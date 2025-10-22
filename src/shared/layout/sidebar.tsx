@@ -38,20 +38,20 @@ const navigation = [
   },
   {
     name: "AI 서비스 관리",
-    href: "/dashboard/ai-service",
+    href: "/dashboard/service",
     icon: Brain,
     children: [
       {
         name: "모델 관리",
-        href: "/dashboard/ai-service/models",
+        href: "/dashboard/service/models",
       },
       {
         name: "도구 관리",
-        href: "/dashboard/ai-service/tools",
+        href: "/dashboard/service/tools",
       },
       {
         name: "페르소나 관리",
-        href: "/dashboard/ai-service/personas",
+        href: "/dashboard/service/personas",
       },
     ],
   },
