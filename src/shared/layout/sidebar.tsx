@@ -3,7 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Shield, FileText, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Shield,
+  FileText,
+  LogOut,
+  Brain,
+  ChevronRight,
+} from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 
@@ -28,11 +36,31 @@ const navigation = [
     href: "/dashboard/audit-logs",
     icon: FileText,
   },
+  {
+    name: "AI 서비스 관리",
+    href: "/dashboard/ai-service",
+    icon: Brain,
+    children: [
+      {
+        name: "모델 관리",
+        href: "/dashboard/ai-service/models",
+      },
+      {
+        name: "도구 관리",
+        href: "/dashboard/ai-service/tools",
+      },
+      {
+        name: "페르소나 관리",
+        href: "/dashboard/ai-service/personas",
+      },
+    ],
+  },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>([""]);
 
   useEffect(() => {
     // 다크모드 상태 확인
@@ -51,6 +79,14 @@ export function Sidebar() {
     window.addEventListener("themeChanged", handleThemeChange);
     return () => window.removeEventListener("themeChanged", handleThemeChange);
   }, []);
+
+  const toggleMenu = (menuName: string) => {
+    setExpandedMenus((prev) =>
+      prev.includes(menuName)
+        ? prev.filter((name) => name !== menuName)
+        : [...prev, menuName]
+    );
+  };
 
   return (
     <div
@@ -102,22 +138,73 @@ export function Sidebar() {
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navigation.map((item) => {
           const isActive = pathname === item.href;
+          const hasChildren = item.children && item.children.length > 0;
+          const isExpanded = expandedMenus.includes(item.name);
+          const isChildActive =
+            hasChildren &&
+            item.children?.some((child) => pathname === child.href);
+
           return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-primary text-primary-foreground"
-                  : isDarkMode
-                  ? "text-white hover:bg-gray-800 hover:text-white"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            <div key={item.name}>
+              {hasChildren && (
+                <button
+                  onClick={() => toggleMenu(item.name)}
+                  className={cn(
+                    "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all text-muted-foreground hover:bg-muted hover:text-foreground duration-300",
+                    (isActive || isChildActive) &&
+                      "bg-primary text-primary-foreground",
+                    isDarkMode && "hover:bg-gray-800 hover:text-white"
+                  )}
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span className="flex-1 text-left">{item.name}</span>
+                  <ChevronRight
+                    className={cn(
+                      "h-4 w-4 transition-transform duration-300",
+                      isExpanded && "rotate-90"
+                    )}
+                  />
+                </button>
               )}
-            >
-              <item.icon className="h-5 w-5" />
-              {item.name}
-            </Link>
+              {!hasChildren && (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors text-muted-foreground hover:bg-muted hover:text-foreground",
+                    isActive && "bg-primary text-primary-foreground",
+                    isDarkMode && "hover:bg-gray-800 hover:text-white"
+                  )}
+                >
+                  <item.icon className="h-5 w-5" />
+                  {item.name}
+                </Link>
+              )}
+              {hasChildren && isExpanded && (
+                <div className="ml-4 mt-1 space-y-1">
+                  {item.children?.map((child) => {
+                    const isChildItemActive = pathname === child.href;
+                    return (
+                      <Link
+                        key={child.name}
+                        href={child.href}
+                        className={cn(
+                          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors text-muted-foreground hover:bg-muted hover:text-foreground",
+                          isChildItemActive &&
+                            "bg-primary/10 text-primary font-medium",
+                          isDarkMode &&
+                            "text-gray-300 hover:bg-gray-800 hover:text-white"
+                        )}
+                      >
+                        <div className="w-5 flex items-center justify-center">
+                          <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                        </div>
+                        {child.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           );
         })}
       </nav>
