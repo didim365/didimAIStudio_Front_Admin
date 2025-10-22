@@ -39,7 +39,7 @@ export default function PermissionsPage() {
   } = usePermissions();
 
   return (
-    <div className="p-8" key={themeKey}>
+    <div key={themeKey}>
       {/* 헤더 */}
       <div className="mb-8">
         <h1

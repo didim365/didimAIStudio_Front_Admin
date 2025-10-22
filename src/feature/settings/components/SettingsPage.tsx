@@ -10,7 +10,7 @@ export default function SettingsPage() {
   const { selectedTheme, selectedFont, handleThemeChange, handleFontChange } = useSettings();
 
   return (
-    <div className="p-8">
+    <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold">설정</h1>
         <p className="text-muted-foreground mt-2">
