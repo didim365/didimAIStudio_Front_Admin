@@ -1,5 +1,5 @@
-function ModelPage() {
-  return <div>page</div>;
-}
+import ModelPage from "@/feature/models/components/ModelPage";
 
-export default ModelPage;
+export default function Page() {
+  return <ModelPage />;
+}

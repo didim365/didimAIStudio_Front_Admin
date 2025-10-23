@@ -159,3 +159,22 @@
 .border-theme-primary {
   border-color: var(--color-primary);
 }
+
+/* Sonner 에러 토스트 스타일 */
+[data-sonner-toast][data-type="error"] {
+  background-color: var(--destructive) !important;
+  border-color: var(--destructive) !important;
+  color: white !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-content] {
+  color: white !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-title] {
+  color: white !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-description] {
+  color: white !important;
+}

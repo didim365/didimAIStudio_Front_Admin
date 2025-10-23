@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ReactQueryProvider } from "@/shared/components/ReactQueryProvider";
+import { Toaster } from "@/shared/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Admin Console - DidimAI Studio",
@@ -14,7 +16,8 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="antialiased font-['Pretendard']">
-        {children}
+        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <Toaster />
       </body>
     </html>
   );
