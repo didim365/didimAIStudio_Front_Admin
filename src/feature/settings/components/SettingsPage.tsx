@@ -1,14 +1,8 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Switch } from "@/shared/ui/switch";
-import { Label } from "@/shared/ui/label";
-import { Moon, Sun } from "lucide-react";
-import { useSettings } from "../hooks/useSettings";
 
 export default function SettingsPage() {
-  const { selectedTheme, selectedFont, handleThemeChange, handleFontChange } = useSettings();
-
   return (
     <div>
       <div className="mb-8">
@@ -25,7 +19,7 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              {/* <div className="flex items-center gap-3">
                 {selectedTheme === "dark" ? (
                   <Moon className="h-5 w-5 text-muted-foreground" />
                 ) : (
@@ -38,7 +32,7 @@ export default function SettingsPage() {
                   </p>
                 </div>
               </div>
-              <Switch checked={selectedTheme === "dark"} onCheckedChange={(checked) => handleThemeChange(checked ? "dark" : "light")} />
+              <Switch checked={selectedTheme === "dark"} onCheckedChange={(checked) => handleThemeChange(checked ? "dark" : "light")} /> */}
             </div>
           </CardContent>
         </Card>

@@ -17,7 +17,7 @@ function ModelPage() {
   const [provider, setProvider] = useState<string | null>(null);
   const [deploymentType, setDeploymentType] = useState<string | null>(null);
 
-  const { data, isLoading, refetch } = useGetCatalog({
+  const { data, isLoading } = useGetCatalog({
     category: category || undefined,
     provider: provider || undefined,
     deployment_type: deploymentType || undefined,

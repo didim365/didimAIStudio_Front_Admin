@@ -39,7 +39,8 @@ export default function ModelPagination({
 
   const handleFirstPage = () => onPageChange(1);
   const handlePreviousPage = () => onPageChange(Math.max(1, currentPage - 1));
-  const handleNextPage = () => onPageChange(Math.min(totalPages, currentPage + 1));
+  const handleNextPage = () =>
+    onPageChange(Math.min(totalPages, currentPage + 1));
   const handleLastPage = () => onPageChange(totalPages);
 
   // Generate page numbers to display
@@ -52,7 +53,7 @@ export default function ModelPagination({
 
     const half = Math.floor(maxPages / 2);
     let start = Math.max(1, currentPage - half);
-    let end = Math.min(totalPages, start + maxPages - 1);
+    const end = Math.min(totalPages, start + maxPages - 1);
 
     if (end === totalPages) {
       start = Math.max(1, end - maxPages + 1);
