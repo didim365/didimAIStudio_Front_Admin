@@ -1,5 +1,7 @@
-function ToolsPage() {
-  return <div>page</div>;
+import ToolsPage from "@/feature/tools/components/ToolsPage";
+
+function Page() {
+  return <ToolsPage />;
 }
 
-export default ToolsPage;
+export default Page;

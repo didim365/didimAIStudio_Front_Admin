@@ -1,0 +1,172 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Button } from "@/shared/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
+import { Search, RefreshCw } from "lucide-react";
+import { useGetMcpTools } from "../hooks/useGetMcpTools";
+import { StatsCards } from "./StatsCards";
+import { ToolsTable } from "./ToolsTable";
+
+export default function ToolsPage() {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(20);
+
+  const queryParams = useMemo(() => {
+    return {
+      page,
+      size: pageSize,
+      status_filter:
+        statusFilter === "all"
+          ? undefined
+          : (statusFilter as "ACTIVE" | "INACTIVE" | "PENDING" | "ERROR"),
+      include_config: false,
+    };
+  }, [page, pageSize, statusFilter]);
+
+  const { data, isLoading, refetch } = useGetMcpTools(queryParams);
+
+  const filteredTools = useMemo(() => {
+    const tools = data?.items || [];
+
+    if (!searchQuery) {
+      return tools;
+    }
+
+    const query = searchQuery.toLowerCase();
+    return tools.filter(
+      (tool) =>
+        tool.name.toLowerCase().includes(query) ||
+        tool.description?.toLowerCase().includes(query) ||
+        tool.definition_name?.toLowerCase().includes(query) ||
+        tool.keywords?.some((keyword) => keyword.toLowerCase().includes(query))
+    );
+  }, [data?.items, searchQuery]);
+
+  const stats = useMemo(() => {
+    const tools = data?.items || [];
+    return {
+      total: data?.total || 0,
+      active: tools.filter((tool) => tool.status === "ACTIVE").length,
+      inactive: tools.filter((tool) => tool.status === "INACTIVE").length,
+      pending: tools.filter((tool) => tool.status === "PENDING").length,
+      error: tools.filter((tool) => tool.status === "ERROR").length,
+    };
+  }, [data]);
+
+  const handleViewDetails = (toolId: number) => {
+    router.push(`/dashboard/service/tools/${toolId}`);
+  };
+
+  return (
+    <div>
+      {/* 헤더 */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">MCP 도구 관리</h1>
+        <p className="mt-2 text-slate-600">
+          등록된 모든 MCP 도구 템플릿을 관리합니다
+        </p>
+      </div>
+
+      {/* 통계 카드 */}
+      <StatsCards {...stats} />
+
+      {/* 검색 및 필터 */}
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="도구 이름, 설명, 키워드로 검색..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="상태 필터" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">전체 상태</SelectItem>
+                  <SelectItem value="ACTIVE">활성</SelectItem>
+                  <SelectItem value="INACTIVE">비활성</SelectItem>
+                  <SelectItem value="PENDING">대기 중</SelectItem>
+                  <SelectItem value="ERROR">오류</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={() => refetch()}
+                disabled={isLoading}
+              >
+                <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+                새로고침
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 도구 테이블 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">
+            도구 목록 ({filteredTools.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading && (
+            <div className="text-center py-8 text-slate-500">
+              로딩 중...
+            </div>
+          )}
+          {!isLoading && (
+            <ToolsTable tools={filteredTools} onViewDetails={handleViewDetails} />
+          )}
+        </CardContent>
+      </Card>
+
+      {/* 페이지네이션 */}
+      {data && data.pages > 1 && (
+        <div className="mt-6 flex justify-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={!data.has_prev}
+          >
+            이전
+          </Button>
+          <div className="flex items-center gap-2 px-4">
+            <span className="text-sm text-slate-600">
+              {data.page} / {data.pages}
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => setPage((p) => p + 1)}
+            disabled={!data.has_next}
+          >
+            다음
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
