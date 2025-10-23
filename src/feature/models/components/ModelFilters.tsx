@@ -43,7 +43,10 @@ const DEPLOYMENT_TYPES = [
   { value: "PUBLIC_API", label: "Public API" },
 ];
 
-export default function ModelFilters({ onFilterChange, className }: ModelFiltersProps) {
+export default function ModelFilters({
+  onFilterChange,
+  className,
+}: ModelFiltersProps) {
   const [category, setCategory] = useState<string | null>(null);
   const [provider, setProvider] = useState<string>("");
   const [deploymentType, setDeploymentType] = useState<string | null>(null);
@@ -74,7 +77,7 @@ export default function ModelFilters({ onFilterChange, className }: ModelFilters
 
   return (
     <Card className={className}>
-      <CardContent className="pt-6">
+      <CardContent>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">

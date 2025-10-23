@@ -1,15 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Database, RefreshCw } from "lucide-react";
 import { components } from "@/shared/types/api/models";
 import useGetCatalog from "../hooks/useGetCatalog";
 import ModelFilters from "./ModelFilters";
 import ModelTable from "./ModelTable";
 import ModelPagination from "./ModelPagination";
-import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { toast } from "sonner";
+import { Card, CardContent } from "@/shared/ui/card";
 
 type AICategoryEnum = components["schemas"]["AICategoryEnum"];
 
@@ -50,41 +47,14 @@ function ModelPage() {
     setPage(1); // Reset to first page when page size changes
   };
 
-  const handleRefresh = () => {
-    refetch();
-    toast.success("모델 목록을 새로고침했습니다");
-  };
-
   return (
     <div>
-      {/* Header */}
+      {/* 헤더 */}
       <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Database className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">AI 모델 카탈로그</h1>
-              <p className="mt-2 text-muted-foreground">
-                {data?.total
-                  ? `총 ${data.total.toLocaleString()}개의 AI 모델을 관리하고 있습니다`
-                  : "AI 모델을 검색하고 관리하세요"}
-              </p>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={isLoading}
-          >
-            <RefreshCw
-              className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-            />
-            새로고침
-          </Button>
-        </div>
+        <h1 className="text-3xl font-bold">AI 모델 카탈로그</h1>
+        <p className="mt-2 text-muted-foreground">
+          시스템의 모든 AI 모델을 검색하고 관리하세요
+        </p>
       </div>
 
       {/* Filters */}
