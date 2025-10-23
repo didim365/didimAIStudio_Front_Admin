@@ -12,6 +12,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Eye } from "lucide-react";
 import { paths } from "@/shared/types/api/tools";
+import Image from "next/image";
 
 type MCPToolResponseDTO =
   paths["/v1/mcp-tools/"]["get"]["responses"]["200"]["content"]["application/json"]["items"][0];
@@ -55,7 +56,10 @@ export function ToolsTable({ tools, onViewDetails }: ToolsTableProps) {
         <TableBody>
           {tools.length === 0 && (
             <TableRow>
-              <TableCell colSpan={8} className="text-center py-8 text-slate-500">
+              <TableCell
+                colSpan={8}
+                className="text-center py-8 text-slate-500"
+              >
                 등록된 도구가 없습니다.
               </TableCell>
             </TableRow>
@@ -65,7 +69,7 @@ export function ToolsTable({ tools, onViewDetails }: ToolsTableProps) {
               <TableCell>
                 <div className="flex items-center gap-2">
                   {tool.icon_url && (
-                    <img
+                    <Image
                       src={tool.icon_url}
                       alt={tool.name}
                       className="w-6 h-6 rounded"

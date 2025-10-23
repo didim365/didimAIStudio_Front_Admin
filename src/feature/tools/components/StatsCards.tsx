@@ -6,18 +6,11 @@ import { Box, Activity, AlertCircle, Clock } from "lucide-react";
 interface StatsCardsProps {
   total: number;
   active: number;
-  inactive: number;
   pending: number;
   error: number;
 }
 
-export function StatsCards({
-  total,
-  active,
-  inactive,
-  pending,
-  error,
-}: StatsCardsProps) {
+export function StatsCards({ total, active, pending, error }: StatsCardsProps) {
   const stats = [
     {
       label: "전체 도구",
