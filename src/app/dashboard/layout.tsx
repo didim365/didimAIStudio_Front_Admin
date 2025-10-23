@@ -31,7 +31,7 @@ export default function DashboardLayout({
     <div className="flex h-screen">
       <Sidebar />
       <main
-        className="flex-1 overflow-y-auto"
+        className="flex-1 overflow-y-auto p-8"
         style={{
           backgroundColor: isDarkMode ? "#000000" : "#ffffff",
           color: isDarkMode ? "#ffffff" : "inherit",

@@ -30,7 +30,7 @@ export default function UsersPage() {
   } = useUsers();
 
   return (
-    <div className="p-8">
+    <div>
       {/* 헤더 */}
       <div className="mb-8">
         <h1
