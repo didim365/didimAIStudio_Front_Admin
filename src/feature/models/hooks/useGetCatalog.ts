@@ -1,3 +1,5 @@
+"use client";
+
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/models";
 import getCatalog from "../api/getCatalog";
