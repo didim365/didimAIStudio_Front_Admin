@@ -43,54 +43,22 @@ export default function ModelPagination({
   const handleLastPage = () => onPageChange(totalPages);
 
   // Generate page numbers to display
-  const getPageNumbers = () => {
-    const pages: (number | string)[] = [];
-    const showPages = 5; // Number of page buttons to show
+  const getPageNumbers = (): number[] => {
+    const maxPages = 5;
 
-    if (totalPages <= showPages + 2) {
-      // Show all pages if total is small
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      // Always show first page
-      pages.push(1);
-
-      let start = Math.max(2, currentPage - 1);
-      let end = Math.min(totalPages - 1, currentPage + 1);
-
-      // Adjust range if near the beginning
-      if (currentPage <= 3) {
-        end = Math.min(showPages - 1, totalPages - 1);
-        start = 2;
-      }
-
-      // Adjust range if near the end
-      if (currentPage >= totalPages - 2) {
-        start = Math.max(2, totalPages - (showPages - 2));
-        end = totalPages - 1;
-      }
-
-      // Add ellipsis if needed
-      if (start > 2) {
-        pages.push("...");
-      }
-
-      // Add middle pages
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-
-      // Add ellipsis if needed
-      if (end < totalPages - 1) {
-        pages.push("...");
-      }
-
-      // Always show last page
-      pages.push(totalPages);
+    if (totalPages <= maxPages) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
 
-    return pages;
+    const half = Math.floor(maxPages / 2);
+    let start = Math.max(1, currentPage - half);
+    let end = Math.min(totalPages, start + maxPages - 1);
+
+    if (end === totalPages) {
+      start = Math.max(1, end - maxPages + 1);
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
   return (
@@ -144,25 +112,16 @@ export default function ModelPagination({
         </Button>
 
         <div className="flex items-center gap-1">
-          {getPageNumbers().map((page, index) => (
-            typeof page === "number" ? (
-              <Button
-                key={index}
-                variant={currentPage === page ? "default" : "outline"}
-                size="sm"
-                onClick={() => onPageChange(page)}
-                className="min-w-[40px]"
-              >
-                {page}
-              </Button>
-            ) : (
-              <span
-                key={index}
-                className="px-2 text-muted-foreground"
-              >
-                {page}
-              </span>
-            )
+          {getPageNumbers().map((page) => (
+            <Button
+              key={page}
+              variant={currentPage === page ? "default" : "outline"}
+              size="sm"
+              onClick={() => onPageChange(page)}
+              className="min-w-[40px]"
+            >
+              {page}
+            </Button>
           ))}
         </div>
 
