@@ -9,7 +9,11 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
-export function ReactQueryProvider({ children }: { children: React.ReactNode }) {
+export function ReactQueryProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -27,6 +31,10 @@ export function ReactQueryProvider({ children }: { children: React.ReactNode }) 
           queries: {
             staleTime: 60 * 1000, // 1분
             refetchOnWindowFocus: false,
+            retry: false, // 재시도 비활성화
+          },
+          mutations: {
+            retry: false, // 재시도 비활성화
           },
         },
       })
