@@ -8,13 +8,7 @@ import ModelFilters from "./ModelFilters";
 import ModelTable from "./ModelTable";
 import ModelPagination from "./ModelPagination";
 import { Button } from "@/shared/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { toast } from "sonner";
 
 type AICategoryEnum = components["schemas"]["AICategoryEnum"];
@@ -62,45 +56,43 @@ function ModelPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div>
       {/* Header */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Database className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <CardTitle className="text-2xl">AI 모델 카탈로그</CardTitle>
-                <CardDescription className="mt-1">
-                  {data?.total
-                    ? `총 ${data.total.toLocaleString()}개의 AI 모델을 관리하고 있습니다`
-                    : "AI 모델을 검색하고 관리하세요"}
-                </CardDescription>
-              </div>
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Database className="h-6 w-6 text-primary" />
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRefresh}
-              disabled={isLoading}
-            >
-              <RefreshCw
-                className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-              />
-              새로고침
-            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">AI 모델 카탈로그</h1>
+              <p className="mt-2 text-muted-foreground">
+                {data?.total
+                  ? `총 ${data.total.toLocaleString()}개의 AI 모델을 관리하고 있습니다`
+                  : "AI 모델을 검색하고 관리하세요"}
+              </p>
+            </div>
           </div>
-        </CardHeader>
-      </Card>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={isLoading}
+          >
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+            />
+            새로고침
+          </Button>
+        </div>
+      </div>
 
       {/* Filters */}
-      <ModelFilters onFilterChange={handleFilterChange} />
+      <ModelFilters onFilterChange={handleFilterChange} className="mb-6" />
 
       {/* Statistics */}
       {data && !isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
