@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
@@ -24,47 +24,38 @@ export default function ToolsPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
 
-  const queryParams = useMemo(() => {
-    return {
-      page,
-      size: pageSize,
-      status_filter:
-        statusFilter === "all"
-          ? undefined
-          : (statusFilter as "ACTIVE" | "INACTIVE" | "PENDING" | "ERROR"),
-      include_config: false,
-    };
-  }, [page, pageSize, statusFilter]);
+  const queryParams = {
+    page,
+    size: pageSize,
+    status_filter:
+      statusFilter === "all"
+        ? undefined
+        : (statusFilter as "ACTIVE" | "INACTIVE" | "PENDING" | "ERROR"),
+    include_config: false,
+  };
 
   const { data, isLoading, refetch } = useGetMcpTools(queryParams);
 
-  const filteredTools = useMemo(() => {
-    const tools = data?.items || [];
+  const tools = data?.items || [];
+  const filteredTools = !searchQuery
+    ? tools
+    : tools.filter((tool) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          tool.name.toLowerCase().includes(query) ||
+          tool.description?.toLowerCase().includes(query) ||
+          tool.definition_name?.toLowerCase().includes(query) ||
+          tool.keywords?.some((keyword) => keyword.toLowerCase().includes(query))
+        );
+      });
 
-    if (!searchQuery) {
-      return tools;
-    }
-
-    const query = searchQuery.toLowerCase();
-    return tools.filter(
-      (tool) =>
-        tool.name.toLowerCase().includes(query) ||
-        tool.description?.toLowerCase().includes(query) ||
-        tool.definition_name?.toLowerCase().includes(query) ||
-        tool.keywords?.some((keyword) => keyword.toLowerCase().includes(query))
-    );
-  }, [data?.items, searchQuery]);
-
-  const stats = useMemo(() => {
-    const tools = data?.items || [];
-    return {
-      total: data?.total || 0,
-      active: tools.filter((tool) => tool.status === "ACTIVE").length,
-      inactive: tools.filter((tool) => tool.status === "INACTIVE").length,
-      pending: tools.filter((tool) => tool.status === "PENDING").length,
-      error: tools.filter((tool) => tool.status === "ERROR").length,
-    };
-  }, [data]);
+  const stats = {
+    total: data?.total || 0,
+    active: tools.filter((tool) => tool.status === "ACTIVE").length,
+    inactive: tools.filter((tool) => tool.status === "INACTIVE").length,
+    pending: tools.filter((tool) => tool.status === "PENDING").length,
+    error: tools.filter((tool) => tool.status === "ERROR").length,
+  };
 
   const handleViewDetails = (toolId: number) => {
     router.push(`/dashboard/service/tools/${toolId}`);
