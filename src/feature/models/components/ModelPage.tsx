@@ -21,8 +21,7 @@ function ModelPage() {
         {data?.items.map((model) => (
           <li key={model.id}>
             <strong>{model.model_name}</strong> - {model.provider} (v
-            {model.version})
-            {model.description && <p>{model.description}</p>}
+            {model.version}){model.description && <p>{model.description}</p>}
           </li>
         ))}
       </ul>
