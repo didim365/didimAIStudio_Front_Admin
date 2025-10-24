@@ -16,6 +16,7 @@ import { Search, RefreshCw } from "lucide-react";
 import { useGetPersonasData } from "../hooks/useGetPersonasData";
 import { StatsCards } from "./StatsCards";
 import { PersonasTable } from "./PersonasTable";
+import { components } from "@/shared/types/api/agents";
 
 export default function PersonasPage() {
   const router = useRouter();
@@ -29,7 +30,10 @@ export default function PersonasPage() {
   const queryParams = {
     page,
     size: pageSize,
-    category: categoryFilter === "all" ? undefined : [categoryFilter as any],
+    category:
+      categoryFilter === "all"
+        ? undefined
+        : [categoryFilter as components["schemas"]["PersonaCategoryEnum"]],
     is_system: typeFilter === "all" ? undefined : typeFilter === "system",
     is_public: publicFilter === "all" ? undefined : publicFilter === "public",
   };
