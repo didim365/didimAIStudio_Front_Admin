@@ -40,11 +40,16 @@ const DEPLOYMENT_TYPES = [
 
 function ModelPage() {
   // URL 쿼리 파라미터 관리 - useState와 동일한 API
-  const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", { debounce: 300 });
+  const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
+    debounce: 300,
+  });
   const [page, setPage] = useQueryParam<number>("page", 1);
   const [category, setCategory] = useQueryParam<string>("category", "all");
   const [provider, setProvider] = useQueryParam<string>("provider", "");
-  const [deploymentType, setDeploymentType] = useQueryParam<string>("deploymentType", "all");
+  const [deploymentType, setDeploymentType] = useQueryParam<string>(
+    "deploymentType",
+    "all"
+  );
 
   const { data, isLoading, refetch } = useGetCatalog({
     category: category === "all" ? undefined : (category as AICategoryEnum),
@@ -79,7 +84,7 @@ function ModelPage() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">AI 모델 카탈로그</h1>
+        <h1 className="text-3xl font-bold">모델 관리</h1>
         <p className="mt-2 text-slate-600">
           시스템의 모든 AI 모델을 검색하고 관리하세요
         </p>
@@ -170,9 +175,7 @@ function ModelPage() {
               <p className="text-slate-500">로딩 중...</p>
             </div>
           )}
-          {!isLoading && (
-            <ModelTable models={filteredModels} />
-          )}
+          {!isLoading && <ModelTable models={filteredModels} />}
         </CardContent>
       </Card>
 
