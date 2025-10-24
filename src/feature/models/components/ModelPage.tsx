@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { components } from "@/shared/types/api/models";
+import { useQueryParams } from "@/shared/hooks/useQueryParams";
 import useGetCatalog from "../hooks/useGetCatalog";
 import ModelTable from "./ModelTable";
 import { ModelStatsCards } from "./ModelStatsCards";
@@ -39,9 +39,7 @@ const DEPLOYMENT_TYPES = [
 ];
 
 function ModelPage() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { searchParams, updateQueryParams } = useQueryParams();
 
   // URL 쿼리 파라미터에서 값 읽기
   const searchQuery = searchParams.get("search") || "";
@@ -49,21 +47,6 @@ function ModelPage() {
   const category = searchParams.get("category") || "all";
   const provider = searchParams.get("provider") || "";
   const deploymentType = searchParams.get("deploymentType") || "all";
-
-  // URL 쿼리 파라미터 업데이트 함수
-  const updateQueryParams = (updates: Record<string, string | number | null>) => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === "" || value === "all") {
-        params.delete(key);
-      } else {
-        params.set(key, String(value));
-      }
-    });
-
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
-  };
 
   const { data, isLoading, refetch } = useGetCatalog({
     category: category === "all" ? undefined : (category as AICategoryEnum),
