@@ -4,6 +4,7 @@ import { useState } from "react";
 import { components } from "@/shared/types/api/models";
 import useGetCatalog from "../hooks/useGetCatalog";
 import ModelTable from "./ModelTable";
+import { ModelStatsCards } from "./ModelStatsCards";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -65,6 +66,16 @@ function ModelPage() {
         );
       });
 
+  const stats = {
+    total: data?.total || 0,
+    privateVllm: models.filter(
+      (model) => model.deployment_type === "PRIVATE_VLLM"
+    ).length,
+    publicApi: models.filter((model) => model.deployment_type === "PUBLIC_API")
+      .length,
+    filtered: filteredModels.length,
+  };
+
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -79,6 +90,9 @@ function ModelPage() {
           시스템의 모든 AI 모델을 검색하고 관리하세요
         </p>
       </div>
+
+      {/* 통계 카드 */}
+      <ModelStatsCards {...stats} />
 
       {/* 검색 및 필터 */}
       <Card className="mb-6">
@@ -144,54 +158,6 @@ function ModelPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Statistics */}
-      {data && !isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-3xl font-bold text-primary">
-                  {data.total.toLocaleString()}
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">전체 모델</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-3xl font-bold text-blue-600">
-                  {data.total_pages.toLocaleString()}
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">총 페이지</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-3xl font-bold text-green-600">
-                  {data.items.length.toLocaleString()}
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  현재 페이지
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-3xl font-bold text-purple-600">{page}</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  현재 페이지 번호
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
 
       {/* Table */}
       <ModelTable models={filteredModels} isLoading={isLoading} />
