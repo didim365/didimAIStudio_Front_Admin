@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { components } from "@/shared/types/api/models";
 import useGetCatalog from "../hooks/useGetCatalog";
 import ModelTable from "./ModelTable";
@@ -39,11 +39,31 @@ const DEPLOYMENT_TYPES = [
 ];
 
 function ModelPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(1);
-  const [category, setCategory] = useState<string>("all");
-  const [provider, setProvider] = useState<string>("");
-  const [deploymentType, setDeploymentType] = useState<string>("all");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // URL 쿼리 파라미터에서 값 읽기
+  const searchQuery = searchParams.get("search") || "";
+  const page = Number(searchParams.get("page")) || 1;
+  const category = searchParams.get("category") || "all";
+  const provider = searchParams.get("provider") || "";
+  const deploymentType = searchParams.get("deploymentType") || "all";
+
+  // URL 쿼리 파라미터 업데이트 함수
+  const updateQueryParams = (updates: Record<string, string | number | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === "" || value === "all") {
+        params.delete(key);
+      } else {
+        params.set(key, String(value));
+      }
+    });
+
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const { data, isLoading, refetch } = useGetCatalog({
     category: category === "all" ? undefined : (category as AICategoryEnum),
@@ -97,14 +117,14 @@ function ModelPage() {
               <Input
                 placeholder="모델 이름, 설명, 제공자로 검색..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => updateQueryParams({ search: e.target.value })}
                 className="pl-10"
               />
             </div>
 
             {/* 필터 옵션 */}
             <div className="flex flex-wrap gap-2">
-              <Select value={category} onValueChange={setCategory}>
+              <Select value={category} onValueChange={(value) => updateQueryParams({ category: value })}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="카테고리" />
                 </SelectTrigger>
@@ -121,11 +141,11 @@ function ModelPage() {
               <Input
                 placeholder="제공자 필터..."
                 value={provider}
-                onChange={(e) => setProvider(e.target.value)}
+                onChange={(e) => updateQueryParams({ provider: e.target.value })}
                 className="w-[180px]"
               />
 
-              <Select value={deploymentType} onValueChange={setDeploymentType}>
+              <Select value={deploymentType} onValueChange={(value) => updateQueryParams({ deploymentType: value })}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="배포 타입" />
                 </SelectTrigger>
@@ -180,7 +200,7 @@ function ModelPage() {
         <div className="mt-6 flex justify-center gap-2">
           <Button
             variant="outline"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            onClick={() => updateQueryParams({ page: Math.max(1, page - 1) })}
             disabled={page === 1 || isLoading}
           >
             이전
@@ -192,7 +212,7 @@ function ModelPage() {
           </div>
           <Button
             variant="outline"
-            onClick={() => setPage((p) => p + 1)}
+            onClick={() => updateQueryParams({ page: page + 1 })}
             disabled={page === data.total_pages || isLoading}
           >
             다음
