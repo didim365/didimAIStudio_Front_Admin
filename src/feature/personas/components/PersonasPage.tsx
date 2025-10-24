@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
@@ -26,22 +26,20 @@ export default function PersonasPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
 
-  const queryParams = useMemo(() => {
-    return {
-      page,
-      size: pageSize,
-      category: categoryFilter === "all" ? undefined : [categoryFilter as any],
-      is_system: typeFilter === "all" ? undefined : typeFilter === "system",
-      is_public: publicFilter === "all" ? undefined : publicFilter === "public",
-    };
-  }, [page, pageSize, categoryFilter, typeFilter, publicFilter]);
+  const queryParams = {
+    page,
+    size: pageSize,
+    category: categoryFilter === "all" ? undefined : [categoryFilter as any],
+    is_system: typeFilter === "all" ? undefined : typeFilter === "system",
+    is_public: publicFilter === "all" ? undefined : publicFilter === "public",
+  };
 
   const { data, isLoading, refetch } = useGetPersonasData(queryParams);
 
   const personas = data?.items || [];
 
   // 클라이언트 사이드 검색 필터링
-  const filteredPersonas = useMemo(() => {
+  const filteredPersonas = (() => {
     if (!searchQuery) return personas;
 
     const query = searchQuery.toLowerCase();
@@ -54,18 +52,16 @@ export default function PersonasPage() {
         persona.user_persona_description?.toLowerCase().includes(query)
       );
     });
-  }, [personas, searchQuery]);
+  })();
 
   // 통계 계산
-  const stats = useMemo(() => {
-    return {
-      total: data?.total || 0,
-      system: personas.filter((p) => p.is_system).length,
-      user: personas.filter((p) => !p.is_system).length,
-      public: personas.filter((p) => p.is_public).length,
-      private: personas.filter((p) => !p.is_public).length,
-    };
-  }, [data?.total, personas]);
+  const stats = {
+    total: data?.total || 0,
+    system: personas.filter((p) => p.is_system).length,
+    user: personas.filter((p) => !p.is_system).length,
+    public: personas.filter((p) => p.is_public).length,
+    private: personas.filter((p) => !p.is_public).length,
+  };
 
   const handleViewDetails = (personaId: number) => {
     router.push(`/dashboard/service/personas/${personaId}`);
