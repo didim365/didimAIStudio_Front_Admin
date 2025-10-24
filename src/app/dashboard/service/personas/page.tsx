@@ -1,5 +1,7 @@
-function PersonasPage() {
-  return <div>page</div>;
+import PersonasPage from "@/feature/personas/components/PersonasPage";
+
+function Page() {
+  return <PersonasPage />;
 }
 
-export default PersonasPage;
+export default Page;
