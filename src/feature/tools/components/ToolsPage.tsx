@@ -45,7 +45,9 @@ export default function ToolsPage() {
           tool.name.toLowerCase().includes(query) ||
           tool.description?.toLowerCase().includes(query) ||
           tool.definition_name?.toLowerCase().includes(query) ||
-          tool.keywords?.some((keyword) => keyword.toLowerCase().includes(query))
+          tool.keywords?.some((keyword) =>
+            keyword.toLowerCase().includes(query)
+          )
         );
       });
 
@@ -76,7 +78,7 @@ export default function ToolsPage() {
 
       {/* 검색 및 필터 */}
       <Card className="mb-6">
-        <CardContent className="pt-6">
+        <CardContent>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -107,7 +109,9 @@ export default function ToolsPage() {
                 onClick={() => refetch()}
                 disabled={isLoading}
               >
-                <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+                <RefreshCw
+                  className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                />
                 새로고침
               </Button>
             </div>
@@ -124,12 +128,13 @@ export default function ToolsPage() {
         </CardHeader>
         <CardContent>
           {isLoading && (
-            <div className="text-center py-8 text-slate-500">
-              로딩 중...
-            </div>
+            <div className="text-center py-8 text-slate-500">로딩 중...</div>
           )}
           {!isLoading && (
-            <ToolsTable tools={filteredTools} onViewDetails={handleViewDetails} />
+            <ToolsTable
+              tools={filteredTools}
+              onViewDetails={handleViewDetails}
+            />
           )}
         </CardContent>
       </Card>
