@@ -90,7 +90,7 @@ export default function PersonasPage() {
 
       {/* 검색 및 필터 */}
       <Card className="mb-6">
-        <CardContent className="pt-6">
+        <CardContent>
           <div className="flex flex-col gap-4">
             {/* 검색 바 */}
             <div className="relative">
