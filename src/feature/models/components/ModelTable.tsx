@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import {
   AlertCircle,
@@ -25,7 +24,6 @@ type GenAIModel = components["schemas"]["GenAIResponseDTO"];
 
 export interface ModelTableProps {
   models: GenAIModel[];
-  isLoading?: boolean;
 }
 
 const getCategoryLabel = (category: string) => {
@@ -101,47 +99,21 @@ const formatDate = (dateString: string | null | undefined) => {
   });
 };
 
-export default function ModelTable({ models, isLoading }: ModelTableProps) {
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>모델 목록</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
+export default function ModelTable({ models }: ModelTableProps) {
   if (models.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>모델 목록</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-            <AlertCircle className="h-12 w-12 mb-4" />
-            <p className="text-lg font-medium">모델을 찾을 수 없습니다</p>
-            <p className="text-sm">필터 조건을 변경해보세요</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+        <AlertCircle className="h-12 w-12 mb-4" />
+        <p className="text-lg font-medium">모델을 찾을 수 없습니다</p>
+        <p className="text-sm">필터 조건을 변경해보세요</p>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>모델 목록 ({models.length}개)</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="rounded-md border">
-          <Table>
+    <>
+      <div className="rounded-md border">
+        <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[250px]">모델</TableHead>
@@ -237,7 +209,6 @@ export default function ModelTable({ models, isLoading }: ModelTableProps) {
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
-  );
-}
+      </>
+    );
+  }
