@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { Search, RefreshCw, AlertCircle } from "lucide-react";
+import { Search, RefreshCw } from "lucide-react";
 import { useGetPersonasData } from "../hooks/useGetPersonasData";
 import { StatsCards } from "./StatsCards";
 import { PersonasTable } from "./PersonasTable";
@@ -36,7 +36,7 @@ export default function PersonasPage() {
     };
   }, [page, pageSize, categoryFilter, typeFilter, publicFilter]);
 
-  const { data, isLoading, error, refetch } = useGetPersonasData(queryParams);
+  const { data, isLoading, refetch } = useGetPersonasData(queryParams);
 
   const personas = data?.items || [];
 
@@ -163,30 +163,15 @@ export default function PersonasPage() {
                 onClick={handleRefresh}
                 disabled={isLoading}
               >
-                <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+                <RefreshCw
+                  className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                />
                 새로고침
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* 에러 상태 */}
-      {error && (
-        <Card className="mb-6 border-red-200 bg-red-50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3 text-red-800">
-              <AlertCircle className="h-5 w-5" />
-              <div>
-                <p className="font-semibold">데이터를 불러오는 중 오류가 발생했습니다</p>
-                <p className="text-sm text-red-600 mt-1">
-                  {error.message || "알 수 없는 오류가 발생했습니다."}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* 페르소나 테이블 */}
       <Card>
@@ -202,7 +187,7 @@ export default function PersonasPage() {
               <p className="text-slate-500">로딩 중...</p>
             </div>
           )}
-          {!isLoading && !error && (
+          {!isLoading && (
             <PersonasTable
               personas={filteredPersonas}
               onViewDetails={handleViewDetails}
