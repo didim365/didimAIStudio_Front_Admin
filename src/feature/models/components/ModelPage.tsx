@@ -41,7 +41,6 @@ const DEPLOYMENT_TYPES = [
 function ModelPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
-  const [size, setSize] = useState(10);
   const [category, setCategory] = useState<string>("all");
   const [provider, setProvider] = useState<string>("");
   const [deploymentType, setDeploymentType] = useState<string>("all");
@@ -51,7 +50,6 @@ function ModelPage() {
     provider: provider || undefined,
     deployment_type: deploymentType === "all" ? undefined : deploymentType,
     page,
-    size,
   });
 
   const models = data?.items || [];
