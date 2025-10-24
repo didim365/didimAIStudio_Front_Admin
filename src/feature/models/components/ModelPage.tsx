@@ -5,7 +5,7 @@ import { components } from "@/shared/types/api/models";
 import useGetCatalog from "../hooks/useGetCatalog";
 import ModelTable from "./ModelTable";
 import { ModelStatsCards } from "./ModelStatsCards";
-import { Card, CardContent } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import {
@@ -74,11 +74,6 @@ function ModelPage() {
     filtered: filteredModels.length,
   };
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
     <div>
       {/* 헤더 */}
@@ -95,8 +90,9 @@ function ModelPage() {
       {/* 검색 및 필터 */}
       <Card className="mb-6">
         <CardContent>
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
+          <div className="flex flex-col gap-4">
+            {/* 검색 바 */}
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="모델 이름, 설명, 제공자로 검색..."
@@ -105,9 +101,11 @@ function ModelPage() {
                 className="pl-10"
               />
             </div>
-            <div className="flex flex-col sm:flex-row gap-2">
+
+            {/* 필터 옵션 */}
+            <div className="flex flex-wrap gap-2">
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="카테고리" />
                 </SelectTrigger>
                 <SelectContent>
@@ -124,11 +122,11 @@ function ModelPage() {
                 placeholder="제공자 필터..."
                 value={provider}
                 onChange={(e) => setProvider(e.target.value)}
-                className="w-full sm:w-[180px]"
+                className="w-[180px]"
               />
 
               <Select value={deploymentType} onValueChange={setDeploymentType}>
-                <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="배포 타입" />
                 </SelectTrigger>
                 <SelectContent>
@@ -157,28 +155,45 @@ function ModelPage() {
         </CardContent>
       </Card>
 
-      {/* Table */}
-      <ModelTable models={filteredModels} isLoading={isLoading} />
+      {/* 모델 테이블 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">
+            모델 목록 ({filteredModels.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading && (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+              <p className="text-slate-500">로딩 중...</p>
+            </div>
+          )}
+          {!isLoading && (
+            <ModelTable models={filteredModels} />
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Pagination */}
+      {/* 페이지네이션 */}
       {data && data.total_pages > 1 && (
         <div className="mt-6 flex justify-center gap-2">
           <Button
             variant="outline"
-            onClick={() => handlePageChange(page - 1)}
-            disabled={page === 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1 || isLoading}
           >
             이전
           </Button>
           <div className="flex items-center gap-2 px-4">
             <span className="text-sm text-slate-600">
-              {page} / {data.total_pages}
+              {data.page} / {data.total_pages}
             </span>
           </div>
           <Button
             variant="outline"
-            onClick={() => handlePageChange(page + 1)}
-            disabled={page >= data.total_pages}
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page === data.total_pages || isLoading}
           >
             다음
           </Button>
