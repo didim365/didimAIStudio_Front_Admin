@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
@@ -17,15 +16,16 @@ import { useGetPersonasData } from "../hooks/useGetPersonasData";
 import { StatsCards } from "./StatsCards";
 import { PersonasTable } from "./PersonasTable";
 import { components } from "@/shared/types/api/agents";
+import { useQueryParam } from "@/shared/hooks/useQueryParams";
 
 export default function PersonasPage() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [publicFilter, setPublicFilter] = useState<string>("all");
-  const [page, setPage] = useState(1);
-  const [pageSize] = useState(20);
+  const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", { debounce: 300 });
+  const [categoryFilter, setCategoryFilter] = useQueryParam<string>("category", "all");
+  const [typeFilter, setTypeFilter] = useQueryParam<string>("type", "all");
+  const [publicFilter, setPublicFilter] = useQueryParam<string>("public", "all");
+  const [page, setPage] = useQueryParam<number>("page", 1);
+  const pageSize = 20;
 
   const queryParams = {
     page,
@@ -44,9 +44,9 @@ export default function PersonasPage() {
 
   // 클라이언트 사이드 검색 필터링
   const filteredPersonas = (() => {
-    if (!searchQuery) return personas;
+    if (!searchQuery || searchQuery === "") return personas;
 
-    const query = searchQuery.toLowerCase();
+    const query = String(searchQuery).toLowerCase();
     return personas.filter((persona) => {
       return (
         persona.name.toLowerCase().includes(query) ||
@@ -73,6 +73,14 @@ export default function PersonasPage() {
 
   const handleRefresh = () => {
     refetch();
+  };
+
+  const handlePreviousPage = () => {
+    setPage(Math.max(1, page - 1));
+  };
+
+  const handleNextPage = () => {
+    setPage(page + 1);
   };
 
   return (
@@ -201,7 +209,7 @@ export default function PersonasPage() {
         <div className="mt-6 flex justify-center gap-2">
           <Button
             variant="outline"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            onClick={handlePreviousPage}
             disabled={page === 1 || isLoading}
           >
             이전
@@ -213,7 +221,7 @@ export default function PersonasPage() {
           </div>
           <Button
             variant="outline"
-            onClick={() => setPage((p) => p + 1)}
+            onClick={handleNextPage}
             disabled={page === data.total_pages || isLoading}
           >
             다음
