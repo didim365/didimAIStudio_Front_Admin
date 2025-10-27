@@ -73,27 +73,27 @@ const fonts = [
 
 export function ThemeSettings() {
   const { theme, setTheme } = useTheme();
-  const [selectedTheme, setSelectedTheme] = useState("monochrome");
-  const [selectedFont, setSelectedFont] = useState("pretendard");
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = typeof window !== 'undefined';
 
-  // 클라이언트에서만 렌더링되도록 보장 (FOUC 방지)
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // localStorage에서 초기값 읽기 (lazy initialization)
+  const [selectedTheme, setSelectedTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem("theme") || "monochrome";
+    }
+    return "monochrome";
+  });
 
-  // 로컬 스토리지에서 설정 불러오기
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "monochrome";
-    const savedFont = localStorage.getItem("font") || "pretendard";
-
-    setSelectedTheme(savedTheme);
-    setSelectedFont(savedFont);
-    applySettings(savedTheme, savedFont);
-  }, []);
+  const [selectedFont, setSelectedFont] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem("font") || "pretendard";
+    }
+    return "pretendard";
+  });
 
   const applySettings = (themeId: string, fontId: string) => {
+    if (typeof window === 'undefined') return;
+
     const theme = themes.find((t) => t.id === themeId);
     const font = fonts.find((f) => f.id === fontId);
 
@@ -112,6 +112,11 @@ export function ThemeSettings() {
       document.body.style.fontFamily = font.family;
     }
   };
+
+  // 초기 설정 적용
+  useEffect(() => {
+    applySettings(selectedTheme, selectedFont);
+  }, [selectedTheme, selectedFont]);
 
   const handleThemeChange = (themeId: string) => {
     setSelectedTheme(themeId);

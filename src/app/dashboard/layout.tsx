@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Sidebar } from "@/shared/layout/sidebar";
 import { ThemeSettings } from "@/shared/layout/theme-settings";
@@ -11,11 +11,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     const handleThemeChange = () => {
@@ -42,8 +37,8 @@ export default function DashboardLayout({
       <main
         className="flex-1 overflow-y-auto p-8"
         style={{
-          backgroundColor: mounted ? (isDarkMode ? "#000000" : "#ffffff") : undefined,
-          color: mounted ? (isDarkMode ? "#ffffff" : "inherit") : undefined,
+          backgroundColor: isDarkMode ? "#000000" : "#ffffff",
+          color: isDarkMode ? "#ffffff" : "inherit",
         }}
       >
         {children}
