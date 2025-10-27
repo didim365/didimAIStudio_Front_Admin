@@ -8,14 +8,19 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-white p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Admin Console</h1>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            Admin Console
+          </h1>
           <p className="text-slate-500">DidimAI Studio 관리자 콘솔</p>
         </div>
         <Card className="border-slate-200 shadow-sm">
           <CardContent className="pt-6">
-            <form className="space-y-5">
+            <form className="space-y-5" action={"/dashboard"}>
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-slate-900">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-medium text-slate-900"
+                >
                   이메일
                 </Label>
                 <Input
@@ -27,7 +32,10 @@ export default function LoginPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-slate-900">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-medium text-slate-900"
+                >
                   비밀번호
                 </Label>
                 <Input
@@ -62,7 +70,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 className="w-full h-11 bg-theme-primary hover:opacity-90 text-white transition-all"
-                style={{ backgroundColor: 'var(--color-primary)' }}
+                style={{ backgroundColor: "var(--color-primary)" }}
               >
                 로그인
               </Button>
