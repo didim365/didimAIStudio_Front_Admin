@@ -48,11 +48,13 @@ export function useQueryParam<T extends QueryParamValue>(
     : (typeof initialValue === 'number' ? Number(urlValue) as T : urlValue as T);
 
   // 로컬 상태 (debounce 중 입력 값 저장)
-  const [pendingValue, setPendingValue] = useState<T | null>(null);
+  const [localValue, setLocalValue] = useState<T>(valueFromUrl);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 실제 표시할 값: pending이 있으면 pending, 없으면 URL 값
-  const currentValue = pendingValue !== null ? pendingValue : valueFromUrl;
+  // URL 값이 변경되면 로컬 값도 동기화 (외부에서 URL이 변경된 경우 대응)
+  useEffect(() => {
+    setLocalValue(valueFromUrl);
+  }, [valueFromUrl]);
 
   // URL 업데이트 함수
   const updateUrl = (value: T) => {
@@ -75,6 +77,9 @@ export function useQueryParam<T extends QueryParamValue>(
 
   // 값 업데이트 함수
   const setValue = (value: T) => {
+    // 로컬 값 즉시 업데이트 (깜빡임 방지)
+    setLocalValue(value);
+
     // 기존 타이머 취소
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
@@ -82,13 +87,9 @@ export function useQueryParam<T extends QueryParamValue>(
 
     // debounce가 설정된 경우
     if (debounce > 0) {
-      // pending 상태로 즉시 업데이트 (입력 끊김 방지)
-      setPendingValue(value);
-
-      // 지연 후 URL 업데이트하고 pending 해제
+      // 지연 후 URL 업데이트
       debounceTimerRef.current = setTimeout(() => {
         updateUrl(value);
-        setPendingValue(null);
       }, debounce);
     } else {
       // debounce가 없으면 즉시 URL 업데이트
@@ -105,5 +106,5 @@ export function useQueryParam<T extends QueryParamValue>(
     };
   }, []);
 
-  return [currentValue, setValue];
+  return [localValue, setValue];
 }

@@ -45,7 +45,9 @@ function ModelPage() {
   });
   const [page, setPage] = useQueryParam<number>("page", 1);
   const [category, setCategory] = useQueryParam<string>("category", "all");
-  const [provider, setProvider] = useQueryParam<string>("provider", "");
+  const [provider, setProvider] = useQueryParam<string>("provider", "", {
+    debounce: 300,
+  });
   const [deploymentType, setDeploymentType] = useQueryParam<string>(
     "deploymentType",
     "all"
