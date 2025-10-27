@@ -42,28 +42,19 @@ export function useQueryParam<T extends QueryParamValue>(
   const { debounce = 0 } = options;
 
   // URL에서 현재 값 읽기
-  const getValueFromUrl = (): T => {
-    const urlValue = searchParams.get(key);
-    if (urlValue === null) {
-      return initialValue;
-    }
+  const urlValue = searchParams.get(key);
+  const valueFromUrl = urlValue === null
+    ? initialValue
+    : (typeof initialValue === 'number' ? Number(urlValue) as T : urlValue as T);
 
-    // 초기값 타입에 따라 변환
-    if (typeof initialValue === 'number') {
-      return Number(urlValue) as T;
-    }
-    return urlValue as T;
-  };
-
-  // 로컬 상태 (입력 중 값 저장)
-  const [localValue, setLocalValue] = useState<T>(getValueFromUrl);
+  // 로컬 상태 (debounce 중 입력 값 저장)
+  const [localValue, setLocalValue] = useState<T>(valueFromUrl);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // URL이 외부에서 변경되었을 때 로컬 상태 동기화
+  // URL 값이 변경되면 로컬 값도 동기화 (외부에서 URL이 변경된 경우 대응)
   useEffect(() => {
-    const urlValue = getValueFromUrl();
-    setLocalValue(urlValue);
-  }, [searchParams]);
+    setLocalValue(valueFromUrl);
+  }, [valueFromUrl]);
 
   // URL 업데이트 함수
   const updateUrl = (value: T) => {
@@ -86,7 +77,7 @@ export function useQueryParam<T extends QueryParamValue>(
 
   // 값 업데이트 함수
   const setValue = (value: T) => {
-    // 로컬 상태는 즉시 업데이트 (입력 끊김 방지)
+    // 로컬 값 즉시 업데이트 (깜빡임 방지)
     setLocalValue(value);
 
     // 기존 타이머 취소
@@ -94,8 +85,9 @@ export function useQueryParam<T extends QueryParamValue>(
       clearTimeout(debounceTimerRef.current);
     }
 
-    // debounce가 설정된 경우 지연 후 URL 업데이트
+    // debounce가 설정된 경우
     if (debounce > 0) {
+      // 지연 후 URL 업데이트
       debounceTimerRef.current = setTimeout(() => {
         updateUrl(value);
       }, debounce);

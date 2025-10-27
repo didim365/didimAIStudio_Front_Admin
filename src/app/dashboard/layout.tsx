@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useTheme } from "next-themes";
 import { Sidebar } from "@/shared/layout/sidebar";
 import { ThemeSettings } from "@/shared/layout/theme-settings";
 
@@ -9,23 +10,26 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
-    const checkDarkMode = () => {
-      const savedDarkMode = localStorage.getItem("darkMode") === "true";
-      setIsDarkMode(savedDarkMode);
-    };
-
-    checkDarkMode();
-
     const handleThemeChange = () => {
-      checkDarkMode();
+      // 다크모드에 따라 body 스타일 업데이트
+      if (theme === "dark") {
+        document.body.style.backgroundColor = '#000000';
+        document.body.style.color = '#ffffff';
+      } else {
+        document.body.style.backgroundColor = '#ffffff';
+        document.body.style.color = '#000000';
+      }
     };
 
+    handleThemeChange();
     window.addEventListener("themeChanged", handleThemeChange);
     return () => window.removeEventListener("themeChanged", handleThemeChange);
-  }, []);
+  }, [theme]);
+
+  const isDarkMode = theme === "dark";
 
   return (
     <div className="flex h-screen">

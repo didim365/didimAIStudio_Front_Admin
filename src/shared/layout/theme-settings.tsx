@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { Settings, Check, Moon, Sun } from "lucide-react";
 import {
   Sheet,
@@ -71,31 +72,28 @@ const fonts = [
 ];
 
 export function ThemeSettings() {
-  const [selectedTheme, setSelectedTheme] = useState("monochrome");
-  const [selectedFont, setSelectedFont] = useState("pretendard");
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const mounted = typeof window !== 'undefined';
 
-  // 로컬 스토리지에서 설정 불러오기
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "monochrome";
-    const savedFont = localStorage.getItem("font") || "pretendard";
-    const savedDarkMode = localStorage.getItem("darkMode");
-    const isDark = savedDarkMode === null ? false : savedDarkMode === "true";
-
-    setSelectedTheme(savedTheme);
-    setSelectedFont(savedFont);
-    setIsDarkMode(isDark);
-    applySettings(savedTheme, savedFont);
-    applyDarkMode(isDark);
-
-    // 처음 방문 시 라이트모드 기본값 저장
-    if (savedDarkMode === null) {
-      localStorage.setItem("darkMode", "false");
+  // localStorage에서 초기값 읽기 (lazy initialization)
+  const [selectedTheme, setSelectedTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem("theme") || "monochrome";
     }
-  }, []);
+    return "monochrome";
+  });
+
+  const [selectedFont, setSelectedFont] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem("font") || "pretendard";
+    }
+    return "pretendard";
+  });
 
   const applySettings = (themeId: string, fontId: string) => {
+    if (typeof window === 'undefined') return;
+
     const theme = themes.find((t) => t.id === themeId);
     const font = fonts.find((f) => f.id === fontId);
 
@@ -115,6 +113,11 @@ export function ThemeSettings() {
     }
   };
 
+  // 초기 설정 적용
+  useEffect(() => {
+    applySettings(selectedTheme, selectedFont);
+  }, [selectedTheme, selectedFont]);
+
   const handleThemeChange = (themeId: string) => {
     setSelectedTheme(themeId);
     localStorage.setItem("theme", themeId);
@@ -130,24 +133,28 @@ export function ThemeSettings() {
     applySettings(selectedTheme, fontId);
   };
 
-  const applyDarkMode = (dark: boolean) => {
-    if (dark) {
-      document.documentElement.classList.add('dark');
+  const handleDarkModeChange = (checked: boolean) => {
+    const newTheme = checked ? "dark" : "light";
+    setTheme(newTheme);
+
+    // 다크모드 스타일 적용
+    if (checked) {
       document.body.style.backgroundColor = '#000000';
       document.body.style.color = '#ffffff';
     } else {
-      document.documentElement.classList.remove('dark');
       document.body.style.backgroundColor = '#ffffff';
       document.body.style.color = '#000000';
     }
-  };
 
-  const handleDarkModeChange = (dark: boolean) => {
-    setIsDarkMode(dark);
-    localStorage.setItem("darkMode", dark.toString());
-    applyDarkMode(dark);
     window.dispatchEvent(new Event('themeChanged'));
   };
+
+  const isDarkMode = theme === "dark";
+
+  // 마운트 전에는 버튼을 숨겨서 FOUC 방지
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <>
