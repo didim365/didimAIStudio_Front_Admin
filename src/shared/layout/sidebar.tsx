@@ -121,19 +121,21 @@ export function Sidebar() {
             </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full justify-start gap-2 mt-2"
-          style={{
-            borderColor: isDarkMode ? "#666666" : undefined,
-            color: isDarkMode ? "#ffffff" : undefined,
-            backgroundColor: isDarkMode ? "transparent" : undefined,
-          }}
-        >
-          <LogOut className="h-4 w-4" />
-          로그아웃
-        </Button>
+        <Link href="/" className="w-full">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full justify-start gap-2 mt-2 cursor-pointer"
+            style={{
+              borderColor: isDarkMode ? "#666666" : undefined,
+              color: isDarkMode ? "#ffffff" : undefined,
+              backgroundColor: isDarkMode ? "transparent" : undefined,
+            }}
+          >
+            <LogOut className="h-4 w-4" />
+            로그아웃
+          </Button>
+        </Link>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navigation.map((item) => {
