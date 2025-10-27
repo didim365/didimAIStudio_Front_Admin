@@ -1,60 +1,38 @@
-<<<<<<< HEAD
-=======
 version: "3.8"
 
->>>>>>> c4ad53d0f292fbd087929664e40ccff692fcc572
 services:
   nextjs:
     build:
       context: .
-<<<<<<< HEAD
-      dockerfile: Dockerfile
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
-    ports:
-      - "3000:3000"
-=======
       dockerfile: Dockerfile.dev
       no_cache: true
     env_file:
       - .env.develop
-    # 로컬 환경에서 volumes 추가
+    # 로컬 환경에서 volumes 추가 (Hot Reload)
     volumes:
       - .:/app
       - /app/node_modules
       - /app/nextjs-build
+      - /app/.next
     ports:
-      - "4000:4000" # 개발용 직접 접근
->>>>>>> c4ad53d0f292fbd087929664e40ccff692fcc572
+      - "4000:4000" # 호스트:컨테이너 (관리자 페이지는 4000 포트 사용)
     networks:
       - app-network
     environment:
       - NODE_ENV=development
       - NEXT_TELEMETRY_DISABLED=1
-<<<<<<< HEAD
-=======
       - PORT=4000
->>>>>>> c4ad53d0f292fbd087929664e40ccff692fcc572
 
   nginx:
     image: nginx:latest
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-<<<<<<< HEAD
-      - ./certs/fullchain.pem:/etc/ssl/certs/fullchain.pem
-      - ./certs/privkey.pem:/etc/ssl/private/privkey.pem
-    ports:
-      - "3002:3002"
-=======
       # SSL 인증서가 있는 경우 아래 주석 해제
       # - ./certs/fullchain.pem:/etc/ssl/certs/fullchain.pem
       # - ./certs/privkey.pem:/etc/ssl/private/privkey.pem
     ports:
-      - "4002:4000" # API 테스트용
+      - "3002:3002" # API 테스트용
       - "80:80" # ALB 연결용
->>>>>>> c4ad53d0f292fbd087929664e40ccff692fcc572
     networks:
       - app-network
     depends_on:

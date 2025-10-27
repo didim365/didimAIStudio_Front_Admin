@@ -9,8 +9,12 @@ import {
   Shield,
   FileText,
   LogOut,
+<<<<<<< HEAD
   Brain,
   ChevronRight,
+=======
+  File,
+>>>>>>> c4ad53d0f292fbd087929664e40ccff692fcc572
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
@@ -37,6 +41,7 @@ const navigation = [
     icon: FileText,
   },
   {
+<<<<<<< HEAD
     name: "AI 서비스 관리",
     href: "/dashboard/service",
     icon: Brain,
@@ -54,6 +59,11 @@ const navigation = [
         href: "/dashboard/service/personas",
       },
     ],
+=======
+    name: "문서 관리",
+    href: "/dashboard/documents",
+    icon: File,
+>>>>>>> c4ad53d0f292fbd087929664e40ccff692fcc572
   },
 ];
 

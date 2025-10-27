@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencies
 node_modules
 npm-debug.log*
@@ -21,6 +22,23 @@ build
 # Git
 .git
 .gitignore
+=======
+# 의존성
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Next.js
+.next
+nextjs-build
+out
+build
+
+# 테스팅
+coverage
+.nyc_output
+>>>>>>> c4ad53d0f292fbd087929664e40ccff692fcc572
 
 # IDE
 .vscode
@@ -28,6 +46,7 @@ build
 *.swp
 *.swo
 *~
+<<<<<<< HEAD
 
 # OS
 .DS_Store
@@ -45,3 +64,37 @@ coverage
 # Misc
 *.log
 .cache
+=======
+.DS_Store
+
+# 환경 변수 (필요한 것만 COPY)
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Docker
+Dockerfile
+Dockerfile.dev
+.dockerignore
+docker-compose*.yml
+
+# Nginx & Certs (런타임에 마운트)
+nginx.conf
+certs
+
+# 기타
+README.md
+.editorconfig
+.eslintcache
+*.tsbuildinfo
+*.log
+
+>>>>>>> c4ad53d0f292fbd087929664e40ccff692fcc572
