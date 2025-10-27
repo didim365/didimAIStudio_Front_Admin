@@ -3,12 +3,6 @@ import { useState, useEffect } from "react";
 export function useSettings() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem("darkMode") === "true";
-    setIsDarkMode(savedDarkMode);
-    applyDarkMode(savedDarkMode);
-  }, []);
-
   const applyDarkMode = (isDark: boolean) => {
     if (isDark) {
       document.documentElement.classList.add("dark");
@@ -16,6 +10,11 @@ export function useSettings() {
       document.documentElement.classList.remove("dark");
     }
   };
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem("darkMode") === "true";
+    setIsDarkMode(savedDarkMode);
+    applyDarkMode(savedDarkMode);
+  }, []);
 
   const handleDarkModeToggle = () => {
     const newDarkMode = !isDarkMode;
