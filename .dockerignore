@@ -28,20 +28,35 @@ build
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
-Thumbs.db
+
+# 환경 변수 (필요한 것만 COPY)
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+
+# CI/CD
+.github
+.gitlab-ci.yml
 
 # Docker
 Dockerfile
-docker-compose.yml
+Dockerfile.dev
 .dockerignore
+docker-compose*.yml
 
-# Testing
-coverage
-.nyc_output
+# Nginx & Certs (런타임에 마운트)
+nginx.conf
+certs
 
-# Misc
+# 기타
+README.md
+.editorconfig
+.eslintcache
+*.tsbuildinfo
 *.log
-.cache
+

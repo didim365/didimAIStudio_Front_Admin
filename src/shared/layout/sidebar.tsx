@@ -11,6 +11,7 @@ import {
   LogOut,
   Brain,
   ChevronRight,
+  File,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
@@ -56,6 +57,7 @@ const navigation = [
       },
     ],
   },
+  { name: "문서 관리", href: "/dashboard/documents", icon: File },
 ];
 
 export function Sidebar() {

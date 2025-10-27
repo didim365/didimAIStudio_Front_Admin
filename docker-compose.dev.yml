@@ -8,13 +8,14 @@ services:
       no_cache: true
     env_file:
       - .env.develop
-    # 로컬 환경에서 volumes 추가
+    # 로컬 환경에서 volumes 추가 (Hot Reload)
     volumes:
       - .:/app
       - /app/node_modules
       - /app/nextjs-build
+      - /app/.next
     ports:
-      - "4000:4000" # 개발용 직접 접근
+      - "4000:4000" # 호스트:컨테이너 (관리자 페이지는 4000 포트 사용)
     networks:
       - app-network
     environment:
@@ -30,7 +31,7 @@ services:
       # - ./certs/fullchain.pem:/etc/ssl/certs/fullchain.pem
       # - ./certs/privkey.pem:/etc/ssl/private/privkey.pem
     ports:
-      - "4002:4000" # API 테스트용
+      - "3002:3002" # API 테스트용
       - "80:80" # ALB 연결용
     networks:
       - app-network
