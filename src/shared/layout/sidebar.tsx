@@ -3,7 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Shield, FileText, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Shield,
+  FileText,
+  LogOut,
+  File,
+} from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 
@@ -27,6 +34,11 @@ const navigation = [
     name: "감사 로그",
     href: "/dashboard/audit-logs",
     icon: FileText,
+  },
+  {
+    name: "문서 관리",
+    href: "/dashboard/documents",
+    icon: File,
   },
 ];
 
