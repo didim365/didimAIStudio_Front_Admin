@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
@@ -13,16 +12,20 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { Search, RefreshCw } from "lucide-react";
+import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { useGetMcpTools } from "../hooks/useGetMcpTools";
 import { StatsCards } from "./StatsCards";
 import { ToolsTable } from "./ToolsTable";
 
 export default function ToolsPage() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [page, setPage] = useState(1);
-  const [pageSize] = useState(20);
+  // URL 쿼리 파라미터 관리 - useState와 동일한 API
+  const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
+    debounce: 300,
+  });
+  const [statusFilter, setStatusFilter] = useQueryParam<string>("status", "all");
+  const [page, setPage] = useQueryParam<number>("page", 1);
+  const pageSize = 20;
 
   const queryParams = {
     page,
@@ -61,6 +64,14 @@ export default function ToolsPage() {
 
   const handleViewDetails = (toolId: number) => {
     router.push(`/dashboard/service/tools/${toolId}`);
+  };
+
+  const handlePrevPage = () => {
+    setPage(Math.max(1, page - 1));
+  };
+
+  const handleNextPage = () => {
+    setPage(page + 1);
   };
 
   return (
@@ -144,8 +155,8 @@ export default function ToolsPage() {
         <div className="mt-6 flex justify-center gap-2">
           <Button
             variant="outline"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={!data.has_prev}
+            onClick={handlePrevPage}
+            disabled={!data.has_prev || isLoading}
           >
             이전
           </Button>
@@ -156,8 +167,8 @@ export default function ToolsPage() {
           </div>
           <Button
             variant="outline"
-            onClick={() => setPage((p) => p + 1)}
-            disabled={!data.has_next}
+            onClick={handleNextPage}
+            disabled={!data.has_next || isLoading}
           >
             다음
           </Button>
