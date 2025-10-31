@@ -21,7 +21,18 @@ export function ReactQueryProvider({
         queryCache: new QueryCache({
           onError: (error) => {
             if (error instanceof AxiosError && error.response?.data) {
-              toast.error(JSON.stringify(error.response.data, null, 2));
+              const formattedMessage = JSON.stringify(
+                error.response.data,
+                null,
+                2
+              );
+              toast.error("", {
+                description: (
+                  <pre className="whitespace-pre-wrap text-xs font-mono overflow-auto max-h-64">
+                    {formattedMessage}
+                  </pre>
+                ),
+              });
             } else {
               toast.error(String(error));
             }
@@ -30,7 +41,18 @@ export function ReactQueryProvider({
         mutationCache: new MutationCache({
           onError: (error) => {
             if (error instanceof AxiosError && error.response?.data) {
-              toast.error(JSON.stringify(error.response.data, null, 2));
+              const formattedMessage = JSON.stringify(
+                error.response.data,
+                null,
+                2
+              );
+              toast.error("", {
+                description: (
+                  <pre className="whitespace-pre-wrap text-xs font-mono overflow-auto max-h-64">
+                    {formattedMessage}
+                  </pre>
+                ),
+              });
             } else {
               toast.error(String(error));
             }
