@@ -81,10 +81,10 @@ export function UserEditPage({ userId }: UserEditPageProps) {
 
   const { mutate: updateUser, isPending: isUpdating } = usePatchUser({
     onSuccess: () => {
-      // 해당 회원의 캐시를 무효화하여 최신 데이터를 가져오도록 함
       queryClient.invalidateQueries({
-        queryKey: ["users", "account", Number(userId)],
+        queryKey: ["users"],
       });
+
       router.push(`/dashboard/users/${userId}`);
     },
   });
