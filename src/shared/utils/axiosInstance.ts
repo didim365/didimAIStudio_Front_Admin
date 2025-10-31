@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import { tokenStorage } from "./tokenStorage";
 
 const HTTP_API_GATEWAY = {
   models: "/models",
@@ -20,9 +21,25 @@ type AxiosInstanceWithGateways = {
 const axiosInstance = {} as AxiosInstanceWithGateways;
 
 Object.entries(HTTP_API_GATEWAY).forEach(([key, path]) => {
-  axiosInstance[key as GatewayKey] = axios.create({
+  const instance = axios.create({
     baseURL: `/api${path}`,
   });
+
+  // Request interceptor: 모든 요청에 Authorization 헤더 추가
+  instance.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+      const accessToken = tokenStorage.getAccessToken();
+      if (accessToken && config.headers) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+  axiosInstance[key as GatewayKey] = instance;
 });
 
 export default axiosInstance;

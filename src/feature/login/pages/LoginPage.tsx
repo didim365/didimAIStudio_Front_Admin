@@ -7,6 +7,7 @@ import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Button } from "@/shared/ui/button";
 import { usePostLogin } from "../hooks/usePostLogin";
+import { tokenStorage } from "@/shared/utils/tokenStorage";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,7 +15,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   const { mutate: login, isPending } = usePostLogin({
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // 로그인 성공 시 토큰 저장
+      if (data.access_token) {
+        tokenStorage.setAccessToken(data.access_token);
+      }
+      if (data.refresh_token) {
+        tokenStorage.setRefreshToken(data.refresh_token);
+      }
       router.push("/dashboard");
     },
   });
