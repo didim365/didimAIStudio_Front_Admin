@@ -73,7 +73,7 @@ export function UsersTable({ users }: UsersTableProps) {
                         alt={user.full_name || user.email}
                       />
                     )}
-                    <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
+                    <AvatarFallback className="font-semibold">
                       {(
                         user.full_name ||
                         user.email.split("@")[0] ||
