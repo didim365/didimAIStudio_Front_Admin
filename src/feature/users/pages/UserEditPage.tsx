@@ -149,6 +149,7 @@ export function UserEditPage({ userId }: UserEditPageProps) {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     // 전화번호에서 숫자만 추출하여 전송
     const phoneDigits = formData.phone_number
       ? extractPhoneDigits(formData.phone_number)
@@ -287,7 +288,7 @@ export function UserEditPage({ userId }: UserEditPageProps) {
                       className="flex items-center gap-2"
                     >
                       <User className="h-4 w-4" />
-                      <span>이름</span>
+                      <span>이름 *</span>
                     </Label>
                     <Input
                       id="full_name"
@@ -297,6 +298,7 @@ export function UserEditPage({ userId }: UserEditPageProps) {
                       }
                       placeholder="이름을 입력하세요"
                       className="pl-6"
+                      required
                     />
                   </div>
 
@@ -304,7 +306,7 @@ export function UserEditPage({ userId }: UserEditPageProps) {
                   <div className="space-y-2">
                     <Label htmlFor="email" className="flex items-center gap-2">
                       <Mail className="h-4 w-4" />
-                      <span>이메일</span>
+                      <span>이메일 *</span>
                     </Label>
                     <Input
                       id="email"
@@ -315,6 +317,7 @@ export function UserEditPage({ userId }: UserEditPageProps) {
                       }
                       placeholder="이메일을 입력하세요"
                       className="pl-6"
+                      required
                     />
                   </div>
 
@@ -325,7 +328,7 @@ export function UserEditPage({ userId }: UserEditPageProps) {
                       className="flex items-center gap-2"
                     >
                       <Phone className="h-4 w-4" />
-                      <span>전화번호</span>
+                      <span>전화번호 *</span>
                     </Label>
                     <Input
                       id="phone_number"
@@ -335,6 +338,7 @@ export function UserEditPage({ userId }: UserEditPageProps) {
                       placeholder="010-1234-5678"
                       className="pl-6"
                       maxLength={13}
+                      required
                     />
                   </div>
 
@@ -342,13 +346,14 @@ export function UserEditPage({ userId }: UserEditPageProps) {
                   <div className="space-y-2">
                     <Label htmlFor="status" className="flex items-center gap-2">
                       <Activity className="h-4 w-4" />
-                      <span>상태</span>
+                      <span>상태 *</span>
                     </Label>
                     <Select
                       value={formData.status}
                       onValueChange={(
                         value: "ACTIVE" | "INACTIVE" | "SUSPENDED"
                       ) => setFormData({ ...formData, status: value })}
+                      required
                     >
                       <SelectTrigger id="status" className="pl-6 w-full">
                         <SelectValue />
