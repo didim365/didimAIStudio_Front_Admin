@@ -23,11 +23,10 @@ type UserResponse =
 
 interface UsersTableProps {
   users: UserResponse[];
-  isDarkMode: boolean;
   onEditUser: (user: UserResponse) => void;
 }
 
-export function UsersTable({ users, isDarkMode, onEditUser }: UsersTableProps) {
+export function UsersTable({ users, onEditUser }: UsersTableProps) {
   return (
     <Table>
       <TableHeader>
@@ -57,28 +56,15 @@ export function UsersTable({ users, isDarkMode, onEditUser }: UsersTableProps) {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <div
-                    className="font-medium"
-                    style={{ color: isDarkMode ? "#ffffff" : undefined }}
-                  >
+                  <div className="font-medium">
                     {user.full_name || user.email.split("@")[0] || "-"}
                   </div>
-                  <div
-                    className="text-sm"
-                    style={{ color: isDarkMode ? "#cccccc" : undefined }}
-                  >
-                    {user.email}
-                  </div>
+                  <div className="text-sm">{user.email}</div>
                 </div>
               </div>
             </TableCell>
             <TableCell>
-              <div
-                className="text-sm"
-                style={{ color: isDarkMode ? "#cccccc" : undefined }}
-              >
-                -
-              </div>
+              <div className="text-sm">-</div>
             </TableCell>
             <TableCell>
               <Badge variant="outline">-</Badge>
@@ -94,29 +80,16 @@ export function UsersTable({ users, isDarkMode, onEditUser }: UsersTableProps) {
             </TableCell>
             <TableCell>
               <div className="flex flex-col gap-1">
-                <div
-                  className="text-sm font-medium"
-                  style={{ color: isDarkMode ? "#cccccc" : undefined }}
-                >
-                  -
-                </div>
+                <div className="text-sm font-medium">-</div>
               </div>
             </TableCell>
             <TableCell>
               <div className="flex flex-col gap-1">
-                <div
-                  className="text-sm font-medium"
-                  style={{ color: isDarkMode ? "#cccccc" : undefined }}
-                >
-                  -
-                </div>
+                <div className="text-sm font-medium">-</div>
               </div>
             </TableCell>
             <TableCell>
-              <div
-                className="text-sm"
-                style={{ color: isDarkMode ? "#cccccc" : undefined }}
-              >
+              <div className="text-sm">
                 {user.last_login
                   ? new Date(user.last_login).toLocaleDateString("ko-KR")
                   : "-"}

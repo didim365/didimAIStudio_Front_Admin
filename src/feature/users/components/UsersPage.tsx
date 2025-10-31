@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -25,7 +25,6 @@ export default function UsersPage() {
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // API에서 사용자 데이터 가져오기
   const {
@@ -35,22 +34,6 @@ export default function UsersPage() {
   } = useGetUsers({
     search: searchQuery || undefined,
   });
-
-  useEffect(() => {
-    const checkDarkMode = () => {
-      const savedDarkMode = localStorage.getItem("darkMode") === "true";
-      setIsDarkMode(savedDarkMode);
-    };
-
-    checkDarkMode();
-
-    const handleThemeChange = () => {
-      checkDarkMode();
-    };
-
-    window.addEventListener("themeChanged", handleThemeChange);
-    return () => window.removeEventListener("themeChanged", handleThemeChange);
-  }, []);
 
   // 필터링된 사용자 목록
   const filteredUsers =
@@ -73,18 +56,8 @@ export default function UsersPage() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1
-          className="text-3xl font-bold"
-          style={{ color: isDarkMode ? "#ffffff" : undefined }}
-        >
-          회원 관리
-        </h1>
-        <p
-          className="mt-2"
-          style={{ color: isDarkMode ? "#cccccc" : undefined }}
-        >
-          회원 정보 조회 및 권한, 사용량 제한 설정
-        </p>
+        <h1 className="text-3xl font-bold">회원 관리</h1>
+        <p className="mt-2">회원 정보 조회 및 권한, 사용량 제한 설정</p>
       </div>
 
       {/* 검색 및 필터 */}
@@ -132,9 +105,7 @@ export default function UsersPage() {
         <CardContent>
           {isLoading ? (
             <div className="flex justify-center items-center py-8">
-              <p style={{ color: isDarkMode ? "#cccccc" : undefined }}>
-                로딩 중...
-              </p>
+              <p>로딩 중...</p>
             </div>
           ) : error ? (
             <div className="flex justify-center items-center py-8">
@@ -143,11 +114,7 @@ export default function UsersPage() {
               </p>
             </div>
           ) : (
-            <UsersTable
-              users={filteredUsers}
-              isDarkMode={isDarkMode}
-              onEditUser={handleEditUser}
-            />
+            <UsersTable users={filteredUsers} onEditUser={handleEditUser} />
           )}
         </CardContent>
       </Card>
