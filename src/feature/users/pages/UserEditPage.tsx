@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useGetUser } from "../hooks/useGetUser";
 import { usePatchUser } from "../hooks/usePatchUser";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -43,6 +44,7 @@ interface UserEditPageProps {
 
 export function UserEditPage({ userId }: UserEditPageProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const {
     data: user,
     isLoading,
@@ -79,6 +81,10 @@ export function UserEditPage({ userId }: UserEditPageProps) {
 
   const { mutate: updateUser, isPending: isUpdating } = usePatchUser({
     onSuccess: () => {
+      // 해당 회원의 캐시를 무효화하여 최신 데이터를 가져오도록 함
+      queryClient.invalidateQueries({
+        queryKey: ["users", "account", Number(userId)],
+      });
       router.push(`/dashboard/users/${userId}`);
     },
   });
