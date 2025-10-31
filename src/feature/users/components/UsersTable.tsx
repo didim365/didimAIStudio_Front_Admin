@@ -32,11 +32,21 @@ export function UsersTable({ users }: UsersTableProps) {
       <TableHeader>
         <TableRow>
           <TableHead className="w-[40%] min-w-[200px]">사용자</TableHead>
-          <TableHead className="w-[10%] min-w-[80px]">상태</TableHead>
-          <TableHead className="w-[10%] min-w-[100px]">전화번호</TableHead>
-          <TableHead className="w-[10%] min-w-[100px]">최근 접속</TableHead>
-          <TableHead className="w-[10%] min-w-[100px]">생성일</TableHead>
-          <TableHead className="w-[10%] min-w-[100px]">수정일</TableHead>
+          <TableHead className="w-[10%] min-w-[80px] text-center">
+            상태
+          </TableHead>
+          <TableHead className="w-[10%] min-w-[100px] text-center">
+            전화번호
+          </TableHead>
+          <TableHead className="w-[10%] min-w-[100px] text-center">
+            최근 접속
+          </TableHead>
+          <TableHead className="w-[10%] min-w-[100px] text-center">
+            생성일
+          </TableHead>
+          <TableHead className="w-[10%] min-w-[100px] text-center">
+            수정일
+          </TableHead>
           <TableHead className="w-[10%] min-w-[80px] text-right">
             작업
           </TableHead>
@@ -72,31 +82,31 @@ export function UsersTable({ users }: UsersTableProps) {
                 </div>
               </div>
             </TableCell>
-            <TableCell>
+            <TableCell className="text-center">
               <Badge variant="outline">
                 {user.status === "ACTIVE" && "활성"}
                 {user.status === "INACTIVE" && "비활성"}
                 {user.status === "SUSPENDED" && "정지"}
               </Badge>
             </TableCell>
-            <TableCell>
+            <TableCell className="text-center">
               <div className="text-sm">{formatPhoneNumber(user.phone)}</div>
             </TableCell>
-            <TableCell>
+            <TableCell className="text-center">
               <div className="text-sm">
                 {user.last_login &&
                   new Date(user.last_login).toLocaleDateString("ko-KR")}
                 {!user.last_login && "-"}
               </div>
             </TableCell>
-            <TableCell>
+            <TableCell className="text-center">
               <div className="text-sm">
                 {user.created_at &&
                   new Date(user.created_at).toLocaleDateString("ko-KR")}
                 {!user.created_at && "-"}
               </div>
             </TableCell>
-            <TableCell>
+            <TableCell className="text-center">
               <div className="text-sm">
                 {user.updated_at &&
                   new Date(user.updated_at).toLocaleDateString("ko-KR")}
