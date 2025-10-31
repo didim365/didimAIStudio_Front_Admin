@@ -88,10 +88,6 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    return "bg-muted text-muted-foreground hover:bg-muted/80";
-  };
-
   const getInitials = (name: string | null | undefined, email: string) => {
     if (name) {
       return name
@@ -144,7 +140,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
                     {getInitials(user.full_name, user.email)}
                   </AvatarFallback>
                 </Avatar>
-                <Badge className={getStatusColor(user.status)}>
+                <Badge className="bg-muted text-muted-foreground hover:bg-muted/80">
                   {user.status}
                 </Badge>
               </div>
