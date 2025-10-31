@@ -6,17 +6,17 @@ import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Separator } from "@/shared/ui/separator";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  Calendar, 
-  Clock, 
+import {
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  Clock,
   Activity,
   Settings,
   UserCircle,
   Image as ImageIcon,
-  ArrowLeft
+  ArrowLeft,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -29,11 +29,15 @@ interface UserDetailPageProps {
 
 export function UserDetailPage({ userId }: UserDetailPageProps) {
   const router = useRouter();
-  const { data: user, isLoading, error } = useGetUser({ user_id: Number(userId) });
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useGetUser({ user_id: Number(userId) });
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 px-4 space-y-6">
+      <div className="py-8 px-4 space-y-6">
         <Skeleton className="h-8 w-48" />
         <div className="grid gap-6 md:grid-cols-2">
           <Skeleton className="h-[400px]" />
@@ -45,7 +49,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
 
   if (error) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="py-8 px-4">
         <Card className="border-destructive">
           <CardHeader>
             <CardTitle className="text-destructive">오류 발생</CardTitle>
@@ -63,7 +67,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
 
   if (!user) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="py-8 px-4">
         <Card>
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">
@@ -85,18 +89,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status.toUpperCase()) {
-      case "ACTIVE":
-        return "bg-green-500/10 text-green-500 hover:bg-green-500/20";
-      case "INACTIVE":
-        return "bg-gray-500/10 text-gray-500 hover:bg-gray-500/20";
-      case "SUSPENDED":
-        return "bg-red-500/10 text-red-500 hover:bg-red-500/20";
-      case "PENDING":
-        return "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20";
-      default:
-        return "bg-blue-500/10 text-blue-500 hover:bg-blue-500/20";
-    }
+    return "bg-muted text-muted-foreground hover:bg-muted/80";
   };
 
   const getInitials = (name: string | null | undefined, email: string) => {
@@ -112,7 +105,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4 space-y-6">
+    <div className="py-8 px-4 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button
@@ -124,10 +117,10 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">사용자 상세 정보</h1>
-          <p className="text-muted-foreground">
-            사용자 ID: {user.id}
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            사용자 상세 정보
+          </h1>
+          <p className="text-muted-foreground">사용자 ID: {user.id}</p>
         </div>
       </div>
 
@@ -197,9 +190,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
                     <Activity className="h-4 w-4" />
                     <span className="font-medium">사용자 ID</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">
-                    #{user.id}
-                  </p>
+                  <p className="text-lg font-semibold pl-6">#{user.id}</p>
                 </div>
               </div>
             </div>
@@ -218,11 +209,13 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
             {/* Created At */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <Calendar className="h-4 w-4 text-blue-500" />
+                <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span>계정 생성일</span>
               </div>
-              <div className="ml-6 p-3 bg-blue-500/5 rounded-lg border border-blue-500/20">
-                <p className="text-sm font-mono">{formatDate(user.created_at)}</p>
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                <p className="text-sm font-mono">
+                  {formatDate(user.created_at)}
+                </p>
               </div>
             </div>
 
@@ -231,11 +224,13 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
             {/* Updated At */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <Calendar className="h-4 w-4 text-purple-500" />
+                <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span>마지막 업데이트</span>
               </div>
-              <div className="ml-6 p-3 bg-purple-500/5 rounded-lg border border-purple-500/20">
-                <p className="text-sm font-mono">{formatDate(user.updated_at)}</p>
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                <p className="text-sm font-mono">
+                  {formatDate(user.updated_at)}
+                </p>
               </div>
             </div>
 
@@ -244,11 +239,13 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
             {/* Last Login */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <Clock className="h-4 w-4 text-green-500" />
+                <Clock className="h-4 w-4 text-muted-foreground" />
                 <span>마지막 로그인</span>
               </div>
-              <div className="ml-6 p-3 bg-green-500/5 rounded-lg border border-green-500/20">
-                <p className="text-sm font-mono">{formatDate(user.last_login)}</p>
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                <p className="text-sm font-mono">
+                  {formatDate(user.last_login)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -266,10 +263,10 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
             {/* Profile Image URL */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <ImageIcon className="h-4 w-4 text-amber-500" />
+                <ImageIcon className="h-4 w-4 text-muted-foreground" />
                 <span>프로필 이미지 URL</span>
               </div>
-              <div className="ml-6 p-3 bg-amber-500/5 rounded-lg border border-amber-500/20">
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
                 {user.profile_image_url ? (
                   <p className="text-sm font-mono break-all">
                     {user.profile_image_url}
@@ -287,11 +284,12 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
             {/* Preferences */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <Settings className="h-4 w-4 text-indigo-500" />
+                <Settings className="h-4 w-4 text-muted-foreground" />
                 <span>사용자 설정</span>
               </div>
-              <div className="ml-6 p-3 bg-indigo-500/5 rounded-lg border border-indigo-500/20">
-                {user.preferences && Object.keys(user.preferences).length > 0 ? (
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                {user.preferences &&
+                Object.keys(user.preferences).length > 0 ? (
                   <pre className="text-sm font-mono overflow-x-auto">
                     {JSON.stringify(user.preferences, null, 2)}
                   </pre>
@@ -305,24 +303,6 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
           </CardContent>
         </Card>
       </div>
-
-      {/* Raw Data Card (for debugging/admin purposes) */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5" />
-            전체 데이터 (개발자용)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="bg-muted p-4 rounded-lg overflow-x-auto">
-            <pre className="text-sm font-mono">
-              {JSON.stringify(user, null, 2)}
-            </pre>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
-
