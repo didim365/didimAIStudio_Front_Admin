@@ -7,10 +7,6 @@ import { Button } from "@/shared/ui/button";
 import { Search, UserPlus } from "lucide-react";
 import { useGetUsers } from "../hooks/useGetUsers";
 import { UsersTable } from "./UsersTable";
-import { paths } from "@/shared/types/api/auth";
-
-type UserResponse =
-  paths["/api/v1/users/admin/users"]["get"]["responses"]["200"]["content"]["application/json"]["items"][number];
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,17 +59,19 @@ export default function UsersPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
+          {isLoading && (
             <div className="flex justify-center items-center py-8">
               <p>로딩 중...</p>
             </div>
-          ) : error ? (
+          )}
+          {error && (
             <div className="flex justify-center items-center py-8">
               <p style={{ color: "#ef4444" }}>
                 사용자 데이터를 불러오는 중 오류가 발생했습니다.
               </p>
             </div>
-          ) : (
+          )}
+          {!isLoading && !error && (
             <UsersTable users={usersData?.items ?? []} />
           )}
         </CardContent>
