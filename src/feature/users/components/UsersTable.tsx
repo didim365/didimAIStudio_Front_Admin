@@ -17,6 +17,7 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { MoreVertical, Shield, Key, Trash2 } from "lucide-react";
 import { paths } from "@/shared/types/api/auth";
+import { formatPhoneNumber } from "@/shared/lib/formatPhoneNumber";
 
 type UserResponse =
   paths["/api/v1/users/admin/users"]["get"]["responses"]["200"]["content"]["application/json"]["items"][number];
@@ -73,35 +74,33 @@ export function UsersTable({ users }: UsersTableProps) {
             </TableCell>
             <TableCell>
               <Badge variant="outline">
-                {user.status === "ACTIVE"
-                  ? "활성"
-                  : user.status === "INACTIVE"
-                  ? "비활성"
-                  : user.status}
+                {user.status === "ACTIVE" && "활성"}
+                {user.status === "INACTIVE" && "비활성"}
+                {user.status === "SUSPENDED" && "정지"}
               </Badge>
             </TableCell>
             <TableCell>
-              <div className="text-sm">{user.phone || "-"}</div>
+              <div className="text-sm">{formatPhoneNumber(user.phone)}</div>
             </TableCell>
             <TableCell>
               <div className="text-sm">
-                {user.last_login
-                  ? new Date(user.last_login).toLocaleDateString("ko-KR")
-                  : "-"}
+                {user.last_login &&
+                  new Date(user.last_login).toLocaleDateString("ko-KR")}
+                {!user.last_login && "-"}
               </div>
             </TableCell>
             <TableCell>
               <div className="text-sm">
-                {user.created_at
-                  ? new Date(user.created_at).toLocaleDateString("ko-KR")
-                  : "-"}
+                {user.created_at &&
+                  new Date(user.created_at).toLocaleDateString("ko-KR")}
+                {!user.created_at && "-"}
               </div>
             </TableCell>
             <TableCell>
               <div className="text-sm">
-                {user.updated_at
-                  ? new Date(user.updated_at).toLocaleDateString("ko-KR")
-                  : "-"}
+                {user.updated_at &&
+                  new Date(user.updated_at).toLocaleDateString("ko-KR")}
+                {!user.updated_at && "-"}
               </div>
             </TableCell>
             <TableCell className="text-right">
