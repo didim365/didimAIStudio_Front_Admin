@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
+import { tokenStorage } from "@/shared/utils/tokenStorage";
 
 const navigation = [
   {
@@ -59,6 +60,7 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [expandedMenus, setExpandedMenus] = useState<string[]>([""]);
 
   const toggleMenu = (menuName: string) => {
@@ -67,6 +69,11 @@ export function Sidebar() {
         ? prev.filter((name) => name !== menuName)
         : [...prev, menuName]
     );
+  };
+
+  const handleLogout = () => {
+    tokenStorage.clearTokens();
+    router.push("/");
   };
 
   return (
@@ -81,16 +88,15 @@ export function Sidebar() {
             <p className="text-xs">admin@example.com</p>
           </div>
         </div>
-        <Link href="/" className="w-full">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full justify-start gap-2 mt-2 cursor-pointer"
-          >
-            <LogOut className="h-4 w-4" />
-            로그아웃
-          </Button>
-        </Link>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full justify-start gap-2 mt-2 cursor-pointer"
+          onClick={handleLogout}
+        >
+          <LogOut className="h-4 w-4" />
+          로그아웃
+        </Button>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navigation.map((item) => {
