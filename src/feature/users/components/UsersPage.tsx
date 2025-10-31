@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import { Search, UserPlus } from "lucide-react";
 import { useGetUsers } from "../hooks/useGetUsers";
 import { UsersTable } from "./UsersTable";
+import { useQueryParam } from "@/shared/hooks/useQueryParams";
 
 export default function UsersPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
+    debounce: 300,
+  });
 
   // API에서 사용자 데이터 가져오기
   const {
@@ -55,7 +57,7 @@ export default function UsersPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            전체 회원 ({isLoading ? "..." : usersData?.items?.length ?? 0})
+            전체 회원 {!isLoading && usersData?.total}
           </CardTitle>
         </CardHeader>
         <CardContent>
