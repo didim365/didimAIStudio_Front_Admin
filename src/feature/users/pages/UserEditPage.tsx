@@ -35,7 +35,7 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 
 interface UserEditPageProps {
   userId: string;
@@ -69,7 +69,7 @@ export function UserEditPage({ userId }: UserEditPageProps) {
       setFormData({
         email: user.email || "",
         full_name: user.full_name || "",
-        phone_number: user.phone || "",
+        phone_number: formatPhoneNumber(user.phone || ""),
         status,
         role_id: null, // role_id is not in user response, keeping null
         preferences: user.preferences || null,
@@ -108,13 +108,57 @@ export function UserEditPage({ userId }: UserEditPageProps) {
     return email[0].toUpperCase();
   };
 
+  // 전화번호에서 숫자만 추출하는 함수
+  const extractPhoneDigits = (phone: string): string => {
+    return phone.replace(/\D/g, "");
+  };
+
+  // 전화번호 입력 핸들러 - 입력 시 자동 포맷팅
+  const handlePhoneNumberChange = (value: string) => {
+    // 숫자만 추출
+    const digits = extractPhoneDigits(value);
+
+    // 숫자만으로 포맷팅 적용
+    let formatted = digits;
+    if (digits.length === 11) {
+      formatted = `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(
+        7
+      )}`;
+    } else if (digits.length === 10) {
+      formatted = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(
+        6
+      )}`;
+    } else if (digits.length > 0) {
+      // 입력 중일 때는 부분적으로 포맷팅
+      if (digits.length <= 3) {
+        formatted = digits;
+      } else if (digits.length <= 7) {
+        formatted = `${digits.slice(0, 3)}-${digits.slice(3)}`;
+      } else {
+        formatted = `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(
+          7
+        )}`;
+      }
+    }
+
+    setFormData({
+      ...formData,
+      phone_number: formatted,
+    });
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // 전화번호에서 숫자만 추출하여 전송
+    const phoneDigits = formData.phone_number
+      ? extractPhoneDigits(formData.phone_number)
+      : null;
+
     updateUser({
       user_id: Number(userId),
       email: formData.email || null,
       full_name: formData.full_name || null,
-      phone_number: formData.phone_number || null,
+      phone_number: phoneDigits || null,
       status: formData.status || null,
       role_id: formData.role_id,
       preferences: formData.preferences,
@@ -287,14 +331,10 @@ export function UserEditPage({ userId }: UserEditPageProps) {
                       id="phone_number"
                       type="tel"
                       value={formData.phone_number}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          phone_number: e.target.value,
-                        })
-                      }
-                      placeholder="전화번호를 입력하세요"
+                      onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                      placeholder="010-1234-5678"
                       className="pl-6"
+                      maxLength={13}
                     />
                   </div>
 

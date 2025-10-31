@@ -17,7 +17,7 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { MoreVertical, Shield, Key, Trash2 } from "lucide-react";
 import { paths } from "@/shared/types/api/auth";
-import { formatPhoneNumber } from "@/shared/lib/formatPhoneNumber";
+import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import Link from "next/link";
 
 type UserResponse =

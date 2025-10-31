@@ -24,6 +24,7 @@ import { ko } from "date-fns/locale";
 import { Button } from "@/shared/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 
 interface UserDetailPageProps {
   userId: string;
@@ -186,7 +187,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
                     <span className="font-medium">전화번호</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {user.phone || "정보 없음"}
+                    {formatPhoneNumber(user.phone || "") || "정보 없음"}
                   </p>
                 </div>
 
