@@ -7,11 +7,13 @@ import { Search, UserPlus } from "lucide-react";
 import { useGetUsers } from "../hooks/useGetUsers";
 import { UsersTable } from "./UsersTable";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
+import { Pagination } from "@/shared/ui/pagination";
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
     debounce: 300,
   });
+  const [page, setPage] = useQueryParam<number>("page", 1);
 
   // API에서 사용자 데이터 가져오기
   const {
@@ -20,6 +22,7 @@ export default function UsersPage() {
     error,
   } = useGetUsers({
     search: searchQuery || undefined,
+    page,
   });
 
   return (
@@ -78,6 +81,18 @@ export default function UsersPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* 페이지네이션 */}
+      {usersData && usersData.pages > 1 && (
+        <div className="mt-6">
+          <Pagination
+            currentPage={usersData.page}
+            totalPages={usersData.pages}
+            onPageChange={(newPage) => setPage(newPage)}
+            isLoading={isLoading}
+          />
+        </div>
+      )}
     </div>
   );
 }
