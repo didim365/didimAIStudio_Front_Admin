@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
-import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import {
@@ -36,7 +36,10 @@ export function UsersTable({ users }: UsersTableProps) {
           <TableHead className="w-[10%] min-w-[80px]">상태</TableHead>
           <TableHead className="w-[12%] min-w-[100px]">챗 사용량</TableHead>
           <TableHead className="w-[12%] min-w-[100px]">임베딩 사용량</TableHead>
+          <TableHead className="w-[10%] min-w-[100px]">전화번호</TableHead>
           <TableHead className="w-[11%] min-w-[100px]">최근 접속</TableHead>
+          <TableHead className="w-[11%] min-w-[100px]">생성일</TableHead>
+          <TableHead className="w-[11%] min-w-[100px]">수정일</TableHead>
           <TableHead className="w-[10%] min-w-[80px] text-right">
             작업
           </TableHead>
@@ -48,6 +51,12 @@ export function UsersTable({ users }: UsersTableProps) {
             <TableCell className="overflow-hidden">
               <div className="flex items-center gap-3 min-w-0">
                 <Avatar className="shrink-0">
+                  {user.profile_image_url && (
+                    <AvatarImage
+                      src={user.profile_image_url}
+                      alt={user.full_name || user.email}
+                    />
+                  )}
                   <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
                     {(
                       user.full_name ||
@@ -92,9 +101,26 @@ export function UsersTable({ users }: UsersTableProps) {
               </div>
             </TableCell>
             <TableCell>
+              <div className="text-sm">{user.phone || "-"}</div>
+            </TableCell>
+            <TableCell>
               <div className="text-sm">
                 {user.last_login
                   ? new Date(user.last_login).toLocaleDateString("ko-KR")
+                  : "-"}
+              </div>
+            </TableCell>
+            <TableCell>
+              <div className="text-sm">
+                {user.created_at
+                  ? new Date(user.created_at).toLocaleDateString("ko-KR")
+                  : "-"}
+              </div>
+            </TableCell>
+            <TableCell>
+              <div className="text-sm">
+                {user.updated_at
+                  ? new Date(user.updated_at).toLocaleDateString("ko-KR")
                   : "-"}
               </div>
             </TableCell>
