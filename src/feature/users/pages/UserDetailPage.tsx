@@ -37,7 +37,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
 
   if (isLoading) {
     return (
-      <div className="py-8 px-4 space-y-6">
+      <div className="space-y-6">
         <Skeleton className="h-8 w-48" />
         <div className="grid gap-6 md:grid-cols-2">
           <Skeleton className="h-[400px]" />
@@ -105,7 +105,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
   };
 
   return (
-    <div className="py-8 px-4 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button
