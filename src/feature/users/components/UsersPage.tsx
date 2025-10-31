@@ -4,14 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/ui/select";
-import { Search, Filter, UserPlus } from "lucide-react";
+import { Search, UserPlus } from "lucide-react";
 import { useGetUsers } from "../hooks/useGetUsers";
 import { UsersTable } from "./UsersTable";
 import { UserEditDialog } from "./UserEditDialog";
@@ -22,8 +15,6 @@ type UserResponse =
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedRole, setSelectedRole] = useState("all");
-  const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // API에서 사용자 데이터 가져오기
@@ -36,7 +27,6 @@ export default function UsersPage() {
   });
 
   const handleEditUser = (user: UserResponse) => {
-    setSelectedUser(user);
     setIsEditDialogOpen(true);
   };
 
@@ -62,18 +52,6 @@ export default function UsersPage() {
               />
             </div>
             <div className="flex gap-2">
-              <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger className="w-[180px]">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="권한 필터" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체 권한</SelectItem>
-                  <SelectItem value="관리자">관리자</SelectItem>
-                  <SelectItem value="매니저">매니저</SelectItem>
-                  <SelectItem value="일반 사용자">일반 사용자</SelectItem>
-                </SelectContent>
-              </Select>
               <Button className="gap-2">
                 <UserPlus className="h-4 w-4" />
                 회원 추가
@@ -112,7 +90,7 @@ export default function UsersPage() {
 
       {/* 사용자 수정 다이얼로그 */}
       <UserEditDialog
-        user={selectedUser}
+        user={null}
         isOpen={isEditDialogOpen}
         onClose={() => setIsEditDialogOpen(false)}
       />
