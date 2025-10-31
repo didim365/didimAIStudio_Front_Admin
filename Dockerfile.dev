@@ -1,0 +1,20 @@
+# 개발 환경용 Dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+# pnpm 설치
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# 의존성 파일 복사
+COPY package.json pnpm-lock.yaml* ./
+
+# 의존성 설치
+RUN pnpm install
+
+# 소스 코드는 volume으로 마운트됨
+
+EXPOSE 4000
+
+CMD ["pnpm", "dev", "--port", "4000"]
+

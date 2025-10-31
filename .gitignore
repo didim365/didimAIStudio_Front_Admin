@@ -9,7 +9,8 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
+./nextjs-build
+/nextjs-build
 # testing
 /coverage
 
