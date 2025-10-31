@@ -30,16 +30,12 @@ export function UsersTable({ users }: UsersTableProps) {
     <Table className="table-fixed">
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[25%] min-w-[200px]">사용자</TableHead>
-          <TableHead className="w-[10%] min-w-[80px]">그룹</TableHead>
-          <TableHead className="w-[10%] min-w-[80px]">권한</TableHead>
+          <TableHead className="w-[40%] min-w-[200px]">사용자</TableHead>
           <TableHead className="w-[10%] min-w-[80px]">상태</TableHead>
-          <TableHead className="w-[12%] min-w-[100px]">챗 사용량</TableHead>
-          <TableHead className="w-[12%] min-w-[100px]">임베딩 사용량</TableHead>
           <TableHead className="w-[10%] min-w-[100px]">전화번호</TableHead>
-          <TableHead className="w-[11%] min-w-[100px]">최근 접속</TableHead>
-          <TableHead className="w-[11%] min-w-[100px]">생성일</TableHead>
-          <TableHead className="w-[11%] min-w-[100px]">수정일</TableHead>
+          <TableHead className="w-[10%] min-w-[100px]">최근 접속</TableHead>
+          <TableHead className="w-[10%] min-w-[100px]">생성일</TableHead>
+          <TableHead className="w-[10%] min-w-[100px]">수정일</TableHead>
           <TableHead className="w-[10%] min-w-[80px] text-right">
             작업
           </TableHead>
@@ -76,12 +72,6 @@ export function UsersTable({ users }: UsersTableProps) {
               </div>
             </TableCell>
             <TableCell>
-              <div className="text-sm">-</div>
-            </TableCell>
-            <TableCell>
-              <Badge variant="outline">-</Badge>
-            </TableCell>
-            <TableCell>
               <Badge variant="outline">
                 {user.status === "ACTIVE"
                   ? "활성"
@@ -89,16 +79,6 @@ export function UsersTable({ users }: UsersTableProps) {
                   ? "비활성"
                   : user.status}
               </Badge>
-            </TableCell>
-            <TableCell>
-              <div className="flex flex-col gap-1">
-                <div className="text-sm font-medium">-</div>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div className="flex flex-col gap-1">
-                <div className="text-sm font-medium">-</div>
-              </div>
             </TableCell>
             <TableCell>
               <div className="text-sm">{user.phone || "-"}</div>
