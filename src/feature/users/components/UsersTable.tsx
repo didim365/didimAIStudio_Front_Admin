@@ -1,4 +1,3 @@
-import { User, roleColors, statusColors } from "../types";
 import {
   Table,
   TableBody,
@@ -16,29 +15,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
-import { MoreVertical, Edit, Shield, Key, Trash2 } from "lucide-react";
+import { MoreVertical, Shield, Key, Trash2 } from "lucide-react";
+import { paths } from "@/shared/types/api/auth";
+
+type UserResponse =
+  paths["/api/v1/users/admin/users"]["get"]["responses"]["200"]["content"]["application/json"]["items"][number];
 
 interface UsersTableProps {
-  users: User[];
-  isDarkMode: boolean;
-  onEditUser: (user: User) => void;
+  users: UserResponse[];
 }
 
-export function UsersTable({ users, isDarkMode, onEditUser }: UsersTableProps) {
-  const getUsageColor = (used: number, limit: number) => {
-    const ratio = used / limit;
-    if (ratio > 0.9) return "bg-red-500";
-    if (ratio > 0.7) return "bg-orange-500";
-    return "bg-blue-500";
-  };
-
-  const getUsageColorEmbed = (used: number, limit: number) => {
-    const ratio = used / limit;
-    if (ratio > 0.9) return "bg-red-500";
-    if (ratio > 0.7) return "bg-orange-500";
-    return "bg-purple-500";
-  };
-
+export function UsersTable({ users }: UsersTableProps) {
   return (
     <Table>
       <TableHeader>
@@ -60,99 +47,51 @@ export function UsersTable({ users, isDarkMode, onEditUser }: UsersTableProps) {
               <div className="flex items-center gap-3">
                 <Avatar>
                   <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
-                    {user.name.substring(0, 2)}
+                    {(
+                      user.full_name ||
+                      user.email.split("@")[0] ||
+                      "U"
+                    ).substring(0, 2)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <div
-                    className="font-medium"
-                    style={{ color: isDarkMode ? "#ffffff" : undefined }}
-                  >
-                    {user.name}
+                  <div className="font-medium">
+                    {user.full_name || user.email.split("@")[0] || "-"}
                   </div>
-                  <div
-                    className="text-sm"
-                    style={{ color: isDarkMode ? "#cccccc" : undefined }}
-                  >
-                    {user.email}
-                  </div>
+                  <div className="text-sm">{user.email}</div>
                 </div>
               </div>
             </TableCell>
             <TableCell>
-              <div
-                className="text-sm"
-                style={{ color: isDarkMode ? "#cccccc" : undefined }}
-              >
-                {user.group}
-              </div>
+              <div className="text-sm">-</div>
             </TableCell>
             <TableCell>
-              <Badge variant="outline" className={roleColors[user.role]}>
-                {user.role}
-              </Badge>
+              <Badge variant="outline">-</Badge>
             </TableCell>
             <TableCell>
-              <Badge variant="outline" className={statusColors[user.status]}>
-                {user.status === "active" ? "활성" : "비활성"}
+              <Badge variant="outline">
+                {user.status === "ACTIVE"
+                  ? "활성"
+                  : user.status === "INACTIVE"
+                  ? "비활성"
+                  : user.status}
               </Badge>
             </TableCell>
             <TableCell>
               <div className="flex flex-col gap-1">
-                <div
-                  className="text-sm font-medium"
-                  style={{ color: isDarkMode ? "#ffffff" : undefined }}
-                >
-                  {user.chatUsed.toLocaleString()} /{" "}
-                  {user.chatLimit.toLocaleString()}
-                </div>
-                <div
-                  className="w-full rounded-full h-1.5"
-                  style={{ backgroundColor: isDarkMode ? "#333333" : undefined }}
-                >
-                  <div
-                    className={`h-1.5 rounded-full ${getUsageColor(
-                      user.chatUsed,
-                      user.chatLimit
-                    )}`}
-                    style={{
-                      width: `${(user.chatUsed / user.chatLimit) * 100}%`,
-                    }}
-                  />
-                </div>
+                <div className="text-sm font-medium">-</div>
               </div>
             </TableCell>
             <TableCell>
               <div className="flex flex-col gap-1">
-                <div
-                  className="text-sm font-medium"
-                  style={{ color: isDarkMode ? "#ffffff" : undefined }}
-                >
-                  {user.embeddingUsed.toLocaleString()} /{" "}
-                  {user.embeddingLimit.toLocaleString()}
-                </div>
-                <div
-                  className="w-full rounded-full h-1.5"
-                  style={{ backgroundColor: isDarkMode ? "#333333" : undefined }}
-                >
-                  <div
-                    className={`h-1.5 rounded-full ${getUsageColorEmbed(
-                      user.embeddingUsed,
-                      user.embeddingLimit
-                    )}`}
-                    style={{
-                      width: `${(user.embeddingUsed / user.embeddingLimit) * 100}%`,
-                    }}
-                  />
-                </div>
+                <div className="text-sm font-medium">-</div>
               </div>
             </TableCell>
             <TableCell>
-              <div
-                className="text-sm"
-                style={{ color: isDarkMode ? "#cccccc" : undefined }}
-              >
-                {user.lastLogin}
+              <div className="text-sm">
+                {user.last_login
+                  ? new Date(user.last_login).toLocaleDateString("ko-KR")
+                  : "-"}
               </div>
             </TableCell>
             <TableCell className="text-right">
@@ -163,10 +102,6 @@ export function UsersTable({ users, isDarkMode, onEditUser }: UsersTableProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onEditUser(user)}>
-                    <Edit className="h-4 w-4 mr-2" />
-                    수정
-                  </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Shield className="h-4 w-4 mr-2" />
                     권한 변경
