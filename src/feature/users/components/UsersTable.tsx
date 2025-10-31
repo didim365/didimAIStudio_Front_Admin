@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
-import { MoreVertical, Edit, Shield, Key, Trash2 } from "lucide-react";
+import { MoreVertical, Shield, Key, Trash2 } from "lucide-react";
 import { paths } from "@/shared/types/api/auth";
 
 type UserResponse =
@@ -23,10 +23,9 @@ type UserResponse =
 
 interface UsersTableProps {
   users: UserResponse[];
-  onEditUser: (user: UserResponse) => void;
 }
 
-export function UsersTable({ users, onEditUser }: UsersTableProps) {
+export function UsersTable({ users }: UsersTableProps) {
   return (
     <Table>
       <TableHeader>
@@ -103,10 +102,6 @@ export function UsersTable({ users, onEditUser }: UsersTableProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onEditUser(user)}>
-                    <Edit className="h-4 w-4 mr-2" />
-                    수정
-                  </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Shield className="h-4 w-4 mr-2" />
                     권한 변경

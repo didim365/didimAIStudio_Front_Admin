@@ -7,7 +7,6 @@ import { Button } from "@/shared/ui/button";
 import { Search, UserPlus } from "lucide-react";
 import { useGetUsers } from "../hooks/useGetUsers";
 import { UsersTable } from "./UsersTable";
-import { UserEditDialog } from "./UserEditDialog";
 import { paths } from "@/shared/types/api/auth";
 
 type UserResponse =
@@ -15,7 +14,6 @@ type UserResponse =
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // API에서 사용자 데이터 가져오기
   const {
@@ -25,10 +23,6 @@ export default function UsersPage() {
   } = useGetUsers({
     search: searchQuery || undefined,
   });
-
-  const handleEditUser = (user: UserResponse) => {
-    setIsEditDialogOpen(true);
-  };
 
   return (
     <div>
@@ -80,20 +74,10 @@ export default function UsersPage() {
               </p>
             </div>
           ) : (
-            <UsersTable
-              users={usersData?.items ?? []}
-              onEditUser={handleEditUser}
-            />
+            <UsersTable users={usersData?.items ?? []} />
           )}
         </CardContent>
       </Card>
-
-      {/* 사용자 수정 다이얼로그 */}
-      <UserEditDialog
-        user={null}
-        isOpen={isEditDialogOpen}
-        onClose={() => setIsEditDialogOpen(false)}
-      />
     </div>
   );
 }
