@@ -79,7 +79,6 @@ export default function LoginPage() {
                 type="submit"
                 disabled={isPending}
                 className="w-full h-11 bg-theme-primary hover:opacity-90 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ backgroundColor: "var(--color-primary)" }}
               >
                 {isPending ? "로그인 중..." : "로그인"}
               </Button>
