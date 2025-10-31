@@ -19,12 +19,12 @@ import {
   ArrowLeft,
   Pencil,
 } from "lucide-react";
-import { format } from "date-fns";
-import { ko } from "date-fns/locale";
 import { Button } from "@/shared/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
+import { formatDate } from "@/feature/users/utils/formatDate";
+import { getInitials } from "@/feature/users/utils/getInitials";
 
 interface UserDetailPageProps {
   userId: string;
@@ -37,27 +37,6 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
     isLoading,
     error,
   } = useGetUser({ user_id: Number(userId) });
-
-  const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return "정보 없음";
-    try {
-      return format(new Date(dateString), "PPP HH:mm:ss", { locale: ko });
-    } catch {
-      return dateString;
-    }
-  };
-
-  const getInitials = (name: string | null | undefined, email: string) => {
-    if (name) {
-      return name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    return email[0].toUpperCase();
-  };
 
   if (isLoading) {
     return (

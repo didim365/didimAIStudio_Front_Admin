@@ -22,8 +22,6 @@ import {
   Save,
   X,
 } from "lucide-react";
-import { format } from "date-fns";
-import { ko } from "date-fns/locale";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
@@ -36,6 +34,8 @@ import {
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
+import { formatDate } from "@/feature/users/utils/formatDate";
+import { getInitials } from "@/feature/users/utils/getInitials";
 
 interface UserEditPageProps {
   userId: string;
@@ -81,32 +81,7 @@ export function UserEditPage({ userId }: UserEditPageProps) {
     onSuccess: () => {
       router.push(`/dashboard/users/${userId}`);
     },
-    onError: (error) => {
-      console.error("사용자 업데이트 오류:", error);
-      alert("사용자 정보 업데이트 중 오류가 발생했습니다.");
-    },
   });
-
-  const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return "정보 없음";
-    try {
-      return format(new Date(dateString), "PPP HH:mm:ss", { locale: ko });
-    } catch {
-      return dateString;
-    }
-  };
-
-  const getInitials = (name: string | null | undefined, email: string) => {
-    if (name) {
-      return name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    return email[0].toUpperCase();
-  };
 
   // 전화번호에서 숫자만 추출하는 함수
   const extractPhoneDigits = (phone: string): string => {
