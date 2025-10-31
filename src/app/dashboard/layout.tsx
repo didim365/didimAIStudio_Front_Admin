@@ -16,11 +16,11 @@ export default function DashboardLayout({
     const handleThemeChange = () => {
       // 다크모드에 따라 body 스타일 업데이트
       if (theme === "dark") {
-        document.body.style.backgroundColor = '#000000';
-        document.body.style.color = '#ffffff';
+        document.body.style.backgroundColor = "#000000";
+        document.body.style.color = "#ffffff";
       } else {
-        document.body.style.backgroundColor = '#ffffff';
-        document.body.style.color = '#000000';
+        document.body.style.backgroundColor = "#ffffff";
+        document.body.style.color = "#000000";
       }
     };
 
