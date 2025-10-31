@@ -1,4 +1,3 @@
-import { User } from "../types";
 import {
   Dialog,
   DialogContent,
@@ -17,9 +16,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
+import { paths } from "@/shared/types/api/auth";
+
+type UserResponse =
+  paths["/api/v1/users/admin/users"]["get"]["responses"]["200"]["content"]["application/json"]["items"][number];
 
 interface UserEditDialogProps {
-  user: User | null;
+  user: UserResponse | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -40,7 +43,7 @@ export function UserEditDialog({ user, isOpen, onClose }: UserEditDialogProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>이름</Label>
-              <Input defaultValue={user.name} />
+              <Input defaultValue={user.full_name || ""} />
             </div>
             <div className="space-y-2">
               <Label>이메일</Label>
@@ -49,41 +52,8 @@ export function UserEditDialog({ user, isOpen, onClose }: UserEditDialogProps) {
           </div>
 
           <div className="space-y-2">
-            <Label>그룹</Label>
-            <Input defaultValue={user.group} />
-          </div>
-
-          <div className="space-y-2">
-            <Label>권한</Label>
-            <Select defaultValue={user.role}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="관리자">관리자</SelectItem>
-                <SelectItem value="매니저">매니저</SelectItem>
-                <SelectItem value="일반 사용자">일반 사용자</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>챗 토큰 제한</Label>
-              <Input
-                type="number"
-                defaultValue={user.chatLimit}
-                placeholder="토큰 수"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>임베딩 토큰 제한</Label>
-              <Input
-                type="number"
-                defaultValue={user.embeddingLimit}
-                placeholder="토큰 수"
-              />
-            </div>
+            <Label>전화번호</Label>
+            <Input defaultValue={user.phone || ""} />
           </div>
 
           <div className="flex items-center justify-between rounded-lg border p-4">
@@ -93,7 +63,7 @@ export function UserEditDialog({ user, isOpen, onClose }: UserEditDialogProps) {
                 계정을 활성화하거나 비활성화합니다
               </p>
             </div>
-            <Switch defaultChecked={user.status === "active"} />
+            <Switch defaultChecked={user.status === "ACTIVE"} />
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
