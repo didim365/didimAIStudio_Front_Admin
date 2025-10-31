@@ -35,18 +35,6 @@ export default function UsersPage() {
     search: searchQuery || undefined,
   });
 
-  // 필터링된 사용자 목록
-  const filteredUsers =
-    usersData?.items.filter((user) => {
-      const matchesSearch =
-        (user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ??
-          false) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase());
-      // API 응답에 role 정보가 없으므로 selectedRole 필터는 적용하지 않음
-      // 또는 필요시 다른 필드로 필터링
-      return matchesSearch;
-    }) ?? [];
-
   const handleEditUser = (user: UserResponse) => {
     setSelectedUser(user);
     setIsEditDialogOpen(true);
@@ -99,7 +87,7 @@ export default function UsersPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            전체 회원 ({isLoading ? "..." : filteredUsers.length})
+            전체 회원 ({isLoading ? "..." : usersData?.items?.length ?? 0})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -114,7 +102,10 @@ export default function UsersPage() {
               </p>
             </div>
           ) : (
-            <UsersTable users={filteredUsers} onEditUser={handleEditUser} />
+            <UsersTable
+              users={usersData?.items ?? []}
+              onEditUser={handleEditUser}
+            />
           )}
         </CardContent>
       </Card>
