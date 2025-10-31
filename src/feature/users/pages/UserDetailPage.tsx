@@ -17,11 +17,13 @@ import {
   UserCircle,
   Image as ImageIcon,
   ArrowLeft,
+  Pencil,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Button } from "@/shared/ui/button";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface UserDetailPageProps {
   userId: string;
@@ -34,6 +36,27 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
     isLoading,
     error,
   } = useGetUser({ user_id: Number(userId) });
+
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return "정보 없음";
+    try {
+      return format(new Date(dateString), "PPP HH:mm:ss", { locale: ko });
+    } catch {
+      return dateString;
+    }
+  };
+
+  const getInitials = (name: string | null | undefined, email: string) => {
+    if (name) {
+      return name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+    }
+    return email[0].toUpperCase();
+  };
 
   if (isLoading) {
     return (
@@ -79,45 +102,32 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
     );
   }
 
-  const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return "정보 없음";
-    try {
-      return format(new Date(dateString), "PPP HH:mm:ss", { locale: ko });
-    } catch {
-      return dateString;
-    }
-  };
-
-  const getInitials = (name: string | null | undefined, email: string) => {
-    if (name) {
-      return name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    return email[0].toUpperCase();
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.push("/dashboard/users")}
-          className="shrink-0"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            사용자 상세 정보
-          </h1>
-          <p className="text-muted-foreground">사용자 ID: {user.id}</p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push("/dashboard/users")}
+            className="shrink-0"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              사용자 상세 정보
+            </h1>
+            <p className="text-muted-foreground">사용자 ID: {user.id}</p>
+          </div>
         </div>
+        <Link href={`/dashboard/users/${userId}/edit`}>
+          <Button className="shrink-0 cursor-pointer">
+            <Pencil className="h-4 w-4 mr-2" />
+            수정
+          </Button>
+        </Link>
       </div>
 
       {/* Main Content Grid */}
