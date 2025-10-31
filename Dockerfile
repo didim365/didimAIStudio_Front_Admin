@@ -17,37 +17,42 @@ RUN pnpm install --frozen-lockfile
 # 소스 코드 복사
 COPY . .
 
-# 환경 변수 설정
-ENV NEXT_TELEMETRY_DISABLED=1
+EXPOSE 3000
 
-# Next.js 빌드
-RUN pnpm build
+CMD ["pnpm", "run", "dev"]
 
-# 런타임 단계
-FROM node:20-alpine AS runner
+# # 프로덕션 빌드 단계
+# FROM node:18-alpine AS builder
 
-WORKDIR /app
+# WORKDIR /app
 
-# pnpm 설치 (런타임에서도 필요할 수 있음)
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# # pnpm 설치
+# RUN corepack enable && corepack prepare pnpm@latest --activate
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+# # 의존성 파일 복사
+# COPY package.json pnpm-lock.yaml ./
 
-# 보안을 위한 non-root 유저 생성
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+# # 의존성 설치
+# RUN pnpm install --frozen-lockfile
 
-# Next.js standalone 파일 복사
-COPY --from=builder --chown=nextjs:nodejs /app/nextjs-build/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/nextjs-build/static ./nextjs-build/static
+# # 소스 코드 복사
+# COPY . .
 
-USER nextjs
+# # 빌드 실행
+# RUN pnpm run build
 
-EXPOSE 4000
+# # 런타임 단계
+# FROM node:18-alpine
 
-ENV PORT=4000
-ENV HOSTNAME="0.0.0.0"
+# WORKDIR /app
 
-CMD ["node", "server.js"]
+# # Next.js 애플리케이션 복사
+# COPY --from=builder /app/nextjs-build/standalone ./
+# COPY --from=builder /app/public ./public
+# COPY --from=builder /app/nextjs-build/static ./nextjs-build/static
+# COPY --from=builder /app/node_modules ./node_modules
+# COPY --from=builder /app/nextjs-build .next
+
+# EXPOSE 3000
+
+# CMD ["pnpm", "run", "start"]

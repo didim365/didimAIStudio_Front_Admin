@@ -1,37 +1,28 @@
-version: "3.8"
-
 services:
   nextjs:
     build:
       context: .
-      dockerfile: Dockerfile.dev
-      no_cache: true
-    env_file:
-      - .env.develop
-    # 로컬 환경에서 volumes 추가
+      dockerfile: Dockerfile
     volumes:
       - .:/app
       - /app/node_modules
-      - /app/nextjs-build
+      - /app/.next
     ports:
-      - "4000:4000" # 개발용 직접 접근
+      - "3000:3000"
     networks:
       - app-network
     environment:
       - NODE_ENV=development
       - NEXT_TELEMETRY_DISABLED=1
-      - PORT=4000
 
   nginx:
     image: nginx:latest
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      # SSL 인증서가 있는 경우 아래 주석 해제
-      # - ./certs/fullchain.pem:/etc/ssl/certs/fullchain.pem
-      # - ./certs/privkey.pem:/etc/ssl/private/privkey.pem
+      - ./certs/fullchain.pem:/etc/ssl/certs/fullchain.pem
+      - ./certs/privkey.pem:/etc/ssl/private/privkey.pem
     ports:
-      - "4002:4000" # API 테스트용
-      - "80:80" # ALB 연결용
+      - "3002:3002"
     networks:
       - app-network
     depends_on:
