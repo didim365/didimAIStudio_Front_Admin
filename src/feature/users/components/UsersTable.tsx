@@ -27,25 +27,27 @@ interface UsersTableProps {
 
 export function UsersTable({ users }: UsersTableProps) {
   return (
-    <Table>
+    <Table className="table-fixed">
       <TableHeader>
         <TableRow>
-          <TableHead>사용자</TableHead>
-          <TableHead>그룹</TableHead>
-          <TableHead>권한</TableHead>
-          <TableHead>상태</TableHead>
-          <TableHead>챗 사용량</TableHead>
-          <TableHead>임베딩 사용량</TableHead>
-          <TableHead>최근 접속</TableHead>
-          <TableHead className="text-right">작업</TableHead>
+          <TableHead className="w-[25%] min-w-[200px]">사용자</TableHead>
+          <TableHead className="w-[10%] min-w-[80px]">그룹</TableHead>
+          <TableHead className="w-[10%] min-w-[80px]">권한</TableHead>
+          <TableHead className="w-[10%] min-w-[80px]">상태</TableHead>
+          <TableHead className="w-[12%] min-w-[100px]">챗 사용량</TableHead>
+          <TableHead className="w-[12%] min-w-[100px]">임베딩 사용량</TableHead>
+          <TableHead className="w-[11%] min-w-[100px]">최근 접속</TableHead>
+          <TableHead className="w-[10%] min-w-[80px] text-right">
+            작업
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {users.map((user) => (
           <TableRow key={user.id}>
-            <TableCell>
-              <div className="flex items-center gap-3">
-                <Avatar>
+            <TableCell className="overflow-hidden">
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar className="shrink-0">
                   <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
                     {(
                       user.full_name ||
@@ -54,11 +56,13 @@ export function UsersTable({ users }: UsersTableProps) {
                     ).substring(0, 2)}
                   </AvatarFallback>
                 </Avatar>
-                <div>
-                  <div className="font-medium">
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium truncate">
                     {user.full_name || user.email.split("@")[0] || "-"}
                   </div>
-                  <div className="text-sm">{user.email}</div>
+                  <div className="text-sm text-slate-500 truncate">
+                    {user.email}
+                  </div>
                 </div>
               </div>
             </TableCell>
