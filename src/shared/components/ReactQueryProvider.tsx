@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export function ReactQueryProvider({
   children,
@@ -19,12 +20,20 @@ export function ReactQueryProvider({
       new QueryClient({
         queryCache: new QueryCache({
           onError: (error) => {
-            toast.error(String(error));
+            if (error instanceof AxiosError && error.response?.data) {
+              toast.error(JSON.stringify(error.response.data, null, 2));
+            } else {
+              toast.error(String(error));
+            }
           },
         }),
         mutationCache: new MutationCache({
           onError: (error) => {
-            toast.error(String(error));
+            if (error instanceof AxiosError && error.response?.data) {
+              toast.error(JSON.stringify(error.response.data, null, 2));
+            } else {
+              toast.error(String(error));
+            }
           },
         }),
         defaultOptions: {
