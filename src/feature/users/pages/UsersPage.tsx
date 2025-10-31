@@ -5,7 +5,7 @@ import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import { Search, UserPlus } from "lucide-react";
 import { useGetUsers } from "../hooks/useGetUsers";
-import { UsersTable } from "./UsersTable";
+import { UsersTable } from "../components/UsersTable";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
 
