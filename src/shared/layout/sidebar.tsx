@@ -56,6 +56,9 @@ const navigation = [
         href: "/dashboard/service/personas",
       },
     ],
+    name: "문서 관리",
+    href: "/dashboard/documents",
+    icon: File,
   },
   { name: "문서 관리", href: "/dashboard/documents", icon: File },
 ];
