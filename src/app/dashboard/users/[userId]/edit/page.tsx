@@ -1,6 +1,7 @@
 import { UserEditPage } from "@/feature/users/pages/UserEditPage";
 import { cookies } from "next/headers";
 import axios from "axios";
+import { redirect } from "next/navigation";
 
 async function Page({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params;
@@ -8,11 +9,16 @@ async function Page({ params }: { params: Promise<{ userId: string }> }) {
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
-    throw new Error("Unauthorized");
+    redirect("/");
   }
 
+  const BASE_URL =
+    process.env.NODE_ENV === "development"
+      ? "https://aistudio-dev.hell0world.net"
+      : "https://aistudio.didim365.com";
+
   const response = await axios.get(
-    `https://aistudio-dev.hell0world.net/api/v1/users/account/${userId}`,
+    `${BASE_URL}/api/v1/users/account/${userId}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
