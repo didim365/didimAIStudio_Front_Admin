@@ -1,11 +1,22 @@
 "use client";
 
+import { useState } from "react";
 import { useGetUser } from "../hooks/useGetUser";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Separator } from "@/shared/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/ui/alert-dialog";
 import {
   User,
   Mail,
@@ -18,6 +29,7 @@ import {
   Image as ImageIcon,
   ArrowLeft,
   Pencil,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
@@ -30,11 +42,19 @@ interface UserDetailPageProps {
 }
 
 export function UserDetailPage({ userId }: UserDetailPageProps) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const {
     data: user,
     isLoading,
     error,
   } = useGetUser({ user_id: Number(userId) });
+
+  const handleDelete = () => {
+    // TODO: 사용자 삭제 API 호출
+    console.log("사용자 삭제:", userId);
+    setShowDeleteDialog(false);
+    // TODO: 삭제 후 사용자 목록 페이지로 이동하거나 리프레시
+  };
 
   if (isLoading) {
     return (
@@ -101,13 +121,47 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
             <p className="text-muted-foreground">사용자 ID: {user.id}</p>
           </div>
         </div>
-        <Link href={`/dashboard/users/${userId}/edit`}>
-          <Button className="shrink-0 cursor-pointer">
-            <Pencil className="h-4 w-4 mr-2" />
-            수정
+        <div className="flex items-center gap-2 shrink-0">
+          <Link href={`/dashboard/users/${userId}/edit`}>
+            <Button className="cursor-pointer">
+              <Pencil className="h-4 w-4 mr-2" />
+              수정
+            </Button>
+          </Link>
+          <Button
+            variant="destructive"
+            className="cursor-pointer"
+            onClick={() => setShowDeleteDialog(true)}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            제거
           </Button>
-        </Link>
+        </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>사용자 삭제 확인</AlertDialogTitle>
+            <AlertDialogDescription>
+              정말{" "}
+              <span className="font-semibold">
+                {user.full_name || user.email}
+              </span>
+              를 삭제하시겠습니까?
+              <br />
+              <span className="text-destructive mt-2 block">
+                이 작업은 되돌릴 수 없습니다.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>삭제</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Main Content Grid */}
       <div className="grid gap-6 md:grid-cols-2">
