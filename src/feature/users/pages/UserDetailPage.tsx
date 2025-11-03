@@ -20,7 +20,6 @@ import {
   Pencil,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { formatDate } from "@/feature/users/utils/formatDate";
@@ -31,7 +30,6 @@ interface UserDetailPageProps {
 }
 
 export function UserDetailPage({ userId }: UserDetailPageProps) {
-  const router = useRouter();
   const {
     data: user,
     isLoading,
@@ -87,14 +85,15 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.push("/dashboard/users")}
-            className="shrink-0"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+          <Link href="/dashboard/users">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0 cursor-pointer"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               사용자 상세 정보

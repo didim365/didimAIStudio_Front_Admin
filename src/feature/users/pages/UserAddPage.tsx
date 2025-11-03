@@ -24,7 +24,6 @@ import {
   Activity,
   ArrowLeft,
   Save,
-  X,
   Lock,
   Shield,
   UserPlus,
@@ -62,9 +61,6 @@ export function UserAddPage() {
       // 생성된 사용자 상세 페이지로 이동
       router.push(`/dashboard/users/${data.id}`);
     },
-    onError: (error) => {
-      console.error("사용자 생성 실패:", error);
-    },
   });
 
   // 전화번호 입력 핸들러 - 입력 시 자동 포맷팅
@@ -78,11 +74,6 @@ export function UserAddPage() {
 
   // 비밀번호 검증
   const validatePasswords = (): boolean => {
-    if (formData.password.length < 8) {
-      setPasswordError("비밀번호는 최소 8자 이상이어야 합니다.");
-      return false;
-    }
-
     if (formData.password !== formData.password_confirm) {
       setPasswordError("비밀번호가 일치하지 않습니다.");
       return false;
@@ -115,10 +106,6 @@ export function UserAddPage() {
     });
   };
 
-  const handleCancel = () => {
-    router.push("/dashboard/users");
-  };
-
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-6">
@@ -144,16 +131,6 @@ export function UserAddPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              className="shrink-0"
-              disabled={isCreating}
-            >
-              <X className="h-4 w-4 mr-2" />
-              취소
-            </Button>
             <Button type="submit" className="shrink-0" disabled={isCreating}>
               <Save className="h-4 w-4 mr-2" />
               {isCreating ? "생성 중..." : "사용자 생성"}
@@ -348,40 +325,32 @@ export function UserAddPage() {
                     <Shield className="h-4 w-4" />
                     <span>역할</span>
                   </Label>
-                  {isLoadingRoles ? (
-                    <Skeleton className="h-10 w-full" />
-                  ) : (
-                    <Select
-                      value={formData.role_id?.toString() || "none"}
-                      onValueChange={(value) =>
-                        setFormData({
-                          ...formData,
-                          role_id: value === "none" ? undefined : Number(value),
-                        })
-                      }
-                    >
-                      <SelectTrigger id="role_id" className="pl-6 w-full">
-                        <SelectValue placeholder="역할을 선택하세요 (선택사항)" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">역할 없음</SelectItem>
-                        {roles?.map((role) => (
-                          <SelectItem key={role.id} value={role.id.toString()}>
-                            <div className="flex flex-col">
-                              <span className="font-medium">
-                                {role.role_name}
-                              </span>
-                              {role.description && (
-                                <span className="text-xs text-muted-foreground">
-                                  {role.description}
-                                </span>
-                              )}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
+                  {isLoadingRoles && <Skeleton className="h-10 w-full" />}
+                  <Select
+                    value={formData.role_id?.toString() || "none"}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        role_id: value === "none" ? undefined : Number(value),
+                      })
+                    }
+                  >
+                    <SelectTrigger id="role_id" className="pl-6 w-full">
+                      <SelectValue placeholder="역할을 선택하세요 (선택사항)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">역할 없음</SelectItem>
+                      {roles?.map((role) => (
+                        <SelectItem key={role.id} value={role.id.toString()}>
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">
+                              {role.role_name}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <p className="text-xs text-muted-foreground">
                     사용자에게 할당할 역할을 선택하세요 (선택사항)
                   </p>

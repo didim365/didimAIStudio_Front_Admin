@@ -8,6 +8,7 @@ import { useGetUsers } from "../hooks/useGetUsers";
 import { UsersTable } from "../components/UsersTable";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
+import Link from "next/link";
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
@@ -43,10 +44,12 @@ export default function UsersPage() {
               />
             </div>
             <div className="flex gap-2">
-              <Button className="gap-2">
-                <UserPlus className="h-4 w-4" />
-                회원 추가
-              </Button>
+              <Link href="/dashboard/users/add">
+                <Button className="gap-2 cursor-pointer">
+                  <UserPlus className="h-4 w-4" />
+                  회원 추가
+                </Button>
+              </Link>
             </div>
           </div>
         </CardContent>
