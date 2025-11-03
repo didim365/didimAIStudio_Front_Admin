@@ -5,9 +5,10 @@ import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import { Search, UserPlus } from "lucide-react";
 import { useGetUsers } from "../hooks/useGetUsers";
-import { UsersTable } from "./UsersTable";
+import { UsersTable } from "../components/UsersTable";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
+import Link from "next/link";
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
@@ -16,11 +17,7 @@ export default function UsersPage() {
   const [page, setPage] = useQueryParam<number>("page", 1);
 
   // API에서 사용자 데이터 가져오기
-  const {
-    data: usersData,
-    isLoading,
-    error,
-  } = useGetUsers({
+  const { data: usersData, isLoading } = useGetUsers({
     search: searchQuery || undefined,
     page,
   });
@@ -40,17 +37,19 @@ export default function UsersPage() {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
-                placeholder="이름, 이메일, 그룹으로 검색..."
+                placeholder="회원명을 입력해주세요."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
             </div>
             <div className="flex gap-2">
-              <Button className="gap-2">
-                <UserPlus className="h-4 w-4" />
-                회원 추가
-              </Button>
+              <Link href="/dashboard/users/add">
+                <Button className="gap-2 cursor-pointer">
+                  <UserPlus className="h-4 w-4" />
+                  회원 추가
+                </Button>
+              </Link>
             </div>
           </div>
         </CardContent>
@@ -64,21 +63,7 @@ export default function UsersPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading && (
-            <div className="flex justify-center items-center py-8">
-              <p>로딩 중...</p>
-            </div>
-          )}
-          {error && (
-            <div className="flex justify-center items-center py-8">
-              <p style={{ color: "#ef4444" }}>
-                사용자 데이터를 불러오는 중 오류가 발생했습니다.
-              </p>
-            </div>
-          )}
-          {!isLoading && !error && (
-            <UsersTable users={usersData?.items ?? []} />
-          )}
+          <UsersTable users={usersData?.items ?? []} />
         </CardContent>
       </Card>
 

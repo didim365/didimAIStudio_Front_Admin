@@ -178,3 +178,22 @@
 [data-sonner-toast][data-type="error"] [data-description] {
   color: white !important;
 }
+
+/* Sonner 성공 토스트 스타일 */
+[data-sonner-toast][data-type="success"] {
+  background-color: rgb(34, 197, 94) !important; /* green-500 */
+  border-color: rgb(34, 197, 94) !important;
+  color: white !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-content] {
+  color: white !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-title] {
+  color: white !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-description] {
+  color: white !important;
+}

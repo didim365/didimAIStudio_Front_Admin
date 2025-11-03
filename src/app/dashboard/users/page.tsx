@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import UsersPage from "@/feature/users/components/UsersPage";
+import UsersPage from "@/feature/users/pages/UsersPage";
 
 export default function Page() {
   return (

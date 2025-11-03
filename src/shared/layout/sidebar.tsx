@@ -60,6 +60,7 @@ const navigation = [
     href: "/dashboard/documents",
     icon: File,
   },
+  { name: "문서 관리", href: "/dashboard/documents", icon: File },
 ];
 
 export function Sidebar() {
@@ -104,12 +105,19 @@ export function Sidebar() {
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navigation.map((item) => {
-          const isActive = pathname === item.href;
+          // 대시보드는 정확히 일치할 때만 활성화, 다른 메뉴는 자식 경로 포함
+          const isActive =
+            item.href === "/dashboard"
+              ? pathname === item.href
+              : pathname === item.href || pathname.startsWith(item.href + "/");
           const hasChildren = item.children && item.children.length > 0;
           const isExpanded = expandedMenus.includes(item.name);
           const isChildActive =
             hasChildren &&
-            item.children?.some((child) => pathname === child.href);
+            item.children?.some(
+              (child) =>
+                pathname === child.href || pathname.startsWith(child.href + "/")
+            );
 
           return (
             <div key={item.name}>
@@ -147,7 +155,9 @@ export function Sidebar() {
               {hasChildren && isExpanded && (
                 <div className="ml-4 mt-1 space-y-1">
                   {item.children?.map((child) => {
-                    const isChildItemActive = pathname === child.href;
+                    const isChildItemActive =
+                      pathname === child.href ||
+                      pathname.startsWith(child.href + "/");
                     return (
                       <Link
                         key={child.name}
