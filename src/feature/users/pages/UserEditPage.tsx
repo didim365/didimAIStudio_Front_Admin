@@ -34,6 +34,7 @@ import {
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/feature/users/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
+import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { GetUserResponse } from "../api/getUser";
 
 export function UserEditPage({ user }: { user: GetUserResponse }) {
@@ -58,38 +59,9 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
     },
   });
 
-  // 전화번호에서 숫자만 추출하는 함수
-  const extractPhoneDigits = (phone: string): string => {
-    return phone.replace(/\D/g, "");
-  };
-
   // 전화번호 입력 핸들러 - 입력 시 자동 포맷팅
   const handlePhoneNumberChange = (value: string) => {
-    // 숫자만 추출
-    const digits = extractPhoneDigits(value);
-
-    // 숫자만으로 포맷팅 적용
-    let formatted = digits;
-    if (digits.length === 11) {
-      formatted = `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(
-        7
-      )}`;
-    } else if (digits.length === 10) {
-      formatted = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(
-        6
-      )}`;
-    } else if (digits.length > 0) {
-      // 입력 중일 때는 부분적으로 포맷팅
-      if (digits.length <= 3) {
-        formatted = digits;
-      } else if (digits.length <= 7) {
-        formatted = `${digits.slice(0, 3)}-${digits.slice(3)}`;
-      } else {
-        formatted = `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(
-          7
-        )}`;
-      }
-    }
+    const formatted = formatPhoneNumber(value);
 
     setFormData({
       ...formData,
@@ -102,7 +74,7 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
 
     // 전화번호에서 숫자만 추출하여 전송
     const phoneDigits = formData.phone_number
-      ? extractPhoneDigits(formData.phone_number)
+      ? formData.phone_number.replace(/\D/g, "")
       : null;
 
     updateUser({
