@@ -19,7 +19,6 @@ import {
   Image as ImageIcon,
   ArrowLeft,
   Save,
-  X,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -87,10 +86,6 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
     });
   };
 
-  const handleCancel = () => {
-    router.push(`/dashboard/users/${user.id}`);
-  };
-
   if (!user) {
     return (
       <div className="py-8 px-4">
@@ -128,16 +123,6 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              className="shrink-0"
-              disabled={isUpdating}
-            >
-              <X className="h-4 w-4 mr-2" />
-              취소
-            </Button>
             <Button type="submit" className="shrink-0" disabled={isUpdating}>
               <Save className="h-4 w-4 mr-2" />
               {isUpdating ? "저장 중..." : "저장"}
