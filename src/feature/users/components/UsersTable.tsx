@@ -18,7 +18,7 @@ import {
 import { MoreVertical, Shield, Key, Trash2 } from "lucide-react";
 import { paths } from "@/shared/types/api/auth";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type UserResponse =
   paths["/api/v1/users/admin/users"]["get"]["responses"]["200"]["content"]["application/json"]["items"][number];
@@ -28,6 +28,10 @@ interface UsersTableProps {
 }
 
 export function UsersTable({ users }: UsersTableProps) {
+  const router = useRouter();
+  const handleClick = (userId: number) => {
+    router.push(`/dashboard/users/${userId}`);
+  };
   return (
     <Table className="table-fixed">
       <TableHeader>
@@ -58,71 +62,66 @@ export function UsersTable({ users }: UsersTableProps) {
           <TableRow
             key={`user-${user.id}`}
             className="group cursor-pointer hover:bg-slate-50"
+            onClick={() => handleClick(user.id)}
           >
-            <Link
-              href={`/dashboard/users/${user.id}`}
-              className="contents"
-              title={`/dashboard/users/${user.id}`}
-            >
-              <TableCell className="overflow-hidden">
-                <div className="flex items-center gap-3 min-w-0">
-                  <Avatar className="shrink-0">
-                    {user.profile_image_url && (
-                      <AvatarImage
-                        src={user.profile_image_url}
-                        alt={user.full_name || user.email}
-                      />
-                    )}
-                    <AvatarFallback className="font-semibold">
-                      {(
-                        user.full_name ||
-                        user.email.split("@")[0] ||
-                        "U"
-                      ).substring(0, 2)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <div className="font-medium truncate">
-                      {user.full_name || user.email.split("@")[0] || "-"}
-                    </div>
-                    <div className="text-sm text-slate-500 truncate">
-                      {user.email}
-                    </div>
+            <TableCell className="overflow-hidden">
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar className="shrink-0">
+                  {user.profile_image_url && (
+                    <AvatarImage
+                      src={user.profile_image_url}
+                      alt={user.full_name || user.email}
+                    />
+                  )}
+                  <AvatarFallback className="font-semibold">
+                    {(
+                      user.full_name ||
+                      user.email.split("@")[0] ||
+                      "U"
+                    ).substring(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium truncate">
+                    {user.full_name || user.email.split("@")[0] || "-"}
+                  </div>
+                  <div className="text-sm text-slate-500 truncate">
+                    {user.email}
                   </div>
                 </div>
-              </TableCell>
-              <TableCell className="text-center">
-                <Badge variant="outline">
-                  {user.status === "ACTIVE" && "활성"}
-                  {user.status === "INACTIVE" && "비활성"}
-                  {user.status === "SUSPENDED" && "정지"}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-center">
-                <div className="text-sm">{formatPhoneNumber(user.phone)}</div>
-              </TableCell>
-              <TableCell className="text-center">
-                <div className="text-sm">
-                  {user.last_login &&
-                    new Date(user.last_login).toLocaleDateString("ko-KR")}
-                  {!user.last_login && "-"}
-                </div>
-              </TableCell>
-              <TableCell className="text-center">
-                <div className="text-sm">
-                  {user.created_at &&
-                    new Date(user.created_at).toLocaleDateString("ko-KR")}
-                  {!user.created_at && "-"}
-                </div>
-              </TableCell>
-              <TableCell className="text-center">
-                <div className="text-sm">
-                  {user.updated_at &&
-                    new Date(user.updated_at).toLocaleDateString("ko-KR")}
-                  {!user.updated_at && "-"}
-                </div>
-              </TableCell>
-            </Link>
+              </div>
+            </TableCell>
+            <TableCell className="text-center">
+              <Badge variant="outline">
+                {user.status === "ACTIVE" && "활성"}
+                {user.status === "INACTIVE" && "비활성"}
+                {user.status === "SUSPENDED" && "정지"}
+              </Badge>
+            </TableCell>
+            <TableCell className="text-center">
+              <div className="text-sm">{formatPhoneNumber(user.phone)}</div>
+            </TableCell>
+            <TableCell className="text-center">
+              <div className="text-sm">
+                {user.last_login &&
+                  new Date(user.last_login).toLocaleDateString("ko-KR")}
+                {!user.last_login && "-"}
+              </div>
+            </TableCell>
+            <TableCell className="text-center">
+              <div className="text-sm">
+                {user.created_at &&
+                  new Date(user.created_at).toLocaleDateString("ko-KR")}
+                {!user.created_at && "-"}
+              </div>
+            </TableCell>
+            <TableCell className="text-center">
+              <div className="text-sm">
+                {user.updated_at &&
+                  new Date(user.updated_at).toLocaleDateString("ko-KR")}
+                {!user.updated_at && "-"}
+              </div>
+            </TableCell>
             <TableCell
               className="text-right"
               onClick={(e) => e.stopPropagation()}
