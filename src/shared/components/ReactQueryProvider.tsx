@@ -57,6 +57,12 @@ export function ReactQueryProvider({
               toast.error(String(error));
             }
           },
+          onSuccess: (data, variables, context, mutation) => {
+            if (mutation.meta?.skipSuccessToast) {
+              return;
+            }
+            toast.success("작업이 성공적으로 완료되었습니다.");
+          },
         }),
         defaultOptions: {
           queries: {
