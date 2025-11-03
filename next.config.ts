@@ -39,15 +39,8 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
-  // CORS 문제 해결을 위한 프록시 설정 추가
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://auth:8000/api/:path*",
-      },
-    ];
-  },
+  // nginx가 API 프록시를 처리하므로 rewrites 제거
+  // 개발 환경에서는 nginx가 /api 요청을 https://aistudio-dev.hell0world.net/api로 프록시
 };
 
 export default nextConfig;
