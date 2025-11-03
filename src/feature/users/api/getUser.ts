@@ -1,7 +1,7 @@
 import { paths } from "@/shared/types/api/auth";
 import axiosInstance from "@/shared/utils/axiosInstance";
 
-type GetUserResponse =
+export type GetUserResponse =
   paths["/api/v1/users/account/{user_id}"]["get"]["responses"]["200"]["content"]["application/json"];
 
 type GetUserParams =

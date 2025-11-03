@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, FormEvent, useEffect, useEffectEvent } from "react";
+import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useGetUser } from "../hooks/useGetUser";
 import { usePatchUser } from "../hooks/usePatchUser";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Separator } from "@/shared/ui/separator";
 import {
@@ -34,45 +32,21 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
-import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { formatDate } from "@/feature/users/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
+import { GetUserResponse } from "../api/getUser";
 
-interface UserEditPageProps {
-  userId: string;
-}
-
-export function UserEditPage({ userId }: UserEditPageProps) {
+export function UserEditPage({ user }: { user: GetUserResponse }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useGetUser({ user_id: Number(userId) });
 
   const [formData, setFormData] = useState({
-    email: "",
-    full_name: "",
-    phone_number: "",
-    status: "ACTIVE" as "ACTIVE" | "INACTIVE" | "SUSPENDED",
-    role_id: null as number | null,
-    preferences: null as Record<string, never> | null,
+    email: user.email || "",
+    full_name: user.full_name || "",
+    phone_number: user.phone || "",
+    status: user.status as "ACTIVE" | "INACTIVE" | "SUSPENDED",
+    preferences: user.preferences || {},
   });
-
-  const setUserData = useEffectEvent(() => {
-    if (!user) return;
-    setFormData({
-      email: user.email || "",
-      full_name: user.full_name || "",
-      phone_number: formatPhoneNumber(user.phone || ""),
-      status: user.status as "ACTIVE" | "INACTIVE" | "SUSPENDED",
-      role_id: null,
-      preferences: user.preferences || null,
-    });
-  });
-
-  useEffect(() => setUserData(), [user]);
 
   const { mutate: updateUser, isPending: isUpdating } = usePatchUser({
     onSuccess: () => {
@@ -80,7 +54,7 @@ export function UserEditPage({ userId }: UserEditPageProps) {
         queryKey: ["users"],
       });
 
-      router.push(`/dashboard/users/${userId}`);
+      router.push(`/dashboard/users/${user.id}`);
     },
   });
 
@@ -132,49 +106,18 @@ export function UserEditPage({ userId }: UserEditPageProps) {
       : null;
 
     updateUser({
-      user_id: Number(userId),
+      user_id: user.id,
       email: formData.email || null,
       full_name: formData.full_name || null,
       phone_number: phoneDigits || null,
       status: formData.status || null,
-      role_id: formData.role_id,
       preferences: formData.preferences,
     });
   };
 
   const handleCancel = () => {
-    router.push(`/dashboard/users/${userId}`);
+    router.push(`/dashboard/users/${user.id}`);
   };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-[400px]" />
-          <Skeleton className="h-[400px]" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="py-8 px-4">
-        <Card className="border-destructive">
-          <CardHeader>
-            <CardTitle className="text-destructive">오류 발생</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              사용자 정보를 불러오는 중 오류가 발생했습니다.
-            </p>
-            <p className="text-sm text-destructive mt-2">{error.message}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   if (!user) {
     return (
