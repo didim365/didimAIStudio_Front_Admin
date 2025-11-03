@@ -1,4 +1,4 @@
-import { Document, DocumentFilter } from "../types";
+import { Document } from "../types";
 
 // Mock 데이터
 export const mockDocuments: Document[] = [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, useEffectEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetUser } from "../hooks/useGetUser";
 import { usePatchUser } from "../hooks/usePatchUser";
@@ -60,24 +60,19 @@ export function UserEditPage({ userId }: UserEditPageProps) {
     preferences: null as Record<string, never> | null,
   });
 
-  useEffect(() => {
-    if (user) {
-      const validStatuses = ["ACTIVE", "INACTIVE", "SUSPENDED"] as const;
-      const status =
-        user.status && validStatuses.includes(user.status as any)
-          ? (user.status as "ACTIVE" | "INACTIVE" | "SUSPENDED")
-          : "ACTIVE";
+  const setUserData = useEffectEvent(() => {
+    if (!user) return;
+    setFormData({
+      email: user.email || "",
+      full_name: user.full_name || "",
+      phone_number: formatPhoneNumber(user.phone || ""),
+      status: user.status as "ACTIVE" | "INACTIVE" | "SUSPENDED",
+      role_id: null,
+      preferences: user.preferences || null,
+    });
+  });
 
-      setFormData({
-        email: user.email || "",
-        full_name: user.full_name || "",
-        phone_number: formatPhoneNumber(user.phone || ""),
-        status,
-        role_id: null, // role_id is not in user response, keeping null
-        preferences: user.preferences || null,
-      });
-    }
-  }, [user]);
+  useEffect(() => setUserData(), [user]);
 
   const { mutate: updateUser, isPending: isUpdating } = usePatchUser({
     onSuccess: () => {
