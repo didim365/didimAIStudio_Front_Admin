@@ -106,6 +106,8 @@ export function UserAddPage() {
     });
   };
 
+  const selectedRole = roles?.find((r) => r.id === formData.role_id);
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-6">
@@ -357,30 +359,21 @@ export function UserAddPage() {
                 </div>
 
                 {/* 역할 정보 표시 */}
-                {formData.role_id && roles && (
+                {selectedRole && (
                   <div className="p-4 bg-muted rounded-lg border border-border">
-                    {(() => {
-                      const selectedRole = roles.find(
-                        (r) => r.id === formData.role_id
-                      );
-                      if (!selectedRole) return null;
-
-                      return (
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <Shield className="h-4 w-4 text-primary" />
-                            <span className="font-semibold">
-                              {selectedRole.role_name}
-                            </span>
-                          </div>
-                          {selectedRole.description && (
-                            <p className="text-sm text-muted-foreground">
-                              {selectedRole.description}
-                            </p>
-                          )}
-                        </div>
-                      );
-                    })()}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-4 w-4 text-primary" />
+                        <span className="font-semibold">
+                          {selectedRole.role_name}
+                        </span>
+                      </div>
+                      {selectedRole.description && (
+                        <p className="text-sm text-muted-foreground">
+                          {selectedRole.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
