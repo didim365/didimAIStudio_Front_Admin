@@ -2,6 +2,7 @@ import { UserEditPage } from "@/feature/users/pages/UserEditPage";
 import { cookies } from "next/headers";
 import axios from "axios";
 import { redirect } from "next/navigation";
+import { BASE_URL } from "@/shared/constants";
 
 async function Page({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params;
@@ -11,11 +12,6 @@ async function Page({ params }: { params: Promise<{ userId: string }> }) {
   if (!accessToken) {
     redirect("/");
   }
-
-  const BASE_URL =
-    process.env.NODE_ENV === "development"
-      ? "https://aistudio-dev.hell0world.net"
-      : "https://aistudio.didim365.com";
 
   const response = await axios.get(
     `${BASE_URL}/api/v1/users/account/${userId}`,
