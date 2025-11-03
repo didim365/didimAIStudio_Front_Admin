@@ -8,30 +8,13 @@ import {
 } from "@/shared/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
-import { Button } from "@/shared/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
-import { MoreVertical, Shield, Key, Trash2 } from "lucide-react";
-import { paths } from "@/shared/types/api/auth";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
+import { GetUsersResponse } from "../hooks/useGetUsers";
+import { getInitials } from "../utils/getInitials";
 import { useRouter } from "next/navigation";
 
-type UserResponse =
-  paths["/api/v1/users/admin/users"]["get"]["responses"]["200"]["content"]["application/json"]["items"][number];
-
-interface UsersTableProps {
-  users: UserResponse[];
-}
-
-export function UsersTable({ users }: UsersTableProps) {
+export function UsersTable({ users }: { users: GetUsersResponse["items"] }) {
   const router = useRouter();
-  const handleClick = (userId: number) => {
-    router.push(`/dashboard/users/${userId}`);
-  };
   return (
     <Table className="table-fixed">
       <TableHeader>
@@ -52,9 +35,6 @@ export function UsersTable({ users }: UsersTableProps) {
           <TableHead className="w-[10%] min-w-[100px] text-center">
             수정일
           </TableHead>
-          <TableHead className="w-[10%] min-w-[80px] text-right">
-            작업
-          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -62,7 +42,7 @@ export function UsersTable({ users }: UsersTableProps) {
           <TableRow
             key={`user-${user.id}`}
             className="group cursor-pointer hover:bg-slate-50"
-            onClick={() => handleClick(user.id)}
+            onClick={() => router.push(`/dashboard/users/${user.id}`)}
           >
             <TableCell className="overflow-hidden">
               <div className="flex items-center gap-3 min-w-0">
@@ -74,16 +54,12 @@ export function UsersTable({ users }: UsersTableProps) {
                     />
                   )}
                   <AvatarFallback className="font-semibold">
-                    {(
-                      user.full_name ||
-                      user.email.split("@")[0] ||
-                      "U"
-                    ).substring(0, 2)}
+                    {getInitials(user.full_name, user.email)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">
                   <div className="font-medium truncate">
-                    {user.full_name || user.email.split("@")[0] || "-"}
+                    {user.full_name || getInitials(user.full_name, user.email)}
                   </div>
                   <div className="text-sm text-slate-500 truncate">
                     {user.email}
@@ -121,32 +97,6 @@ export function UsersTable({ users }: UsersTableProps) {
                   new Date(user.updated_at).toLocaleDateString("ko-KR")}
                 {!user.updated_at && "-"}
               </div>
-            </TableCell>
-            <TableCell
-              className="text-right"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <Shield className="h-4 w-4 mr-2" />
-                    권한 변경
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Key className="h-4 w-4 mr-2" />
-                    비밀번호 재설정
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-red-600">
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    삭제
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </TableCell>
           </TableRow>
         ))}
