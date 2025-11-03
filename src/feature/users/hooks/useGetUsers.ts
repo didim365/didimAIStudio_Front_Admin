@@ -4,7 +4,7 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
 import getUsers from "../api/getUsers";
 
-type GetUsersResponse =
+export type GetUsersResponse =
   paths["/api/v1/users/admin/users"]["get"]["responses"]["200"]["content"]["application/json"];
 
 type GetUsersParams =

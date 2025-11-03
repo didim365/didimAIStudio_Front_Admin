@@ -6,116 +6,97 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
-import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
-import { Button } from "@/shared/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
-import { MoreVertical, Shield, Key, Trash2 } from "lucide-react";
-import { paths } from "@/shared/types/api/auth";
+import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
+import { GetUsersResponse } from "../hooks/useGetUsers";
+import { getInitials } from "../utils/getInitials";
+import { useRouter } from "next/navigation";
 
-type UserResponse =
-  paths["/api/v1/users/admin/users"]["get"]["responses"]["200"]["content"]["application/json"]["items"][number];
-
-interface UsersTableProps {
-  users: UserResponse[];
-}
-
-export function UsersTable({ users }: UsersTableProps) {
+export function UsersTable({ users }: { users: GetUsersResponse["items"] }) {
+  const router = useRouter();
   return (
-    <Table>
+    <Table className="table-fixed">
       <TableHeader>
         <TableRow>
-          <TableHead>사용자</TableHead>
-          <TableHead>그룹</TableHead>
-          <TableHead>권한</TableHead>
-          <TableHead>상태</TableHead>
-          <TableHead>챗 사용량</TableHead>
-          <TableHead>임베딩 사용량</TableHead>
-          <TableHead>최근 접속</TableHead>
-          <TableHead className="text-right">작업</TableHead>
+          <TableHead className="w-[40%] min-w-[200px]">사용자</TableHead>
+          <TableHead className="w-[10%] min-w-[80px] text-center">
+            상태
+          </TableHead>
+          <TableHead className="w-[10%] min-w-[100px] text-center">
+            전화번호
+          </TableHead>
+          <TableHead className="w-[10%] min-w-[100px] text-center">
+            최근 접속
+          </TableHead>
+          <TableHead className="w-[10%] min-w-[100px] text-center">
+            생성일
+          </TableHead>
+          <TableHead className="w-[10%] min-w-[100px] text-center">
+            수정일
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {users.map((user) => (
-          <TableRow key={user.id}>
-            <TableCell>
-              <div className="flex items-center gap-3">
-                <Avatar>
-                  <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
-                    {(
-                      user.full_name ||
-                      user.email.split("@")[0] ||
-                      "U"
-                    ).substring(0, 2)}
+          <TableRow
+            key={`user-${user.id}`}
+            className="group cursor-pointer hover:bg-slate-50"
+            onClick={() => router.push(`/dashboard/users/${user.id}`)}
+          >
+            <TableCell className="overflow-hidden">
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar className="shrink-0">
+                  {user.profile_image_url && (
+                    <AvatarImage
+                      src={user.profile_image_url}
+                      alt={user.full_name || user.email}
+                    />
+                  )}
+                  <AvatarFallback className="font-semibold">
+                    {getInitials(user.full_name, user.email)}
                   </AvatarFallback>
                 </Avatar>
-                <div>
-                  <div className="font-medium">
-                    {user.full_name || user.email.split("@")[0] || "-"}
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium truncate">
+                    {user.full_name || getInitials(user.full_name, user.email)}
                   </div>
-                  <div className="text-sm">{user.email}</div>
+                  <div className="text-sm text-slate-500 truncate">
+                    {user.email}
+                  </div>
                 </div>
               </div>
             </TableCell>
-            <TableCell>
-              <div className="text-sm">-</div>
-            </TableCell>
-            <TableCell>
-              <Badge variant="outline">-</Badge>
-            </TableCell>
-            <TableCell>
+            <TableCell className="text-center">
               <Badge variant="outline">
-                {user.status === "ACTIVE"
-                  ? "활성"
-                  : user.status === "INACTIVE"
-                  ? "비활성"
-                  : user.status}
+                {user.status === "ACTIVE" && "활성"}
+                {user.status === "INACTIVE" && "비활성"}
+                {user.status === "SUSPENDED" && "정지"}
               </Badge>
             </TableCell>
-            <TableCell>
-              <div className="flex flex-col gap-1">
-                <div className="text-sm font-medium">-</div>
-              </div>
+            <TableCell className="text-center">
+              <div className="text-sm">{formatPhoneNumber(user.phone)}</div>
             </TableCell>
-            <TableCell>
-              <div className="flex flex-col gap-1">
-                <div className="text-sm font-medium">-</div>
-              </div>
-            </TableCell>
-            <TableCell>
+            <TableCell className="text-center">
               <div className="text-sm">
-                {user.last_login
-                  ? new Date(user.last_login).toLocaleDateString("ko-KR")
-                  : "-"}
+                {user.last_login &&
+                  new Date(user.last_login).toLocaleDateString("ko-KR")}
+                {!user.last_login && "-"}
               </div>
             </TableCell>
-            <TableCell className="text-right">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <Shield className="h-4 w-4 mr-2" />
-                    권한 변경
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Key className="h-4 w-4 mr-2" />
-                    비밀번호 재설정
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-red-600">
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    삭제
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <TableCell className="text-center">
+              <div className="text-sm">
+                {user.created_at &&
+                  new Date(user.created_at).toLocaleDateString("ko-KR")}
+                {!user.created_at && "-"}
+              </div>
+            </TableCell>
+            <TableCell className="text-center">
+              <div className="text-sm">
+                {user.updated_at &&
+                  new Date(user.updated_at).toLocaleDateString("ko-KR")}
+                {!user.updated_at && "-"}
+              </div>
             </TableCell>
           </TableRow>
         ))}

@@ -54,7 +54,13 @@ export default function DocumentsPage() {
       search: searchQuery,
       groupId: selectedGroup !== "all" ? selectedGroup : undefined,
       embeddingStatus:
-        selectedStatus !== "all" ? (selectedStatus as any) : undefined,
+        selectedStatus !== "all"
+          ? (selectedStatus as
+              | "pending"
+              | "processing"
+              | "completed"
+              | "failed")
+          : undefined,
     });
   };
 
