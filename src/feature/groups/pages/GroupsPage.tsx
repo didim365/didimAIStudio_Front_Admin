@@ -28,6 +28,7 @@ import {
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { formatDate } from "@/shared/utils/formatDate";
 
 const GROUP_TYPE_LABELS: Record<string, string> = {
   COMPANY: "회사",
@@ -59,17 +60,6 @@ export function GroupsPage() {
   const handleCreateGroup = () => {
     // TODO: 그룹 생성 모달 또는 페이지로 이동
     console.log("그룹 생성");
-  };
-
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
   };
 
   return (

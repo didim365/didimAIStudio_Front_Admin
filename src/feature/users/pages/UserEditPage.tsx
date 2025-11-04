@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
-import { formatDate } from "@/feature/users/utils/formatDate";
+import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { GetUserResponse } from "../api/getUser";
