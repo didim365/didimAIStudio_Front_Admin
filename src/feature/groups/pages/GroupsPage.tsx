@@ -139,11 +139,11 @@ export function GroupsPage() {
                 </TableRow>
               )}
               {data?.items.map((group) => (
-                <TableRow key={group.id} className="text-center">
+                <TableRow key={group.id}>
                   <TableCell className="font-medium text-center">
                     {group.id}
                   </TableCell>
-                  <TableCell className="font-medium text-center">
+                  <TableCell className="font-medium">
                     {group.group_name}
                   </TableCell>
                   <TableCell className="text-center">
