@@ -18,10 +18,6 @@ async function Page({ params }: { params: Promise<{ userId: string }> }) {
     }
   );
 
-  if (response.status === 401) {
-    redirect("/");
-  }
-
   const user = response.data;
   return <UserEditPage user={user} />;
 }
