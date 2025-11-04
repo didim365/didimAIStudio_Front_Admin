@@ -97,6 +97,11 @@ export default function GroupAddPage() {
       return;
     }
 
+    if (!formData.role_id) {
+      toast.error("역할을 선택해주세요.");
+      return;
+    }
+
     createGroup({
       group_name: formData.group_name,
       group_type: formData.group_type,
@@ -104,7 +109,7 @@ export default function GroupAddPage() {
       parent: formData.parent ? String(formData.parent) : null,
       manager: formData.manager || null,
       creator: myInfo.id,
-      role_id: formData.role_id || null,
+      role_id: formData.role_id,
     });
   };
 
@@ -402,23 +407,23 @@ export default function GroupAddPage() {
                 <div className="space-y-2">
                   <Label htmlFor="role_id" className="flex items-center gap-2">
                     <Shield className="h-4 w-4" />
-                    <span>역할</span>
+                    <span>역할 *</span>
                   </Label>
                   {isLoadingRoles && <Skeleton className="h-10 w-full" />}
                   <Select
-                    value={formData.role_id?.toString() || "none"}
+                    value={formData.role_id?.toString() || ""}
                     onValueChange={(value) =>
                       setFormData({
                         ...formData,
-                        role_id: value === "none" ? undefined : Number(value),
+                        role_id: Number(value),
                       })
                     }
+                    required
                   >
                     <SelectTrigger id="role_id" className="pl-6 w-full">
-                      <SelectValue placeholder="역할 선택 (선택사항)" />
+                      <SelectValue placeholder="역할 선택" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">역할 없음</SelectItem>
                       {roles?.map((role) => (
                         <SelectItem key={role.id} value={role.id.toString()}>
                           <div className="flex flex-col items-start">
@@ -431,7 +436,7 @@ export default function GroupAddPage() {
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
-                    그룹에 할당할 역할을 선택하세요 (선택사항)
+                    그룹에 할당할 역할을 선택하세요
                   </p>
                 </div>
 
