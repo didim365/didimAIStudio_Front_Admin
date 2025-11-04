@@ -17,6 +17,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { formatDate } from "@/shared/utils/formatDate";
 import { Pagination } from "@/shared/ui/pagination";
+import Link from "next/link";
 
 const GROUP_TYPE_LABELS: Record<string, string> = {
   COMPANY: "회사",
@@ -44,11 +45,6 @@ export function GroupsPage() {
     size: 20,
   });
 
-  const handleCreateGroup = () => {
-    // TODO: 그룹 생성 모달 또는 페이지로 이동
-    console.log("그룹 생성");
-  };
-
   return (
     <div>
       {/* 헤더 */}
@@ -60,12 +56,12 @@ export function GroupsPage() {
       {/* 검색 및 필터 */}
       <Card className="mb-6">
         <CardContent>
-          <div className="flex gap-2">
-            <Button onClick={handleCreateGroup} className="gap-2">
+          <Link href="/groups/add">
+            <Button className="gap-2 cursor-pointer">
               <Plus className="h-4 w-4" />
               그룹 생성
             </Button>
-          </div>
+          </Link>
         </CardContent>
       </Card>
 
