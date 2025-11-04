@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import { GroupsPage } from "@/feature/groups/pages/GroupsPage";
 
 export default function Page() {
-  return <GroupsPage />;
+  return (
+    <Suspense fallback={<div>로딩 중...</div>}>
+      <GroupsPage />
+    </Suspense>
+  );
 }

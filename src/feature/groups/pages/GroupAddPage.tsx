@@ -88,8 +88,6 @@ export default function GroupAddPage() {
     });
   };
 
-  const selectedRole = roles?.find((r) => r.id === formData.role_id);
-
   // 로딩 중일 때
   if (isLoadingMyInfo) {
     return (

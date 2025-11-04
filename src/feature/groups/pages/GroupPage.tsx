@@ -77,10 +77,7 @@ function GroupPage({ groupId }: GroupPageProps) {
   const { data: roles } = useGetRoles();
 
   const handleDelete = () => {
-    // TODO: 그룹 삭제 API 호출
-    console.log("그룹 삭제:", groupId);
     setShowDeleteDialog(false);
-    // TODO: 삭제 후 그룹 목록 페이지로 이동하거나 리프레시
   };
 
   if (isLoading) {
