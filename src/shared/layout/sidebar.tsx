@@ -12,6 +12,7 @@ import {
   Brain,
   ChevronRight,
   File,
+  Group,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
@@ -27,6 +28,11 @@ const navigation = [
     name: "회원 관리",
     href: "/users",
     icon: Users,
+  },
+  {
+    name: "그룹 관리",
+    href: "/groups",
+    icon: Group,
   },
   {
     name: "권한 관리",
