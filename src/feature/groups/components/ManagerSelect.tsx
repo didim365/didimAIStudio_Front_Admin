@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Label } from "@/shared/ui/label";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
-import { UserCog, Check, Search } from "lucide-react";
+import { Check, Search } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Pagination } from "@/shared/ui/pagination";
 import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
@@ -35,11 +34,6 @@ export default function ManagerSelect({ value, onChange }: ManagerSelectProps) {
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="manager" className="flex items-center gap-2">
-        <UserCog className="h-4 w-4" />
-        <span>관리자</span>
-      </Label>
-
       {/* 검색 입력 */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />

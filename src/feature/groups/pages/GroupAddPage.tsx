@@ -214,46 +214,6 @@ export default function GroupAddPage() {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 계층 구조 Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FolderTree className="h-5 w-5" />
-                계층 구조
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* 상위 그룹 */}
-              <ParentGroupSelect
-                value={formData.parent_group_id}
-                onChange={(value) =>
-                  setFormData({ ...formData, parent_group_id: value })
-                }
-              />
-            </CardContent>
-          </Card>
-
-          {/* 관리 정보 Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                관리 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* 관리자 */}
-                <ManagerSelect
-                  value={formData.manager}
-                  onChange={(value) =>
-                    setFormData({ ...formData, manager: value })
-                  }
-                />
 
                 {/* 생성자 (자동) */}
                 <div className="space-y-2">
@@ -299,6 +259,9 @@ export default function GroupAddPage() {
                             <span className="font-medium">
                               {role.role_name}
                             </span>
+                            <span className="text-xs text-muted-foreground">
+                              {role.description}
+                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -308,25 +271,46 @@ export default function GroupAddPage() {
                     그룹에 할당할 역할을 선택하세요
                   </p>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                {/* 역할 정보 표시 */}
-                {selectedRole && (
-                  <div className="p-4 bg-muted rounded-lg border border-border">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-primary" />
-                        <span className="font-semibold">
-                          {selectedRole.role_name}
-                        </span>
-                      </div>
-                      {selectedRole.description && (
-                        <p className="text-sm text-muted-foreground">
-                          {selectedRole.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
+          {/* 계층 Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FolderTree className="h-5 w-5" />
+                상위 그룹
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {/* 상위 그룹 */}
+              <ParentGroupSelect
+                value={formData.parent_group_id}
+                onChange={(value) =>
+                  setFormData({ ...formData, parent_group_id: value })
+                }
+              />
+            </CardContent>
+          </Card>
+
+          {/* 관리 정보 Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                관리자
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* 관리자 */}
+                <ManagerSelect
+                  value={formData.manager}
+                  onChange={(value) =>
+                    setFormData({ ...formData, manager: value })
+                  }
+                />
               </div>
             </CardContent>
           </Card>

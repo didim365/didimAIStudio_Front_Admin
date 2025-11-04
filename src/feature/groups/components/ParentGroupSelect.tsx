@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Label } from "@/shared/ui/label";
 import { Button } from "@/shared/ui/button";
-import { FolderTree, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Pagination } from "@/shared/ui/pagination";
 import { useGetGroups } from "../hooks/useGetGroups";
@@ -30,11 +29,6 @@ export default function ParentGroupSelect({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="parent_group_id" className="flex items-center gap-2">
-        <FolderTree className="h-4 w-4" />
-        <span>상위 그룹</span>
-      </Label>
-
       {isLoadingGroups && (
         <div className="space-y-2">
           <Skeleton className="h-16 w-full" />
