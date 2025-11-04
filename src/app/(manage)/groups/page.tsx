@@ -1,5 +1,5 @@
-function GroupsPage() {
-  return <div>page</div>;
-}
+import { GroupsPage } from "@/feature/groups/pages/GroupsPage";
 
-export default GroupsPage;
+export default function Page() {
+  return <GroupsPage />;
+}
