@@ -2,17 +2,12 @@
 
 import { useState } from "react";
 import { Label } from "@/shared/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/ui/select";
-import { FolderTree } from "lucide-react";
+import { Button } from "@/shared/ui/button";
+import { FolderTree, Check } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Pagination } from "@/shared/ui/pagination";
 import { useGetGroups } from "../hooks/useGetGroups";
+import { cn } from "@/shared/lib/utils";
 
 interface ParentGroupSelectProps {
   value?: number;
@@ -39,36 +34,66 @@ export default function ParentGroupSelect({
         <FolderTree className="h-4 w-4" />
         <span>상위 그룹</span>
       </Label>
-      {isLoadingGroups && <Skeleton className="h-10 w-full" />}
-      <Select
-        value={value?.toString() || "none"}
-        onValueChange={(selectedValue) =>
-          onChange(selectedValue === "none" ? undefined : Number(selectedValue))
-        }
-      >
-        <SelectTrigger id="parent_group_id" className="pl-6 w-full">
-          <SelectValue placeholder="상위 그룹 선택 (선택사항)" />
-        </SelectTrigger>
-        <SelectContent className="max-h-[300px]">
-          <SelectItem value="none">상위 그룹 없음</SelectItem>
-          {groups?.items?.map((group) => (
-            <SelectItem key={group.id} value={group.id.toString()}>
+
+      {isLoadingGroups && (
+        <div className="space-y-2">
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+        </div>
+      )}
+      {!isLoadingGroups && (
+        <div className="space-y-2">
+          {/* 상위 그룹 없음 옵션 */}
+          <Button
+            type="button"
+            variant="outline"
+            className={cn(
+              "w-full justify-start h-auto py-3 px-4",
+              !value && "border-primary bg-primary/5"
+            )}
+            onClick={() => onChange(undefined)}
+          >
+            <div className="flex items-center justify-between w-full">
               <div className="flex flex-col items-start">
-                <span className="font-medium">{group.group_name}</span>
+                <span className="font-medium">상위 그룹 없음</span>
                 <span className="text-xs text-muted-foreground">
-                  ID: {group.id}
+                  최상위 그룹으로 생성됩니다
                 </span>
               </div>
-            </SelectItem>
-          ))}
-          {!groups?.items ||
-            (groups.items.length === 0 && (
-              <SelectItem value="no-results" disabled>
-                그룹이 없습니다
-              </SelectItem>
-            ))}
-        </SelectContent>
-      </Select>
+              {!value && <Check className="h-5 w-5 text-primary" />}
+            </div>
+          </Button>
+
+          {/* 그룹 리스트 */}
+          {groups?.items.map((group) => {
+            const isSelected = value === group.id;
+            return (
+              <Button
+                key={group.id}
+                type="button"
+                variant="outline"
+                className={cn(
+                  "w-full justify-start h-auto py-3 px-4",
+                  isSelected && "border-primary bg-primary/5"
+                )}
+                onClick={() => onChange(group.id)}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">{group.group_name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      ID: {group.id}
+                    </span>
+                  </div>
+                  {isSelected && <Check className="h-5 w-5 text-primary" />}
+                </div>
+              </Button>
+            );
+          })}
+        </div>
+      )}
+
       {/* 페이지네이션 */}
       {groups && groups.total_pages > 1 && (
         <div className="flex justify-center pt-2">
@@ -82,6 +107,7 @@ export default function ParentGroupSelect({
           />
         </div>
       )}
+
       <p className="text-xs text-muted-foreground">
         이 그룹의 상위 그룹을 선택하세요
         {groups?.total && ` (전체 ${groups.total}개)`}
