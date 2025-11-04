@@ -105,7 +105,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/users">
+          <Link href="/users">
             <Button
               variant="ghost"
               size="icon"
@@ -122,7 +122,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/dashboard/users/${userId}/edit`}>
+          <Link href={`/users/${userId}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정

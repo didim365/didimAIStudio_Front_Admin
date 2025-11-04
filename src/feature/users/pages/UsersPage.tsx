@@ -44,7 +44,7 @@ export default function UsersPage() {
               />
             </div>
             <div className="flex gap-2">
-              <Link href="/dashboard/users/add">
+              <Link href="/users/add">
                 <Button className="gap-2 cursor-pointer">
                   <UserPlus className="h-4 w-4" />
                   회원 추가

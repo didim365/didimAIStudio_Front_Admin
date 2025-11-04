@@ -42,7 +42,7 @@ export function UsersTable({ users }: { users: GetUsersResponse["items"] }) {
           <TableRow
             key={`user-${user.id}`}
             className="group cursor-pointer hover:bg-slate-50"
-            onClick={() => router.push(`/dashboard/users/${user.id}`)}
+            onClick={() => router.push(`/users/${user.id}`)}
           >
             <TableCell className="overflow-hidden">
               <div className="flex items-center gap-3 min-w-0">
