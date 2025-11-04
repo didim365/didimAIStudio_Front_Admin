@@ -203,7 +203,7 @@ function GroupPage({ groupId }: GroupPageProps) {
             <div className="flex flex-col md:flex-row gap-6">
               {/* Icon */}
               <div className="flex flex-col items-center gap-4">
-                <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl from-primary/20 to-primary/5 flex items-center justify-center">
                   <GroupTypeIcon className="h-16 w-16 text-primary" />
                 </div>
                 <Badge className={`${groupTypeColor} border`}>
@@ -240,16 +240,15 @@ function GroupPage({ groupId }: GroupPageProps) {
                     <span className="font-medium">상위 그룹</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {parentGroup ? (
+                    {parentGroup && (
                       <Link
                         href={`/groups/${parentGroup.id}`}
                         className="text-primary hover:underline cursor-pointer"
                       >
                         {parentGroup.group_name}
                       </Link>
-                    ) : (
-                      "없음"
                     )}
+                    {!parentGroup && "없음"}
                   </p>
                 </div>
 
@@ -271,16 +270,15 @@ function GroupPage({ groupId }: GroupPageProps) {
                     <span className="font-medium">매니저</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {manager ? (
+                    {manager && (
                       <Link
                         href={`/users/${manager.id}`}
                         className="text-primary hover:underline cursor-pointer"
                       >
                         {manager.full_name || manager.email}
                       </Link>
-                    ) : (
-                      "미지정"
                     )}
+                    {!manager && "미지정"}
                   </p>
                 </div>
 
@@ -291,16 +289,15 @@ function GroupPage({ groupId }: GroupPageProps) {
                     <span className="font-medium">생성자</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {creator ? (
+                    {creator && (
                       <Link
                         href={`/users/${creator.id}`}
                         className="text-primary hover:underline cursor-pointer"
                       >
                         {creator.full_name || creator.email}
                       </Link>
-                    ) : (
-                      `#${group.creator}`
                     )}
+                    {!creator && `#${group.creator}`}
                   </p>
                 </div>
 
@@ -311,7 +308,8 @@ function GroupPage({ groupId }: GroupPageProps) {
                     <span className="font-medium">역할 ID</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {group.role_id ? `#${group.role_id}` : "미지정"}
+                    {group.role_id && `#${group.role_id}`}
+                    {!group.role_id && "미지정"}
                   </p>
                 </div>
               </div>
@@ -351,7 +349,8 @@ function GroupPage({ groupId }: GroupPageProps) {
               </div>
               <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
                 <p className="text-sm font-mono">
-                  {group.updated_at ? formatDate(group.updated_at) : "없음"}
+                  {group.updated_at && formatDate(group.updated_at)}
+                  {!group.updated_at && "없음"}
                 </p>
               </div>
             </div>
@@ -367,36 +366,32 @@ function GroupPage({ groupId }: GroupPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {group.members && group.members.length > 0 ? (
-              <div className="space-y-3">
-                {group.members.map((member) => (
-                  <Link
-                    key={member.user_id}
-                    href={`/users/${member.user_id}`}
-                    className="cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="text-sm">
-                          {getInitials(
-                            member.full_name,
-                            `user${member.user_id}`
-                          )}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm truncate">
-                          {member.full_name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          ID: #{member.user_id}
-                        </p>
-                      </div>
+            <div className="space-y-3">
+              {group?.members?.map((member) => (
+                <Link
+                  key={member.user_id}
+                  href={`/users/${member.user_id}`}
+                  className="cursor-pointer"
+                >
+                  <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback className="text-sm">
+                        {getInitials(member.full_name, `user${member.user_id}`)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm truncate">
+                        {member.full_name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        ID: #{member.user_id}
+                      </p>
                     </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
+                  </div>
+                </Link>
+              ))}
+            </div>
+            {!group?.members?.length && (
               <div className="text-center py-8">
                 <UsersIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" />
                 <p className="text-sm text-muted-foreground">
