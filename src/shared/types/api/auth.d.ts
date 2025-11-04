@@ -188,6 +188,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/admin/passport/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 사용자 Passport 조회 (관리자용)
+         * @description 관리자가 특정 사용자의 실시간 Passport(권한 정보)를 조회합니다.
+         */
+        get: operations["get_user_passport_admin_api_v1_users_admin_passport__user_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/admin/test-permission/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 사용자 권한 테스트 (관리자용)
+         * @description 관리자가 특정 사용자가 특정 리소스에 대한 권한을 가지고 있는지 테스트합니다.
+         */
+        post: operations["test_user_permission_api_v1_users_admin_test_permission__user_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/groups": {
         parameters: {
             query?: never;
@@ -226,7 +266,11 @@ export interface paths {
         get: operations["get_group_api_v1_groups__group_id__get"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * 그룹 삭제
+         * @description 그룹을 삭제합니다. 하위 그룹이나 멤버가 있으면 삭제할 수 없습니다.
+         */
+        delete: operations["delete_group_endpoint_api_v1_groups__group_id__delete"];
         options?: never;
         head?: never;
         /**
@@ -1275,6 +1319,22 @@ export interface components {
             pagination: components["schemas"]["PageInfo"];
         };
         /**
+         * ApplicableRoleSchema
+         * @description 적용 가능한 역할 스키마
+         */
+        ApplicableRoleSchema: {
+            /**
+             * Role Id
+             * @description 역할 ID
+             */
+            role_id: number;
+            /**
+             * Role Name
+             * @description 역할 이름
+             */
+            role_name: string;
+        };
+        /**
          * AvailableUserResponse
          * @description 그룹 추가 가능 사용자 응답 모델
          */
@@ -1355,6 +1415,22 @@ export interface components {
              */
             file: string;
         };
+        /**
+         * GlobalRoleSchema
+         * @description 글로벌 역할 스키마
+         */
+        GlobalRoleSchema: {
+            /**
+             * Id
+             * @description 역할 ID
+             */
+            id: number;
+            /**
+             * Name
+             * @description 역할 이름
+             */
+            name: string;
+        };
         /** GroupCreate */
         GroupCreate: {
             /** Group Name */
@@ -1410,6 +1486,31 @@ export interface components {
              */
             joined_at: string;
         };
+        /**
+         * GroupPassportSchema
+         * @description 그룹 Passport 스키마
+         */
+        GroupPassportSchema: {
+            /**
+             * Group List
+             * @description 소속 그룹 ID 리스트
+             */
+            group_list?: string[];
+            /**
+             * Group Roles
+             * @description 그룹별 역할 ID 리스트
+             */
+            group_roles?: {
+                [key: string]: number[];
+            };
+            /**
+             * In Group Role
+             * @description 그룹 내 사용자 역할 ID 리스트
+             */
+            in_group_role?: {
+                [key: string]: number[];
+            };
+        };
         /** GroupResponse */
         GroupResponse: {
             /** Id */
@@ -1432,6 +1533,17 @@ export interface components {
             created_at: string;
             /** Updated At */
             updated_at: string | null;
+            /**
+             * Members
+             * @description 그룹 회원 목록 (include_members=true 시 포함)
+             */
+            members?: components["schemas"]["GroupMemberResponse"][];
+            /**
+             * Member Count
+             * @description 총 회원 수
+             * @default 0
+             */
+            member_count: number;
         };
         /** GroupRoleResponse */
         GroupRoleResponse: {
@@ -1622,12 +1734,204 @@ export interface components {
              */
             items: components["schemas"]["GroupWithMembersResponse"][];
         };
+        /**
+         * PaginatedResponse
+         * @description 페이징된 응답
+         */
+        PaginatedResponse: {
+            /**
+             * Total
+             * @description 전체 항목 수
+             */
+            total: number;
+            /**
+             * Page
+             * @description 현재 페이지 번호
+             */
+            page: number;
+            /**
+             * Size
+             * @description 페이지당 항목 수
+             */
+            size: number;
+            /**
+             * Total Pages
+             * @description 전체 페이지 수
+             */
+            total_pages: number;
+            /**
+             * Items
+             * @description 그룹 목록
+             */
+            items: components["schemas"]["GroupResponse"][];
+        };
+        /**
+         * PassportResponse
+         * @description Passport 조회 Response
+         * @example {
+         *       "global_role": {
+         *         "id": 1,
+         *         "name": "ADMIN"
+         *       },
+         *       "group_passport": {
+         *         "group_list": [
+         *           "10",
+         *           "20"
+         *         ],
+         *         "group_roles": {
+         *           "10": [
+         *             2,
+         *             3
+         *           ],
+         *           "20": [
+         *             4
+         *           ]
+         *         },
+         *         "in_group_role": {
+         *           "10": [
+         *             2
+         *           ],
+         *           "20": [
+         *             3
+         *           ]
+         *         }
+         *       },
+         *       "role_permission": {
+         *         "1": {
+         *           "name": "ADMIN",
+         *           "permissions": {
+         *             "DELETE": [
+         *               "AGENT"
+         *             ],
+         *             "READ": [
+         *               "AGENT",
+         *               "MODEL",
+         *               "SCENARIO"
+         *             ],
+         *             "WRITE": [
+         *               "AGENT",
+         *               "MODEL"
+         *             ]
+         *           }
+         *         }
+         *       },
+         *       "total_role": [
+         *         1,
+         *         2,
+         *         3,
+         *         4
+         *       ],
+         *       "user_id": "123"
+         *     }
+         */
+        PassportResponse: {
+            /**
+             * User Id
+             * @description 사용자 ID
+             */
+            user_id: string;
+            /** @description 글로벌 역할 */
+            global_role: components["schemas"]["GlobalRoleSchema"];
+            /** @description 그룹 Passport */
+            group_passport: components["schemas"]["GroupPassportSchema"];
+            /**
+             * Total Role
+             * @description 모든 역할 ID 리스트 (중복 제거)
+             */
+            total_role?: number[];
+            /**
+             * Role Permission
+             * @description 역할별 권한 맵 (role_id -> RolePermissionSchema)
+             */
+            role_permission?: {
+                [key: string]: components["schemas"]["RolePermissionSchema"];
+            };
+        };
         /** PasswordUpdateRequest */
         PasswordUpdateRequest: {
             /** Old Password */
             old_password: string;
             /** New Password */
             new_password: string;
+        };
+        /**
+         * PermissionTestRequest
+         * @description 권한 테스트 Request
+         * @example {
+         *       "action_type": "WRITE",
+         *       "resource_type": "AGENT"
+         *     }
+         */
+        PermissionTestRequest: {
+            /**
+             * Resource Type
+             * @description 리소스 타입 (예: AGENT, MODEL, SCENARIO)
+             */
+            resource_type: string;
+            /**
+             * Action Type
+             * @description 액션 타입 (예: READ, WRITE, EXECUTE, DELETE)
+             */
+            action_type: string;
+        };
+        /**
+         * PermissionTestResponse
+         * @description 권한 테스트 Response
+         * @example {
+         *       "action_type": "WRITE",
+         *       "applicable_roles": [
+         *         {
+         *           "role_id": 1,
+         *           "role_name": "ADMIN"
+         *         },
+         *         {
+         *           "role_id": 2,
+         *           "role_name": "DEVELOPER"
+         *         }
+         *       ],
+         *       "has_permission": true,
+         *       "missing_privileges": [],
+         *       "reason": "User has permission via roles: ['ADMIN', 'DEVELOPER']",
+         *       "resource_type": "AGENT",
+         *       "user_id": 123
+         *     }
+         */
+        PermissionTestResponse: {
+            /**
+             * User Id
+             * @description 사용자 ID
+             */
+            user_id: number;
+            /**
+             * Resource Type
+             * @description 테스트한 리소스 타입
+             */
+            resource_type: string;
+            /**
+             * Action Type
+             * @description 테스트한 액션 타입
+             */
+            action_type: string;
+            /**
+             * Has Permission
+             * @description 권한 보유 여부
+             */
+            has_permission: boolean;
+            /**
+             * Reason
+             * @description 권한 판정 이유
+             */
+            reason: string;
+            /**
+             * Applicable Roles
+             * @description 권한을 부여하는 역할 리스트
+             */
+            applicable_roles?: components["schemas"]["ApplicableRoleSchema"][];
+            /**
+             * Missing Privileges
+             * @description 부족한 권한 리스트 (has_permission=False일 때)
+             */
+            missing_privileges?: string[];
         };
         /** PrivilegeCreate */
         PrivilegeCreate: {
@@ -1657,6 +1961,24 @@ export interface components {
             role_name: string;
             /** Description */
             description?: string | null;
+        };
+        /**
+         * RolePermissionSchema
+         * @description 역할 권한 스키마
+         */
+        RolePermissionSchema: {
+            /**
+             * Name
+             * @description 역할 이름
+             */
+            name: string;
+            /**
+             * Permissions
+             * @description 권한 맵 (action_type -> resource_types)
+             */
+            permissions?: {
+                [key: string]: string[];
+            };
         };
         /** RolePrivilegeResponse */
         RolePrivilegeResponse: {
@@ -2979,6 +3301,114 @@ export interface operations {
             };
         };
     };
+    get_user_passport_admin_api_v1_users_admin_passport__user_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PassportResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description User not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    test_user_permission_api_v1_users_admin_test_permission__user_id__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PermissionTestRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionTestResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description User not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_groups_api_v1_groups_get: {
         parameters: {
             query?: {
@@ -3001,7 +3431,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["PaginatedResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3142,6 +3572,56 @@ export interface operations {
             };
         };
     };
+    delete_group_endpoint_api_v1_groups__group_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Group not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     update_group_info_api_v1_groups__group_id__patch: {
         parameters: {
             query?: never;
@@ -3222,7 +3702,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["PaginatedResponse"];
                 };
             };
             /** @description Unauthorized */

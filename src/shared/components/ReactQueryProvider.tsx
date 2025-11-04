@@ -61,7 +61,12 @@ export function ReactQueryProvider({
             if (mutation.meta?.skipSuccessToast) {
               return;
             }
-            toast.success("작업이 성공적으로 완료되었습니다.");
+            console.log({ mutation });
+            const successMessage =
+              typeof mutation.meta?.successMessage === "string"
+                ? mutation.meta.successMessage
+                : "작업이 성공적으로 완료되었습니다.";
+            toast.success(successMessage);
           },
         }),
         defaultOptions: {

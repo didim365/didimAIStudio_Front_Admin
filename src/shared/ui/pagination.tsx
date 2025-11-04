@@ -49,33 +49,6 @@ export interface PaginationProps {
   className?: string;
 }
 
-/**
- * Pagination 컴포넌트
- *
- * shadcn-ui 스타일의 페이징 컴포넌트로, 다양한 API 응답 구조를 지원합니다.
- *
- * @example
- * ```tsx
- * <Pagination
- *   currentPage={data.page}
- *   totalPages={data.total_pages}
- *   onPageChange={(page) => setPage(page)}
- *   isLoading={isLoading}
- * />
- * ```
- *
- * @example 다양한 API 구조 지원
- * ```tsx
- * <Pagination
- *   currentPage={data.page}
- *   totalPages={data.pages || data.total_pages}
- *   onPageChange={(page) => setPage(page)}
- *   hasPrevious={data.has_prev || data.has_previous}
- *   hasNext={data.has_next}
- *   isLoading={isLoading}
- * />
- * ```
- */
 export function Pagination({
   currentPage,
   totalPages,

@@ -16,10 +16,10 @@ export default function UsersPage() {
   });
   const [page, setPage] = useQueryParam<number>("page", 1);
 
-  // API에서 사용자 데이터 가져오기
   const { data: usersData, isLoading } = useGetUsers({
     search: searchQuery || undefined,
     page,
+    size: 20,
   });
 
   return (
@@ -27,7 +27,7 @@ export default function UsersPage() {
       {/* 헤더 */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold">회원 관리</h1>
-        <p className="mt-2">회원 정보 조회 및 권한, 사용량 제한 설정</p>
+        <p className="mt-2">회원 정보 조회 및 권한 설정</p>
       </div>
 
       {/* 검색 및 필터 */}
@@ -44,7 +44,7 @@ export default function UsersPage() {
               />
             </div>
             <div className="flex gap-2">
-              <Link href="/dashboard/users/add">
+              <Link href="/users/add">
                 <Button className="gap-2 cursor-pointer">
                   <UserPlus className="h-4 w-4" />
                   회원 추가
