@@ -22,15 +22,19 @@ import {
   getGroupTypeLabel,
   GROUP_TYPE_BADGE_VARIANTS,
 } from "../constants/groupType";
+import { useRouter } from "next/navigation";
 
 export function GroupsPage() {
   const [page, setPage] = useQueryParam<number>("page", 1);
-
+  const router = useRouter();
   const { data, isLoading, error } = useGetGroups({
     page,
     include_members: true,
     size: 20,
   });
+  const handleGroupClick = (groupId: number) => {
+    router.push(`/groups/${groupId}`);
+  };
 
   return (
     <div>
@@ -123,7 +127,11 @@ export function GroupsPage() {
                 </TableRow>
               )}
               {data?.items.map((group) => (
-                <TableRow key={group.id}>
+                <TableRow
+                  key={group.id}
+                  onClick={() => handleGroupClick(group.id)}
+                  className="cursor-pointer"
+                >
                   <TableCell className="font-medium text-center">
                     {group.id}
                   </TableCell>
