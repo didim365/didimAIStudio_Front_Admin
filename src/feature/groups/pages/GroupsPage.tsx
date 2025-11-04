@@ -76,60 +76,60 @@ export function GroupsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table className="w-full">
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[80px]">ID</TableHead>
-                <TableHead>그룹명</TableHead>
-                <TableHead className="w-[120px]">그룹 타입</TableHead>
-                <TableHead className="w-[100px]">상위 그룹</TableHead>
-                <TableHead className="w-[100px]">관리자</TableHead>
-                <TableHead className="w-[100px]">생성자</TableHead>
-                <TableHead className="w-[100px]">역할</TableHead>
-                <TableHead className="w-[100px]">회원 수</TableHead>
-                <TableHead className="w-[180px]">생성일</TableHead>
-                <TableHead className="w-[180px]">수정일</TableHead>
+              <TableRow className="text-center">
+                <TableHead className="w-[5%] text-center">ID</TableHead>
+                <TableHead className="w-[45%] text-center">그룹명</TableHead>
+                <TableHead className="w-[5%] text-center">그룹 타입</TableHead>
+                <TableHead className="w-[5%] text-center">상위 그룹</TableHead>
+                <TableHead className="w-[5%] text-center">관리자</TableHead>
+                <TableHead className="w-[5%] text-center">생성자</TableHead>
+                <TableHead className="w-[5%] text-center">역할</TableHead>
+                <TableHead className="w-[5%] text-center">회원 수</TableHead>
+                <TableHead className="w-[10%] text-center">생성일</TableHead>
+                <TableHead className="w-[10%] text-center">수정일</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading &&
                 // 로딩 스켈레톤
                 Array.from({ length: 5 }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton className="h-4 w-12" />
+                  <TableRow key={index} className="text-center">
+                    <TableCell className="text-center">
+                      <Skeleton className="h-4 w-12 mx-auto" />
                     </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-32" />
+                    <TableCell className="text-center">
+                      <Skeleton className="h-4 w-32 mx-auto" />
                     </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-6 w-16" />
+                    <TableCell className="text-center">
+                      <Skeleton className="h-6 w-16 mx-auto" />
                     </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-12" />
+                    <TableCell className="text-center">
+                      <Skeleton className="h-4 w-12 mx-auto" />
                     </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-12" />
+                    <TableCell className="text-center">
+                      <Skeleton className="h-4 w-12 mx-auto" />
                     </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-12" />
+                    <TableCell className="text-center">
+                      <Skeleton className="h-4 w-12 mx-auto" />
                     </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-12" />
+                    <TableCell className="text-center">
+                      <Skeleton className="h-4 w-12 mx-auto" />
                     </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-16" />
+                    <TableCell className="text-center">
+                      <Skeleton className="h-4 w-16 mx-auto" />
                     </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-32" />
+                    <TableCell className="text-center">
+                      <Skeleton className="h-4 w-32 mx-auto" />
                     </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-32" />
+                    <TableCell className="text-center">
+                      <Skeleton className="h-4 w-32 mx-auto" />
                     </TableCell>
                   </TableRow>
                 ))}
               {error && (
-                <TableRow>
+                <TableRow className="text-center">
                   <TableCell
                     colSpan={10}
                     className="h-32 text-center text-muted-foreground"
@@ -139,13 +139,18 @@ export function GroupsPage() {
                 </TableRow>
               )}
               {data?.items.map((group) => (
-                <TableRow key={group.id}>
-                  <TableCell className="font-medium">{group.id}</TableCell>
-                  <TableCell className="font-medium">
+                <TableRow key={group.id} className="text-center">
+                  <TableCell className="font-medium text-center">
+                    {group.id}
+                  </TableCell>
+                  <TableCell className="font-medium text-center">
                     {group.group_name}
                   </TableCell>
-                  <TableCell>
-                    <Badge variant={GROUP_TYPE_COLORS[group.group_type]}>
+                  <TableCell className="text-center">
+                    <Badge
+                      variant={GROUP_TYPE_COLORS[group.group_type]}
+                      className="mx-auto"
+                    >
                       {GROUP_TYPE_LABELS[group.group_type] || group.group_type}
                     </Badge>
                   </TableCell>
@@ -160,12 +165,14 @@ export function GroupsPage() {
                     {group.role_id ?? "-"}
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge variant="outline">{group.member_count}</Badge>
+                    <Badge variant="outline" className="mx-auto">
+                      {group.member_count}
+                    </Badge>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="text-sm text-muted-foreground text-center">
                     {formatDate(group.created_at)}
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="text-sm text-muted-foreground text-center">
                     {formatDate(group.updated_at)}
                   </TableCell>
                 </TableRow>
