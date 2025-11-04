@@ -12,13 +12,6 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/ui/select";
 import { Plus } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
@@ -99,7 +92,7 @@ export function GroupsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
+              {isLoading &&
                 // 로딩 스켈레톤
                 Array.from({ length: 5 }).map((_, index) => (
                   <TableRow key={index}>
@@ -134,8 +127,8 @@ export function GroupsPage() {
                       <Skeleton className="h-4 w-32" />
                     </TableCell>
                   </TableRow>
-                ))
-              ) : error ? (
+                ))}
+              {error && (
                 <TableRow>
                   <TableCell
                     colSpan={10}
@@ -144,52 +137,39 @@ export function GroupsPage() {
                     데이터를 불러오는 중 오류가 발생했습니다.
                   </TableCell>
                 </TableRow>
-              ) : data?.items.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={10}
-                    className="h-32 text-center text-muted-foreground"
-                  >
-                    등록된 그룹이 없습니다.
+              )}
+              {data?.items.map((group) => (
+                <TableRow key={group.id}>
+                  <TableCell className="font-medium">{group.id}</TableCell>
+                  <TableCell className="font-medium">
+                    {group.group_name}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={GROUP_TYPE_COLORS[group.group_type]}>
+                      {GROUP_TYPE_LABELS[group.group_type] || group.group_type}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {group.parent_group_id ?? "-"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {group.manager ?? "-"}
+                  </TableCell>
+                  <TableCell className="text-center">{group.creator}</TableCell>
+                  <TableCell className="text-center">
+                    {group.role_id ?? "-"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant="outline">{group.member_count}</Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {formatDate(group.created_at)}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {formatDate(group.updated_at)}
                   </TableCell>
                 </TableRow>
-              ) : (
-                data?.items.map((group) => (
-                  <TableRow key={group.id}>
-                    <TableCell className="font-medium">{group.id}</TableCell>
-                    <TableCell className="font-medium">
-                      {group.group_name}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={GROUP_TYPE_COLORS[group.group_type]}>
-                        {GROUP_TYPE_LABELS[group.group_type] ||
-                          group.group_type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {group.parent_group_id ?? "-"}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {group.manager ?? "-"}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {group.creator}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {group.role_id ?? "-"}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant="outline">{group.member_count}</Badge>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {formatDate(group.created_at)}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {formatDate(group.updated_at)}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
+              ))}
             </TableBody>
           </Table>
         </CardContent>
