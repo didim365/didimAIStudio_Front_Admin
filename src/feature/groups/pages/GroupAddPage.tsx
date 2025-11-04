@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostGroups } from "../hooks/usePostGroups";
-import { useGetGroups } from "../hooks/useGetGroups";
 import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
+import { ParentGroupSelect } from "../components";
 import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { useGetMyInfo } from "@/shared/hooks/useGetMyInfo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -56,12 +56,6 @@ export default function GroupAddPage() {
     parent: undefined as number | undefined,
     manager: undefined as number | undefined,
     role_id: undefined as number | undefined,
-  });
-
-  // 그룹 목록 조회 (상위 그룹 선택용)
-  const { data: groups, isLoading: isLoadingGroups } = useGetGroups({
-    page: 1,
-    size: 100,
   });
 
   // 사용자 목록 조회 (관리자, parent 선택용)
@@ -249,48 +243,12 @@ export default function GroupAddPage() {
             <CardContent>
               <div className="space-y-4">
                 {/* 상위 그룹 */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="parent_group_id"
-                    className="flex items-center gap-2"
-                  >
-                    <FolderTree className="h-4 w-4" />
-                    <span>상위 그룹</span>
-                  </Label>
-                  {isLoadingGroups && <Skeleton className="h-10 w-full" />}
-                  <Select
-                    value={formData.parent_group_id?.toString() || "none"}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        parent_group_id:
-                          value === "none" ? undefined : Number(value),
-                      })
-                    }
-                  >
-                    <SelectTrigger id="parent_group_id" className="pl-6 w-full">
-                      <SelectValue placeholder="상위 그룹 선택 (선택사항)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">상위 그룹 없음</SelectItem>
-                      {groups?.items?.map((group) => (
-                        <SelectItem key={group.id} value={group.id.toString()}>
-                          <div className="flex flex-col items-start">
-                            <span className="font-medium">
-                              {group.group_name}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              ID: {group.id}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    이 그룹의 상위 그룹을 선택하세요
-                  </p>
-                </div>
+                <ParentGroupSelect
+                  value={formData.parent_group_id}
+                  onChange={(value) =>
+                    setFormData({ ...formData, parent_group_id: value })
+                  }
+                />
 
                 {/* Parent (사용자) */}
                 <div className="space-y-2">
