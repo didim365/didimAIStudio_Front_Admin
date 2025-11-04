@@ -16,7 +16,6 @@ export default function UsersPage() {
   });
   const [page, setPage] = useQueryParam<number>("page", 1);
 
-  // API에서 사용자 데이터 가져오기
   const { data: usersData, isLoading } = useGetUsers({
     search: searchQuery || undefined,
     page,
