@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { GetUsersResponse } from "../hooks/useGetUsers";
@@ -19,7 +18,10 @@ export function UsersTable({ users }: { users: GetUsersResponse["items"] }) {
     <Table className="table-fixed">
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[40%] min-w-[200px]">사용자</TableHead>
+          <TableHead className="w-[5%] min-w-[50px] text-center">ID</TableHead>
+          <TableHead className="w-[40%] min-w-[200px] text-center">
+            사용자
+          </TableHead>
           <TableHead className="w-[10%] min-w-[80px] text-center">
             상태
           </TableHead>
@@ -42,27 +44,17 @@ export function UsersTable({ users }: { users: GetUsersResponse["items"] }) {
           <TableRow
             key={`user-${user.id}`}
             className="group cursor-pointer hover:bg-slate-50"
-            onClick={() => router.push(`/dashboard/users/${user.id}`)}
+            onClick={() => router.push(`/users/${user.id}`)}
           >
+            <TableCell className="text-center">{user.id}</TableCell>
             <TableCell className="overflow-hidden">
               <div className="flex items-center gap-3 min-w-0">
-                <Avatar className="shrink-0">
-                  {user.profile_image_url && (
-                    <AvatarImage
-                      src={user.profile_image_url}
-                      alt={user.full_name || user.email}
-                    />
-                  )}
-                  <AvatarFallback className="font-semibold">
-                    {getInitials(user.full_name, user.email)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 flex gap-2">
                   <div className="font-medium truncate">
                     {user.full_name || getInitials(user.full_name, user.email)}
                   </div>
                   <div className="text-sm text-slate-500 truncate">
-                    {user.email}
+                    ({user.email})
                   </div>
                 </div>
               </div>

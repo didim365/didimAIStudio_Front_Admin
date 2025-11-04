@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
-import { formatDate } from "@/feature/users/utils/formatDate";
+import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { GetUserResponse } from "../api/getUser";
@@ -54,7 +54,7 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
         queryKey: ["users"],
       });
 
-      router.push(`/dashboard/users/${user.id}`);
+      router.push(`/users/${user.id}`);
     },
   });
 
@@ -110,7 +110,7 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => router.push("/dashboard/users")}
+              onClick={() => router.push("/users")}
               className="shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />

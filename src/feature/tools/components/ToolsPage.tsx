@@ -23,7 +23,10 @@ export default function ToolsPage() {
   const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
     debounce: 300,
   });
-  const [statusFilter, setStatusFilter] = useQueryParam<string>("status", "all");
+  const [statusFilter, setStatusFilter] = useQueryParam<string>(
+    "status",
+    "all"
+  );
   const [page, setPage] = useQueryParam<number>("page", 1);
   const pageSize = 20;
 
@@ -63,7 +66,7 @@ export default function ToolsPage() {
   };
 
   const handleViewDetails = (toolId: number) => {
-    router.push(`/dashboard/service/tools/${toolId}`);
+    router.push(`/service/tools/${toolId}`);
   };
 
   const handlePrevPage = () => {

@@ -5,8 +5,8 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const accessToken = request.cookies.get("access_token");
 
-  // /dashboard 경로에 포함되어 있고 accessToken이 없으면 redirect
-  if (pathname.includes("/dashboard") && !accessToken) {
+  // 시작 지점 `/`가 아닌 페이지에 접근하는데 토큰이 없으면 redirect
+  if (pathname !== "/" && !accessToken) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -14,6 +14,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/((?!^/$).*)"],
 };
-

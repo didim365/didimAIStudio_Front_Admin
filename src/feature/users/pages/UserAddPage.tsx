@@ -59,7 +59,7 @@ export function UserAddPage() {
         queryKey: ["users"],
       });
       // 생성된 사용자 상세 페이지로 이동
-      router.push(`/dashboard/users/${data.id}`);
+      router.push(`/users/${data.id}`);
     },
   });
 
@@ -118,7 +118,7 @@ export function UserAddPage() {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => router.push("/dashboard/users")}
+              onClick={() => router.push("/users")}
               className="shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />

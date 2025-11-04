@@ -14,6 +14,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   const { mutate: login, isPending } = usePostLogin({
+    meta: {
+      successMessage: "로그인에 성공하였습니다.",
+    },
     onSuccess: () => {
       router.push("/dashboard");
     },
