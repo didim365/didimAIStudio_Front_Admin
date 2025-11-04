@@ -12,10 +12,10 @@ type GetGroupParams =
  * 그룹 조회 API
  * @param groupId - 그룹 ID
  */
-const getGroup = async (groupId: GetGroupParams): Promise<GetGroupResponse> => {
+const getGroup = async (params: GetGroupParams): Promise<GetGroupResponse> => {
   try {
     const response = await axiosInstance.auth.get<GetGroupResponse>(
-      `/v1/groups/${groupId}`
+      `/v1/groups/${params.group_id}`
     );
     return response.data;
   } catch (error) {
