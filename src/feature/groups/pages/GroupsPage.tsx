@@ -2,6 +2,7 @@
 
 import { useGetGroups } from "../hooks/useGetGroups";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
+import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { Button } from "@/shared/ui/button";
 import {
   Table,
@@ -32,6 +33,7 @@ export function GroupsPage() {
     include_members: true,
     size: 20,
   });
+  const { data: roles } = useGetRoles();
   const handleGroupClick = (groupId: number) => {
     router.push(`/groups/${groupId}`);
   };
@@ -154,7 +156,13 @@ export function GroupsPage() {
                   </TableCell>
                   <TableCell className="text-center">{group.creator}</TableCell>
                   <TableCell className="text-center">
-                    {group.role_id ?? "-"}
+                    {group.role_id && (
+                      <>
+                        {roles?.find((role) => role.id === group.role_id)
+                          ?.role_name || `#${group.role_id}`}
+                      </>
+                    )}
+                    {!group.role_id && "-"}
                   </TableCell>
                   <TableCell className="text-center">
                     <Badge variant="outline" className="mx-auto">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useGetGroup } from "../hooks/useGetGroup";
 import { useGetUser } from "@/feature/users/hooks/useGetUser";
+import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
@@ -71,6 +72,9 @@ function GroupPage({ groupId }: GroupPageProps) {
     { group_id: group?.parent_group_id ?? 0 },
     { enabled: !!group?.parent_group_id }
   );
+
+  // 역할 정보 조회
+  const { data: roles } = useGetRoles();
 
   const handleDelete = () => {
     // TODO: 그룹 삭제 API 호출
@@ -305,10 +309,15 @@ function GroupPage({ groupId }: GroupPageProps) {
                 <div className="space-y-2 md:col-span-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Shield className="h-4 w-4" />
-                    <span className="font-medium">역할 ID</span>
+                    <span className="font-medium">권한</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {group.role_id && `#${group.role_id}`}
+                    {group.role_id && (
+                      <>
+                        {roles?.find((role) => role.id === group.role_id)
+                          ?.role_name || `#${group.role_id}`}
+                      </>
+                    )}
                     {!group.role_id && "미지정"}
                   </p>
                 </div>
