@@ -6,7 +6,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostGroups } from "../hooks/usePostGroups";
 import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
-import { ParentGroupSelect } from "../components";
 import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { useGetMyInfo } from "@/shared/hooks/useGetMyInfo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -32,6 +31,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { Skeleton } from "@/shared/ui/skeleton";
+import ParentGroupSelect from "../components/ParentGroupSelect";
 
 type GroupType = "COMPANY" | "DEPARTMENT" | "TEAM" | "PERSONAL";
 

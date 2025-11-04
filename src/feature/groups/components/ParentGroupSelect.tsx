@@ -20,7 +20,10 @@ interface ParentGroupSelectProps {
   onChange: (value: number | undefined) => void;
 }
 
-export function ParentGroupSelect({ value, onChange }: ParentGroupSelectProps) {
+export default function ParentGroupSelect({
+  value,
+  onChange,
+}: ParentGroupSelectProps) {
   // 페이지네이션 및 검색 상태
   const [groupPage, setGroupPage] = useState(1);
   const [groupSearchQuery, setGroupSearchQuery] = useState("");
