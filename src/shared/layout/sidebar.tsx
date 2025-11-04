@@ -3,68 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  LayoutDashboard,
-  Users,
-  Shield,
-  FileText,
-  LogOut,
-  Brain,
-  ChevronRight,
-  File,
-  Group,
-} from "lucide-react";
+import { LogOut, ChevronRight } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { tokenStorage } from "@/shared/utils/tokenStorage";
-
-const navigation = [
-  {
-    name: "대시보드",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "회원 관리",
-    href: "/users",
-    icon: Users,
-  },
-  {
-    name: "그룹 관리",
-    href: "/groups",
-    icon: Group,
-  },
-  {
-    name: "권한 관리",
-    href: "/permissions",
-    icon: Shield,
-  },
-  {
-    name: "감사 로그",
-    href: "/audit-logs",
-    icon: FileText,
-  },
-  {
-    name: "AI 서비스 관리",
-    href: "/service",
-    icon: Brain,
-    children: [
-      {
-        name: "모델 관리",
-        href: "/service/models",
-      },
-      {
-        name: "도구 관리",
-        href: "/service/tools",
-      },
-      {
-        name: "페르소나 관리",
-        href: "/service/personas",
-      },
-    ],
-  },
-  { name: "문서 관리", href: "/documents", icon: File },
-];
+import MENU from "../constants/menu";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -107,12 +50,9 @@ export function Sidebar() {
         </Button>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {navigation.map((item) => {
-          // 대시보드는 정확히 일치할 때만 활성화, 다른 메뉴는 자식 경로 포함
+        {MENU.map((item) => {
           const isActive =
-            item.href === "/dashboard"
-              ? pathname === item.href
-              : pathname === item.href || pathname.startsWith(item.href + "/");
+            pathname === item.href || pathname.startsWith(item.href + "/");
           const hasChildren = item.children && item.children.length > 0;
           const isExpanded = expandedMenus.includes(item.name);
           const isChildActive =
