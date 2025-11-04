@@ -19,6 +19,7 @@ export default function UsersPage() {
   const { data: usersData, isLoading } = useGetUsers({
     search: searchQuery || undefined,
     page,
+    size: 20,
   });
 
   return (

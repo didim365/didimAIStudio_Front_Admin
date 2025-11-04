@@ -41,6 +41,7 @@ export function GroupsPage() {
   const { data, isLoading, error } = useGetGroups({
     page,
     include_members: true,
+    size: 20,
   });
 
   const handleCreateGroup = () => {
