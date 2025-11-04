@@ -25,39 +25,39 @@ const navigation = [
   },
   {
     name: "회원 관리",
-    href: "/dashboard/users",
+    href: "/users",
     icon: Users,
   },
   {
     name: "권한 관리",
-    href: "/dashboard/permissions",
+    href: "/permissions",
     icon: Shield,
   },
   {
     name: "감사 로그",
-    href: "/dashboard/audit-logs",
+    href: "/audit-logs",
     icon: FileText,
   },
   {
     name: "AI 서비스 관리",
-    href: "/dashboard/service",
+    href: "/service",
     icon: Brain,
     children: [
       {
         name: "모델 관리",
-        href: "/dashboard/service/models",
+        href: "/service/models",
       },
       {
         name: "도구 관리",
-        href: "/dashboard/service/tools",
+        href: "/service/tools",
       },
       {
         name: "페르소나 관리",
-        href: "/dashboard/service/personas",
+        href: "/service/personas",
       },
     ],
   },
-  { name: "문서 관리", href: "/dashboard/documents", icon: File },
+  { name: "문서 관리", href: "/documents", icon: File },
 ];
 
 export function Sidebar() {
