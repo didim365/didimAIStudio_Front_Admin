@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostGroups } from "../hooks/usePostGroups";
-import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
 import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { useGetMyInfo } from "@/shared/hooks/useGetMyInfo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -32,6 +31,7 @@ import {
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { Skeleton } from "@/shared/ui/skeleton";
 import ParentGroupSelect from "../components/ParentGroupSelect";
+import ManagerSelect from "../components/ManagerSelect";
 
 type GroupType = "COMPANY" | "DEPARTMENT" | "TEAM" | "PERSONAL";
 
@@ -55,12 +55,6 @@ export default function GroupAddPage() {
     parent_group_id: undefined as number | undefined,
     manager: undefined as number | undefined,
     role_id: undefined as number | undefined,
-  });
-
-  // 사용자 목록 조회 (관리자, parent 선택용)
-  const { data: users, isLoading: isLoadingUsers } = useGetUsers({
-    page: 1,
-    size: 100,
   });
 
   // 역할 목록 조회
@@ -254,45 +248,12 @@ export default function GroupAddPage() {
             <CardContent>
               <div className="space-y-4">
                 {/* 관리자 */}
-                <div className="space-y-2">
-                  <Label htmlFor="manager" className="flex items-center gap-2">
-                    <UserCog className="h-4 w-4" />
-                    <span>관리자</span>
-                  </Label>
-                  {isLoadingUsers && <Skeleton className="h-10 w-full" />}
-                  <Select
-                    value={formData.manager?.toString() || "none"}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        manager: value === "none" ? undefined : Number(value),
-                      })
-                    }
-                  >
-                    <SelectTrigger id="manager" className="pl-6 w-full">
-                      <SelectValue placeholder="관리자 선택 (선택사항)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">관리자 없음</SelectItem>
-                      {users?.items?.map((user) => (
-                        <SelectItem key={user.id} value={user.id.toString()}>
-                          <div className="flex flex-col items-start">
-                            <span className="font-medium">
-                              {user.full_name || user.email}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {user.email}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <p className="text-xs text-muted-foreground">
-                    그룹을 관리할 관리자를 선택하세요
-                  </p>
-                </div>
+                <ManagerSelect
+                  value={formData.manager}
+                  onChange={(value) =>
+                    setFormData({ ...formData, manager: value })
+                  }
+                />
 
                 {/* 생성자 (자동) */}
                 <div className="space-y-2">

@@ -99,11 +99,9 @@ export default function ParentGroupSelect({
         <div className="flex justify-center pt-2">
           <Pagination
             currentPage={groupPage}
-            totalPages={groups.total_pages || 1}
+            totalPages={groups.total_pages ?? 1}
             onPageChange={setGroupPage}
             isLoading={isLoadingGroups}
-            maxVisiblePages={5}
-            showFirstLast={false}
           />
         </div>
       )}
