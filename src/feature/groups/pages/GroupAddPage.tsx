@@ -33,14 +33,9 @@ import { Skeleton } from "@/shared/ui/skeleton";
 import ParentGroupSelect from "../components/ParentGroupSelect";
 import ManagerSelect from "../components/ManagerSelect";
 
-type GroupType = "COMPANY" | "DEPARTMENT" | "TEAM" | "PERSONAL";
+import { GROUP_TYPE_OPTIONS } from "../constants/groupType";
 
-const GROUP_TYPE_OPTIONS = [
-  { value: "COMPANY" as const, label: "회사", icon: Building2 },
-  { value: "DEPARTMENT" as const, label: "부서", icon: Network },
-  { value: "TEAM" as const, label: "팀", icon: Users },
-  { value: "PERSONAL" as const, label: "개인", icon: UserCog },
-];
+type GroupType = "COMPANY" | "DEPARTMENT" | "TEAM" | "PERSONAL";
 
 export default function GroupAddPage() {
   const router = useRouter();

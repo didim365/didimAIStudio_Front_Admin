@@ -18,23 +18,10 @@ import { Skeleton } from "@/shared/ui/skeleton";
 import { formatDate } from "@/shared/utils/formatDate";
 import { Pagination } from "@/shared/ui/pagination";
 import Link from "next/link";
-
-const GROUP_TYPE_LABELS: Record<string, string> = {
-  COMPANY: "회사",
-  DEPARTMENT: "부서",
-  TEAM: "팀",
-  PERSONAL: "개인",
-};
-
-const GROUP_TYPE_COLORS: Record<
-  string,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  COMPANY: "default",
-  DEPARTMENT: "secondary",
-  TEAM: "outline",
-  PERSONAL: "destructive",
-};
+import {
+  getGroupTypeLabel,
+  GROUP_TYPE_BADGE_VARIANTS,
+} from "../constants/groupType";
 
 export function GroupsPage() {
   const [page, setPage] = useQueryParam<number>("page", 1);
@@ -145,10 +132,10 @@ export function GroupsPage() {
                   </TableCell>
                   <TableCell className="text-center">
                     <Badge
-                      variant={GROUP_TYPE_COLORS[group.group_type]}
+                      variant={GROUP_TYPE_BADGE_VARIANTS[group.group_type]}
                       className="mx-auto"
                     >
-                      {GROUP_TYPE_LABELS[group.group_type] || group.group_type}
+                      {getGroupTypeLabel(group.group_type)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
