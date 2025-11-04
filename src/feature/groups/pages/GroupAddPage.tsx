@@ -53,7 +53,6 @@ export default function GroupAddPage() {
     group_name: "",
     group_type: "COMPANY" as GroupType,
     parent_group_id: undefined as number | undefined,
-    parent: undefined as number | undefined,
     manager: undefined as number | undefined,
     role_id: undefined as number | undefined,
   });
@@ -70,16 +69,10 @@ export default function GroupAddPage() {
   // 그룹 생성 mutation
   const { mutate: createGroup, isPending: isCreating } = usePostGroups({
     onSuccess: (data) => {
-      toast.success("그룹이 성공적으로 생성되었습니다.");
       queryClient.invalidateQueries({
         queryKey: ["groups"],
       });
-      // 그룹 목록 페이지로 이동
-      router.push("/groups");
-    },
-    onError: (error) => {
-      toast.error("그룹 생성에 실패했습니다.");
-      console.error("그룹 생성 오류:", error);
+      router.push(`/groups/${data.id}`);
     },
   });
 
@@ -100,7 +93,6 @@ export default function GroupAddPage() {
       group_name: formData.group_name,
       group_type: formData.group_type,
       parent_group_id: formData.parent_group_id || null,
-      parent: formData.parent ? String(formData.parent) : null,
       manager: formData.manager || null,
       creator: myInfo.id,
       role_id: formData.role_id,
@@ -241,55 +233,13 @@ export default function GroupAddPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {/* 상위 그룹 */}
-                <ParentGroupSelect
-                  value={formData.parent_group_id}
-                  onChange={(value) =>
-                    setFormData({ ...formData, parent_group_id: value })
-                  }
-                />
-
-                {/* Parent (사용자) */}
-                <div className="space-y-2">
-                  <Label htmlFor="parent" className="flex items-center gap-2">
-                    <UserCog className="h-4 w-4" />
-                    <span>상위 사용자</span>
-                  </Label>
-                  {isLoadingUsers && <Skeleton className="h-10 w-full" />}
-                  <Select
-                    value={formData.parent?.toString() || "none"}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        parent: value === "none" ? undefined : Number(value),
-                      })
-                    }
-                  >
-                    <SelectTrigger id="parent" className="pl-6 w-full">
-                      <SelectValue placeholder="상위 사용자 선택 (선택사항)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">상위 사용자 없음</SelectItem>
-                      {users?.items?.map((user) => (
-                        <SelectItem key={user.id} value={user.id.toString()}>
-                          <div className="flex flex-col items-start">
-                            <span className="font-medium">
-                              {user.full_name || user.email}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {user.email}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    상위 사용자를 선택하세요 (선택사항)
-                  </p>
-                </div>
-              </div>
+              {/* 상위 그룹 */}
+              <ParentGroupSelect
+                value={formData.parent_group_id}
+                onChange={(value) =>
+                  setFormData({ ...formData, parent_group_id: value })
+                }
+              />
             </CardContent>
           </Card>
 
