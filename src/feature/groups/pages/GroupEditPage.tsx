@@ -3,9 +3,10 @@
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePatchGroup } from "../hooks/usePatchGroup";
-import { useGetGroups } from "../hooks/useGetGroups";
-import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
+import { useGetGroupMembers } from "../hooks/useGetGroupMembers";
 import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
+import ParentGroupSelect from "../components/ParentGroupSelect";
+import ManagerSelect from "../components/ManagerSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import {
@@ -13,7 +14,6 @@ import {
   ArrowLeft,
   Save,
   FolderTree,
-  UserCircle,
   Shield,
   Hash,
 } from "lucide-react";
@@ -52,16 +52,10 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
     role_id: group.role_id || null,
   });
 
-  // 그룹 목록 조회 (상위 그룹 선택용)
-  const { data: groupsData } = useGetGroups(
-    {},
-    {
-      select: (data) => data.items.filter((g) => g.id !== group.id),
-    }
-  );
-
-  // 사용자 목록 조회 (매니저 선택용)
-  const { data: usersData } = useGetUsers();
+  // 그룹 멤버 조회
+  const { data: groupMembersData } = useGetGroupMembers({
+    group_id: group.id,
+  });
 
   // 역할 목록 조회
   const { data: roles } = useGetRoles();
@@ -236,71 +230,6 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
                     </Select>
                   </div>
 
-                  {/* Parent Group */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="parent_group_id"
-                      className="flex items-center gap-2"
-                    >
-                      <FolderTree className="h-4 w-4" />
-                      <span>상위 그룹</span>
-                    </Label>
-                    <Select
-                      value={formData.parent_group_id?.toString() || "none"}
-                      onValueChange={(value) =>
-                        setFormData({
-                          ...formData,
-                          parent_group_id:
-                            value === "none" ? null : Number(value),
-                        })
-                      }
-                    >
-                      <SelectTrigger id="parent_group_id" className="w-full">
-                        <SelectValue placeholder="상위 그룹 선택" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">없음</SelectItem>
-                        {groupsData?.map((g) => (
-                          <SelectItem key={g.id} value={g.id.toString()}>
-                            {g.group_name} (#{g.id})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Manager */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="manager"
-                      className="flex items-center gap-2"
-                    >
-                      <UserCircle className="h-4 w-4" />
-                      <span>매니저</span>
-                    </Label>
-                    <Select
-                      value={formData.manager?.toString() || "none"}
-                      onValueChange={(value) =>
-                        setFormData({
-                          ...formData,
-                          manager: value === "none" ? null : Number(value),
-                        })
-                      }
-                    >
-                      <SelectTrigger id="manager" className="w-full">
-                        <SelectValue placeholder="매니저 선택" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">미지정</SelectItem>
-                        {usersData?.items?.map((user) => (
-                          <SelectItem key={user.id} value={user.id.toString()}>
-                            {user.full_name || user.email} (#{user.id})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
                   {/* Role */}
                   <div className="space-y-2">
                     <Label
@@ -334,6 +263,48 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* 상위 그룹 Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FolderTree className="h-5 w-5" />
+                상위 그룹
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ParentGroupSelect
+                value={formData.parent_group_id ?? undefined}
+                onChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    parent_group_id: value ?? null,
+                  })
+                }
+              />
+            </CardContent>
+          </Card>
+
+          {/* 관리 정보 Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                관리자
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ManagerSelect
+                value={formData.manager ?? undefined}
+                onChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    manager: value ?? null,
+                  })
+                }
+              />
             </CardContent>
           </Card>
         </div>
