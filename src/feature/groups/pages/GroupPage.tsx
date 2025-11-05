@@ -73,12 +73,6 @@ function GroupPage({ groupId }: GroupPageProps) {
     { enabled: !!group?.creator }
   );
 
-  // 상위 그룹 정보 조회
-  const { data: parentGroup } = useGetGroup(
-    { group_id: group?.parent_group_id ?? 0 },
-    { enabled: !!group?.parent_group_id }
-  );
-
   // 역할 정보 조회
   const { data: roles } = useGetRoles();
 
@@ -267,15 +261,15 @@ function GroupPage({ groupId }: GroupPageProps) {
                     <span className="font-medium">상위 그룹</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {parentGroup && (
+                    {group && (
                       <Link
-                        href={`/groups/${parentGroup.id}`}
+                        href={`/groups/${group.parent_group_id}`}
                         className="text-primary hover:underline cursor-pointer"
                       >
-                        {parentGroup.group_name}
+                        {group.parent_group_id}
                       </Link>
                     )}
-                    {!parentGroup && "없음"}
+                    {!group.parent_group_id && "없음"}
                   </p>
                 </div>
 
