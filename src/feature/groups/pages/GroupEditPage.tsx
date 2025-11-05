@@ -53,9 +53,11 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
   });
 
   // 그룹 목록 조회 (상위 그룹 선택용)
-  const { data: groupsData } = useGetGroups();
-  const availableParentGroups = groupsData?.items?.filter(
-    (g) => g.id !== group.id
+  const { data: groupsData } = useGetGroups(
+    {},
+    {
+      select: (data) => data.items.filter((g) => g.id !== group.id),
+    }
   );
 
   // 사용자 목록 조회 (매니저 선택용)
@@ -258,7 +260,7 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">없음</SelectItem>
-                        {availableParentGroups?.map((g) => (
+                        {groupsData?.map((g) => (
                           <SelectItem key={g.id} value={g.id.toString()}>
                             {g.group_name} (#{g.id})
                           </SelectItem>
