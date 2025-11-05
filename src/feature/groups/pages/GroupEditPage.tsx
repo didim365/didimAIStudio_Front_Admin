@@ -58,7 +58,7 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
 
   // 그룹 목록 조회 (상위 그룹 선택용)
   const { data: groupsData } = useGetGroups();
-  const availableParentGroups = groupsData?.groups?.filter(
+  const availableParentGroups = groupsData?.items?.filter(
     (g) => g.id !== group.id
   );
 
@@ -86,7 +86,7 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
       data: {
         group_name: formData.group_name || null,
         group_type: formData.group_type || null,
-        parent_group_id: formData.parent_group_id || null,
+        parent_group: formData.parent_group_id || null,
         manager: formData.manager || null,
         role_id: formData.role_id || null,
       },
@@ -168,7 +168,10 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
                 <div className="flex-1 grid gap-4 md:grid-cols-2">
                   {/* Group ID (Read-only) */}
                   <div className="space-y-2">
-                    <Label htmlFor="group_id" className="flex items-center gap-2">
+                    <Label
+                      htmlFor="group_id"
+                      className="flex items-center gap-2"
+                    >
                       <Hash className="h-4 w-4" />
                       <span>그룹 ID</span>
                     </Label>
@@ -291,7 +294,7 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">미지정</SelectItem>
-                        {usersData?.users?.map((user) => (
+                        {usersData?.items?.map((user) => (
                           <SelectItem key={user.id} value={user.id.toString()}>
                             {user.full_name || user.email} (#{user.id})
                           </SelectItem>
@@ -302,7 +305,10 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
 
                   {/* Role */}
                   <div className="space-y-2">
-                    <Label htmlFor="role_id" className="flex items-center gap-2">
+                    <Label
+                      htmlFor="role_id"
+                      className="flex items-center gap-2"
+                    >
                       <Shield className="h-4 w-4" />
                       <span>권한</span>
                     </Label>
@@ -412,4 +418,3 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
     </form>
   );
 }
-
