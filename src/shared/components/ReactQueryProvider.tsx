@@ -61,7 +61,6 @@ export function ReactQueryProvider({
             if (mutation.meta?.skipSuccessToast) {
               return;
             }
-            console.log({ mutation });
             const successMessage =
               typeof mutation.meta?.successMessage === "string"
                 ? mutation.meta.successMessage
