@@ -2,7 +2,7 @@ import { paths } from "@/shared/types/api/auth";
 import axiosInstance from "@/shared/utils/axiosInstance";
 
 // API 타입 추출
-type GetGroupResponse =
+export type GetGroupResponse =
   paths["/api/v1/groups/{group_id}"]["get"]["responses"]["200"]["content"]["application/json"];
 
 type GetGroupParams =
