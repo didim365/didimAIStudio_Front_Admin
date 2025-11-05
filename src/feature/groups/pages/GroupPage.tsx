@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useGetGroup } from "../hooks/useGetGroup";
 import { useGetUser } from "@/feature/users/hooks/useGetUser";
 import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
+import { useDeleteGroup } from "../hooks/useDeleteGroup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
@@ -48,6 +51,8 @@ interface GroupPageProps {
 }
 
 function GroupPage({ groupId }: GroupPageProps) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const {
     data: group,
@@ -76,8 +81,19 @@ function GroupPage({ groupId }: GroupPageProps) {
   // 역할 정보 조회
   const { data: roles } = useGetRoles();
 
+  // 그룹 삭제 mutation
+  const { mutate: deleteGroup, isPending: isDeleting } = useDeleteGroup({
+    onSuccess: () => {
+      // 그룹 목록 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: ["groups"],
+      });
+      router.push("/groups");
+    },
+  });
+
   const handleDelete = () => {
-    setShowDeleteDialog(false);
+    deleteGroup({ group_id: Number(groupId) });
   };
 
   if (isLoading) {
@@ -169,7 +185,14 @@ function GroupPage({ groupId }: GroupPageProps) {
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <AlertDialog
+        open={showDeleteDialog}
+        onOpenChange={(open) => {
+          if (!isDeleting) {
+            setShowDeleteDialog(open);
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>그룹 삭제 확인</AlertDialogTitle>
@@ -184,8 +207,10 @@ function GroupPage({ groupId }: GroupPageProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>삭제</AlertDialogAction>
+            <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? "삭제 중..." : "삭제"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
