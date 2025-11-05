@@ -8,11 +8,8 @@ import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
 import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Separator } from "@/shared/ui/separator";
 import {
   Building2,
-  Calendar,
-  Clock,
   ArrowLeft,
   Save,
   FolderTree,
@@ -31,7 +28,6 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
-import { formatDate } from "@/shared/utils/formatDate";
 import {
   getGroupTypeLabel,
   GROUP_TYPE_ICONS,
@@ -334,81 +330,6 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Activity Timeline Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                활동 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Created At */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>그룹 생성일</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  <p className="text-sm font-mono">
-                    {formatDate(group.created_at)}
-                  </p>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Updated At */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>마지막 업데이트</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  <p className="text-sm font-mono">
-                    {group.updated_at && formatDate(group.updated_at)}
-                    {!group.updated_at && "없음"}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Additional Info Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5" />
-                추가 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Member Count */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <UserCircle className="h-4 w-4 text-muted-foreground" />
-                  <span>현재 멤버 수</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  <p className="text-sm font-mono">{group.member_count}명</p>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Creator */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <UserCircle className="h-4 w-4 text-muted-foreground" />
-                  <span>생성자 ID</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  <p className="text-sm font-mono">#{group.creator}</p>
                 </div>
               </div>
             </CardContent>
