@@ -16,12 +16,20 @@ import {
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Pagination } from "@/shared/ui/pagination";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
-import { UserPlus, Search, Check, Loader2 } from "lucide-react";
+import { UserPlus, Search, Check, Loader2, Shield } from "lucide-react";
 import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
+import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { usePostGroupUser } from "../hooks/usePostGroupUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/shared/lib/utils";
 import { getInitials } from "@/feature/users/utils/getInitials";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
 
 interface AddMemberDialogProps {
   groupId: number;
@@ -33,6 +41,7 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [userPage, setUserPage] = useState(1);
   const [selectedUserId, setSelectedUserId] = useState<number | undefined>();
+  const [selectedRoleId, setSelectedRoleId] = useState<number | undefined>();
 
   // 사용자 목록 조회
   const { data: users, isLoading: isLoadingUsers } = useGetUsers({
@@ -40,6 +49,9 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
     size: 10,
     search: searchQuery || undefined,
   });
+
+  // 권한 목록 조회
+  const { data: roles, isLoading: isLoadingRoles } = useGetRoles();
 
   // 그룹 멤버 추가 mutation
   const { mutate: addGroupUser, isPending: isAddingMember } = usePostGroupUser({
@@ -51,6 +63,7 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
       // 다이얼로그 닫기 및 초기화
       setOpen(false);
       setSelectedUserId(undefined);
+      setSelectedRoleId(undefined);
       setSearchQuery("");
       setUserPage(1);
     },
@@ -63,17 +76,29 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
   };
 
   const handleAddMember = () => {
-    if (!selectedUserId) return;
+    if (!selectedUserId || !selectedRoleId) return;
 
     addGroupUser({
       group_id: groupId,
       user_id: selectedUserId,
       status: "ACTIVE",
+      role_id: selectedRoleId,
     });
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) {
+      // 다이얼로그가 닫힐 때 상태 초기화
+      setSelectedUserId(undefined);
+      setSelectedRoleId(undefined);
+      setSearchQuery("");
+      setUserPage(1);
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button size="sm" className="gap-2">
           <UserPlus className="h-4 w-4" />
@@ -120,9 +145,9 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
                 </div>
               )}
 
-              {!isLoadingUsers && users?.items && users.items.length > 0 && (
+              {!isLoadingUsers && (
                 <div className="p-2 space-y-2">
-                  {users.items.map((user) => {
+                  {users?.items.map((user) => {
                     const isSelected = selectedUserId === user.id;
                     return (
                       <Button
@@ -187,6 +212,44 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
               전체 {users?.total ?? 0}명의 사용자
             </p>
           </div>
+
+          {/* 권한 선택 */}
+          <div className="space-y-2">
+            <Label htmlFor="role_id" className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              권한 선택 *
+            </Label>
+            {isLoadingRoles && <Skeleton className="h-10 w-full" />}
+            {!isLoadingRoles && (
+              <Select
+                value={selectedRoleId?.toString() || ""}
+                onValueChange={(value) => setSelectedRoleId(Number(value))}
+                disabled={isAddingMember}
+                required
+              >
+                <SelectTrigger id="role_id" className="w-full">
+                  <SelectValue placeholder="권한을 선택하세요" />
+                </SelectTrigger>
+                <SelectContent>
+                  {roles?.map((role) => (
+                    <SelectItem key={role.id} value={role.id.toString()}>
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">{role.role_name}</span>
+                        {role.description && (
+                          <span className="text-xs text-muted-foreground">
+                            {role.description}
+                          </span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            <p className="text-xs text-muted-foreground">
+              그룹 멤버에게 할당할 권한을 선택하세요
+            </p>
+          </div>
         </div>
 
         <DialogFooter>
@@ -201,7 +264,7 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
           <Button
             type="submit"
             onClick={handleAddMember}
-            disabled={!selectedUserId || isAddingMember}
+            disabled={!selectedUserId || !selectedRoleId || isAddingMember}
           >
             {isAddingMember ? (
               <>
