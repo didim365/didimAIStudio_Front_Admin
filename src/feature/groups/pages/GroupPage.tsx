@@ -45,6 +45,7 @@ import {
   GROUP_TYPE_COLORS,
 } from "../constants/groupType";
 import { getInitials } from "@/feature/users/utils/getInitials";
+import AddMemberDialog from "../components/AddMemberDialog";
 
 interface GroupPageProps {
   groupId: string;
@@ -391,10 +392,13 @@ function GroupPage({ groupId }: GroupPageProps) {
         {/* Members Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <UsersIcon className="h-5 w-5" />
-              그룹 멤버 ({group.member_count})
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <UsersIcon className="h-5 w-5" />
+                그룹 멤버 ({group.member_count})
+              </CardTitle>
+              <AddMemberDialog groupId={Number(groupId)} />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
