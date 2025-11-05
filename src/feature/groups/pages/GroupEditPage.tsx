@@ -3,7 +3,6 @@
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePatchGroup } from "../hooks/usePatchGroup";
-import { useGetGroupMembers } from "../hooks/useGetGroupMembers";
 import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import ParentGroupSelect from "../components/ParentGroupSelect";
 import ManagerSelect from "../components/ManagerSelect";
@@ -52,11 +51,6 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
     role_id: group.role_id || null,
   });
 
-  // 그룹 멤버 조회
-  const { data: groupMembersData } = useGetGroupMembers({
-    group_id: group.id,
-  });
-
   // 역할 목록 조회
   const { data: roles } = useGetRoles();
 
@@ -72,7 +66,6 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     updateGroup({
       params: { group_id: group.id },
       data: {
