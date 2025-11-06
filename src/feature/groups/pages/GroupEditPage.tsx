@@ -230,7 +230,7 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
                       className="flex items-center gap-2"
                     >
                       <Shield className="h-4 w-4" />
-                      <span>권한</span>
+                      <span>역할</span>
                     </Label>
                     <Select
                       value={formData.role_id?.toString() || "none"}
@@ -242,7 +242,7 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
                       }
                     >
                       <SelectTrigger id="role_id" className="w-full">
-                        <SelectValue placeholder="권한 선택" />
+                        <SelectValue placeholder="역할 선택" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">미지정</SelectItem>
