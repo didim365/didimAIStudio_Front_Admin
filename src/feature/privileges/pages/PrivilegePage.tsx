@@ -274,7 +274,7 @@ function PrivilegePage({ privilegeId }: PrivilegePageProps) {
                 <Shield className="h-4 w-4 text-muted-foreground" />
                 <span>권한 요약</span>
               </div>
-              <div className="ml-6 p-4 bg-muted rounded-lg border border-border">
+              <div className="ml-6 p-4 rounded-lg border border-border">
                 <p className="text-sm">
                   <span className="font-semibold">
                     {privilege.resource_type}
@@ -302,7 +302,7 @@ function PrivilegePage({ privilegeId }: PrivilegePageProps) {
                 <Database className="h-4 w-4 text-muted-foreground" />
                 <span>리소스 정보</span>
               </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+              <div className="ml-6 p-3 rounded-lg border border-border">
                 <p className="text-sm font-mono">{privilege.resource_type}</p>
               </div>
             </div>
@@ -315,7 +315,7 @@ function PrivilegePage({ privilegeId }: PrivilegePageProps) {
                 <Zap className="h-4 w-4 text-muted-foreground" />
                 <span>액션 정보</span>
               </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+              <div className="ml-6 p-3 rounded-lg border border-border">
                 <p className="text-sm font-mono">{privilege.action_type}</p>
               </div>
             </div>
