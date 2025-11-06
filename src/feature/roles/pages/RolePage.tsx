@@ -169,7 +169,7 @@ function RolePage({ roleId }: RolePageProps) {
             <div className="flex flex-col md:flex-row gap-6">
               {/* Icon */}
               <div className="flex flex-col items-center gap-4">
-                <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl from-primary/20 to-primary/5 flex items-center justify-center">
                   <Shield className="h-16 w-16 text-primary" />
                 </div>
                 <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
