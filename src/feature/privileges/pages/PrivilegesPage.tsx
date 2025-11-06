@@ -16,29 +16,10 @@ import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-// ActionType에 따른 Badge variant 매핑
-const ACTION_TYPE_VARIANTS: Record<
-  string,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  READ: "outline",
-  WRITE: "default",
-  EXECUTE: "secondary",
-  DELETE: "destructive",
-  UPDATE: "default",
-  PATCH: "secondary",
-};
-
-// ActionType 한글 레이블
-const ACTION_TYPE_LABELS: Record<string, string> = {
-  READ: "읽기",
-  WRITE: "쓰기",
-  EXECUTE: "실행",
-  DELETE: "삭제",
-  UPDATE: "수정",
-  PATCH: "부분수정",
-};
+import {
+  ACTION_TYPE_VARIANTS,
+  ACTION_TYPE_LABELS,
+} from "@/feature/privileges/constants/actionType";
 
 export default function PrivilegesPage() {
   const router = useRouter();
