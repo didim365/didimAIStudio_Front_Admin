@@ -53,18 +53,18 @@ export function Sidebar() {
         {MENU.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
-          // const hasChildren = item.children && item.children.length > 0;
+          const hasChildren = item.children && item.children.length > 0;
           const isExpanded = expandedMenus.includes(item.name);
-          // const isChildActive =
-          //   hasChildren &&
-          //   item.children?.some(
-          //     (child) =>
-          //       pathname === child.href || pathname.startsWith(child.href + "/")
-          //   );
+          const isChildActive =
+            hasChildren &&
+            item.children?.some(
+              (child) =>
+                pathname === child.href || pathname.startsWith(child.href + "/")
+            );
 
           return (
             <div key={item.name}>
-              {/* {hasChildren && (
+              {hasChildren && (
                 <button
                   onClick={() => toggleMenu(item.name)}
                   className={cn(
@@ -82,20 +82,20 @@ export function Sidebar() {
                     )}
                   />
                 </button>
-              )} */}
-              {/* {!hasChildren && ( */}
-              <Link
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors text-muted-foreground hover:bg-muted hover:text-foreground",
-                  isActive && "bg-primary text-primary-foreground"
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                {item.name}
-              </Link>
-              {/* )} */}
-              {/* {hasChildren && isExpanded && (
+              )}
+              {!hasChildren && (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors text-muted-foreground hover:bg-muted hover:text-foreground",
+                    isActive && "bg-primary text-primary-foreground"
+                  )}
+                >
+                  <item.icon className="h-5 w-5" />
+                  {item.name}
+                </Link>
+              )}
+              {hasChildren && isExpanded && (
                 <div className="ml-4 mt-1 space-y-1">
                   {item.children?.map((child) => {
                     const isChildItemActive =
@@ -119,7 +119,7 @@ export function Sidebar() {
                     );
                   })}
                 </div>
-              )} */}
+              )}
             </div>
           );
         })}
