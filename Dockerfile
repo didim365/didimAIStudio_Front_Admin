@@ -34,10 +34,6 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# 보안을 위한 non-root 유저 생성
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
-
 # Next.js standalone 파일 복사
 COPY --from=builder --chown=nextjs:nodejs /app/nextjs-build/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
