@@ -2,8 +2,9 @@ import {
   Brain,
   FileText,
   Group,
+  Key,
   LayoutDashboard,
-  Shield,
+  UserCog,
   Users,
 } from "lucide-react";
 
@@ -26,9 +27,13 @@ const MENU = [
   {
     name: "역할 관리",
     href: "/roles",
-    icon: Shield,
+    icon: UserCog,
   },
-
+  {
+    name: "권한 관리",
+    href: "/privileges",
+    icon: Key,
+  },
   {
     name: "감사 로그",
     href: "/audit-logs",
