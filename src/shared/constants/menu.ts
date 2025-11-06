@@ -18,7 +18,7 @@ const MENU = [
   },
   {
     name: "권한 관리",
-    href: "/permissions",
+    href: "/roles",
     icon: Shield,
   },
 
