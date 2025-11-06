@@ -204,11 +204,12 @@ function RolePage({ roleId }: RolePageProps) {
                     <span className="font-medium">설명</span>
                   </div>
                   <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                    {role.description ? (
+                    {role.description && (
                       <p className="text-sm whitespace-pre-wrap">
                         {role.description}
                       </p>
-                    ) : (
+                    )}
+                    {!role.description && (
                       <p className="text-sm text-muted-foreground italic">
                         설명이 없습니다
                       </p>
