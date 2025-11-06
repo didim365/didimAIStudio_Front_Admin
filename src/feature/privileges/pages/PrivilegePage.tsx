@@ -260,14 +260,14 @@ function PrivilegePage({ privilegeId }: PrivilegePageProps) {
         </Card>
 
         {/* Details Card */}
-        <Card>
+        <Card className="col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
               상세 정보
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 ">
             {/* Permission Summary */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
