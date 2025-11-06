@@ -6,4 +6,3 @@ envsubst '${API_BACKEND_URL} ${API_BACKEND_HOST}' < /etc/nginx/nginx.conf.templa
 
 # nginx 실행
 exec nginx -g 'daemon off;'
-
