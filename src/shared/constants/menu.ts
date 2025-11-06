@@ -1,12 +1,4 @@
-import {
-  Brain,
-  File,
-  FileText,
-  Group,
-  LayoutDashboard,
-  Shield,
-  Users,
-} from "lucide-react";
+import { Group, Shield, Users } from "lucide-react";
 
 const MENU = [
   // {
@@ -24,11 +16,12 @@ const MENU = [
     href: "/groups",
     icon: Group,
   },
-  // {
-  //   name: "권한 관리",
-  //   href: "/permissions",
-  //   icon: Shield,
-  // },
+  {
+    name: "권한 관리",
+    href: "/permissions",
+    icon: Shield,
+  },
+
   // {
   //   name: "감사 로그",
   //   href: "/audit-logs",
