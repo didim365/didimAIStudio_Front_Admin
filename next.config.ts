@@ -7,7 +7,6 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: false,
   output: "standalone",
-  distDir: "nextjs-build",
   sassOptions: {
     includePaths: [path.join(__dirname, "src/assets/styles")],
     prependData: "@import '@/assets/styles/main.scss';",
