@@ -1,5 +1,7 @@
+import PrivilegesPage from "@/feature/privileges/pages/PrivilegesPage";
+
 function Page() {
-  return <div>page</div>;
+  return <PrivilegesPage />;
 }
 
 export default Page;
