@@ -11,10 +11,6 @@ const nextConfig: NextConfig = {
     includePaths: [path.join(__dirname, "src/assets/styles")],
     prependData: "@import '@/assets/styles/main.scss';",
   },
-  // React Compiler 활성화 (비활성화)
-  // experimental: {
-  //   reactCompiler: true,
-  // },
   images: {
     remotePatterns: [
       {
