@@ -46,13 +46,13 @@ export default function PermissionsPage() {
           className="text-3xl font-bold"
           style={{ color: isDarkMode ? "#ffffff" : undefined }}
         >
-          권한 관리
+          역할 관리
         </h1>
         <p
           className="mt-2"
           style={{ color: isDarkMode ? "#cccccc" : undefined }}
         >
-          역할(Role), 그룹(Group), 권한(Permission) 관리
+          역할(Role), 그룹(Group), 역할(Permission) 관리
         </p>
       </div>
 
@@ -68,7 +68,7 @@ export default function PermissionsPage() {
           </TabsTrigger>
           <TabsTrigger value="permissions" className="gap-2">
             <Settings className="h-4 w-4" />
-            권한 관리
+            역할 관리
           </TabsTrigger>
           <TabsTrigger value="passport" className="gap-2">
             <Eye className="h-4 w-4" />
@@ -125,7 +125,7 @@ export default function PermissionsPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-base">권한 목록</Label>
+                  <Label className="text-base">역할 목록</Label>
                   <PermissionsList
                     permissions={permissions}
                     selectedRole={selectedRole}
@@ -186,7 +186,11 @@ export default function PermissionsPage() {
                         >
                           매니저 역할 부여
                         </span>
-                        <input type="checkbox" defaultChecked className="w-4 h-4" />
+                        <input
+                          type="checkbox"
+                          defaultChecked
+                          className="w-4 h-4"
+                        />
                       </div>
                       <div className="flex items-center justify-between">
                         <span
@@ -205,7 +209,7 @@ export default function PermissionsPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>리소스 접근 권한</CardTitle>
+                <CardTitle>리소스 접근 역할</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -237,14 +241,14 @@ export default function PermissionsPage() {
           </div>
         </TabsContent>
 
-        {/* 권한 관리 탭 */}
+        {/* 역할 관리 탭 */}
         <TabsContent value="permissions" className="space-y-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>권한 목록</CardTitle>
+              <CardTitle>역할 목록</CardTitle>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
-                권한 추가
+                역할 추가
               </Button>
             </CardHeader>
             <CardContent>
@@ -257,7 +261,9 @@ export default function PermissionsPage() {
                           <Shield className="h-4 w-4 text-blue-600" />
                           <div
                             className="font-semibold"
-                            style={{ color: isDarkMode ? "#ffffff" : undefined }}
+                            style={{
+                              color: isDarkMode ? "#ffffff" : undefined,
+                            }}
                           >
                             {permission.name}
                           </div>
@@ -293,7 +299,7 @@ export default function PermissionsPage() {
             <CardHeader>
               <CardTitle>Passport 시뮬레이션</CardTitle>
               <p className="text-sm text-slate-500">
-                특정 사용자의 Passport를 미리보기하여 권한을 확인합니다
+                특정 사용자의 Passport를 미리보기하여 역할을 확인합니다
               </p>
             </CardHeader>
             <CardContent>
@@ -371,7 +377,7 @@ export default function PermissionsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>권한 목록</Label>
+                <Label>역할 목록</Label>
                 <div className="flex flex-wrap gap-2">
                   {passportData.permissions.map((perm: string) => (
                     <Badge key={perm} variant="outline">

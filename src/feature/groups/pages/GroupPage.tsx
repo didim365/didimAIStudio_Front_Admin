@@ -332,7 +332,7 @@ function GroupPage({ groupId }: GroupPageProps) {
                 <div className="space-y-2 md:col-span-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Shield className="h-4 w-4" />
-                    <span className="font-medium">권한</span>
+                    <span className="font-medium">역할</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
                     {group.role_id && (

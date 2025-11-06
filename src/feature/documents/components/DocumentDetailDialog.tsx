@@ -84,7 +84,7 @@ export function DocumentDetailDialog({
             {document.title}
           </DialogTitle>
           <DialogDescription>
-            문서의 상세 정보 및 권한 설정을 확인할 수 있습니다.
+            문서의 상세 정보 및 역할 설정을 확인할 수 있습니다.
           </DialogDescription>
         </DialogHeader>
 
@@ -175,9 +175,9 @@ export function DocumentDetailDialog({
 
           <Separator />
 
-          {/* 권한 정보 */}
+          {/* 역할 정보 */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">접근 권한</h3>
+            <h3 className="text-lg font-semibold">접근 역할</h3>
 
             <div className="flex items-center gap-2 p-4 border rounded-lg">
               {document.permissions.isPublic ? (
@@ -205,7 +205,7 @@ export function DocumentDetailDialog({
 
             {!document.permissions.isPublic && (
               <>
-                {/* 그룹 권한 */}
+                {/* 그룹 역할 */}
                 {document.permissions.allowedGroups.length > 0 && (
                   <div className="space-y-2">
                     <div className="text-sm font-medium">허용된 그룹</div>
@@ -237,7 +237,7 @@ export function DocumentDetailDialog({
                   </div>
                 )}
 
-                {/* 사용자 권한 */}
+                {/* 사용자 역할 */}
                 {document.permissions.allowedUsers.length > 0 && (
                   <div className="space-y-2">
                     <div className="text-sm font-medium">허용된 사용자</div>

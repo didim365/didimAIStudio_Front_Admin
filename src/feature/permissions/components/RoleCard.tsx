@@ -19,9 +19,7 @@ export function RoleCard({
   return (
     <Card
       className={`cursor-pointer transition-all ${
-        isSelected
-          ? "border-blue-500 shadow-md"
-          : "hover:border-slate-300"
+        isSelected ? "border-blue-500 shadow-md" : "hover:border-slate-300"
       }`}
       onClick={onClick}
     >
@@ -54,7 +52,7 @@ export function RoleCard({
           </div>
           <div className="flex items-center justify-between text-sm">
             <span style={{ color: isDarkMode ? "#cccccc" : undefined }}>
-              권한 수
+              역할 수
             </span>
             <Badge variant="outline">{role.permissions.length}개</Badge>
           </div>

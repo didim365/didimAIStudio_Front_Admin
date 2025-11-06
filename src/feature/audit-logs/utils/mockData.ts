@@ -12,7 +12,7 @@ export const auditLogs: AuditLog[] = [
     details: {
       before: { role: "USER" },
       after: { role: "AGENTS_MANAGER" },
-      reason: "에이전트 관리 권한 부여",
+      reason: "에이전트 관리 역할 부여",
     },
     ipAddress: "192.168.1.100",
     severity: "info",
@@ -24,7 +24,7 @@ export const auditLogs: AuditLog[] = [
     user: "김지현",
     userId: 52,
     action: "PERMISSION_GRANTED",
-    actionKr: "권한 부여",
+    actionKr: "역할 부여",
     target: "R&D그룹 (group_id: 59)",
     details: {
       permission: "MANAGE_AGENTS",

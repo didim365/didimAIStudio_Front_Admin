@@ -91,7 +91,7 @@ export default function DocumentsPage() {
       <div>
         <h1 className="text-3xl font-bold">문서 관리</h1>
         <p className="text-muted-foreground mt-2">
-          문서 상태, 권한, 임베딩 정보를 관리합니다.
+          문서 상태, 역할, 임베딩 정보를 관리합니다.
         </p>
       </div>
 
@@ -130,7 +130,7 @@ export default function DocumentsPage() {
           <CardContent>
             <div className="text-2xl font-bold">{stats.restricted}</div>
             <p className="text-xs text-muted-foreground">
-              권한 설정 문서 (
+              역할 설정 문서 (
               {((stats.restricted / stats.total) * 100).toFixed(0)}%)
             </p>
           </CardContent>
@@ -267,7 +267,7 @@ export default function DocumentsPage() {
         </CardContent>
       </Card>
 
-      {/* 권한 수정 다이얼로그 */}
+      {/* 역할 수정 다이얼로그 */}
       <PermissionEditDialog
         document={editingDocument}
         open={!!editingDocument}

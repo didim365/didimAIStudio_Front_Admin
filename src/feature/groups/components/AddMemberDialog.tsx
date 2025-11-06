@@ -50,7 +50,7 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
     search: searchQuery || undefined,
   });
 
-  // 권한 목록 조회
+  // 역할 목록 조회
   const { data: roles, isLoading: isLoadingRoles } = useGetRoles();
 
   // 그룹 멤버 추가 mutation
@@ -213,11 +213,11 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
             </p>
           </div>
 
-          {/* 권한 선택 */}
+          {/* 역할 선택 */}
           <div className="space-y-2">
             <Label htmlFor="role_id" className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
-              권한 선택 *
+              역할 선택 *
             </Label>
             {isLoadingRoles && <Skeleton className="h-10 w-full" />}
             {!isLoadingRoles && (
@@ -228,7 +228,7 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
                 required
               >
                 <SelectTrigger id="role_id" className="w-full">
-                  <SelectValue placeholder="권한을 선택하세요" />
+                  <SelectValue placeholder="역할을 선택하세요" />
                 </SelectTrigger>
                 <SelectContent>
                   {roles?.map((role) => (
@@ -247,7 +247,7 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
               </Select>
             )}
             <p className="text-xs text-muted-foreground">
-              그룹 멤버에게 할당할 권한을 선택하세요
+              그룹 멤버에게 할당할 역할을 선택하세요
             </p>
           </div>
         </div>

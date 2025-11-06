@@ -11,11 +11,7 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { Calendar } from "@/shared/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
 import { Search, Download, CalendarIcon } from "lucide-react";
 import { ko } from "date-fns/locale";
 import { useAuditLogs } from "../hooks/useAuditLogs";
@@ -56,7 +52,7 @@ export default function AuditLogsPage() {
           className="mt-2"
           style={{ color: isDarkMode ? "#cccccc" : undefined }}
         >
-          시스템의 모든 권한 변경 및 중요 활동 기록
+          시스템의 모든 역할 변경 및 중요 활동 기록
         </p>
       </div>
 
@@ -84,7 +80,7 @@ export default function AuditLogsPage() {
                 <SelectContent>
                   <SelectItem value="all">전체 작업</SelectItem>
                   <SelectItem value="ROLE_UPDATED">역할 변경</SelectItem>
-                  <SelectItem value="PERMISSION_GRANTED">권한 부여</SelectItem>
+                  <SelectItem value="PERMISSION_GRANTED">역할 부여</SelectItem>
                   <SelectItem value="USER_LIMIT_UPDATED">제한 변경</SelectItem>
                   <SelectItem value="GROUP_CREATED">그룹 생성</SelectItem>
                 </SelectContent>

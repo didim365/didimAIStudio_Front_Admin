@@ -71,7 +71,7 @@ export function DocumentsTable({
             <TableHead>그룹</TableHead>
             <TableHead>임베딩 상태</TableHead>
             <TableHead>토큰 사용</TableHead>
-            <TableHead>권한</TableHead>
+            <TableHead>역할</TableHead>
             <TableHead>파일 크기</TableHead>
             <TableHead>생성일</TableHead>
             <TableHead className="text-right">작업</TableHead>
@@ -151,7 +151,7 @@ export function DocumentsTable({
                       variant="ghost"
                       size="icon"
                       onClick={() => onEdit(document)}
-                      title="권한 수정"
+                      title="역할 수정"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>

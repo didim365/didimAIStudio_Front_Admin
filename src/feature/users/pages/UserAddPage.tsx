@@ -311,12 +311,12 @@ export function UserAddPage() {
             </CardContent>
           </Card>
 
-          {/* 권한 정보 Card */}
+          {/* 역할 정보 Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5" />
-                권한 정보
+                역할 정보
               </CardTitle>
             </CardHeader>
             <CardContent>
