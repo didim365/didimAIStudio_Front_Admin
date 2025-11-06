@@ -103,7 +103,7 @@ export const roles: Role[] = [
     id: 2,
     name: "MANAGER",
     displayName: "매니저",
-    description: "에이전트 관리 권한",
+    description: "에이전트 관리 역할",
     userCount: 15,
     permissions: ["READ", "WRITE", "DELETE"],
   },
@@ -111,7 +111,7 @@ export const roles: Role[] = [
     id: 3,
     name: "USER",
     displayName: "사용자",
-    description: "기본 읽기 권한",
+    description: "기본 읽기 역할",
     userCount: 635,
     permissions: ["READ"],
   },
@@ -147,7 +147,7 @@ export const groups: Group[] = [
   },
 ];
 
-// 임시 권한 데이터
+// 임시 역할 데이터
 export const permissions: Permission[] = [
   { id: 1, name: "READ", description: "리소스 읽기" },
   { id: 2, name: "WRITE", description: "리소스 생성/수정" },

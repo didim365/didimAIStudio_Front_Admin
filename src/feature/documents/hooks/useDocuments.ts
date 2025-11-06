@@ -39,7 +39,7 @@ export function useDocuments() {
     }
   };
 
-  // 문서 권한 업데이트
+  // 문서 역할 업데이트
   const updateDocumentPermissions = async (
     documentId: string,
     permissions: Document["permissions"]

@@ -9,9 +9,9 @@ type PostPrivilegesRequest =
   paths["/api/v1/roles/privileges"]["post"]["requestBody"]["content"]["application/json"];
 
 /**
- * 권한 생성 API
- * @param data - 권한 생성 요청 데이터
- * @description 새로운 권한을 생성합니다.
+ * 역할 생성 API
+ * @param data - 역할 생성 요청 데이터
+ * @description 새로운 역할을 생성합니다.
  */
 const postPrivileges = async (
   data: PostPrivilegesRequest

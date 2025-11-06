@@ -30,7 +30,7 @@ export default function RolesPage() {
       {/* 헤더 */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold">역할 관리</h1>
-        <p className="mt-2">시스템 역할 및 권한을 관리할 수 있습니다.</p>
+        <p className="mt-2">시스템 역할 및 역할을 관리할 수 있습니다.</p>
       </div>
 
       {/* 검색 및 필터 */}

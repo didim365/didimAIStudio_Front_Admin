@@ -130,7 +130,7 @@ export default function RoleAddPage() {
                     maxLength={500}
                   />
                   <p className="text-xs text-muted-foreground">
-                    역할의 목적과 권한 범위를 설명하세요 (최대 500자, 선택사항)
+                    역할의 목적과 역할 범위를 설명하세요 (최대 500자, 선택사항)
                   </p>
                 </div>
               </div>

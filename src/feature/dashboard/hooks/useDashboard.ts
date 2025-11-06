@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Users,
-  Activity,
-  DollarSign,
-  AlertCircle,
-} from "lucide-react";
+import { Users, Activity, DollarSign, AlertCircle } from "lucide-react";
 import { MetricCardData } from "../types";
 
 export function useDashboard() {
@@ -51,9 +46,9 @@ export function useDashboard() {
       trend: "+8%",
     },
     {
-      title: "권한 이슈",
+      title: "역할 이슈",
       value: 3,
-      description: "검토가 필요한 권한 변경 요청",
+      description: "검토가 필요한 역할 변경 요청",
       icon: AlertCircle,
     },
   ];

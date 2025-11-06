@@ -7,7 +7,7 @@ type GetRolesResponse =
 
 /**
  * 모든 역할 조회 API
- * 모든 권한 조회 (권한은 Admin, manager, user 등으로 정책에 따라 설정할 수 있다.)
+ * 모든 역할 조회 (역할은 Admin, manager, user 등으로 정책에 따라 설정할 수 있다.)
  */
 const getRoles = async (): Promise<GetRolesResponse> => {
   try {

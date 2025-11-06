@@ -24,7 +24,7 @@ const MENU = [
     icon: Group,
   },
   {
-    name: "권한 관리",
+    name: "역할 관리",
     href: "/roles",
     icon: Shield,
   },

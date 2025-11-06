@@ -135,9 +135,9 @@ export function PermissionEditDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>문서 권한 설정</DialogTitle>
+          <DialogTitle>문서 역할 설정</DialogTitle>
           <DialogDescription>
-            {document.title}의 접근 권한을 설정합니다.
+            {document.title}의 접근 역할을 설정합니다.
           </DialogDescription>
         </DialogHeader>
 
@@ -155,9 +155,9 @@ export function PermissionEditDialog({
 
           {!isPublic && (
             <>
-              {/* 그룹 권한 */}
+              {/* 그룹 역할 */}
               <div className="space-y-3">
-                <Label>그룹별 권한</Label>
+                <Label>그룹별 역할</Label>
                 <div className="flex gap-2">
                   <Select
                     value={selectedGroup}
@@ -228,9 +228,9 @@ export function PermissionEditDialog({
                 </div>
               </div>
 
-              {/* 사용자 권한 */}
+              {/* 사용자 역할 */}
               <div className="space-y-3">
-                <Label>개별 사용자 권한</Label>
+                <Label>개별 사용자 역할</Label>
                 <div className="flex gap-2">
                   <Select value={selectedUser} onValueChange={setSelectedUser}>
                     <SelectTrigger className="flex-1">

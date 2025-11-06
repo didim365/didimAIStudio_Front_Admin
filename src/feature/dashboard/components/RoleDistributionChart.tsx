@@ -1,11 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { RoleDistribution } from "../types";
 
 interface RoleDistributionChartProps {
@@ -20,7 +14,7 @@ export function RoleDistributionChart({
   return (
     <Card className="col-span-3">
       <CardHeader>
-        <CardTitle>권한별 사용자 분포</CardTitle>
+        <CardTitle>역할별 사용자 분포</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -44,13 +38,13 @@ export function RoleDistributionChart({
                       ? index === 0
                         ? "#ffffff"
                         : index === 1
-                          ? "#cccccc"
-                          : "#999999"
+                        ? "#cccccc"
+                        : "#999999"
                       : index === 0
-                        ? "var(--color-primary)"
-                        : index === 1
-                          ? "var(--color-secondary)"
-                          : "var(--color-accent)"
+                      ? "var(--color-primary)"
+                      : index === 1
+                      ? "var(--color-secondary)"
+                      : "var(--color-accent)"
                   }
                 />
               ))}
@@ -60,7 +54,9 @@ export function RoleDistributionChart({
                 backgroundColor: isDarkMode
                   ? "#1a1a1a"
                   : "hsl(var(--background))",
-                border: `1px solid ${isDarkMode ? "#444444" : "hsl(var(--border))"}`,
+                border: `1px solid ${
+                  isDarkMode ? "#444444" : "hsl(var(--border))"
+                }`,
                 borderRadius: "8px",
                 color: isDarkMode ? "#ffffff" : "inherit",
               }}
