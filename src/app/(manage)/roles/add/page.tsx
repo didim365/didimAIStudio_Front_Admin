@@ -1,5 +1,7 @@
+import RoleAddPage from "@/feature/roles/pages/RoleAddPage";
+
 function Page() {
-  return <div>page</div>;
+  return <RoleAddPage />;
 }
 
 export default Page;
