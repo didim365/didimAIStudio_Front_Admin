@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useGetRole } from "../hooks/useGetRole";
+import { useDeleteRole } from "../hooks/useDeleteRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
@@ -36,6 +39,8 @@ interface RolePageProps {
 }
 
 function RolePage({ roleId }: RolePageProps) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const {
     data: role,
@@ -43,11 +48,19 @@ function RolePage({ roleId }: RolePageProps) {
     error,
   } = useGetRole({ role_id: Number(roleId) });
 
+  // 역할 삭제 mutation
+  const { mutate: deleteRole, isPending: isDeleting } = useDeleteRole({
+    onSuccess: () => {
+      // 역할 목록 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: ["roles"],
+      });
+      router.push("/roles");
+    },
+  });
+
   const handleDelete = () => {
-    // TODO: 역할 삭제 API 호출
-    console.log("역할 삭제:", roleId);
-    setShowDeleteDialog(false);
-    // TODO: 삭제 후 역할 목록 페이지로 이동하거나 리프레시
+    deleteRole({ role_id: Number(roleId) });
   };
 
   if (isLoading) {
@@ -149,8 +162,14 @@ function RolePage({ roleId }: RolePageProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>삭제</AlertDialogAction>
+            <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {isDeleting ? "삭제 중..." : "삭제"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
