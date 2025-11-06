@@ -7,6 +7,7 @@ import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Button } from "@/shared/ui/button";
 import { usePostLogin } from "../hooks/usePostLogin";
+import MENU from "@/shared/constants/menu";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function LoginPage() {
       successMessage: "로그인에 성공하였습니다.",
     },
     onSuccess: () => {
-      router.push("/dashboard");
+      router.push(MENU[0].href);
     },
   });
 
