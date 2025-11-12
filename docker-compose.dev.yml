@@ -27,8 +27,8 @@ services:
     depends_on:
       - nextjs
     environment:
-      - API_BACKEND_URL=https://aistudio-dev.hell0world.net
-      - API_BACKEND_HOST=aistudio-dev.hell0world.net
+      - API_BACKEND_URL=http://49.50.129.74
+      - API_BACKEND_HOST=49.50.129.74
     entrypoint: ["/bin/sh", "/docker-entrypoint.d/nginx-entrypoint.sh"]
 
 networks:
