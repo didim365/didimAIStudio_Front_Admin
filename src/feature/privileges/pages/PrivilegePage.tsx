@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useGetPrivilege } from "../hooks/useGetPrivilege";
+import { useDeletePrivilege } from "../hooks/useDeletePrivilege";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
@@ -27,6 +30,7 @@ import {
   Pencil,
   Trash2,
   Hash,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
@@ -42,6 +46,7 @@ interface PrivilegePageProps {
 
 function PrivilegePage({ privilegeId }: PrivilegePageProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const {
     data: privilege,
@@ -49,9 +54,26 @@ function PrivilegePage({ privilegeId }: PrivilegePageProps) {
     error,
   } = useGetPrivilege({ privilege_id: privilegeId });
 
+  // 권한 삭제 mutation
+  const { mutate: deletePrivilege, isPending: isDeleting } = useDeletePrivilege(
+    {
+      onSuccess: () => {
+        toast.success("권한이 성공적으로 삭제되었습니다.");
+        queryClient.invalidateQueries({
+          queryKey: ["privileges"],
+        });
+        setShowDeleteDialog(false);
+        router.push("/privileges");
+      },
+      onError: (error) => {
+        toast.error("권한 삭제에 실패했습니다.");
+        console.error("Error deleting privilege:", error);
+      },
+    }
+  );
+
   const handleDelete = () => {
-    setShowDeleteDialog(false);
-    router.push("/privileges");
+    deletePrivilege({ privilege_id: privilegeId });
   };
 
   if (isLoading) {
@@ -158,8 +180,11 @@ function PrivilegePage({ privilegeId }: PrivilegePageProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>삭제</AlertDialogAction>
+            <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              삭제
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
