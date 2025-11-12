@@ -50,10 +50,7 @@ function PrivilegePage({ privilegeId }: PrivilegePageProps) {
   } = useGetPrivilege({ privilege_id: privilegeId });
 
   const handleDelete = () => {
-    // TODO: 권한 삭제 API 호출
-    console.log("권한 삭제:", privilegeId);
     setShowDeleteDialog(false);
-    // TODO: 삭제 후 권한 목록 페이지로 이동
     router.push("/privileges");
   };
 
