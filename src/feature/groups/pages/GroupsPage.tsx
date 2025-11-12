@@ -128,7 +128,7 @@ export function GroupsPage() {
                   </TableCell>
                 </TableRow>
               )}
-              {data?.items.map((group) => (
+              {data?.items?.map((group) => (
                 <TableRow
                   key={group.id}
                   onClick={() => handleGroupClick(group.id)}

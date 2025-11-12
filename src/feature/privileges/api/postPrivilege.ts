@@ -13,7 +13,7 @@ type PostPrivilegesRequest =
  * @param data - 역할 생성 요청 데이터
  * @description 새로운 역할을 생성합니다.
  */
-const postPrivileges = async (
+const postPrivilege = async (
   data: PostPrivilegesRequest
 ): Promise<PostPrivilegesResponse> => {
   try {
@@ -27,4 +27,4 @@ const postPrivileges = async (
   }
 };
 
-export default postPrivileges;
+export default postPrivilege;

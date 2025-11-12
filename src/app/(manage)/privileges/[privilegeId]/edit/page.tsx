@@ -1,5 +1,6 @@
-import PrivilegePage from "@/feature/privileges/pages/PrivilegePage";
+import PrivilegeEditPage from "@/feature/privileges/pages/PrivilegeEditPage";
 import { BASE_URL } from "@/shared/constants";
+import { Card, CardContent } from "@/shared/ui/card";
 import axios from "axios";
 import { cookies } from "next/headers";
 
@@ -15,7 +16,21 @@ async function Page({ params }: { params: Promise<{ privilegeId: string }> }) {
       },
     }
   );
-  return <PrivilegePage privilege={response.data} />;
+  const privilege = response.data;
+  if (!privilege) {
+    return (
+      <div className="py-8 px-4">
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-center text-muted-foreground">
+              권한을 찾을 수 없습니다.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+  return <PrivilegeEditPage privilege={privilege} />;
 }
 
 export default Page;

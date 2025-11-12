@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useGetPrivilege } from "../hooks/useGetPrivilege";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useDeletePrivilege } from "../hooks/useDeletePrivilege";
+import { GetPrivilegeResponse } from "../api/getPrivilege";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Separator } from "@/shared/ui/separator";
 import {
   AlertDialog,
@@ -27,6 +29,7 @@ import {
   Pencil,
   Trash2,
   Hash,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
@@ -37,69 +40,35 @@ import {
 } from "@/feature/privileges/constants/actionType";
 
 interface PrivilegePageProps {
-  privilegeId: number;
+  privilege: GetPrivilegeResponse;
 }
 
-function PrivilegePage({ privilegeId }: PrivilegePageProps) {
+function PrivilegePage({ privilege }: PrivilegePageProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const {
-    data: privilege,
-    isLoading,
-    error,
-  } = useGetPrivilege({ privilege_id: privilegeId });
+
+  // 권한 삭제 mutation
+  const { mutate: deletePrivilege, isPending: isDeleting } = useDeletePrivilege(
+    {
+      onSuccess: () => {
+        toast.success("권한이 성공적으로 삭제되었습니다.");
+        queryClient.invalidateQueries({
+          queryKey: ["privileges"],
+        });
+        setShowDeleteDialog(false);
+        router.push("/privileges");
+      },
+      onError: (error) => {
+        toast.error("권한 삭제에 실패했습니다.");
+        console.error("Error deleting privilege:", error);
+      },
+    }
+  );
 
   const handleDelete = () => {
-    // TODO: 권한 삭제 API 호출
-    console.log("권한 삭제:", privilegeId);
-    setShowDeleteDialog(false);
-    // TODO: 삭제 후 권한 목록 페이지로 이동
-    router.push("/privileges");
+    deletePrivilege({ privilege_id: privilege.id });
   };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-[400px]" />
-          <Skeleton className="h-[400px]" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="py-8 px-4">
-        <Card className="border-destructive">
-          <CardHeader>
-            <CardTitle className="text-destructive">오류 발생</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              권한 정보를 불러오는 중 오류가 발생했습니다.
-            </p>
-            <p className="text-sm text-destructive mt-2">{error.message}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!privilege) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              권한을 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const actionTypeColor =
     ACTION_TYPE_COLORS[privilege.action_type] ||
@@ -127,7 +96,7 @@ function PrivilegePage({ privilegeId }: PrivilegePageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/privileges/${privilegeId}/edit`}>
+          <Link href={`/privileges/${privilege.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정
@@ -161,8 +130,11 @@ function PrivilegePage({ privilegeId }: PrivilegePageProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>삭제</AlertDialogAction>
+            <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              삭제
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

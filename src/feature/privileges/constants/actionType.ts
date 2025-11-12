@@ -1,3 +1,5 @@
+import { FileText, Zap } from "lucide-react";
+
 // ActionType에 따른 Badge variant 매핑
 export const ACTION_TYPE_VARIANTS: Record<
   string,
@@ -31,3 +33,12 @@ export const ACTION_TYPE_COLORS: Record<string, string> = {
   PATCH: "bg-orange-100 text-orange-700 border-orange-200",
 };
 
+// 액션 타입 옵션 (Select 컴포넌트용)
+export const ACTION_TYPE_OPTIONS = [
+  { value: "READ", label: "읽기", icon: FileText },
+  { value: "WRITE", label: "쓰기", icon: Zap },
+  { value: "EXECUTE", label: "실행", icon: Zap },
+  { value: "DELETE", label: "삭제", icon: Zap },
+  { value: "UPDATE", label: "수정", icon: Zap },
+  { value: "PATCH", label: "부분수정", icon: Zap },
+] as const;
