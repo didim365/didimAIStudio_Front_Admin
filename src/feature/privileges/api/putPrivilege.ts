@@ -23,7 +23,7 @@ const putPrivilege = async (
 ): Promise<PutPrivilegeResponse> => {
   try {
     const response = await axiosInstance.auth.put<PutPrivilegeResponse>(
-      `/v1/roles/privileges/${params.privilege_id}`,
+      `/roles/privileges/${params.privilege_id}`,
       data
     );
     return response.data;

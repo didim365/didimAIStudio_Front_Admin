@@ -12,7 +12,7 @@ type GetPrivilegesResponse =
 const getPrivileges = async (): Promise<GetPrivilegesResponse> => {
   try {
     const response = await axiosInstance.auth.get<GetPrivilegesResponse>(
-      "/v1/roles/privileges/all"
+      "/roles/privileges/all"
     );
     return response.data;
   } catch (error) {

@@ -15,7 +15,7 @@ const deletePrivilege = async (
 ): Promise<void> => {
   try {
     await axiosInstance.auth.delete<void>(
-      `/v1/roles/privileges/${params.privilege_id}`
+      `/roles/privileges/${params.privilege_id}`
     );
   } catch (error) {
     throw error;
