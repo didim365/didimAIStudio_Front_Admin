@@ -1,6 +1,3 @@
-const BASE_URL =
-  process.env.NODE_ENV === "development"
-    ? "https://aistudio-dev.hell0world.net"
-    : "https://aistudio.didim365.com";
+const BASE_URL = "http://49.50.129.74";
 
 export { BASE_URL };
