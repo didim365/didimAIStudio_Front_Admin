@@ -7,6 +7,7 @@ import { Key, Lock, FileText, AlertCircle } from "lucide-react";
 import { useGetRolePrivileges } from "../hooks/useGetRolePrivileges";
 import { getActionTypeInfo } from "@/feature/privileges/constants/actionType";
 import { AddPrivilegeDialog } from "./AddPrivilegeDialog";
+import Link from "next/link";
 
 interface RolePrivilegesListProps {
   roleId: number;
@@ -94,79 +95,81 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
                     key={privilege.id}
                     className="hover:shadow-md transition-shadow duration-200 border-l-4 border-l-primary/40"
                   >
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-4">
-                        {/* Icon */}
-                        <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                          <Key className="h-6 w-6 text-primary" />
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1 space-y-3">
-                          {/* Header */}
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="space-y-1">
-                              <h4 className="font-semibold text-base flex items-center gap-2">
-                                {privilege.privilege_name}
-                                <Badge
-                                  variant="outline"
-                                  className="text-xs font-mono"
-                                >
-                                  #{privilege.id}
-                                </Badge>
-                              </h4>
-                              {privilege.description && (
-                                <p className="text-sm text-muted-foreground">
-                                  {privilege.description}
-                                </p>
-                              )}
-                            </div>
-
-                            {/* Action Type Badge */}
-                            <Badge
-                              variant="outline"
-                              className={`${actionInfo.color} shrink-0`}
-                            >
-                              <ActionIcon className="h-3 w-3 mr-1" />
-                              {actionInfo.label}
-                            </Badge>
+                    <Link href={`/privileges/${privilege.id}`}>
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-4">
+                          {/* Icon */}
+                          <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <Key className="h-6 w-6 text-primary" />
                           </div>
 
-                          {/* Details Grid */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t">
-                            {/* Resource Type */}
-                            <div className="flex items-center gap-2">
-                              <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
-                                <FileText className="h-4 w-4 text-muted-foreground" />
+                          {/* Content */}
+                          <div className="flex-1 space-y-3">
+                            {/* Header */}
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="space-y-1">
+                                <h4 className="font-semibold text-base flex items-center gap-2">
+                                  {privilege.privilege_name}
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs font-mono"
+                                  >
+                                    #{privilege.id}
+                                  </Badge>
+                                </h4>
+                                {privilege.description && (
+                                  <p className="text-sm text-muted-foreground">
+                                    {privilege.description}
+                                  </p>
+                                )}
                               </div>
-                              <div>
-                                <p className="text-xs text-muted-foreground">
-                                  리소스 타입
-                                </p>
-                                <p className="text-sm font-medium font-mono">
-                                  {privilege.resource_type}
-                                </p>
-                              </div>
+
+                              {/* Action Type Badge */}
+                              <Badge
+                                variant="outline"
+                                className={`${actionInfo.color} shrink-0`}
+                              >
+                                <ActionIcon className="h-3 w-3 mr-1" />
+                                {actionInfo.label}
+                              </Badge>
                             </div>
 
-                            {/* Action Type Detail */}
-                            <div className="flex items-center gap-2">
-                              <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
-                                <ActionIcon className="h-4 w-4 text-muted-foreground" />
+                            {/* Details Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t">
+                              {/* Resource Type */}
+                              <div className="flex items-center gap-2">
+                                <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                                  <FileText className="h-4 w-4 text-muted-foreground" />
+                                </div>
+                                <div>
+                                  <p className="text-xs text-muted-foreground">
+                                    리소스 타입
+                                  </p>
+                                  <p className="text-sm font-medium font-mono">
+                                    {privilege.resource_type}
+                                  </p>
+                                </div>
                               </div>
-                              <div>
-                                <p className="text-xs text-muted-foreground">
-                                  액션 타입
-                                </p>
-                                <p className="text-sm font-medium font-mono">
-                                  {privilege.action_type}
-                                </p>
+
+                              {/* Action Type Detail */}
+                              <div className="flex items-center gap-2">
+                                <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                                  <ActionIcon className="h-4 w-4 text-muted-foreground" />
+                                </div>
+                                <div>
+                                  <p className="text-xs text-muted-foreground">
+                                    액션 타입
+                                  </p>
+                                  <p className="text-sm font-medium font-mono">
+                                    {privilege.action_type}
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
+                      </CardContent>
+                    </Link>
                   </Card>
                 );
               })}

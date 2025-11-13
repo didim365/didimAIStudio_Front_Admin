@@ -64,11 +64,6 @@ export function AddPrivilegeDialog({ roleId }: AddPrivilegeDialogProps) {
       setOpen(false);
       setSelectedPrivilegeId(null);
     },
-    onError: (error) => {
-      toast.error("권한 추가에 실패했습니다.", {
-        description: error.message || "다시 시도해주세요.",
-      });
-    },
   });
 
   // 이미 연결된 권한 ID 목록
