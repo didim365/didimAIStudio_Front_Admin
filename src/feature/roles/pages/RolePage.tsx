@@ -33,6 +33,7 @@ import {
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
+import { RolePrivilegesList } from "../components/RolePrivilegesList";
 
 interface RolePageProps {
   roleId: string;
@@ -299,6 +300,9 @@ function RolePage({ roleId }: RolePageProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Privileges Section */}
+      <RolePrivilegesList roleId={Number(roleId)} />
     </div>
   );
 }
