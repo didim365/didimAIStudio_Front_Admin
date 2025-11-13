@@ -99,7 +99,7 @@ export function AddPrivilegeDialog({ roleId }: AddPrivilegeDialogProps) {
           권한 추가
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl max-h-[80vh]">
+      <DialogContent className="flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Key className="h-5 w-5 text-primary" />
@@ -146,7 +146,7 @@ export function AddPrivilegeDialog({ roleId }: AddPrivilegeDialogProps) {
                   <Card
                     key={privilege.id}
                     className={cn(
-                      "cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/50",
+                      "cursor-pointerhover:shadow-md hover:border-primary/50",
                       isSelected && "border-primary border-2 bg-primary/5"
                     )}
                     onClick={() => setSelectedPrivilegeId(privilege.id)}
@@ -170,26 +170,26 @@ export function AddPrivilegeDialog({ roleId }: AddPrivilegeDialogProps) {
                             <div className="space-y-1">
                               <h4 className="font-semibold text-sm flex items-center gap-2">
                                 {privilege.privilege_name}
+                              </h4>
+                              <div className="flex items-center gap-2">
                                 <Badge
                                   variant="outline"
                                   className="text-xs font-mono"
                                 >
                                   #{privilege.id}
                                 </Badge>
-                              </h4>
+                                <Badge
+                                  variant="outline"
+                                  className={`${actionInfo.color} shrink-0 text-xs`}
+                                >
+                                  <ActionIcon className="h-3 w-3 mr-1" />
+                                  {actionInfo.label}
+                                </Badge>
+                              </div>
                               <p className="text-xs text-muted-foreground">
                                 {privilege.description}
                               </p>
                             </div>
-
-                            {/* Action Type Badge */}
-                            <Badge
-                              variant="outline"
-                              className={`${actionInfo.color} shrink-0 text-xs`}
-                            >
-                              <ActionIcon className="h-3 w-3 mr-1" />
-                              {actionInfo.label}
-                            </Badge>
                           </div>
 
                           {/* Details */}
