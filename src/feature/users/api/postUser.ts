@@ -10,7 +10,7 @@ type PostUserRequest =
 const postUser = async (data: PostUserRequest): Promise<PostUserResponse> => {
   try {
     const response = await axiosInstance.auth.post<PostUserResponse>(
-      "/v1/users/admin/user",
+      "/users/admin/user",
       data
     );
     return response.data;

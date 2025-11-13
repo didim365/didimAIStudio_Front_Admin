@@ -12,7 +12,7 @@ const patchUser = async (
 ): Promise<PatchUserResponse> => {
   try {
     const response = await axiosInstance.auth.patch<PatchUserResponse>(
-      "/v1/users/admin/user",
+      "/users/admin/user",
       data
     );
     return response.data;

@@ -12,7 +12,7 @@ type GetMyInfoResponse =
 const getMyInfo = async (): Promise<GetMyInfoResponse> => {
   try {
     const response = await axiosInstance.auth.get<GetMyInfoResponse>(
-      "/v1/users/me"
+      "/users/me"
     );
     return response.data;
   } catch (error) {

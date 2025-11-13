@@ -10,7 +10,7 @@ type GetUserParams =
 const getUser = async (params: GetUserParams): Promise<GetUserResponse> => {
   try {
     const response = await axiosInstance.auth.get<GetUserResponse>(
-      `/v1/users/account/${params.user_id}`
+      `/users/account/${params.user_id}`
     );
     return response.data;
   } catch (error) {
