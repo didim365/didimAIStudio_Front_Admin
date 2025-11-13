@@ -3,11 +3,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { Key, Lock, FileText, AlertCircle } from "lucide-react";
+import { Button } from "@/shared/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/ui/alert-dialog";
+import { Key, Lock, FileText, AlertCircle, Trash2 } from "lucide-react";
 import { useGetRolePrivileges } from "../hooks/useGetRolePrivileges";
+import { useDeleteRolePrivilege } from "../hooks/useDeleteRolePrivilege";
 import { getActionTypeInfo } from "@/feature/privileges/constants/actionType";
 import { AddPrivilegeDialog } from "./AddPrivilegeDialog";
 import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface RolePrivilegesListProps {
   roleId: number;
@@ -17,12 +32,56 @@ interface RolePrivilegesListProps {
  * 역할에 연결된 권한 목록 컴포넌트
  */
 export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
+  const queryClient = useQueryClient();
+  const [privilegeToDelete, setPrivilegeToDelete] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+
   // 역할의 권한 조회
   const {
     data: privileges,
     isLoading,
     error,
   } = useGetRolePrivileges({ role_id: roleId });
+
+  // 권한 삭제 mutation
+  const deletePrivilegeMutation = useDeleteRolePrivilege({
+    onSuccess: () => {
+      // 캐시 무효화하여 목록 새로고침
+      queryClient.invalidateQueries({
+        queryKey: ["roles", roleId, "privileges"],
+      });
+      toast.success("권한이 성공적으로 삭제되었습니다.");
+      setPrivilegeToDelete(null);
+    },
+    onError: (error) => {
+      toast.error("권한 삭제에 실패했습니다.", {
+        description: error.message,
+      });
+    },
+  });
+
+  // 삭제 다이얼로그 열기 핸들러
+  const handleOpenDeleteDialog = (
+    privilegeId: number,
+    privilegeName: string
+  ) => {
+    setPrivilegeToDelete({
+      id: privilegeId,
+      name: privilegeName,
+    });
+  };
+
+  // 삭제 실행 핸들러
+  const handleDeletePrivilege = () => {
+    if (!privilegeToDelete) return;
+
+    deletePrivilegeMutation.mutate({
+      role_id: roleId,
+      privilege_id: privilegeToDelete.id,
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -93,10 +152,10 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
                 return (
                   <Card
                     key={privilege.id}
-                    className="hover:shadow-md transition-shadow duration-200 border-l-4 border-l-primary/40"
+                    className="relative hover:shadow-md transition-shadow duration-200 border-l-4 border-l-primary/40 group"
                   >
                     <Link href={`/privileges/${privilege.id}`}>
-                      <CardContent className="p-4">
+                      <CardContent className="p-4 pr-12">
                         <div className="flex items-start gap-4">
                           {/* Icon */}
                           <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -107,14 +166,22 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
                           <div className="flex-1 space-y-3">
                             {/* Header */}
                             <div className="flex items-start justify-between gap-2">
-                              <div className="space-y-1">
-                                <h4 className="font-semibold text-base flex items-center gap-2">
+                              <div className="space-y-1 flex-1">
+                                <h4 className="font-semibold text-base flex items-center gap-2 flex-wrap">
                                   {privilege.privilege_name}
                                   <Badge
                                     variant="outline"
                                     className="text-xs font-mono"
                                   >
                                     #{privilege.id}
+                                  </Badge>
+                                  {/* Action Type Badge */}
+                                  <Badge
+                                    variant="outline"
+                                    className={`${actionInfo.color} shrink-0`}
+                                  >
+                                    <ActionIcon className="h-3 w-3 mr-1" />
+                                    {actionInfo.label}
                                   </Badge>
                                 </h4>
                                 {privilege.description && (
@@ -123,15 +190,23 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
                                   </p>
                                 )}
                               </div>
-
-                              {/* Action Type Badge */}
-                              <Badge
-                                variant="outline"
-                                className={`${actionInfo.color} shrink-0`}
+                              {/* 삭제 버튼 */}
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleOpenDeleteDialog(
+                                    privilege.id,
+                                    privilege.privilege_name
+                                  );
+                                }}
+                                disabled={deletePrivilegeMutation.isPending}
                               >
-                                <ActionIcon className="h-3 w-3 mr-1" />
-                                {actionInfo.label}
-                              </Badge>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </div>
 
                             {/* Details Grid */}
@@ -177,6 +252,56 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* 삭제 확인 다이얼로그 */}
+      <AlertDialog
+        open={!!privilegeToDelete}
+        onOpenChange={(open) => {
+          if (!open) setPrivilegeToDelete(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Trash2 className="h-5 w-5 text-destructive" />
+              권한 삭제 확인
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                정말로 <strong>{privilegeToDelete?.name}</strong> 권한을 이
+                역할에서 제거하시겠습니까?
+              </p>
+              <p className="text-xs text-muted-foreground">
+                이 작업은 되돌릴 수 없습니다.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deletePrivilegeMutation.isPending}>
+              취소
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDeletePrivilege();
+              }}
+              disabled={deletePrivilegeMutation.isPending}
+            >
+              {deletePrivilegeMutation.isPending ? (
+                <>
+                  <span className="animate-spin mr-2">⏳</span>
+                  삭제 중...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  삭제
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
