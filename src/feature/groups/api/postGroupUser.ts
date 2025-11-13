@@ -18,7 +18,7 @@ const postGroupUser = async (
 ): Promise<PostGroupUserResponse> => {
   try {
     const response = await axiosInstance.auth.post<PostGroupUserResponse>(
-      "/v1/groups/user",
+      "/groups/user",
       data
     );
     return response.data;

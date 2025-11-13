@@ -9,8 +9,8 @@ type LoginResponse =
 
 const postLogin = async (data: LoginRequest): Promise<LoginResponse> => {
   try {
-    const response = await axiosInstance.auth.post<LoginResponse>(
-      "/v1/auth/login",
+    const response = await axiosInstance.admin.post<LoginResponse>(
+      "/auth/login",
       data
     );
     return response.data;

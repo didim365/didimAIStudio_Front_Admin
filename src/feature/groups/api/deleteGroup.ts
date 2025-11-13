@@ -12,7 +12,7 @@ type DeleteGroupParams =
  */
 const deleteGroup = async (params: DeleteGroupParams): Promise<void> => {
   try {
-    await axiosInstance.auth.delete<void>(`/v1/groups/${params.group_id}`);
+    await axiosInstance.auth.delete<void>(`/groups/${params.group_id}`);
   } catch (error) {
     throw error;
   }

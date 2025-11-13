@@ -17,7 +17,7 @@ const postGroups = async (
 ): Promise<PostGroupsResponse> => {
   try {
     const response = await axiosInstance.auth.post<PostGroupsResponse>(
-      "/v1/groups",
+      "/groups",
       data
     );
     return response.data;

@@ -23,7 +23,7 @@ const putRole = async (
 ): Promise<PutRoleResponse> => {
   try {
     const response = await axiosInstance.auth.put<PutRoleResponse>(
-      `/v1/roles/${params.role_id}`,
+      `/roles/${params.role_id}`,
       data
     );
     return response.data;

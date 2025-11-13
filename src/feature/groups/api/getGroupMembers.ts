@@ -25,7 +25,7 @@ const getGroupMembers = async (
   try {
     const { group_id, page, size } = params;
     const response = await axiosInstance.auth.get<GetGroupMembersResponse>(
-      `/v1/groups/${group_id}/members`,
+      `/groups/${group_id}/members`,
       { params: { page, size } }
     );
     return response.data;

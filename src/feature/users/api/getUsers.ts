@@ -10,7 +10,7 @@ type GetUsersParams =
 const getUsers = async (params?: GetUsersParams) => {
   try {
     const response = await axiosInstance.auth.get<GetUsersResponse>(
-      "/v1/users/admin/users",
+      "/users/admin/users",
       { params }
     );
     return response.data;

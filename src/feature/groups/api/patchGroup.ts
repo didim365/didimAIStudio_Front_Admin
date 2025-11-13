@@ -23,7 +23,7 @@ const patchGroup = async (
 ): Promise<PatchGroupResponse> => {
   try {
     const response = await axiosInstance.auth.patch<PatchGroupResponse>(
-      `/v1/groups/${params.group_id}`,
+      `/groups/${params.group_id}`,
       data
     );
     return response.data;

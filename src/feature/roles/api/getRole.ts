@@ -13,7 +13,7 @@ export type GetRoleResponse =
 const getRole = async (roleId: number): Promise<GetRoleResponse> => {
   try {
     const response = await axiosInstance.auth.get<GetRoleResponse>(
-      `/v1/roles/${roleId}`
+      `/roles/${roleId}`
     );
     return response.data;
   } catch (error) {
