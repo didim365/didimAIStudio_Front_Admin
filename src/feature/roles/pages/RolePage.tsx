@@ -33,7 +33,7 @@ import {
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
-import { RolePrivileges } from "../components/RolePrivilegesList";
+import { RolePrivileges } from "../components/RolePrivileges";
 
 interface RolePageProps {
   roleId: string;

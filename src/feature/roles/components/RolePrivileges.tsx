@@ -6,6 +6,7 @@ import { Skeleton } from "@/shared/ui/skeleton";
 import { Key, Lock, FileText, AlertCircle } from "lucide-react";
 import { useGetRolePrivileges } from "../hooks/useGetRolePrivileges";
 import { getActionTypeInfo } from "@/feature/privileges/constants/actionType";
+import { AddPrivilegeDialog } from "./AddPrivilegeDialog";
 
 interface RolePrivilegesListProps {
   roleId: number;
@@ -21,6 +22,7 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
     isLoading,
     error,
   } = useGetRolePrivileges({ role_id: roleId });
+
   return (
     <div className="space-y-4">
       <Card className="border-primary/20">
@@ -33,6 +35,8 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
                 <Badge className="ml-2 bg-primary">{privileges.length}개</Badge>
               )}
             </CardTitle>
+            {/* 권한 추가 버튼 */}
+            <AddPrivilegeDialog roleId={roleId} />
           </div>
         </CardHeader>
         <CardContent className="pt-6">
