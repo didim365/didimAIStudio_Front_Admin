@@ -8,7 +8,7 @@ async function Page({ params }: { params: Promise<{ privilegeId: string }> }) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
   const response = await axios.get(
-    `${BASE_URL}/api/v1/roles/privileges/${privilegeId}`,
+    `${BASE_URL}/api/auth/v1/roles/privileges/${privilegeId}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

@@ -55,7 +55,7 @@ const axiosInstance = {} as AxiosInstanceWithGateways;
 
 Object.entries(HTTP_API_GATEWAY).forEach(([key, path]) => {
   const instance = axios.create({
-    baseURL: `/api${path}`,
+    baseURL: `/api${path}/v1`,
   });
 
   // Request interceptor: 모든 요청에 Authorization 헤더 추가
