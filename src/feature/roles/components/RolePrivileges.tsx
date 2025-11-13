@@ -266,14 +266,13 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
               <Trash2 className="h-5 w-5 text-destructive" />
               권한 삭제 확인
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
-              <p>
-                정말로 <strong>{privilegeToDelete?.name}</strong> 권한을 이
-                역할에서 제거하시겠습니까?
-              </p>
-              <p className="text-xs text-muted-foreground">
+            <AlertDialogDescription>
+              정말로 <strong>{privilegeToDelete?.name}</strong> 권한을 이
+              역할에서 제거하시겠습니까?
+              <br />
+              <span className="text-xs text-muted-foreground">
                 이 작업은 되돌릴 수 없습니다.
-              </p>
+              </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
