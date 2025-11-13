@@ -18,7 +18,7 @@ const postPrivilege = async (
 ): Promise<PostPrivilegesResponse> => {
   try {
     const response = await axiosInstance.auth.post<PostPrivilegesResponse>(
-      "/v1/roles/privileges",
+      "/roles/privileges",
       data
     );
     return response.data;

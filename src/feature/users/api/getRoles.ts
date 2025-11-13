@@ -6,9 +6,7 @@ type GetRolesResponse =
 
 const getRoles = async (): Promise<GetRolesResponse> => {
   try {
-    const response = await axiosInstance.auth.get<GetRolesResponse>(
-      "/v1/roles/"
-    );
+    const response = await axiosInstance.auth.get<GetRolesResponse>("/roles/");
     return response.data;
   } catch (error) {
     throw error;

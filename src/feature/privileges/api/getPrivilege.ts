@@ -18,7 +18,7 @@ const getPrivilege = async (
 ): Promise<GetPrivilegeResponse> => {
   try {
     const response = await axiosInstance.auth.get<GetPrivilegeResponse>(
-      `/v1/roles/privileges/${params.privilege_id}`
+      `/roles/privileges/${params.privilege_id}`
     );
     return response.data;
   } catch (error) {

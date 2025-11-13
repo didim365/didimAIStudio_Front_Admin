@@ -12,7 +12,7 @@ const postRefreshToken = async (
 ): Promise<RefreshTokenResponse> => {
   try {
     const response = await axiosInstance.auth.post<RefreshTokenResponse>(
-      "/v1/auth/refresh",
+      "/refresh",
       undefined,
       {
         params: {

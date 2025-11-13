@@ -12,7 +12,7 @@ type DeleteRoleParams =
  */
 const deleteRole = async (params: DeleteRoleParams): Promise<void> => {
   try {
-    await axiosInstance.auth.delete(`/v1/roles/${params.role_id}`);
+    await axiosInstance.auth.delete(`/roles/${params.role_id}`);
   } catch (error) {
     throw error;
   }

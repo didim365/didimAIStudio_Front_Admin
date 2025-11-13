@@ -16,7 +16,7 @@ const getGroups = async (
 ): Promise<GetGroupsResponse> => {
   try {
     const response = await axiosInstance.auth.get<GetGroupsResponse>(
-      "/v1/groups",
+      "/groups",
       { params }
     );
     return response.data;

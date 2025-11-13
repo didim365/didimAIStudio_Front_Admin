@@ -16,7 +16,7 @@ type PostRoleRequest =
 const postRole = async (data: PostRoleRequest): Promise<PostRoleResponse> => {
   try {
     const response = await axiosInstance.auth.post<PostRoleResponse>(
-      "/v1/roles/",
+      "/roles/",
       data
     );
     return response.data;
