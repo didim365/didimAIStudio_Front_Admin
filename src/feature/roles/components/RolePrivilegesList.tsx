@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Key, Lock, FileText, AlertCircle } from "lucide-react";
-import { getActionTypeInfo } from "@/feature/privileges/constants";
 import { useGetRolePrivileges } from "../hooks/useGetRolePrivileges";
+import { getActionTypeInfo } from "@/feature/privileges/constants/actionType";
 
 interface RolePrivilegesListProps {
   roleId: number;
@@ -24,7 +24,7 @@ export function RolePrivilegesList({ roleId }: RolePrivilegesListProps) {
   return (
     <div className="space-y-4">
       <Card className="border-primary/20">
-        <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
+        <CardHeader className="from-primary/5 to-primary/10">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Key className="h-5 w-5 text-primary" />
