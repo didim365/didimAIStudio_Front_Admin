@@ -286,12 +286,13 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
               }}
               disabled={deletePrivilegeMutation.isPending}
             >
-              {deletePrivilegeMutation.isPending ? (
+              {deletePrivilegeMutation.isPending && (
                 <>
                   <span className="animate-spin mr-2">⏳</span>
                   삭제 중...
                 </>
-              ) : (
+              )}
+              {!deletePrivilegeMutation.isPending && (
                 <>
                   <Trash2 className="h-4 w-4 mr-2" />
                   삭제
