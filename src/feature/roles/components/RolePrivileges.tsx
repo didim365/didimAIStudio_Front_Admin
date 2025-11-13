@@ -14,7 +14,7 @@ interface RolePrivilegesListProps {
 /**
  * 역할에 연결된 권한 목록 컴포넌트
  */
-export function RolePrivilegesList({ roleId }: RolePrivilegesListProps) {
+export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
   // 역할의 권한 조회
   const {
     data: privileges,
@@ -174,4 +174,4 @@ export function RolePrivilegesList({ roleId }: RolePrivilegesListProps) {
   );
 }
 
-export default RolePrivilegesList;
+export default RolePrivileges;
