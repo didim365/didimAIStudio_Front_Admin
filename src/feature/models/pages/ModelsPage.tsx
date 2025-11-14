@@ -3,8 +3,8 @@
 import { components } from "@/shared/types/api/models";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import useGetCatalog from "../hooks/useGetCatalog";
-import ModelTable from "./ModelTable";
-import { ModelStatsCards } from "./ModelStatsCards";
+import ModelTable from "../components/ModelTable";
+import { ModelStatsCards } from "../components/ModelStatsCards";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -38,7 +38,7 @@ const DEPLOYMENT_TYPES = [
   { value: "PUBLIC_API", label: "Public API" },
 ];
 
-function ModelPage() {
+function ModelsPage() {
   // URL 쿼리 파라미터 관리 - useState와 동일한 API
   const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
     debounce: 300,
@@ -209,4 +209,4 @@ function ModelPage() {
   );
 }
 
-export default ModelPage;
+export default ModelsPage;
