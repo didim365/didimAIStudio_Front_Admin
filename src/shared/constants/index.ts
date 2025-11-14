@@ -1,3 +1,4 @@
-const BASE_URL = "http://49.50.129.74";
+const SERVER_API_BASE_URL =
+  process.env.NGINX_INTERNAL_URL || "http://nginx:4000";
 
-export { BASE_URL };
+export { SERVER_API_BASE_URL };
