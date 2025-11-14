@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import ModelPage from "@/feature/models/components/ModelPage";
+import ModelsPage from "@/feature/models/pages/ModelsPage";
 
 export default function Page() {
   return (
     <Suspense fallback={<div>로딩 중...</div>}>
-      <ModelPage />
+      <ModelsPage />
     </Suspense>
   );
 }
