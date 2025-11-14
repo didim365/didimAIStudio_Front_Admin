@@ -183,7 +183,7 @@ export default function GroupRolesCard({ groupId }: GroupRolesCardProps) {
                 handleDeleteRole();
               }}
               disabled={deleteRoleMutation.isPending}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive hover:bg-destructive/90"
             >
               {deleteRoleMutation.isPending && (
                 <>
