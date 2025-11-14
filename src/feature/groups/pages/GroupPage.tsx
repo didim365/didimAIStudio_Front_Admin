@@ -11,7 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
-import { Separator } from "@/shared/ui/separator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,7 +25,6 @@ import {
   Building2,
   Users as UsersIcon,
   Calendar,
-  Clock,
   ArrowLeft,
   Pencil,
   Trash2,
@@ -46,6 +44,7 @@ import {
 } from "../constants/groupType";
 import { getInitials } from "@/feature/users/utils/getInitials";
 import AddMemberDialog from "../components/AddMemberDialog";
+import GroupRolesCard from "../components/GroupRolesCard";
 
 interface GroupPageProps {
   groupId: string;
@@ -344,46 +343,28 @@ function GroupPage({ groupId }: GroupPageProps) {
                     {!group.role_id && "미지정"}
                   </p>
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Activity Timeline Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              활동 정보
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Created At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>그룹 생성일</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-sm font-mono">
-                  {formatDate(group.created_at)}
-                </p>
-              </div>
-            </div>
+                {/* Created At */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span className="font-medium">그룹 생성일</span>
+                  </div>
+                  <p className="text-lg font-semibold pl-6">
+                    {formatDate(group.created_at)}
+                  </p>
+                </div>
 
-            <Separator />
-
-            {/* Updated At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>마지막 업데이트</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-sm font-mono">
-                  {group.updated_at && formatDate(group.updated_at)}
-                  {!group.updated_at && "없음"}
-                </p>
+                {/* Updated At */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span className="font-medium">마지막 업데이트</span>
+                  </div>
+                  <p className="text-lg font-semibold pl-6">
+                    {group.updated_at ? formatDate(group.updated_at) : "없음"}
+                  </p>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -436,6 +417,9 @@ function GroupPage({ groupId }: GroupPageProps) {
             )}
           </CardContent>
         </Card>
+
+        {/* Group Roles Card */}
+        <GroupRolesCard groupId={Number(groupId)} />
       </div>
     </div>
   );
