@@ -32,7 +32,7 @@ const MENU = [
   //   icon: FileText,
   // },
   {
-    name: "AI 서비스 관리",
+    name: "스튜디오 관리",
     href: "/service",
     icon: Brain,
     children: [
