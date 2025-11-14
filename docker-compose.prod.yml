@@ -1,0 +1,33 @@
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "4000"
+    networks:
+      - app-network
+    environment:
+      - NODE_ENV=production
+      - NGINX_INTERNAL_URL=http://nginx:4000
+    restart: unless-stopped
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf.template
+      - ./nginx-entrypoint.sh:/docker-entrypoint.d/nginx-entrypoint.sh
+    ports:
+      - "4000:4000"
+    networks:
+      - app-network
+    depends_on:
+      - nextjs
+    environment:
+      - API_BACKEND_URL=http://49.50.129.74
+      - API_BACKEND_HOST=http://49.50.129.74
+    entrypoint: ["/bin/sh", "/docker-entrypoint.d/nginx-entrypoint.sh"]
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge

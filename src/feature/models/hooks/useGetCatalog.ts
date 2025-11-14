@@ -2,7 +2,7 @@
 
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/models";
-import getCatalog from "../api/getCatalog";
+import getCatalogs from "../api/getCatalogs";
 
 type GetCatalogResponse =
   paths["/v1/catalog/"]["get"]["responses"]["200"]["content"]["application/json"];
@@ -18,7 +18,7 @@ export const useGetCatalog = (
 ) => {
   return useQuery<GetCatalogResponse, Error>({
     queryKey: ["catalog", params],
-    queryFn: () => getCatalog(params),
+    queryFn: () => getCatalogs(params),
     ...options,
   });
 };

@@ -68,7 +68,7 @@ export default function PersonasPage() {
   };
 
   const handleViewDetails = (personaId: number) => {
-    router.push(`/dashboard/service/personas/${personaId}`);
+    router.push(`/studio/personas/${personaId}`);
   };
 
   const handleRefresh = () => {

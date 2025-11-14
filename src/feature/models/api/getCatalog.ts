@@ -1,21 +1,35 @@
+import axios from "axios";
+import { SERVER_API_BASE_URL } from "@/shared/constants";
+import { cookies } from "next/headers";
 import { paths } from "@/shared/types/api/models";
-import axiosInstance from "@/shared/utils/axiosInstance";
 
-type GetCatalogResponse =
-  paths["/v1/catalog/"]["get"]["responses"]["200"]["content"]["application/json"];
+// API 타입 추출 (동적 게이트웨이 라우터 사용)
+export type GetCatalogResponse =
+  paths["/v1/catalog/{model_id}"]["get"]["responses"]["200"]["content"]["application/json"];
 
-type GetCatalogParams = paths["/v1/catalog/"]["get"]["parameters"]["query"];
+type GetCatalogParams = {
+  model_id: number;
+};
 
-const getCatalog = async (params?: GetCatalogParams) => {
-  try {
-    const response = await axiosInstance.models.get<GetCatalogResponse>(
-      "/catalog",
-      { params }
-    );
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+/**
+ * 특정 AI 모델 조회 API (서버사이드용)
+ * @param params - 모델 ID를 포함한 파라미터
+ */
+const getCatalog = async (
+  params: GetCatalogParams
+): Promise<GetCatalogResponse> => {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+
+  const response = await axios.get<GetCatalogResponse>(
+    `${SERVER_API_BASE_URL}/api/models/v1/catalog/${params.model_id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  return response.data;
 };
 
 export default getCatalog;

@@ -1,5 +1,7 @@
-# 런타임 단계
-FROM node:18-alpine AS builder
+# syntax=docker/dockerfile:1
+
+# 빌드 단계
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -7,7 +9,7 @@ WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # 의존성 파일 복사
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml* ./
 
 # 의존성 설치
 RUN pnpm install --frozen-lockfile
@@ -15,42 +17,31 @@ RUN pnpm install --frozen-lockfile
 # 소스 코드 복사
 COPY . .
 
-EXPOSE 3000
+# 환경 변수 설정
+ENV NEXT_TELEMETRY_DISABLED=1
 
-CMD ["pnpm", "run", "dev"]
+# Next.js 빌드
+RUN pnpm build
 
-# # 프로덕션 빌드 단계
-# FROM node:18-alpine AS builder
+# 런타임 단계
+FROM node:20-alpine AS runner
 
-# WORKDIR /app
+WORKDIR /app
 
-# # pnpm 설치
-# RUN corepack enable && corepack prepare pnpm@latest --activate
+# pnpm 설치 (런타임에서도 필요할 수 있음)
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# # 의존성 파일 복사
-# COPY package.json pnpm-lock.yaml ./
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# # 의존성 설치
-# RUN pnpm install --frozen-lockfile
+# Next.js standalone 파일 복사
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/static ./.next/static
 
-# # 소스 코드 복사
-# COPY . .
+EXPOSE 4000
 
-# # 빌드 실행
-# RUN pnpm run build
+ENV PORT=4000
+ENV HOSTNAME="0.0.0.0"
 
-# # 런타임 단계
-# FROM node:18-alpine
-
-# WORKDIR /app
-
-# # Next.js 애플리케이션 복사
-# COPY --from=builder /app/nextjs-build/standalone ./
-# COPY --from=builder /app/public ./public
-# COPY --from=builder /app/nextjs-build/static ./nextjs-build/static
-# COPY --from=builder /app/node_modules ./node_modules
-# COPY --from=builder /app/nextjs-build .next
-
-# EXPOSE 3000
-
-# CMD ["pnpm", "run", "start"]
+CMD ["node", "server.js"]

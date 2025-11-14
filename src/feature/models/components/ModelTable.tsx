@@ -19,6 +19,8 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
+import { formatDate } from "@/shared/utils/formatDate";
+import { useRouter } from "next/navigation";
 
 type GenAIModel = components["schemas"]["GenAIResponseDTO"];
 
@@ -46,7 +48,11 @@ const getCategoryLabel = (category: string) => {
 const getStatusBadge = (status: string) => {
   const config: Record<
     string,
-    { label: string; variant: "default" | "secondary" | "destructive"; icon: React.ReactNode }
+    {
+      label: string;
+      variant: "default" | "secondary" | "destructive";
+      icon: React.ReactNode;
+    }
   > = {
     STABLE: {
       label: "안정",
@@ -73,7 +79,10 @@ const getStatusBadge = (status: string) => {
   const statusConfig = config[status] || config.STABLE;
 
   return (
-    <Badge variant={statusConfig.variant} className="flex items-center gap-1 w-fit">
+    <Badge
+      variant={statusConfig.variant}
+      className="flex items-center gap-1 w-fit"
+    >
       {statusConfig.icon}
       {statusConfig.label}
     </Badge>
@@ -90,16 +99,8 @@ const formatCost = (cost: number | null | undefined) => {
   return `$${cost.toFixed(6)}`;
 };
 
-const formatDate = (dateString: string | null | undefined) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-};
-
 export default function ModelTable({ models }: ModelTableProps) {
+  const router = useRouter();
   if (models.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
@@ -110,105 +111,131 @@ export default function ModelTable({ models }: ModelTableProps) {
     );
   }
 
+  function handleRowClick(modelId: number) {
+    router.push(`/studio/models/${modelId}`);
+  }
+
   return (
     <>
       <div className="rounded-md border">
         <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[250px]">모델</TableHead>
-                <TableHead>카테고리</TableHead>
-                <TableHead>버전</TableHead>
-                <TableHead>상태</TableHead>
-                <TableHead className="text-right">최대 토큰</TableHead>
-                <TableHead className="text-right">입력 토큰</TableHead>
-                <TableHead className="text-right">출력 토큰</TableHead>
-                <TableHead className="text-right">입력 비용</TableHead>
-                <TableHead className="text-right">출력 비용</TableHead>
-                <TableHead>생성일</TableHead>
-                <TableHead className="w-[100px]">작업</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {models.map((model) => (
-                <TableRow key={model.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={model.logo || undefined} alt={model.model_name} />
-                        <AvatarFallback>
-                          {model.model_name.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{model.model_name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {model.provider}
-                        </span>
-                      </div>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-center w-[5%]">ID</TableHead>
+              <TableHead className="text-left w-[15%]">모델</TableHead>
+              <TableHead className="text-center w-[8%]">카테고리</TableHead>
+              <TableHead className="text-left w-[6%]">버전</TableHead>
+              <TableHead className="text-center w-[7%]">상태</TableHead>
+              <TableHead className="text-center w-[8%]">최대 토큰</TableHead>
+              <TableHead className="text-center w-[8%]">입력 토큰</TableHead>
+              <TableHead className="text-center w-[8%]">출력 토큰</TableHead>
+              <TableHead className="text-center w-[9%]">입력 비용</TableHead>
+              <TableHead className="text-center w-[9%]">출력 비용</TableHead>
+              <TableHead className="text-center w-[10%]">생성일</TableHead>
+              <TableHead className="text-center w-[7%]">작업</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {models.map((model) => (
+              <TableRow
+                key={model.id}
+                className="group cursor-pointer hover:bg-slate-50"
+                onClick={() => handleRowClick(model.id)}
+              >
+                <TableCell className="text-center font-mono text-sm text-muted-foreground">
+                  {model.id}
+                </TableCell>
+                <TableCell className="text-left">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage
+                        src={model.logo || undefined}
+                        alt={model.model_name}
+                      />
+                      <AvatarFallback>
+                        {model.model_name.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{model.model_name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {model.provider}
+                      </span>
                     </div>
-                  </TableCell>
-                  <TableCell>
+                  </div>
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="flex justify-center">
                     <Badge variant="outline">
                       {getCategoryLabel(model.category)}
                     </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <code className="text-xs bg-muted px-2 py-1 rounded">
-                      v{model.version}
-                    </code>
-                  </TableCell>
-                  <TableCell>{getStatusBadge(model.status)}</TableCell>
-                  <TableCell className="text-right font-mono text-sm">
-                    {formatNumber(model.max_tokens)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-sm">
-                    {formatNumber(model.max_input_tokens)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-sm">
-                    {formatNumber(model.max_output_tokens)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-sm">
-                    {formatCost(model.input_cost_per_token)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-sm">
-                    {formatCost(model.output_cost_per_token)}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {formatDate(model.created_at)}
-                  </TableCell>
-                  <TableCell>
-                    {model.endpoints_url && (
+                  </div>
+                </TableCell>
+                <TableCell className="text-left">
+                  <code className="text-xs bg-muted px-2 py-1 rounded">
+                    v{model.version}
+                  </code>
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="flex justify-center">
+                    {getStatusBadge(model.status)}
+                  </div>
+                </TableCell>
+                <TableCell className="text-center font-mono text-sm">
+                  {formatNumber(model.max_tokens)}
+                </TableCell>
+                <TableCell className="text-center font-mono text-sm">
+                  {formatNumber(model.max_input_tokens)}
+                </TableCell>
+                <TableCell className="text-center font-mono text-sm">
+                  {formatNumber(model.max_output_tokens)}
+                </TableCell>
+                <TableCell className="text-center font-mono text-sm">
+                  {formatCost(model.input_cost_per_token)}
+                </TableCell>
+                <TableCell className="text-center font-mono text-sm">
+                  {formatCost(model.output_cost_per_token)}
+                </TableCell>
+                <TableCell className="text-center text-sm text-muted-foreground">
+                  {formatDate(model.created_at)}
+                </TableCell>
+                <TableCell className="text-center">
+                  {model.endpoints_url && (
+                    <div className="flex justify-center">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => window.open(model.endpoints_url!, "_blank")}
+                        onClick={() =>
+                          window.open(model.endpoints_url!, "_blank")
+                        }
                       >
                         <ExternalLink className="h-4 w-4" />
                       </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+                    </div>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
 
-        {models.length > 0 && (
-          <div className="mt-4 text-sm text-muted-foreground">
-            <p className="font-medium mb-2">모델 설명:</p>
-            <div className="space-y-2">
-              {models.slice(0, 3).map((model) => (
+      {models.length > 0 && (
+        <div className="mt-4 text-sm text-muted-foreground">
+          <p className="font-medium mb-2">모델 설명:</p>
+          <div className="space-y-2">
+            {models.slice(0, 3).map(
+              (model) =>
                 model.description && (
                   <div key={model.id} className="pl-4 border-l-2 border-muted">
                     <span className="font-medium">{model.model_name}:</span>{" "}
                     {model.description}
                   </div>
                 )
-              ))}
-            </div>
+            )}
           </div>
-        )}
-      </>
-    );
-  }
+        </div>
+      )}
+    </>
+  );
+}
