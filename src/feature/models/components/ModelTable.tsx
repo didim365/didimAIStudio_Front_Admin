@@ -115,23 +115,27 @@ export default function ModelTable({ models }: ModelTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[250px]">모델</TableHead>
-              <TableHead>카테고리</TableHead>
-              <TableHead>버전</TableHead>
-              <TableHead>상태</TableHead>
-              <TableHead className="text-right">최대 토큰</TableHead>
-              <TableHead className="text-right">입력 토큰</TableHead>
-              <TableHead className="text-right">출력 토큰</TableHead>
-              <TableHead className="text-right">입력 비용</TableHead>
-              <TableHead className="text-right">출력 비용</TableHead>
-              <TableHead>생성일</TableHead>
-              <TableHead className="w-[100px]">작업</TableHead>
+              <TableHead className="text-center w-[5%]">ID</TableHead>
+              <TableHead className="text-left w-[15%]">모델</TableHead>
+              <TableHead className="text-center w-[8%]">카테고리</TableHead>
+              <TableHead className="text-left w-[6%]">버전</TableHead>
+              <TableHead className="text-center w-[7%]">상태</TableHead>
+              <TableHead className="text-center w-[8%]">최대 토큰</TableHead>
+              <TableHead className="text-center w-[8%]">입력 토큰</TableHead>
+              <TableHead className="text-center w-[8%]">출력 토큰</TableHead>
+              <TableHead className="text-center w-[9%]">입력 비용</TableHead>
+              <TableHead className="text-center w-[9%]">출력 비용</TableHead>
+              <TableHead className="text-center w-[10%]">생성일</TableHead>
+              <TableHead className="text-center w-[7%]">작업</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {models.map((model) => (
               <TableRow key={model.id}>
-                <TableCell>
+                <TableCell className="text-center font-mono text-sm text-muted-foreground">
+                  {model.id}
+                </TableCell>
+                <TableCell className="text-left">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
                       <AvatarImage
@@ -150,46 +154,54 @@ export default function ModelTable({ models }: ModelTableProps) {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>
-                  <Badge variant="outline">
-                    {getCategoryLabel(model.category)}
-                  </Badge>
+                <TableCell className="text-center">
+                  <div className="flex justify-center">
+                    <Badge variant="outline">
+                      {getCategoryLabel(model.category)}
+                    </Badge>
+                  </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-left">
                   <code className="text-xs bg-muted px-2 py-1 rounded">
                     v{model.version}
                   </code>
                 </TableCell>
-                <TableCell>{getStatusBadge(model.status)}</TableCell>
-                <TableCell className="text-right font-mono text-sm">
+                <TableCell className="text-center">
+                  <div className="flex justify-center">
+                    {getStatusBadge(model.status)}
+                  </div>
+                </TableCell>
+                <TableCell className="text-center font-mono text-sm">
                   {formatNumber(model.max_tokens)}
                 </TableCell>
-                <TableCell className="text-right font-mono text-sm">
+                <TableCell className="text-center font-mono text-sm">
                   {formatNumber(model.max_input_tokens)}
                 </TableCell>
-                <TableCell className="text-right font-mono text-sm">
+                <TableCell className="text-center font-mono text-sm">
                   {formatNumber(model.max_output_tokens)}
                 </TableCell>
-                <TableCell className="text-right font-mono text-sm">
+                <TableCell className="text-center font-mono text-sm">
                   {formatCost(model.input_cost_per_token)}
                 </TableCell>
-                <TableCell className="text-right font-mono text-sm">
+                <TableCell className="text-center font-mono text-sm">
                   {formatCost(model.output_cost_per_token)}
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
+                <TableCell className="text-center text-sm text-muted-foreground">
                   {formatDate(model.created_at)}
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                   {model.endpoints_url && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        window.open(model.endpoints_url!, "_blank")
-                      }
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </Button>
+                    <div className="flex justify-center">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          window.open(model.endpoints_url!, "_blank")
+                        }
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    </div>
                   )}
                 </TableCell>
               </TableRow>
