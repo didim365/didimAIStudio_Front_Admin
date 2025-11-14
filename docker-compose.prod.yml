@@ -9,6 +9,7 @@ services:
       - app-network
     environment:
       - NODE_ENV=production
+      - NGINX_INTERNAL_URL=http://nginx:4000
     restart: unless-stopped
   nginx:
     image: nginx:latest

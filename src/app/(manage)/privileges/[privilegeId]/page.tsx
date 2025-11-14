@@ -1,5 +1,5 @@
 import PrivilegePage from "@/feature/privileges/pages/PrivilegePage";
-import { BASE_URL } from "@/shared/constants";
+import { SERVER_API_BASE_URL } from "@/shared/constants";
 import axios from "axios";
 import { cookies } from "next/headers";
 
@@ -9,7 +9,7 @@ async function Page({ params }: { params: Promise<{ privilegeId: string }> }) {
   const accessToken = cookieStore.get("access_token")?.value;
 
   const response = await axios.get(
-    `${BASE_URL}/api/auth/v1/roles/privileges/${privilegeId}`,
+    `${SERVER_API_BASE_URL}/api/auth/v1/roles/privileges/${privilegeId}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

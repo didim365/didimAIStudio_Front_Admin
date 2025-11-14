@@ -1,7 +1,7 @@
 import { GroupEditPage } from "@/feature/groups/pages/GroupEditPage";
 import { cookies } from "next/headers";
 import axios from "axios";
-import { BASE_URL } from "@/shared/constants";
+import { SERVER_API_BASE_URL } from "@/shared/constants";
 
 interface PageProps {
   params: Promise<{ groupId: string }>;
@@ -13,7 +13,7 @@ async function Page({ params }: PageProps) {
   const accessToken = cookieStore.get("access_token")?.value;
 
   const response = await axios.get(
-    `${BASE_URL}/api/auth/v1/groups/${groupId}`,
+    `${SERVER_API_BASE_URL}/api/auth/v1/groups/${groupId}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
