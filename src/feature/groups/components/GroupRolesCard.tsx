@@ -50,7 +50,7 @@ export default function GroupRolesCard({ groupId }: GroupRolesCardProps) {
     },
     meta: {
       successMessage: "그룹 역할이 성공적으로 제거되었습니다.",
-    } as any,
+    },
   });
 
   // 이미 할당된 역할 ID 목록
