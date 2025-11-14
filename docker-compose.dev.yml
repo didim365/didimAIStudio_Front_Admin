@@ -14,6 +14,7 @@ services:
       - app-network
     environment:
       - NODE_ENV=development
+      - NGINX_INTERNAL_URL=http://nginx:4000
 
   nginx:
     image: nginx:latest
