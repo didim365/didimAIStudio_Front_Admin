@@ -9,7 +9,7 @@ type GetCatalogParams = paths["/v1/catalog/"]["get"]["parameters"]["query"];
 const getCatalog = async (params?: GetCatalogParams) => {
   try {
     const response = await axiosInstance.models.get<GetCatalogResponse>(
-      "/catalog",
+      "/catalog/",
       { params }
     );
     return response.data;
