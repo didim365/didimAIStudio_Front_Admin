@@ -33,20 +33,20 @@ const MENU = [
   // },
   {
     name: "스튜디오 관리",
-    href: "/service",
+    href: "/studio",
     icon: Brain,
     children: [
       {
         name: "모델 관리",
-        href: "/service/models",
+        href: "/studio/models",
       },
       {
         name: "도구 관리",
-        href: "/service/tools",
+        href: "/studio/tools",
       },
       {
         name: "페르소나 관리",
-        href: "/service/personas",
+        href: "/studio/personas",
       },
     ],
   },

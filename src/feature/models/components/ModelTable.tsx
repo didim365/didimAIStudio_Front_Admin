@@ -112,7 +112,7 @@ export default function ModelTable({ models }: ModelTableProps) {
   }
 
   function handleRowClick(modelId: number) {
-    router.push(`/models/${modelId}`);
+    router.push(`/studio/models/${modelId}`);
   }
 
   return (
