@@ -1,19 +1,11 @@
-import {
-  Brain,
-  FileText,
-  Group,
-  Key,
-  LayoutDashboard,
-  UserCog,
-  Users,
-} from "lucide-react";
+import { Brain, Group, Key, UserCog, Users } from "lucide-react";
 
 const MENU = [
-  {
-    name: "대시보드",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
+  // {
+  //   name: "대시보드",
+  //   href: "/dashboard",
+  //   icon: LayoutDashboard,
+  // },
   {
     name: "회원 관리",
     href: "/users",
@@ -34,11 +26,11 @@ const MENU = [
     href: "/privileges",
     icon: Key,
   },
-  {
-    name: "감사 로그",
-    href: "/audit-logs",
-    icon: FileText,
-  },
+  // {
+  //   name: "감사 로그",
+  //   href: "/audit-logs",
+  //   icon: FileText,
+  // },
   {
     name: "AI 서비스 관리",
     href: "/service",
@@ -58,7 +50,7 @@ const MENU = [
       },
     ],
   },
-  { name: "문서 관리", href: "/documents", icon: FileText },
+  // { name: "문서 관리", href: "/documents", icon: FileText },
 ];
 
 export default MENU;
