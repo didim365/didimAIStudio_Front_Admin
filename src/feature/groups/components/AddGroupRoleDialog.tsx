@@ -40,10 +40,7 @@ export default function AddGroupRoleDialog({
     onSuccess: () => {
       // 그룹 정보 및 그룹 역할 새로고침
       queryClient.invalidateQueries({
-        queryKey: ["group", groupId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["groupRoles", groupId],
+        queryKey: ["groups", groupId, "roles"],
       });
       // 다이얼로그 닫기 및 초기화
       setOpen(false);
@@ -132,10 +129,8 @@ export default function AddGroupRoleDialog({
                           >
                             <Shield
                               className={cn(
-                                "h-5 w-5",
-                                isSelected
-                                  ? "text-primary"
-                                  : "text-muted-foreground"
+                                "h-5 w-5 text-muted-foreground",
+                                isSelected && "text-primary"
                               )}
                             />
                           </div>
@@ -198,12 +193,13 @@ export default function AddGroupRoleDialog({
             onClick={handleAddRole}
             disabled={!selectedRoleId || isAddingRole}
           >
-            {isAddingRole ? (
+            {isAddingRole && (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 추가 중...
               </>
-            ) : (
+            )}
+            {!isAddingRole && (
               <>
                 <ShieldPlus className="h-4 w-4 mr-2" />
                 추가하기
