@@ -1,11 +1,11 @@
-import { paths } from "@/shared/types/api/auth";
 import axios from "axios";
 import { SERVER_API_BASE_URL } from "@/shared/constants";
 import { cookies } from "next/headers";
+import { paths } from "@/shared/types/api/models";
 
 // API 타입 추출 (동적 게이트웨이 라우터 사용)
-type GetCatalogResponse =
-  paths["/api/{service}/{path}"]["get"]["responses"]["200"]["content"]["application/json"];
+export type GetCatalogResponse =
+  paths["/v1/catalog/{model_id}"]["get"]["responses"]["200"]["content"]["application/json"];
 
 type GetCatalogParams = {
   model_id: number;
