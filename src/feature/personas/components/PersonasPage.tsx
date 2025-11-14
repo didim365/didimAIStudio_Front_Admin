@@ -14,7 +14,6 @@ import {
 } from "@/shared/ui/select";
 import { Search, RefreshCw } from "lucide-react";
 import { useGetPersonasData } from "../hooks/useGetPersonasData";
-import { StatsCards } from "./StatsCards";
 import { PersonasTable } from "./PersonasTable";
 import { components } from "@/shared/types/api/agents";
 
@@ -36,36 +35,12 @@ export default function PersonasPage() {
         : [categoryFilter as components["schemas"]["PersonaCategoryEnum"]],
     is_system: typeFilter === "all" ? undefined : typeFilter === "system",
     is_public: publicFilter === "all" ? undefined : publicFilter === "public",
+    name: searchQuery || undefined,
   };
 
   const { data, isLoading, refetch } = useGetPersonasData(queryParams);
 
   const personas = data?.items || [];
-
-  // 클라이언트 사이드 검색 필터링
-  const filteredPersonas = (() => {
-    if (!searchQuery) return personas;
-
-    const query = searchQuery.toLowerCase();
-    return personas.filter((persona) => {
-      return (
-        persona.name.toLowerCase().includes(query) ||
-        persona.description?.toLowerCase().includes(query) ||
-        persona.system_prompt?.toLowerCase().includes(query) ||
-        persona.user_persona_title?.toLowerCase().includes(query) ||
-        persona.user_persona_description?.toLowerCase().includes(query)
-      );
-    });
-  })();
-
-  // 통계 계산
-  const stats = {
-    total: data?.total || 0,
-    system: personas.filter((p) => p.is_system).length,
-    user: personas.filter((p) => !p.is_system).length,
-    public: personas.filter((p) => p.is_public).length,
-    private: personas.filter((p) => !p.is_public).length,
-  };
 
   const handleViewDetails = (personaId: number) => {
     router.push(`/studio/personas/${personaId}`);
@@ -85,9 +60,6 @@ export default function PersonasPage() {
         </p>
       </div>
 
-      {/* 통계 카드 */}
-      <StatsCards {...stats} />
-
       {/* 검색 및 필터 */}
       <Card className="mb-6">
         <CardContent>
@@ -96,9 +68,12 @@ export default function PersonasPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
-                placeholder="이름, 설명, 시스템 프롬프트, 사용자 커스텀 정보로 검색..."
+                placeholder="이름으로 검색..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setPage(1); // 검색 시 첫 페이지로 리셋
+                }}
                 className="pl-10"
               />
             </div>
@@ -177,7 +152,7 @@ export default function PersonasPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            페르소나 목록 ({filteredPersonas.length})
+            페르소나 목록 ({personas.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -189,7 +164,7 @@ export default function PersonasPage() {
           )}
           {!isLoading && (
             <PersonasTable
-              personas={filteredPersonas}
+              personas={personas}
               onViewDetails={handleViewDetails}
             />
           )}
