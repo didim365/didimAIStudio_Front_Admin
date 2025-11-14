@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { formatDate } from "@/shared/utils/formatDate";
+import { useRouter } from "next/navigation";
 
 type GenAIModel = components["schemas"]["GenAIResponseDTO"];
 
@@ -99,6 +100,7 @@ const formatCost = (cost: number | null | undefined) => {
 };
 
 export default function ModelTable({ models }: ModelTableProps) {
+  const router = useRouter();
   if (models.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
@@ -107,6 +109,10 @@ export default function ModelTable({ models }: ModelTableProps) {
         <p className="text-sm">필터 조건을 변경해보세요</p>
       </div>
     );
+  }
+
+  function handleRowClick(modelId: number) {
+    router.push(`/models/${modelId}`);
   }
 
   return (
@@ -131,7 +137,11 @@ export default function ModelTable({ models }: ModelTableProps) {
           </TableHeader>
           <TableBody>
             {models.map((model) => (
-              <TableRow key={model.id}>
+              <TableRow
+                key={model.id}
+                className="group cursor-pointer hover:bg-slate-50"
+                onClick={() => handleRowClick(model.id)}
+              >
                 <TableCell className="text-center font-mono text-sm text-muted-foreground">
                   {model.id}
                 </TableCell>

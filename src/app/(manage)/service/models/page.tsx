@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import ModelPage from "@/feature/models/components/ModelPage";
+import ModelPage from "@/feature/models/pages/ModelPage";
 
 export default function Page() {
   return (

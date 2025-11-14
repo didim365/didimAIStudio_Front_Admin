@@ -3,8 +3,8 @@
 import { components } from "@/shared/types/api/models";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import useGetCatalog from "../hooks/useGetCatalog";
-import ModelTable from "./ModelTable";
-import { ModelStatsCards } from "./ModelStatsCards";
+import ModelTable from "../components/ModelTable";
+import { ModelStatsCards } from "../components/ModelStatsCards";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
