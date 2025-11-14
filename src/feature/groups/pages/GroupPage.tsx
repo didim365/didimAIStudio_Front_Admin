@@ -6,7 +6,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useGetGroup } from "../hooks/useGetGroup";
 import { useGetUser } from "@/feature/users/hooks/useGetUser";
 import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
-import { useGetGroupRoles } from "../hooks/useGetGroupRoles";
 import { useDeleteGroup } from "../hooks/useDeleteGroup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -45,6 +44,7 @@ import {
 } from "../constants/groupType";
 import { getInitials } from "@/feature/users/utils/getInitials";
 import AddMemberDialog from "../components/AddMemberDialog";
+import GroupRolesCard from "../components/GroupRolesCard";
 
 interface GroupPageProps {
   groupId: string;
@@ -80,12 +80,6 @@ function GroupPage({ groupId }: GroupPageProps) {
 
   // 역할 정보 조회
   const { data: roles } = useGetRoles();
-
-  // 그룹 역할 조회
-  const { data: groupRoles, isLoading: isLoadingGroupRoles } = useGetGroupRoles(
-    { group_id: Number(groupId) },
-    { enabled: !!groupId }
-  );
 
   // 그룹 삭제 mutation
   const { mutate: deleteGroup, isPending: isDeleting } = useDeleteGroup({
@@ -425,63 +419,7 @@ function GroupPage({ groupId }: GroupPageProps) {
         </Card>
 
         {/* Group Roles Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              그룹 역할 ({groupRoles?.length || 0})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoadingGroupRoles && (
-              <div className="space-y-3">
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-              </div>
-            )}
-            {!isLoadingGroupRoles && (
-              <>
-                <div className="space-y-3">
-                  {groupRoles?.map((role) => (
-                    <div
-                      key={role.id}
-                      className="flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        <Shield className="h-5 w-5 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm truncate">
-                          {role.role_name}
-                        </p>
-                        <p className="text-xs text-muted-foreground mb-1">
-                          ID: #{role.id}
-                        </p>
-                        {role.description && (
-                          <p className="text-xs text-muted-foreground/80 line-clamp-2 mt-1">
-                            {role.description}
-                          </p>
-                        )}
-                      </div>
-                      <Badge variant="secondary" className="shrink-0 text-xs">
-                        역할
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-                {!groupRoles?.length && (
-                  <div className="text-center py-8">
-                    <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" />
-                    <p className="text-sm text-muted-foreground">
-                      할당된 역할이 없습니다
-                    </p>
-                  </div>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
+        <GroupRolesCard groupId={Number(groupId)} />
       </div>
     </div>
   );
