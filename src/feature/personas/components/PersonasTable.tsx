@@ -12,6 +12,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Eye, Shield, Lock, Unlock, User } from "lucide-react";
 import { paths } from "@/shared/types/api/agents";
+import { useRouter } from "next/navigation";
 
 type PersonaDataResponse =
   paths["/v1/personas/data"]["get"]["responses"]["200"]["content"]["application/json"]["items"][0];
@@ -45,7 +46,7 @@ const categoryConfig: Record<string, { label: string; color: string }> = {
   CUSTOM: { label: "커스텀", color: "bg-neutral-100 text-neutral-800" },
 };
 
-export function PersonasTable({ personas, onViewDetails }: PersonasTableProps) {
+export function PersonasTable({ personas }: PersonasTableProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("ko-KR", {
       year: "numeric",
@@ -53,7 +54,10 @@ export function PersonasTable({ personas, onViewDetails }: PersonasTableProps) {
       day: "2-digit",
     });
   };
-
+  const router = useRouter();
+  const handleViewDetails = (personaId: number) => {
+    router.push(`/studio/personas/${personaId}`);
+  };
   return (
     <div className="border rounded-lg overflow-hidden">
       <Table>
@@ -67,7 +71,6 @@ export function PersonasTable({ personas, onViewDetails }: PersonasTableProps) {
             <TableHead className="w-[100px] text-center">타입</TableHead>
             <TableHead className="w-[100px] text-center">공개</TableHead>
             <TableHead className="w-[120px]">생성일</TableHead>
-            <TableHead className="w-[100px] text-right">작업</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -82,13 +85,19 @@ export function PersonasTable({ personas, onViewDetails }: PersonasTableProps) {
             </TableRow>
           )}
           {personas.map((persona) => (
-            <TableRow key={persona.id} className="hover:bg-slate-50 transition-colors">
+            <TableRow
+              key={persona.id}
+              className="hover:bg-slate-50 transition-colors cursor-pointer"
+              onClick={() => handleViewDetails(persona.id)}
+            >
               <TableCell className="font-mono text-sm text-slate-600">
-                #{persona.id}
+                {persona.id}
               </TableCell>
               <TableCell>
                 <div className="space-y-1">
-                  <div className="font-semibold text-slate-900">{persona.name}</div>
+                  <div className="font-semibold text-slate-900">
+                    {persona.name}
+                  </div>
                   {persona.user_persona_title && (
                     <div className="text-xs text-slate-500 flex items-center gap-1">
                       <User className="h-3 w-3" />
@@ -112,32 +121,43 @@ export function PersonasTable({ personas, onViewDetails }: PersonasTableProps) {
               <TableCell>
                 <Badge
                   variant="outline"
-                  className={categoryConfig[persona.category]?.color || "bg-gray-100 text-gray-800"}
+                  className={
+                    categoryConfig[persona.category]?.color ||
+                    "bg-gray-100 text-gray-800"
+                  }
                 >
                   {categoryConfig[persona.category]?.label || persona.category}
                 </Badge>
               </TableCell>
               <TableCell className="text-sm text-slate-600">
-                {(persona.user_persona_title || persona.user_persona_description) && (
+                {(persona.user_persona_title ||
+                  persona.user_persona_description) && (
                   <div className="flex items-center gap-1 text-green-600">
                     <Shield className="h-4 w-4" />
                     커스터마이징됨
                   </div>
                 )}
-                {!persona.user_persona_title && !persona.user_persona_description && (
-                  <span className="text-slate-400">기본</span>
-                )}
+                {!persona.user_persona_title &&
+                  !persona.user_persona_description && (
+                    <span className="text-slate-400">기본</span>
+                  )}
               </TableCell>
               <TableCell>
                 <div className="flex justify-center">
                   {persona.is_system && (
-                    <Badge variant="outline" className="bg-purple-100 text-purple-800">
+                    <Badge
+                      variant="outline"
+                      className="bg-purple-100 text-purple-800"
+                    >
                       <Shield className="h-3 w-3 mr-1" />
                       시스템
                     </Badge>
                   )}
                   {!persona.is_system && (
-                    <Badge variant="outline" className="bg-green-100 text-green-800">
+                    <Badge
+                      variant="outline"
+                      className="bg-green-100 text-green-800"
+                    >
                       <User className="h-3 w-3 mr-1" />
                       사용자
                     </Badge>
@@ -147,13 +167,19 @@ export function PersonasTable({ personas, onViewDetails }: PersonasTableProps) {
               <TableCell>
                 <div className="flex justify-center">
                   {persona.is_public && (
-                    <Badge variant="outline" className="bg-teal-100 text-teal-800">
+                    <Badge
+                      variant="outline"
+                      className="bg-teal-100 text-teal-800"
+                    >
                       <Unlock className="h-3 w-3 mr-1" />
                       공개
                     </Badge>
                   )}
                   {!persona.is_public && (
-                    <Badge variant="outline" className="bg-orange-100 text-orange-800">
+                    <Badge
+                      variant="outline"
+                      className="bg-orange-100 text-orange-800"
+                    >
                       <Lock className="h-3 w-3 mr-1" />
                       비공개
                     </Badge>
@@ -162,16 +188,6 @@ export function PersonasTable({ personas, onViewDetails }: PersonasTableProps) {
               </TableCell>
               <TableCell className="text-sm text-slate-600">
                 {formatDate(persona.created_at)}
-              </TableCell>
-              <TableCell className="text-right">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onViewDetails(persona.id)}
-                  className="hover:bg-blue-50 hover:text-blue-600"
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
               </TableCell>
             </TableRow>
           ))}
