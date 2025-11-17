@@ -54,6 +54,10 @@ function GroupPage({ groupId }: GroupPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
   const {
     data: group,
     isLoading,
@@ -382,15 +386,17 @@ function GroupPage({ groupId }: GroupPageProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-1">
               {group?.members?.map((member) => (
-                <Link
+                <div
                   key={member.user_id}
-                  href={`/users/${member.user_id}`}
-                  className="cursor-pointer"
+                  className="relative flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group"
                 >
-                  <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
-                    <Avatar className="h-10 w-10">
+                  <Link
+                    href={`/users/${member.user_id}`}
+                    className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
+                  >
+                    <Avatar className="h-10 w-10 shrink-0">
                       <AvatarFallback className="text-sm">
                         {getInitials(member.full_name, `user${member.user_id}`)}
                       </AvatarFallback>
@@ -403,8 +409,24 @@ function GroupPage({ groupId }: GroupPageProps) {
                         ID: #{member.user_id}
                       </p>
                     </div>
+                  </Link>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMemberToDelete({
+                          id: member.user_id,
+                          name: member.full_name,
+                        });
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
             {!group?.members?.length && (
@@ -421,6 +443,49 @@ function GroupPage({ groupId }: GroupPageProps) {
         {/* Group Roles Card */}
         <GroupRolesCard groupId={Number(groupId)} />
       </div>
+
+      {/* 멤버 제거 확인 다이얼로그 */}
+      <AlertDialog
+        open={!!memberToDelete}
+        onOpenChange={(open) => {
+          if (!open) setMemberToDelete(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Trash2 className="h-5 w-5 text-destructive" />
+              그룹 멤버 제거 확인
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              정말로 <strong>{memberToDelete?.name}</strong> 사용자를 이
+              그룹에서 제거하시겠습니까?
+              <br />
+              <span className="text-xs text-muted-foreground mt-2 block">
+                이 작업은 되돌릴 수 없습니다.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                // TODO: API 구현 후 삭제 로직 추가
+                // deleteMemberMutation.mutate({
+                //   group_id: Number(groupId),
+                //   user_id: memberToDelete.id,
+                // });
+                setMemberToDelete(null);
+              }}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              제거
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
