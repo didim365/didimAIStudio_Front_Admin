@@ -14,8 +14,8 @@ import {
 } from "@/shared/ui/select";
 import { Search, RefreshCw } from "lucide-react";
 import { useGetPersonasData } from "../hooks/useGetPersonasData";
-import { PersonasTable } from "./PersonasTable";
 import { components } from "@/shared/types/api/agents";
+import { PersonasTable } from "../components/PersonasTable";
 
 export default function PersonasPage() {
   const router = useRouter();

@@ -9,8 +9,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Button } from "@/shared/ui/button";
-import { Eye, Shield, Lock, Unlock, User } from "lucide-react";
+import { Shield, Lock, Unlock, User } from "lucide-react";
 import { paths } from "@/shared/types/api/agents";
 import { useRouter } from "next/navigation";
 import { cn } from "@/shared/lib/utils";
