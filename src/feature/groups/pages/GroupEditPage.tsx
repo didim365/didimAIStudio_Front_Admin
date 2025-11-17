@@ -71,7 +71,7 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
       data: {
         group_name: formData.group_name || null,
         group_type: formData.group_type || null,
-        parent_group: formData.parent_group_id || null,
+        parent_group_id: formData.parent_group_id || null,
         manager: formData.manager || null,
         role_id: formData.role_id || null,
       },
