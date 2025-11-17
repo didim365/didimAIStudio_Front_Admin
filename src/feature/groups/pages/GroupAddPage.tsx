@@ -83,7 +83,6 @@ export default function GroupAddPage() {
       group_type: formData.group_type,
       parent_group_id: formData.parent_group_id || null,
       manager: formData.manager || null,
-      creator: myInfo.id,
       role_id: formData.role_id,
     });
   };
