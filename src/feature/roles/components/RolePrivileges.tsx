@@ -78,7 +78,6 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
     if (!privilegeToDelete) return;
 
     deletePrivilegeMutation.mutate({
-      role_id: roleId,
       privilege_id: privilegeToDelete.id,
     });
   };

@@ -3,7 +3,7 @@ import axiosInstance from "@/shared/utils/axiosInstance";
 
 // API 타입 추출
 type DeleteRolePrivilegeParams =
-  paths["/api/v1/roles/remove_privilege"]["delete"]["parameters"]["query"];
+  paths["/api/v1/roles/privileges/{privilege_id}"]["delete"]["parameters"]["path"];
 
 /**
  * 역할에서 권한 제거 API
