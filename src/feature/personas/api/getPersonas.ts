@@ -1,15 +1,15 @@
 import { paths } from "@/shared/types/api/agents";
 import axiosInstance from "@/shared/utils/axiosInstance";
 
-type GetPersonasDataResponse =
+type GetPersonasResponse =
   paths["/v1/personas/data"]["get"]["responses"]["200"]["content"]["application/json"];
 
-type GetPersonasDataParams =
+type GetPersonasParams =
   paths["/v1/personas/data"]["get"]["parameters"]["query"];
 
-const getPersonasData = async (params?: GetPersonasDataParams) => {
+const getPersonas = async (params?: GetPersonasParams) => {
   try {
-    const response = await axiosInstance.agent.get<GetPersonasDataResponse>(
+    const response = await axiosInstance.agent.get<GetPersonasResponse>(
       "/personas/data",
       { params }
     );
@@ -19,4 +19,4 @@ const getPersonasData = async (params?: GetPersonasDataParams) => {
   }
 };
 
-export default getPersonasData;
+export default getPersonas;

@@ -13,9 +13,9 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { Search, RefreshCw } from "lucide-react";
-import { useGetPersonasData } from "../hooks/useGetPersonasData";
 import { components } from "@/shared/types/api/agents";
 import { PersonasTable } from "../components/PersonasTable";
+import useGetPersonas from "../hooks/useGetPersonas";
 
 export default function PersonasPage() {
   const router = useRouter();
@@ -38,7 +38,7 @@ export default function PersonasPage() {
     name: searchQuery || undefined,
   };
 
-  const { data, isLoading, refetch } = useGetPersonasData(queryParams);
+  const { data, isLoading, refetch } = useGetPersonas(queryParams);
 
   const personas = data?.items || [];
 
