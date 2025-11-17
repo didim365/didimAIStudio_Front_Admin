@@ -1,4 +1,4 @@
-import PersonasPage from "@/feature/personas/components/PersonasPage";
+import PersonasPage from "@/feature/personas/pages/PersonasPage";
 
 function Page() {
   return <PersonasPage />;
