@@ -243,7 +243,7 @@ export interface paths {
         put?: never;
         /**
          * 그룹 생성
-         * @description 새로운 그룹을 생성.
+         * @description 새로운 그룹을 생성합니다. creator는 인증된 사용자로 자동 설정됩니다.
          */
         post: operations["create_new_group_api_v1_groups_post"];
         delete?: never;
@@ -268,7 +268,7 @@ export interface paths {
         post?: never;
         /**
          * 그룹 삭제
-         * @description 그룹을 삭제합니다. 하위 그룹이나 멤버가 있으면 삭제할 수 없습니다.
+         * @description 그룹을 삭제합니다. 하위 그룹이 없고, 멤버가 없거나 본인 혼자인 경우에만 삭제 가능합니다.
          */
         delete: operations["delete_group_endpoint_api_v1_groups__group_id__delete"];
         options?: never;
@@ -513,7 +513,11 @@ export interface paths {
          * @description **역할에 권한을 할당합니다.**
          */
         post: operations["assign_privilege_api_v1_roles__role_id__privileges__privilege_id__post"];
-        delete?: never;
+        /**
+         * 역할에서 권한 제거
+         * @description **역할에서 권한을 제거합니다.**
+         */
+        delete: operations["remove_privilege_from_role_api_api_v1_roles__role_id__privileges__privilege_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -531,23 +535,6 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/roles/remove_privilege": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** 역할에서 권한 제거 */
-        delete: operations["remove_privilege_from_role_api_api_v1_roles_remove_privilege_delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1438,12 +1425,8 @@ export interface components {
             group_type: components["schemas"]["GroupTypeEnum"];
             /** Parent Group Id */
             parent_group_id?: number | null;
-            /** Parent */
-            parent?: string | null;
             /** Manager */
             manager?: number | null;
-            /** Creator */
-            creator: number;
             /** Role Id */
             role_id?: number | null;
         };
@@ -1580,10 +1563,10 @@ export interface components {
             /** @description 그룹 타입 */
             group_type?: components["schemas"]["GroupType"] | null;
             /**
-             * Parent Group
+             * Parent Group Id
              * @description 상위 그룹 ID
              */
-            parent_group?: number | null;
+            parent_group_id?: number | null;
             /**
              * Manager
              * @description 그룹 관리자 ID
@@ -4504,27 +4487,26 @@ export interface operations {
             };
         };
     };
-    get_privileges_of_role_api_v1_roles__role_id__privileges_get: {
+    remove_privilege_from_role_api_api_v1_roles__role_id__privileges__privilege_id__delete: {
         parameters: {
             query?: never;
             header?: never;
             path: {
                 role_id: number;
+                privilege_id: number;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            200: {
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["PrivilegeResponse"][];
-                };
+                content?: never;
             };
-            /** @description Not found */
+            /** @description Role-Privilege relation not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -4549,24 +4531,25 @@ export interface operations {
             };
         };
     };
-    remove_privilege_from_role_api_api_v1_roles_remove_privilege_delete: {
+    get_privileges_of_role_api_v1_roles__role_id__privileges_get: {
         parameters: {
-            query: {
-                role_id: number;
-                privilege_id: number;
-            };
+            query?: never;
             header?: never;
-            path?: never;
+            path: {
+                role_id: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            204: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PrivilegeResponse"][];
+                };
             };
             /** @description Not found */
             404: {
