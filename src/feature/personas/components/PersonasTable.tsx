@@ -65,6 +65,9 @@ export function PersonasTable({ personas }: PersonasTableProps) {
           <TableRow className="bg-slate-50">
             <TableHead className="w-[80px]">ID</TableHead>
             <TableHead className="min-w-[200px]">페르소나 이름</TableHead>
+            <TableHead className="min-w-[180px]">
+              사용자 페르소나 제목
+            </TableHead>
             <TableHead className="min-w-[250px]">설명</TableHead>
             <TableHead className="w-[120px]">카테고리</TableHead>
             <TableHead className="min-w-[180px]">사용자 커스텀</TableHead>
@@ -94,16 +97,14 @@ export function PersonasTable({ personas }: PersonasTableProps) {
                 {persona.id}
               </TableCell>
               <TableCell>
-                <div className="space-y-1">
-                  <div className="font-semibold text-slate-900">
-                    {persona.name}
-                  </div>
-                  {persona.user_persona_title && (
-                    <div className="text-xs text-slate-500 flex items-center gap-1">
-                      <User className="h-3 w-3" />
-                      {persona.user_persona_title}
-                    </div>
-                  )}
+                <div className="font-semibold text-slate-900">
+                  {persona.name}
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="text-sm text-slate-700 flex items-center gap-1">
+                  <User className="h-4 w-4" />
+                  {persona.user_persona_title ?? "-"}
                 </div>
               </TableCell>
               <TableCell>
