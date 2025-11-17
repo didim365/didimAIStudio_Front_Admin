@@ -58,7 +58,7 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
     onSuccess: () => {
       // 그룹 정보 새로고침
       queryClient.invalidateQueries({
-        queryKey: ["group", groupId],
+        queryKey: ["groups", groupId],
       });
       // 다이얼로그 닫기 및 초기화
       setOpen(false);
