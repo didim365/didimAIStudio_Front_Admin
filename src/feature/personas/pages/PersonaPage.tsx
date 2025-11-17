@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
 import { useGetPersona } from "../hooks/useGetPersona";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -43,8 +41,6 @@ interface PersonaPageProps {
 }
 
 function PersonaPage({ personaId }: PersonaPageProps) {
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const {
     data: persona,
@@ -187,7 +183,7 @@ function PersonaPage({ personaId }: PersonaPageProps) {
             <div className="flex flex-col md:flex-row gap-6">
               {/* Icon */}
               <div className="flex flex-col items-center gap-4">
-                <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl from-primary/20 to-primary/5 flex items-center justify-center">
                   <Sparkles className="h-16 w-16 text-primary" />
                 </div>
                 <div className="flex flex-col items-center gap-2">
@@ -323,7 +319,7 @@ function PersonaPage({ personaId }: PersonaPageProps) {
                 <span>타입</span>
               </div>
               <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                {persona.is_system ? (
+                {persona.is_system && (
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
@@ -332,11 +328,9 @@ function PersonaPage({ personaId }: PersonaPageProps) {
                       <Shield className="h-3 w-3 mr-1" />
                       시스템 페르소나
                     </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      관리자가 생성한 기본 페르소나
-                    </span>
                   </div>
-                ) : (
+                )}
+                {!persona.is_system && (
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
@@ -345,9 +339,6 @@ function PersonaPage({ personaId }: PersonaPageProps) {
                       <User className="h-3 w-3 mr-1" />
                       사용자 페르소나
                     </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      사용자가 생성한 커스텀 페르소나
-                    </span>
                   </div>
                 )}
               </div>
@@ -358,15 +349,16 @@ function PersonaPage({ personaId }: PersonaPageProps) {
             {/* Public Status */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
-                {persona.is_public ? (
+                {persona.is_public && (
                   <Unlock className="h-4 w-4 text-muted-foreground" />
-                ) : (
+                )}
+                {!persona.is_public && (
                   <Lock className="h-4 w-4 text-muted-foreground" />
                 )}
                 <span>공개 설정</span>
               </div>
               <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                {persona.is_public ? (
+                {persona.is_public && (
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
@@ -375,11 +367,9 @@ function PersonaPage({ personaId }: PersonaPageProps) {
                       <Unlock className="h-3 w-3 mr-1" />
                       공개
                     </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      모든 사용자가 사용할 수 있습니다
-                    </span>
                   </div>
-                ) : (
+                )}
+                {!persona.is_public && (
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
@@ -388,9 +378,6 @@ function PersonaPage({ personaId }: PersonaPageProps) {
                       <Lock className="h-3 w-3 mr-1" />
                       비공개
                     </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      생성자만 사용할 수 있습니다
-                    </span>
                   </div>
                 )}
               </div>
