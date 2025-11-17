@@ -382,7 +382,7 @@ function GroupPage({ groupId }: GroupPageProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="flex flex-col gap-1">
               {group?.members?.map((member) => (
                 <Link
                   key={member.user_id}
