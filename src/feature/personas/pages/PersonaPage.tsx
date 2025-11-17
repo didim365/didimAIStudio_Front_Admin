@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useGetPersona } from "../hooks/useGetPersona";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Separator } from "@/shared/ui/separator";
 import {
   AlertDialog,
@@ -36,54 +34,18 @@ import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
 import { categoryConfig } from "../constants/categoryConfig";
 
+import type { GetPersonaResponse } from "../api/getPersona";
+
 interface PersonaPageProps {
-  personaId: string;
+  persona: GetPersonaResponse | null;
 }
 
-function PersonaPage({ personaId }: PersonaPageProps) {
+function PersonaPage({ persona }: PersonaPageProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const {
-    data: persona,
-    isLoading,
-    error,
-  } = useGetPersona({ persona_id: Number(personaId) });
 
   const handleDelete = () => {
-    // TODO: 페르소나 삭제 API 호출
-    console.log("페르소나 삭제:", personaId);
     setShowDeleteDialog(false);
-    // TODO: 삭제 후 페르소나 목록 페이지로 이동하거나 리프레시
   };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-[400px]" />
-          <Skeleton className="h-[400px]" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="py-8 px-4">
-        <Card className="border-destructive">
-          <CardHeader>
-            <CardTitle className="text-destructive">오류 발생</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              페르소나 정보를 불러오는 중 오류가 발생했습니다.
-            </p>
-            <p className="text-sm text-destructive mt-2">{error.message}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   if (!persona) {
     return (
@@ -131,7 +93,7 @@ function PersonaPage({ personaId }: PersonaPageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/studio/personas/${personaId}/edit`}>
+          <Link href={`/studio/personas/${persona.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정
