@@ -35,31 +35,23 @@ import { formatDate } from "@/shared/utils/formatDate";
 import { categoryConfig } from "../constants/categoryConfig";
 
 import type { GetPersonaResponse } from "../api/getPersona";
+import useDeletePersona from "../hooks/useDeletePersona";
+import { useRouter } from "next/navigation";
 
 interface PersonaPageProps {
-  persona: GetPersonaResponse | null;
+  persona: GetPersonaResponse;
 }
 
 function PersonaPage({ persona }: PersonaPageProps) {
+  const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { mutate: deletePersona } = useDeletePersona();
 
   const handleDelete = () => {
     setShowDeleteDialog(false);
+    deletePersona({ persona_id: persona.id });
+    router.push("/studio/personas");
   };
-
-  if (!persona) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              페르소나를 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const personaTitle = persona.user_persona_title ?? persona.name;
   const personaDescription =
