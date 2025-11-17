@@ -69,6 +69,9 @@ export function PersonasTable({ personas }: PersonasTableProps) {
               사용자 페르소나 제목
             </TableHead>
             <TableHead className="min-w-[250px]">설명</TableHead>
+            <TableHead className="min-w-[200px]">
+              사용자 페르소나 설명
+            </TableHead>
             <TableHead className="w-[120px]">카테고리</TableHead>
             <TableHead className="min-w-[180px]">사용자 커스텀</TableHead>
             <TableHead className="w-[100px] text-center">타입</TableHead>
@@ -80,7 +83,7 @@ export function PersonasTable({ personas }: PersonasTableProps) {
           {personas.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={9}
+                colSpan={10}
                 className="text-center py-12 text-slate-500"
               >
                 등록된 페르소나가 없습니다.
@@ -108,15 +111,13 @@ export function PersonasTable({ personas }: PersonasTableProps) {
                 </div>
               </TableCell>
               <TableCell>
-                <div className="space-y-1">
-                  <div className="text-sm text-slate-700 line-clamp-2">
-                    {persona.description}
-                  </div>
-                  {persona.user_persona_description && (
-                    <div className="text-xs text-slate-500 line-clamp-1">
-                      메모: {persona.user_persona_description}
-                    </div>
-                  )}
+                <div className="text-sm text-slate-700 line-clamp-2">
+                  {persona.description}
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="text-sm text-slate-600 line-clamp-2">
+                  {persona.user_persona_description ?? "-"}
                 </div>
               </TableCell>
               <TableCell>
