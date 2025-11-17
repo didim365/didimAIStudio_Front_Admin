@@ -1,5 +1,516 @@
-function PersonaPage() {
-  return <div>PersonaPage</div>;
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { useGetPersona } from "../hooks/useGetPersona";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Badge } from "@/shared/ui/badge";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { Separator } from "@/shared/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/ui/alert-dialog";
+import {
+  User,
+  Calendar,
+  Shield,
+  Lock,
+  Unlock,
+  ArrowLeft,
+  Pencil,
+  Trash2,
+  UserCircle,
+  FileText,
+  Tag,
+  Settings,
+  Sparkles,
+} from "lucide-react";
+import { Button } from "@/shared/ui/button";
+import Link from "next/link";
+import { formatDate } from "@/shared/utils/formatDate";
+
+interface PersonaPageProps {
+  personaId: string;
+}
+
+const categoryConfig: Record<string, { label: string; color: string }> = {
+  IT: { label: "IT", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  Medical: { label: "의료", color: "bg-red-100 text-red-800 border-red-200" },
+  Education: {
+    label: "교육",
+    color: "bg-green-100 text-green-800 border-green-200",
+  },
+  Finance: {
+    label: "금융",
+    color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  },
+  Marketing: {
+    label: "마케팅",
+    color: "bg-pink-100 text-pink-800 border-pink-200",
+  },
+  Art: {
+    label: "예술",
+    color: "bg-purple-100 text-purple-800 border-purple-200",
+  },
+  Engineering: {
+    label: "공학",
+    color: "bg-indigo-100 text-indigo-800 border-indigo-200",
+  },
+  Legal: {
+    label: "법률",
+    color: "bg-gray-100 text-gray-800 border-gray-200",
+  },
+  Science: {
+    label: "과학",
+    color: "bg-teal-100 text-teal-800 border-teal-200",
+  },
+  Sports: {
+    label: "스포츠",
+    color: "bg-orange-100 text-orange-800 border-orange-200",
+  },
+  Environment: {
+    label: "환경",
+    color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  },
+  Media: {
+    label: "미디어",
+    color: "bg-rose-100 text-rose-800 border-rose-200",
+  },
+  Culinary: {
+    label: "요리",
+    color: "bg-amber-100 text-amber-800 border-amber-200",
+  },
+  Politics: {
+    label: "정치",
+    color: "bg-slate-100 text-slate-800 border-slate-200",
+  },
+  Psychology: {
+    label: "심리",
+    color: "bg-violet-100 text-violet-800 border-violet-200",
+  },
+  Fashion: {
+    label: "패션",
+    color: "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200",
+  },
+  Travel: {
+    label: "여행",
+    color: "bg-cyan-100 text-cyan-800 border-cyan-200",
+  },
+  Agriculture: {
+    label: "농업",
+    color: "bg-lime-100 text-lime-800 border-lime-200",
+  },
+  Gaming: {
+    label: "게임",
+    color: "bg-sky-100 text-sky-800 border-sky-200",
+  },
+  Automotive: {
+    label: "자동차",
+    color: "bg-stone-100 text-stone-800 border-stone-200",
+  },
+  CUSTOM: {
+    label: "커스텀",
+    color: "bg-neutral-100 text-neutral-800 border-neutral-200",
+  },
+};
+
+function PersonaPage({ personaId }: PersonaPageProps) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const {
+    data: persona,
+    isLoading,
+    error,
+  } = useGetPersona({ persona_id: Number(personaId) });
+
+  const handleDelete = () => {
+    // TODO: 페르소나 삭제 API 호출
+    console.log("페르소나 삭제:", personaId);
+    setShowDeleteDialog(false);
+    // TODO: 삭제 후 페르소나 목록 페이지로 이동하거나 리프레시
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-48" />
+        <div className="grid gap-6 md:grid-cols-2">
+          <Skeleton className="h-[400px]" />
+          <Skeleton className="h-[400px]" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-8 px-4">
+        <Card className="border-destructive">
+          <CardHeader>
+            <CardTitle className="text-destructive">오류 발생</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              페르소나 정보를 불러오는 중 오류가 발생했습니다.
+            </p>
+            <p className="text-sm text-destructive mt-2">{error.message}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!persona) {
+    return (
+      <div className="py-8 px-4">
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-center text-muted-foreground">
+              페르소나를 찾을 수 없습니다.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const personaTitle = persona.user_persona_title ?? persona.name;
+  const personaDescription =
+    persona.user_persona_description ?? persona.description;
+  const isCustomized =
+    !!persona.user_persona_title || !!persona.user_persona_description;
+  const categoryInfo = categoryConfig[persona.category] || {
+    label: persona.category,
+    color: "bg-gray-100 text-gray-800 border-gray-200",
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Link href="/studio/personas">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0 cursor-pointer"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              페르소나 상세 정보
+            </h1>
+            <p className="text-muted-foreground">페르소나 ID: {persona.id}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link href={`/studio/personas/${personaId}/edit`}>
+            <Button className="cursor-pointer">
+              <Pencil className="h-4 w-4 mr-2" />
+              수정
+            </Button>
+          </Link>
+          <Button
+            variant="destructive"
+            className="cursor-pointer"
+            onClick={() => setShowDeleteDialog(true)}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            제거
+          </Button>
+        </div>
+      </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>페르소나 삭제 확인</AlertDialogTitle>
+            <AlertDialogDescription>
+              정말 <span className="font-semibold">{personaTitle}</span>
+              을(를) 삭제하시겠습니까?
+              <br />
+              <span className="text-destructive mt-2 block">
+                이 작업은 되돌릴 수 없습니다.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>삭제</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Main Content Grid */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Profile Card */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <UserCircle className="h-5 w-5" />
+              페르소나 정보
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Icon */}
+              <div className="flex flex-col items-center gap-4">
+                <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                  <Sparkles className="h-16 w-16 text-primary" />
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Badge className={`${categoryInfo.color} border`}>
+                    {categoryInfo.label}
+                  </Badge>
+                  {isCustomized && (
+                    <Badge className="bg-green-100 text-green-800 border-green-200 border">
+                      <Shield className="h-3 w-3 mr-1" />
+                      커스터마이징됨
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* Persona Info Grid */}
+              <div className="flex-1 grid gap-4 md:grid-cols-2">
+                {/* Title */}
+                <div className="space-y-2 md:col-span-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <FileText className="h-4 w-4" />
+                    <span className="font-medium">
+                      {persona.user_persona_title ? "커스텀 제목" : "제목"}
+                    </span>
+                  </div>
+                  <p className="text-lg font-semibold pl-6">{personaTitle}</p>
+                  {persona.user_persona_title && persona.name && (
+                    <p className="text-sm text-muted-foreground pl-6">
+                      원본: {persona.name}
+                    </p>
+                  )}
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2 md:col-span-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <FileText className="h-4 w-4" />
+                    <span className="font-medium">
+                      {persona.user_persona_description
+                        ? "커스텀 설명"
+                        : "설명"}
+                    </span>
+                  </div>
+                  <p className="text-sm pl-6 leading-relaxed">
+                    {personaDescription}
+                  </p>
+                  {persona.user_persona_description && persona.description && (
+                    <p className="text-sm text-muted-foreground pl-6 leading-relaxed">
+                      원본: {persona.description}
+                    </p>
+                  )}
+                </div>
+
+                {/* Persona ID */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Tag className="h-4 w-4" />
+                    <span className="font-medium">페르소나 ID</span>
+                  </div>
+                  <p className="text-lg font-semibold pl-6">#{persona.id}</p>
+                </div>
+
+                {/* Category */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Tag className="h-4 w-4" />
+                    <span className="font-medium">카테고리</span>
+                  </div>
+                  <p className="text-lg font-semibold pl-6">
+                    {categoryInfo.label}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Activity Timeline Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              활동 정보
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Created At */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <span>생성일</span>
+              </div>
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                <p className="text-sm font-mono">
+                  {formatDate(persona.created_at)}
+                </p>
+              </div>
+            </div>
+
+            {persona.updated_at && (
+              <>
+                <Separator />
+                {/* Updated At */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span>마지막 업데이트</span>
+                  </div>
+                  <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                    <p className="text-sm font-mono">
+                      {formatDate(persona.updated_at)}
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Additional Info Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              추가 정보
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Type */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Shield className="h-4 w-4 text-muted-foreground" />
+                <span>타입</span>
+              </div>
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                {persona.is_system ? (
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className="bg-purple-100 text-purple-800 border-purple-200"
+                    >
+                      <Shield className="h-3 w-3 mr-1" />
+                      시스템 페르소나
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      관리자가 생성한 기본 페르소나
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className="bg-green-100 text-green-800 border-green-200"
+                    >
+                      <User className="h-3 w-3 mr-1" />
+                      사용자 페르소나
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      사용자가 생성한 커스텀 페르소나
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Public Status */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                {persona.is_public ? (
+                  <Unlock className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <Lock className="h-4 w-4 text-muted-foreground" />
+                )}
+                <span>공개 설정</span>
+              </div>
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                {persona.is_public ? (
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className="bg-teal-100 text-teal-800 border-teal-200"
+                    >
+                      <Unlock className="h-3 w-3 mr-1" />
+                      공개
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      모든 사용자가 사용할 수 있습니다
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className="bg-orange-100 text-orange-800 border-orange-200"
+                    >
+                      <Lock className="h-3 w-3 mr-1" />
+                      비공개
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      생성자만 사용할 수 있습니다
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {isCustomized && (
+              <>
+                <Separator />
+                {/* Customization Info */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <span>커스터마이징</span>
+                  </div>
+                  <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                    <div className="space-y-1">
+                      {persona.user_persona_title && (
+                        <p className="text-sm">
+                          <span className="font-medium">• 제목이 수정됨</span>
+                        </p>
+                      )}
+                      {persona.user_persona_description && (
+                        <p className="text-sm">
+                          <span className="font-medium">• 설명이 수정됨</span>
+                        </p>
+                      )}
+                      <p className="text-xs text-muted-foreground mt-2">
+                        사용자가 이 페르소나를 자신만의 방식으로
+                        커스터마이징했습니다
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 }
 
 export default PersonaPage;
