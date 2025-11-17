@@ -13,6 +13,7 @@ import { Shield, Lock, Unlock, User } from "lucide-react";
 import { paths } from "@/shared/types/api/agents";
 import { useRouter } from "next/navigation";
 import { cn } from "@/shared/lib/utils";
+import { categoryConfig } from "../constants/categoryConfig";
 
 type PersonaDataResponse =
   paths["/v1/personas/data"]["get"]["responses"]["200"]["content"]["application/json"]["items"][0];
@@ -21,30 +22,6 @@ interface PersonasTableProps {
   personas: PersonaDataResponse[];
   onViewDetails: (personaId: number) => void;
 }
-
-const categoryConfig: Record<string, { label: string; color: string }> = {
-  IT: { label: "IT", color: "bg-blue-100 text-blue-800" },
-  Medical: { label: "의료", color: "bg-red-100 text-red-800" },
-  Education: { label: "교육", color: "bg-green-100 text-green-800" },
-  Finance: { label: "금융", color: "bg-yellow-100 text-yellow-800" },
-  Marketing: { label: "마케팅", color: "bg-pink-100 text-pink-800" },
-  Art: { label: "예술", color: "bg-purple-100 text-purple-800" },
-  Engineering: { label: "공학", color: "bg-indigo-100 text-indigo-800" },
-  Legal: { label: "법률", color: "bg-gray-100 text-gray-800" },
-  Science: { label: "과학", color: "bg-teal-100 text-teal-800" },
-  Sports: { label: "스포츠", color: "bg-orange-100 text-orange-800" },
-  Environment: { label: "환경", color: "bg-emerald-100 text-emerald-800" },
-  Media: { label: "미디어", color: "bg-rose-100 text-rose-800" },
-  Culinary: { label: "요리", color: "bg-amber-100 text-amber-800" },
-  Politics: { label: "정치", color: "bg-slate-100 text-slate-800" },
-  Psychology: { label: "심리", color: "bg-violet-100 text-violet-800" },
-  Fashion: { label: "패션", color: "bg-fuchsia-100 text-fuchsia-800" },
-  Travel: { label: "여행", color: "bg-cyan-100 text-cyan-800" },
-  Agriculture: { label: "농업", color: "bg-lime-100 text-lime-800" },
-  Gaming: { label: "게임", color: "bg-sky-100 text-sky-800" },
-  Automotive: { label: "자동차", color: "bg-stone-100 text-stone-800" },
-  CUSTOM: { label: "커스텀", color: "bg-neutral-100 text-neutral-800" },
-};
 
 export function PersonasTable({ personas }: PersonasTableProps) {
   const formatDate = (dateString: string) => {
