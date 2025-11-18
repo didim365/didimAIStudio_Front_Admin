@@ -69,12 +69,14 @@ export function ToolsTable({ tools, onViewDetails }: ToolsTableProps) {
               <TableCell>
                 <div className="flex items-center gap-2">
                   {tool.icon_url && (
-                    <Image
-                      src={tool.icon_url}
-                      alt={tool.name}
-                      fill
-                      className="object-cover rounded"
-                    />
+                    <div className="relative w-10 h-10 shrink-0">
+                      <Image
+                        src={tool.icon_url}
+                        alt={tool.name}
+                        fill
+                        className="object-cover rounded"
+                      />
+                    </div>
                   )}
                   <div>
                     <div className="font-medium">{tool.name}</div>
