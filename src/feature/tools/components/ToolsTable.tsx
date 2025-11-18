@@ -12,6 +12,7 @@ import { Badge } from "@/shared/ui/badge";
 import { paths } from "@/shared/types/api/tools";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { statusConfig, providerConfig } from "../constants/toolConfigs";
 
 type MCPToolResponseDTO =
   paths["/v1/mcp-tools/"]["get"]["responses"]["200"]["content"]["application/json"]["items"][0];
@@ -19,21 +20,6 @@ type MCPToolResponseDTO =
 interface ToolsTableProps {
   tools: MCPToolResponseDTO[];
 }
-
-const statusConfig = {
-  ACTIVE: { label: "활성", color: "bg-green-100 text-green-800" },
-  INACTIVE: { label: "비활성", color: "bg-gray-100 text-gray-800" },
-  PENDING: { label: "대기 중", color: "bg-yellow-100 text-yellow-800" },
-  ERROR: { label: "오류", color: "bg-red-100 text-red-800" },
-};
-
-const providerConfig = {
-  NPM: { label: "NPM", color: "bg-red-100 text-red-800" },
-  PYTHON: { label: "Python", color: "bg-blue-100 text-blue-800" },
-  GITHUB: { label: "GitHub", color: "bg-purple-100 text-purple-800" },
-  DOCKER: { label: "Docker", color: "bg-cyan-100 text-cyan-800" },
-  CUSTOM: { label: "Custom", color: "bg-orange-100 text-orange-800" },
-};
 
 export function ToolsTable({ tools }: ToolsTableProps) {
   const router = useRouter();

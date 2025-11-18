@@ -13,6 +13,7 @@ import { RefreshCw } from "lucide-react";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { useGetMcpTools } from "../hooks/useGetMcpTools";
 import { ToolsTable } from "../components/ToolsTable";
+import { statusConfig } from "../constants/toolConfigs";
 
 export default function ToolsPage() {
   const [statusFilter, setStatusFilter] = useQueryParam<string>(
@@ -65,10 +66,11 @@ export default function ToolsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">전체 상태</SelectItem>
-                  <SelectItem value="ACTIVE">활성</SelectItem>
-                  <SelectItem value="INACTIVE">비활성</SelectItem>
-                  <SelectItem value="PENDING">대기 중</SelectItem>
-                  <SelectItem value="ERROR">오류</SelectItem>
+                  {Object.entries(statusConfig).map(([key, config]) => (
+                    <SelectItem key={key} value={key}>
+                      {config.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <Button
