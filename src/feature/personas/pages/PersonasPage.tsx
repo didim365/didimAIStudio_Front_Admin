@@ -59,6 +59,14 @@ export default function PersonasPage() {
     refetch();
   };
 
+  const handlePreviousPage = () => {
+    setPage(Math.max(1, page - 1));
+  };
+
+  const handleNextPage = () => {
+    setPage(page + 1);
+  };
+
   return (
     <div>
       {/* 헤더 */}
