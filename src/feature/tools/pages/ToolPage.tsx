@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
@@ -61,11 +62,17 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
   // 도구 삭제 mutation
   const { mutate: deleteTool, isPending: isDeleting } = useDeleteMcpTool({
     onSuccess: () => {
+      // 로딩 토스트 닫기
+      toast.dismiss("deleting-tool");
       // 도구 목록 쿼리 무효화
       queryClient.invalidateQueries({
         queryKey: ["mcp-tools"],
       });
       router.push("/studio/tools");
+    },
+    onError: () => {
+      // 에러 발생 시에도 로딩 토스트 닫기
+      toast.dismiss("deleting-tool");
     },
     meta: {
       successMessage: "도구가 성공적으로 삭제되었습니다.",
@@ -73,6 +80,13 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
   });
 
   const handleDelete = () => {
+    // 삭제 시작 시 토스트 알림 표시
+    toast.loading("도구를 제거하는 중입니다...", {
+      description:
+        "이 작업은 약 1분 정도 소요될 수 있습니다. 잠시만 기다려주세요.",
+      duration: Infinity, // 수동으로 닫을 때까지 표시
+      id: "deleting-tool", // 고유 ID로 중복 방지
+    });
     deleteTool({ tool_id: tool.id });
   };
 
@@ -80,7 +94,30 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
     deploymentTypeConfig[tool.deployment_type]?.icon || Server;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* 로딩 오버레이 - 삭제 중일 때 전체 화면 차단 */}
+      {isDeleting && (
+        <div className="fixed top-0 left-0 right-0 bottom-0 m-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-background rounded-lg border shadow-lg p-6 max-w-md mx-4">
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+              <div className="text-center space-y-2">
+                <h3 className="text-lg font-semibold">도구 제거 중</h3>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-semibold">{tool.name}</span>을(를)
+                  제거하는 중입니다.
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  이 작업은 약 1분 정도 소요될 수 있습니다.
+                  <br />
+                  잠시만 기다려주세요. 페이지를 닫지 마세요.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -89,6 +126,7 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
               variant="ghost"
               size="icon"
               className="shrink-0 cursor-pointer"
+              disabled={isDeleting}
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -102,7 +140,7 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <Link href={`/studio/tools/${tool.id}/edit`}>
-            <Button className="cursor-pointer">
+            <Button className="cursor-pointer" disabled={isDeleting}>
               <Pencil className="h-4 w-4 mr-2" />
               수정
             </Button>
@@ -111,9 +149,20 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
             variant="destructive"
             className="cursor-pointer"
             onClick={() => setShowDeleteDialog(true)}
+            disabled={isDeleting}
           >
-            <Trash2 className="h-4 w-4 mr-2" />
-            제거
+            {isDeleting && (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                제거 중...
+              </>
+            )}
+            {!isDeleting && (
+              <>
+                <Trash2 className="h-4 w-4 mr-2" />
+                제거
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -131,22 +180,34 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              {isDeleting && (
-                <Loader2 className="h-5 w-5 animate-spin text-destructive" />
-              )}
               도구 삭제 {isDeleting ? "중" : "확인"}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {isDeleting && (
-                <>
-                  <span className="font-semibold">{tool.name}</span>을(를)
-                  삭제하는 중입니다.
-                  <br />
-                  <span className="text-muted-foreground mt-2 block text-xs">
-                    잠시만 기다려주세요. 이 작업은 몇 초 정도 소요될 수
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    <span>
+                      <span className="font-semibold">{tool.name}</span>을(를)
+                      제거하는 중입니다.
+                    </span>
+                  </div>
+                  <div className="bg-muted p-3 rounded-md space-y-1">
+                    <p className="text-sm font-medium">진행 중인 작업:</p>
+                    <ul className="text-xs text-muted-foreground space-y-1 ml-4 list-disc">
+                      <li>도구 연결 해제 중...</li>
+                      <li>리소스 정리 중...</li>
+                      <li>데이터 삭제 중...</li>
+                    </ul>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3 p-2 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-md">
+                    ⏱️ 이 작업은 약{" "}
+                    <span className="font-semibold">1분 정도</span> 소요될 수
                     있습니다.
-                  </span>
-                </>
+                    <br />
+                    잠시만 기다려주세요. 페이지를 닫지 마세요.
+                  </p>
+                </div>
               )}
               {!isDeleting && (
                 <>
@@ -155,6 +216,9 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
                   <br />
                   <span className="text-destructive mt-2 block">
                     이 작업은 되돌릴 수 없습니다.
+                  </span>
+                  <span className="text-muted-foreground mt-2 block text-xs">
+                    참고: 삭제 작업은 약 1분 정도 소요될 수 있습니다.
                   </span>
                 </>
               )}
