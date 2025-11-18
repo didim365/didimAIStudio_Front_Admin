@@ -1,5 +1,5 @@
+import ToolsPage from "@/feature/tools/pages/ToolsPage";
 import { Suspense } from "react";
-import ToolsPage from "@/feature/tools/components/ToolsPage";
 
 function Page() {
   return (
