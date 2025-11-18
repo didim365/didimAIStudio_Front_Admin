@@ -51,8 +51,34 @@ import {
 } from "../constants/toolConfigs";
 import { GetMcpToolResponse } from "../api/getMcpTool";
 import { useDeleteMcpTool } from "../hooks/useDeleteMcpTool";
+import { GetMcpToolConfigResponse } from "../api/getMcpToolConfig";
+import { ServerConfigCard } from "../components/ServerConfigCard";
 
-function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
+// Config 데이터 타입 정의
+export interface ConfigData {
+  id: number;
+  mcp_tool_id: number;
+  server_config: Record<string, unknown>;
+  has_secrets: boolean;
+  env_keys: string[];
+  capabilities: string[];
+  config_schema_version: string;
+  is_verified: boolean;
+  last_verification_at?: string | null;
+  verification_error?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+function ToolPage({
+  tool,
+  config,
+}: {
+  tool: GetMcpToolResponse;
+  config: GetMcpToolConfigResponse;
+}) {
+  // 타입 단언으로 config 타입 변환
+  const configData = config as unknown as ConfigData;
   const router = useRouter();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -649,6 +675,74 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
               </CardContent>
             </Card>
           )}
+
+        {/* Config Data Section */}
+        {config && configData && (
+          <>
+            {/* Server Configuration Card */}
+            <ServerConfigCard config={configData} />
+
+            {/* Environment Variables Keys Card */}
+            {configData.env_keys && configData.env_keys.length > 0 && (
+              <Card className="md:col-span-1">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Key className="h-5 w-5 text-amber-600" />
+                    환경 변수 키 목록
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    설정에서 사용되는 환경 변수 키들입니다
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {configData.env_keys.map((key, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-3 p-3 bg-linear-to-r from-amber-50/50 to-yellow-50/50 dark:from-amber-950/20 dark:to-yellow-950/20 rounded-lg border border-amber-200/50 dark:border-amber-800/50 hover:shadow-sm transition-shadow"
+                      >
+                        <div className="flex items-center justify-center h-8 w-8 bg-amber-100 dark:bg-amber-900 rounded-md">
+                          <Key className="h-4 w-4 text-amber-700 dark:text-amber-300" />
+                        </div>
+                        <span className="font-mono text-sm font-semibold text-amber-900 dark:text-amber-100">
+                          {key}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Capabilities Card */}
+            {configData.capabilities && configData.capabilities.length > 0 && (
+              <Card className="md:col-span-1">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-purple-600" />
+                    지원 기능
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    이 도구가 제공하는 기능 목록입니다
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {configData.capabilities.map((capability, index) => (
+                      <Badge
+                        key={index}
+                        className="bg-linear-to-r from-purple-50 to-violet-50 dark:from-purple-950 dark:to-violet-950 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 border px-3 py-1.5 text-sm font-medium"
+                      >
+                        <Zap className="h-3 w-3 mr-1.5" />
+                        {capability}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

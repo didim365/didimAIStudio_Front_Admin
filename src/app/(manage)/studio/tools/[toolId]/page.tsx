@@ -1,4 +1,5 @@
 import getMcpTool from "@/feature/tools/api/getMcpTool";
+import getMcpToolConfig from "@/feature/tools/api/getMcpToolConfig";
 import ToolPage from "@/feature/tools/pages/ToolPage";
 
 interface PageProps {
@@ -13,7 +14,8 @@ async function Page({ params }: PageProps) {
       include_config: false,
     }
   );
-  return <ToolPage tool={tool} />;
+  const config = await getMcpToolConfig({ tool_id: Number(toolId) });
+  return <ToolPage tool={tool} config={config} />;
 }
 
 export default Page;
