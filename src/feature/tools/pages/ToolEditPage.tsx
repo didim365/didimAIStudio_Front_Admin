@@ -44,6 +44,7 @@ import {
   providerConfig,
   deploymentTypeConfig,
 } from "../constants/toolConfigs";
+import Link from "next/link";
 
 export function ToolEditPage({ tool }: { tool: GetMcpToolResponse }) {
   const router = useRouter();
@@ -194,15 +195,16 @@ export function ToolEditPage({ tool }: { tool: GetMcpToolResponse }) {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push(`/studio/tools/${tool.id}`)}
-              className="shrink-0"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+            <Link href={`/studio/tools/${tool.id}`}>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="shrink-0 cursor-pointer"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
                 도구 정보 수정
