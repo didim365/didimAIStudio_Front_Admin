@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import {
   Select,
@@ -11,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { Search, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { useGetMcpTools } from "../hooks/useGetMcpTools";
 import { StatsCards } from "../components/StatsCards";
@@ -90,7 +89,6 @@ export default function ToolsPage() {
                   <SelectItem value="ERROR">오류</SelectItem>
                 </SelectContent>
               </Select>
-
               <Button
                 variant="outline"
                 className="gap-2"

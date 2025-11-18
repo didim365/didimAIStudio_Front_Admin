@@ -9,7 +9,7 @@ type GetMcpToolsParams = paths["/v1/mcp-tools/"]["get"]["parameters"]["query"];
 const getMcpTools = async (params?: GetMcpToolsParams) => {
   try {
     const response = await axiosInstance.tools.get<GetMcpToolsResponse>(
-      "/mcp-tools",
+      "/mcp-tools/",
       {
         params,
       }

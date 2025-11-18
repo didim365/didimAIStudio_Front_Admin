@@ -72,7 +72,8 @@ export function ToolsTable({ tools, onViewDetails }: ToolsTableProps) {
                     <Image
                       src={tool.icon_url}
                       alt={tool.name}
-                      className="w-6 h-6 rounded"
+                      fill
+                      className="object-cover rounded"
                     />
                   )}
                   <div>
