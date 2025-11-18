@@ -79,3 +79,8 @@ export const categoryConfig: Record<string, { label: string; color: string }> =
       color: "bg-neutral-100 text-neutral-800 border-neutral-200",
     },
   };
+
+// 카테고리 옵션 배열 (categoryConfig의 키 순서대로)
+export const CATEGORY_OPTIONS = Object.keys(
+  categoryConfig
+) as (keyof typeof categoryConfig)[];
