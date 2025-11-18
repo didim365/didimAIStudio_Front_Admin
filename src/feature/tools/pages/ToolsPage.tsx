@@ -38,10 +38,6 @@ export default function ToolsPage() {
 
   const tools = data?.items || [];
 
-  const handleViewDetails = (toolId: number) => {
-    router.push(`/service/tools/${toolId}`);
-  };
-
   const handlePrevPage = () => {
     setPage(Math.max(1, page - 1));
   };
@@ -104,9 +100,7 @@ export default function ToolsPage() {
           {isLoading && (
             <div className="text-center py-8 text-slate-500">로딩 중...</div>
           )}
-          {!isLoading && (
-            <ToolsTable tools={tools} onViewDetails={handleViewDetails} />
-          )}
+          {!isLoading && <ToolsTable tools={tools} />}
         </CardContent>
       </Card>
 
