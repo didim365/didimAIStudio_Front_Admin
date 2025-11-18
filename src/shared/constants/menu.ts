@@ -48,6 +48,10 @@ const MENU = [
         name: "페르소나 관리",
         href: "/studio/personas",
       },
+      {
+        name: "시나리오 관리",
+        href: "/studio/scenarios",
+      },
     ],
   },
   // { name: "문서 관리", href: "/documents", icon: FileText },
