@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import {
@@ -16,7 +15,6 @@ import { useGetMcpTools } from "../hooks/useGetMcpTools";
 import { ToolsTable } from "../components/ToolsTable";
 
 export default function ToolsPage() {
-  const router = useRouter();
   const [statusFilter, setStatusFilter] = useQueryParam<string>(
     "status",
     "all"

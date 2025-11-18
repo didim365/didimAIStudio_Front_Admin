@@ -9,8 +9,6 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Button } from "@/shared/ui/button";
-import { Eye } from "lucide-react";
 import { paths } from "@/shared/types/api/tools";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
