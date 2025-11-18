@@ -19,10 +19,6 @@ import { ToolsTable } from "../components/ToolsTable";
 
 export default function ToolsPage() {
   const router = useRouter();
-  // URL 쿼리 파라미터 관리 - useState와 동일한 API
-  const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
-    debounce: 300,
-  });
   const [statusFilter, setStatusFilter] = useQueryParam<string>(
     "status",
     "all"
@@ -43,19 +39,6 @@ export default function ToolsPage() {
   const { data, isLoading, refetch } = useGetMcpTools(queryParams);
 
   const tools = data?.items || [];
-  const filteredTools = !searchQuery
-    ? tools
-    : tools.filter((tool) => {
-        const query = searchQuery.toLowerCase();
-        return (
-          tool.name.toLowerCase().includes(query) ||
-          tool.description?.toLowerCase().includes(query) ||
-          tool.definition_name?.toLowerCase().includes(query) ||
-          tool.keywords?.some((keyword) =>
-            keyword.toLowerCase().includes(query)
-          )
-        );
-      });
 
   const stats = {
     total: data?.total || 0,
@@ -94,15 +77,6 @@ export default function ToolsPage() {
       <Card className="mb-6">
         <CardContent>
           <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="도구 이름, 설명, 키워드로 검색..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
             <div className="flex gap-2">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[180px]">
@@ -137,7 +111,7 @@ export default function ToolsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            도구 목록 ({filteredTools.length})
+            도구 목록 ({tools.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -145,10 +119,7 @@ export default function ToolsPage() {
             <div className="text-center py-8 text-slate-500">로딩 중...</div>
           )}
           {!isLoading && (
-            <ToolsTable
-              tools={filteredTools}
-              onViewDetails={handleViewDetails}
-            />
+            <ToolsTable tools={tools} onViewDetails={handleViewDetails} />
           )}
         </CardContent>
       </Card>
