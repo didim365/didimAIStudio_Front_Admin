@@ -62,17 +62,11 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
   // 도구 삭제 mutation
   const { mutate: deleteTool, isPending: isDeleting } = useDeleteMcpTool({
     onSuccess: () => {
-      // 로딩 토스트 닫기
-      toast.dismiss("deleting-tool");
       // 도구 목록 쿼리 무효화
       queryClient.invalidateQueries({
         queryKey: ["mcp-tools"],
       });
       router.push("/studio/tools");
-    },
-    onError: () => {
-      // 에러 발생 시에도 로딩 토스트 닫기
-      toast.dismiss("deleting-tool");
     },
     meta: {
       successMessage: "도구가 성공적으로 삭제되었습니다.",
@@ -80,13 +74,6 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
   });
 
   const handleDelete = () => {
-    // 삭제 시작 시 토스트 알림 표시
-    toast.loading("도구를 제거하는 중입니다...", {
-      description:
-        "이 작업은 약 1분 정도 소요될 수 있습니다. 잠시만 기다려주세요.",
-      duration: Infinity, // 수동으로 닫을 때까지 표시
-      id: "deleting-tool", // 고유 ID로 중복 방지
-    });
     deleteTool({ tool_id: tool.id });
   };
 
@@ -183,45 +170,17 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
               도구 삭제 {isDeleting ? "중" : "확인"}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {isDeleting && (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                    <span>
-                      <span className="font-semibold">{tool.name}</span>을(를)
-                      제거하는 중입니다.
-                    </span>
-                  </div>
-                  <div className="bg-muted p-3 rounded-md space-y-1">
-                    <p className="text-sm font-medium">진행 중인 작업:</p>
-                    <ul className="text-xs text-muted-foreground space-y-1 ml-4 list-disc">
-                      <li>도구 연결 해제 중...</li>
-                      <li>리소스 정리 중...</li>
-                      <li>데이터 삭제 중...</li>
-                    </ul>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-3 p-2 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-md">
-                    ⏱️ 이 작업은 약{" "}
-                    <span className="font-semibold">1분 정도</span> 소요될 수
-                    있습니다.
-                    <br />
-                    잠시만 기다려주세요. 페이지를 닫지 마세요.
-                  </p>
-                </div>
-              )}
-              {!isDeleting && (
-                <>
-                  정말 <span className="font-semibold">{tool.name}</span>을(를)
-                  삭제하시겠습니까?
-                  <br />
-                  <span className="text-destructive mt-2 block">
-                    이 작업은 되돌릴 수 없습니다.
-                  </span>
-                  <span className="text-muted-foreground mt-2 block text-xs">
-                    참고: 삭제 작업은 약 1분 정도 소요될 수 있습니다.
-                  </span>
-                </>
-              )}
+              <>
+                정말 <span className="font-semibold">{tool.name}</span>을(를)
+                삭제하시겠습니까?
+                <br />
+                <span className="text-destructive mt-2 block">
+                  이 작업은 되돌릴 수 없습니다.
+                </span>
+                <span className="text-muted-foreground mt-2 block text-xs">
+                  참고: 삭제 작업은 약 1분 정도 소요될 수 있습니다.
+                </span>
+              </>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
