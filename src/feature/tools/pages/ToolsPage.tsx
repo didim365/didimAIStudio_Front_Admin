@@ -14,8 +14,8 @@ import {
 import { Search, RefreshCw } from "lucide-react";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { useGetMcpTools } from "../hooks/useGetMcpTools";
-import { StatsCards } from "./StatsCards";
-import { ToolsTable } from "./ToolsTable";
+import { StatsCards } from "../components/StatsCards";
+import { ToolsTable } from "../components/ToolsTable";
 
 export default function ToolsPage() {
   const router = useRouter();
