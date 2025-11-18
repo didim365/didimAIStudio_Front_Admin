@@ -32,73 +32,14 @@ import {
   Settings,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-
-type MCPToolProvider = "NPM" | "PYTHON" | "GITHUB" | "DOCKER" | "CUSTOM";
-type MCPToolCategory =
-  | "WEB_SEARCH"
-  | "DATA_RETRIEVAL"
-  | "API_CLIENT"
-  | "DOCUMENT_MANAGEMENT"
-  | "FILE_OPERATIONS"
-  | "CONTENT_PROCESSING"
-  | "DATA_ANALYSIS"
-  | "DATABASE_TOOLS"
-  | "VISUALIZATION"
-  | "DEVELOPMENT_TOOLS"
-  | "SYSTEM_UTILITIES"
-  | "CODE_GENERATION"
-  | "COMMUNICATION"
-  | "INTEGRATION"
-  | "AUTOMATION"
-  | "SECURITY"
-  | "AUTHENTICATION"
-  | "PRODUCTIVITY"
-  | "ENTERTAINMENT"
-  | "EDUCATION"
-  | "OTHER";
-type MCPToolDeploymentType = "LOCAL" | "CONTAINER" | "CLOUD" | "SERVERLESS";
-
-const PROVIDER_OPTIONS: { value: MCPToolProvider; label: string }[] = [
-  { value: "NPM", label: "NPM" },
-  { value: "PYTHON", label: "Python" },
-  { value: "GITHUB", label: "GitHub" },
-  { value: "DOCKER", label: "Docker" },
-  { value: "CUSTOM", label: "Custom" },
-];
-
-const CATEGORY_OPTIONS: { value: MCPToolCategory; label: string }[] = [
-  { value: "WEB_SEARCH", label: "웹 검색" },
-  { value: "DATA_RETRIEVAL", label: "데이터 조회" },
-  { value: "API_CLIENT", label: "API 클라이언트" },
-  { value: "DOCUMENT_MANAGEMENT", label: "문서 관리" },
-  { value: "FILE_OPERATIONS", label: "파일 작업" },
-  { value: "CONTENT_PROCESSING", label: "콘텐츠 처리" },
-  { value: "DATA_ANALYSIS", label: "데이터 분석" },
-  { value: "DATABASE_TOOLS", label: "데이터베이스 도구" },
-  { value: "VISUALIZATION", label: "시각화" },
-  { value: "DEVELOPMENT_TOOLS", label: "개발 도구" },
-  { value: "SYSTEM_UTILITIES", label: "시스템 유틸리티" },
-  { value: "CODE_GENERATION", label: "코드 생성" },
-  { value: "COMMUNICATION", label: "커뮤니케이션" },
-  { value: "INTEGRATION", label: "통합" },
-  { value: "AUTOMATION", label: "자동화" },
-  { value: "SECURITY", label: "보안" },
-  { value: "AUTHENTICATION", label: "인증" },
-  { value: "PRODUCTIVITY", label: "생산성" },
-  { value: "ENTERTAINMENT", label: "엔터테인먼트" },
-  { value: "EDUCATION", label: "교육" },
-  { value: "OTHER", label: "기타" },
-];
-
-const DEPLOYMENT_TYPE_OPTIONS: {
-  value: MCPToolDeploymentType;
-  label: string;
-}[] = [
-  { value: "LOCAL", label: "로컬" },
-  { value: "CONTAINER", label: "컨테이너" },
-  { value: "CLOUD", label: "클라우드" },
-  { value: "SERVERLESS", label: "서버리스" },
-];
+import {
+  MCPToolProvider,
+  MCPToolCategory,
+  MCPToolDeploymentType,
+  PROVIDER_OPTIONS,
+  CATEGORY_OPTIONS,
+  DEPLOYMENT_TYPE_OPTIONS,
+} from "../constants/toolConfigs";
 
 function ToolAddPage() {
   const router = useRouter();
