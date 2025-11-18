@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
@@ -25,7 +24,6 @@ import {
   Hash,
   Package,
   Tag,
-  Database,
   Server,
   Activity,
   Clock,
@@ -199,15 +197,16 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
 
       {/* Main Content Grid */}
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Profile Card */}
+        {/* Unified Information Card */}
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Wrench className="h-5 w-5" />
-              기본 정보
+              도구 정보
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-8">
+            {/* Basic Info Section */}
             <div className="flex flex-col md:flex-row gap-6">
               {/* Icon */}
               <div className="flex flex-col items-center gap-4">
@@ -245,63 +244,65 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
               {/* Tool Info Grid */}
               <div className="flex-1 grid gap-4 md:grid-cols-2">
                 {/* Tool Name */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Wrench className="h-4 w-4" />
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Wrench className="h-3.5 w-3.5" />
                     <span className="font-medium">도구 이름</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">{tool.name}</p>
+                  <p className="text-base font-semibold pl-5">{tool.name}</p>
                 </div>
 
                 {/* Definition Name */}
                 {tool.definition_name && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Code2 className="h-4 w-4" />
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Code2 className="h-3.5 w-3.5" />
                       <span className="font-medium">정의 이름</span>
                     </div>
-                    <p className="text-lg font-mono pl-6">
+                    <p className="text-base font-mono pl-5">
                       {tool.definition_name}
                     </p>
                   </div>
                 )}
 
                 {/* Tool ID */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Hash className="h-4 w-4" />
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Hash className="h-3.5 w-3.5" />
                     <span className="font-medium">도구 ID</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">#{tool.id}</p>
+                  <p className="text-base font-semibold pl-5">#{tool.id}</p>
                 </div>
 
                 {/* Version */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <GitBranch className="h-4 w-4" />
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <GitBranch className="h-3.5 w-3.5" />
                     <span className="font-medium">버전</span>
                   </div>
-                  <p className="text-lg font-mono font-semibold pl-6">
+                  <p className="text-base font-mono font-semibold pl-5">
                     {tool.version}
                   </p>
                 </div>
 
                 {/* Category */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Package className="h-4 w-4" />
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Package className="h-3.5 w-3.5" />
                     <span className="font-medium">카테고리</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">{tool.category}</p>
+                  <p className="text-base font-semibold pl-5">
+                    {tool.category}
+                  </p>
                 </div>
 
                 {/* Deployment Type */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <DeploymentIcon className="h-4 w-4" />
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <DeploymentIcon className="h-3.5 w-3.5" />
                     <span className="font-medium">배포 타입</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">
+                  <p className="text-base font-semibold pl-5">
                     {deploymentTypeConfig[tool.deployment_type]?.label ||
                       tool.deployment_type}
                   </p>
@@ -309,135 +310,172 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
 
                 {/* Description */}
                 {tool.description && (
-                  <div className="space-y-2 md:col-span-2">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <FileCode className="h-4 w-4" />
+                  <div className="space-y-1 md:col-span-2">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <FileCode className="h-3.5 w-3.5" />
                       <span className="font-medium">설명</span>
                     </div>
-                    <p className="text-base pl-6 text-muted-foreground leading-relaxed">
+                    <p className="text-sm pl-5 text-muted-foreground leading-relaxed">
                       {tool.description}
                     </p>
                   </div>
                 )}
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Performance Metrics Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              성능 지표
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Usage Count */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                <span>사용 횟수</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-2xl font-bold">
-                  {tool.usage_count?.toLocaleString() || 0}
-                  <span className="text-sm font-normal text-muted-foreground ml-2">
-                    회
-                  </span>
-                </p>
-              </div>
-            </div>
 
             <Separator />
 
-            {/* Success Rate */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Zap className="h-4 w-4 text-muted-foreground" />
-                <span>성공률</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-2xl font-bold">
-                  {tool.success_rate?.toFixed(1) || 0}
-                  <span className="text-sm font-normal text-muted-foreground ml-1">
-                    %
-                  </span>
-                </p>
-              </div>
-            </div>
+            {/* Performance Metrics & Timeline & Tags Section */}
+            <div className="grid gap-6 md:grid-cols-3">
+              {/* Performance Metrics - Column 1 */}
+              <div className="space-y-4">
+                <h3 className="flex items-center gap-2 text-sm font-semibold">
+                  <Activity className="h-4 w-4" />
+                  성능 지표
+                </h3>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                  {/* Usage Count */}
+                  <div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                      <TrendingUp className="h-3.5 w-3.5" />
+                      <span>사용 횟수</span>
+                    </div>
+                    <p className="text-base font-semibold">
+                      {tool.usage_count?.toLocaleString() || 0}
+                      <span className="text-xs font-normal text-muted-foreground ml-1">
+                        회
+                      </span>
+                    </p>
+                  </div>
 
-            <Separator />
+                  {/* Success Rate */}
+                  <div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                      <Zap className="h-3.5 w-3.5" />
+                      <span>성공률</span>
+                    </div>
+                    <p className="text-base font-semibold">
+                      {tool.success_rate?.toFixed(1) || 0}
+                      <span className="text-xs font-normal text-muted-foreground ml-1">
+                        %
+                      </span>
+                    </p>
+                  </div>
 
-            {/* Average Response Time */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span>평균 응답 시간</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-2xl font-bold">
-                  {tool.average_response_time?.toFixed(0) || 0}
-                  <span className="text-sm font-normal text-muted-foreground ml-1">
-                    ms
-                  </span>
-                </p>
-              </div>
-            </div>
+                  {/* Average Response Time */}
+                  <div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>평균 응답 시간</span>
+                    </div>
+                    <p className="text-base font-semibold">
+                      {tool.average_response_time?.toFixed(0) || 0}
+                      <span className="text-xs font-normal text-muted-foreground ml-1">
+                        ms
+                      </span>
+                    </p>
+                  </div>
 
-            <Separator />
+                  {/* Last Used At */}
+                  <div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>마지막 사용</span>
+                    </div>
+                    <p className="text-base font-mono">
+                      {tool.last_used_at
+                        ? formatDate(tool.last_used_at)
+                        : "사용 기록 없음"}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-            {/* Last Used At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>마지막 사용</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-sm font-mono">
-                  {tool.last_used_at
-                    ? formatDate(tool.last_used_at)
-                    : "사용 기록 없음"}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              {/* Timeline - Column 2 */}
+              <div className="space-y-4">
+                <h3 className="flex items-center gap-2 text-sm font-semibold">
+                  <Clock className="h-4 w-4" />
+                  타임라인
+                </h3>
+                <div className="space-y-3">
+                  {/* Created At */}
+                  <div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>생성일</span>
+                    </div>
+                    <p className="text-base font-mono">
+                      {formatDate(tool.created_at)}
+                    </p>
+                  </div>
 
-        {/* Timeline Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              타임라인
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Created At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>생성일</span>
+                  {/* Updated At */}
+                  <div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>마지막 업데이트</span>
+                    </div>
+                    <p className="text-base font-mono">
+                      {tool.updated_at ? formatDate(tool.updated_at) : "없음"}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-sm font-mono">
-                  {formatDate(tool.created_at)}
-                </p>
-              </div>
-            </div>
 
-            <Separator />
+              {/* Tags and Keywords - Column 3 */}
+              <div className="space-y-4">
+                <h3 className="flex items-center gap-2 text-sm font-semibold">
+                  <Tag className="h-4 w-4" />
+                  태그 및 키워드
+                </h3>
+                <div className="space-y-3">
+                  {tool.tags && tool.tags.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                        <Tag className="h-3.5 w-3.5" />
+                        <span>태그</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {tool.tags.map((tag, index) => (
+                          <Badge
+                            key={index}
+                            variant="outline"
+                            className="bg-blue-50 text-blue-700 border-blue-200 text-xs"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-            {/* Updated At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>마지막 업데이트</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-sm font-mono">
-                  {tool.updated_at ? formatDate(tool.updated_at) : "없음"}
-                </p>
+                  {tool.keywords && tool.keywords.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                        <Tag className="h-3.5 w-3.5" />
+                        <span>키워드</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {tool.keywords.map((keyword, index) => (
+                          <Badge
+                            key={index}
+                            variant="outline"
+                            className="bg-purple-50 text-purple-700 border-purple-200 text-xs"
+                          >
+                            {keyword}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {(!tool.tags || tool.tags.length === 0) &&
+                    (!tool.keywords || tool.keywords.length === 0) && (
+                      <p className="text-xs text-muted-foreground">
+                        태그 및 키워드 없음
+                      </p>
+                    )}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -611,126 +649,6 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
               </CardContent>
             </Card>
           )}
-
-        {/* Tags and Keywords Card */}
-        {((tool.tags && tool.tags.length > 0) ||
-          (tool.keywords && tool.keywords.length > 0)) && (
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Tag className="h-5 w-5" />
-                태그 및 키워드
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {tool.tags && tool.tags.length > 0 && (
-                <>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <Tag className="h-4 w-4 text-muted-foreground" />
-                      <span>태그</span>
-                    </div>
-                    <div className="ml-6 flex flex-wrap gap-2">
-                      {tool.tags.map((tag, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="bg-blue-50 text-blue-700 border-blue-200"
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  {tool.keywords && tool.keywords.length > 0 && <Separator />}
-                </>
-              )}
-
-              {tool.keywords && tool.keywords.length > 0 && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Tag className="h-4 w-4 text-muted-foreground" />
-                    <span>키워드</span>
-                  </div>
-                  <div className="ml-6 flex flex-wrap gap-2">
-                    {tool.keywords.map((keyword, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="bg-purple-50 text-purple-700 border-purple-200"
-                      >
-                        {keyword}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Advanced Configuration Card */}
-        {(tool.resource_requirements ||
-          tool.default_config ||
-          tool.metadata) && (
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                고급 설정
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {tool.resource_requirements && (
-                <>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <Database className="h-4 w-4 text-muted-foreground" />
-                      <span>리소스 요구사항</span>
-                    </div>
-                    <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                      <pre className="text-xs font-mono overflow-x-auto">
-                        {JSON.stringify(tool.resource_requirements, null, 2)}
-                      </pre>
-                    </div>
-                  </div>
-                  {(tool.default_config || tool.metadata) && <Separator />}
-                </>
-              )}
-
-              {tool.default_config && (
-                <>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <Settings className="h-4 w-4 text-muted-foreground" />
-                      <span>기본 설정</span>
-                    </div>
-                    <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                      <pre className="text-xs font-mono overflow-x-auto">
-                        {JSON.stringify(tool.default_config, null, 2)}
-                      </pre>
-                    </div>
-                  </div>
-                  {tool.metadata && <Separator />}
-                </>
-              )}
-
-              {tool.metadata && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <FileCode className="h-4 w-4 text-muted-foreground" />
-                    <span>메타데이터</span>
-                  </div>
-                  <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                    <pre className="text-xs font-mono overflow-x-auto">
-                      {JSON.stringify(tool.metadata, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );
