@@ -7,7 +7,7 @@ import { LogOut, ChevronRight } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { tokenStorage } from "@/shared/utils/tokenStorage";
-import MENU from "../constants/menu";
+import MENU from "@/shared/constants/menu";
 
 export function Sidebar() {
   const pathname = usePathname();
