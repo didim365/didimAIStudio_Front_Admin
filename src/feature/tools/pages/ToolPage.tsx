@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useGetMcpTool } from "../hooks/useGetMcpTool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
@@ -47,10 +46,7 @@ import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
 import Image from "next/image";
 import { statusConfig, providerConfig } from "../constants/toolConfigs";
-
-interface ToolPageProps {
-  toolId: string;
-}
+import { GetMcpToolResponse } from "../api/getMcpTool";
 
 const deploymentTypeConfig = {
   LOCAL: { label: "로컬", icon: Server },
@@ -59,62 +55,16 @@ const deploymentTypeConfig = {
   SERVERLESS: { label: "서버리스", icon: Zap },
 };
 
-function ToolPage({ toolId }: ToolPageProps) {
+function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const { data: tool, isLoading, error } = useGetMcpTool(Number(toolId));
 
   const handleDelete = () => {
     // TODO: 도구 삭제 API 호출
-    console.log("도구 삭제:", toolId);
     setShowDeleteDialog(false);
     // TODO: 삭제 후 도구 목록 페이지로 이동
     router.push("/studio/tools");
   };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-[400px]" />
-          <Skeleton className="h-[400px]" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="py-8 px-4">
-        <Card className="border-destructive">
-          <CardHeader>
-            <CardTitle className="text-destructive">오류 발생</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              도구 정보를 불러오는 중 오류가 발생했습니다.
-            </p>
-            <p className="text-sm text-destructive mt-2">{error.message}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!tool) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              도구를 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const DeploymentIcon =
     deploymentTypeConfig[tool.deployment_type]?.icon || Server;
@@ -141,7 +91,7 @@ function ToolPage({ toolId }: ToolPageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/studio/tools/${toolId}/edit`}>
+          <Link href={`/studio/tools/${tool.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정
