@@ -11,11 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { Search, RefreshCw } from "lucide-react";
+import { Search, RefreshCw, UserPlus } from "lucide-react";
 import { components } from "@/shared/types/api/agents";
 import { PersonasTable } from "../components/PersonasTable";
 import useGetPersonas from "../hooks/useGetPersonas";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
+import Link from "next/link";
 
 export default function PersonasPage() {
   const router = useRouter();
@@ -73,17 +74,27 @@ export default function PersonasPage() {
         <CardContent>
           <div className="flex flex-col gap-4">
             {/* 검색 바 */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="이름으로 검색..."
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setPage(1); // 검색 시 첫 페이지로 리셋
-                }}
-                className="pl-10"
-              />
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="이름으로 검색..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setPage(1); // 검색 시 첫 페이지로 리셋
+                  }}
+                  className="pl-10"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Link href="/studio/personas/add">
+                  <Button className="gap-2 cursor-pointer">
+                    <UserPlus className="h-4 w-4" />
+                    페르소나 생성
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             {/* 필터 옵션 */}

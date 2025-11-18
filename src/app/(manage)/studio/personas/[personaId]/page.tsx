@@ -1,8 +1,14 @@
 import PersonaPage from "@/feature/personas/pages/PersonaPage";
+import getPersona from "@/feature/personas/api/getPersona";
 
 async function Page({ params }: { params: Promise<{ personaId: string }> }) {
   const { personaId } = await params;
-  return <PersonaPage personaId={personaId} />;
+
+  const persona = await getPersona({
+    persona_id: Number(personaId),
+  });
+
+  return <PersonaPage persona={persona} />;
 }
 
 export default Page;
