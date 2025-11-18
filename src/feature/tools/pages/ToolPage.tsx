@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Separator } from "@/shared/ui/separator";
 import {
   AlertDialog,
@@ -35,11 +35,11 @@ import {
   Code2,
   Settings,
   Container,
-  Globe,
   Key,
   Layers,
   FileCode,
   GitBranch,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
@@ -51,16 +51,29 @@ import {
   deploymentTypeConfig,
 } from "../constants/toolConfigs";
 import { GetMcpToolResponse } from "../api/getMcpTool";
+import { useDeleteMcpTool } from "../hooks/useDeleteMcpTool";
 
 function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  // 도구 삭제 mutation
+  const { mutate: deleteTool, isPending: isDeleting } = useDeleteMcpTool({
+    onSuccess: () => {
+      // 도구 목록 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: ["mcp-tools"],
+      });
+      router.push("/studio/tools");
+    },
+    meta: {
+      successMessage: "도구가 성공적으로 삭제되었습니다.",
+    },
+  });
+
   const handleDelete = () => {
-    // TODO: 도구 삭제 API 호출
-    setShowDeleteDialog(false);
-    // TODO: 삭제 후 도구 목록 페이지로 이동
-    router.push("/studio/tools");
+    deleteTool({ tool_id: tool.id });
   };
 
   const DeploymentIcon =
@@ -106,22 +119,57 @@ function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <AlertDialog
+        open={showDeleteDialog}
+        onOpenChange={(open) => {
+          // 삭제 중일 때는 모달을 닫을 수 없도록 함
+          if (!isDeleting) {
+            setShowDeleteDialog(open);
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>도구 삭제 확인</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2">
+              {isDeleting && (
+                <Loader2 className="h-5 w-5 animate-spin text-destructive" />
+              )}
+              도구 삭제 {isDeleting ? "중" : "확인"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              정말 <span className="font-semibold">{tool.name}</span>을(를)
-              삭제하시겠습니까?
-              <br />
-              <span className="text-destructive mt-2 block">
-                이 작업은 되돌릴 수 없습니다.
-              </span>
+              {isDeleting && (
+                <>
+                  <span className="font-semibold">{tool.name}</span>을(를)
+                  삭제하는 중입니다.
+                  <br />
+                  <span className="text-muted-foreground mt-2 block text-xs">
+                    잠시만 기다려주세요. 이 작업은 몇 초 정도 소요될 수
+                    있습니다.
+                  </span>
+                </>
+              )}
+              {!isDeleting && (
+                <>
+                  정말 <span className="font-semibold">{tool.name}</span>을(를)
+                  삭제하시겠습니까?
+                  <br />
+                  <span className="text-destructive mt-2 block">
+                    이 작업은 되돌릴 수 없습니다.
+                  </span>
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>삭제</AlertDialogAction>
+            <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="flex items-center gap-2"
+            >
+              {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isDeleting ? "삭제 중..." : "삭제"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
