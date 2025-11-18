@@ -14,8 +14,6 @@ import {
   Package,
   Server,
   Container,
-  Globe,
-  Zap,
   GitBranch,
   Code2,
   FileCode,
@@ -171,20 +169,6 @@ export function ToolEditPage({ tool }: { tool: GetMcpToolResponse }) {
       },
     });
   };
-
-  if (!tool) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              도구를 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const DeploymentIcon =
     deploymentTypeConfig[tool.deployment_type]?.icon || Server;
