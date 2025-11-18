@@ -13,7 +13,6 @@ import {
 import { RefreshCw } from "lucide-react";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { useGetMcpTools } from "../hooks/useGetMcpTools";
-import { StatsCards } from "../components/StatsCards";
 import { ToolsTable } from "../components/ToolsTable";
 
 export default function ToolsPage() {
@@ -39,14 +38,6 @@ export default function ToolsPage() {
 
   const tools = data?.items || [];
 
-  const stats = {
-    total: data?.total || 0,
-    active: tools.filter((tool) => tool.status === "ACTIVE").length,
-    inactive: tools.filter((tool) => tool.status === "INACTIVE").length,
-    pending: tools.filter((tool) => tool.status === "PENDING").length,
-    error: tools.filter((tool) => tool.status === "ERROR").length,
-  };
-
   const handleViewDetails = (toolId: number) => {
     router.push(`/service/tools/${toolId}`);
   };
@@ -68,9 +59,6 @@ export default function ToolsPage() {
           등록된 모든 MCP 도구 템플릿을 관리합니다
         </p>
       </div>
-
-      {/* 통계 카드 */}
-      <StatsCards {...stats} />
 
       {/* 검색 및 필터 */}
       <Card className="mb-6">
