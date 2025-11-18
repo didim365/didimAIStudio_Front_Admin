@@ -45,15 +45,12 @@ import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
 import Image from "next/image";
-import { statusConfig, providerConfig } from "../constants/toolConfigs";
+import {
+  statusConfig,
+  providerConfig,
+  deploymentTypeConfig,
+} from "../constants/toolConfigs";
 import { GetMcpToolResponse } from "../api/getMcpTool";
-
-const deploymentTypeConfig = {
-  LOCAL: { label: "로컬", icon: Server },
-  CONTAINER: { label: "컨테이너", icon: Container },
-  CLOUD: { label: "클라우드", icon: Globe },
-  SERVERLESS: { label: "서버리스", icon: Zap },
-};
 
 function ToolPage({ tool }: { tool: GetMcpToolResponse }) {
   const router = useRouter();

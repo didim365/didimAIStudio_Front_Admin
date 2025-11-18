@@ -1,3 +1,5 @@
+import { Server, Container, Globe, Zap } from "lucide-react";
+
 export const statusConfig = {
   ACTIVE: {
     label: "활성",
@@ -32,4 +34,11 @@ export const providerConfig = {
     label: "Custom",
     color: "bg-orange-100 text-orange-800 border-orange-200",
   },
+} as const;
+
+export const deploymentTypeConfig = {
+  LOCAL: { label: "로컬", icon: Server },
+  CONTAINER: { label: "컨테이너", icon: Container },
+  CLOUD: { label: "클라우드", icon: Globe },
+  SERVERLESS: { label: "서버리스", icon: Zap },
 } as const;
