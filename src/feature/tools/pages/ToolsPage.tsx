@@ -9,11 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Plus } from "lucide-react";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { useGetMcpTools } from "../hooks/useGetMcpTools";
 import { ToolsTable } from "../components/ToolsTable";
 import { statusConfig } from "../constants/toolConfigs";
+import Link from "next/link";
 
 export default function ToolsPage() {
   const [statusFilter, setStatusFilter] = useQueryParam<string>(
@@ -84,6 +85,14 @@ export default function ToolsPage() {
                 />
                 새로고침
               </Button>
+            </div>
+            <div className="flex gap-2">
+              <Link href="/studio/tools/add">
+                <Button className="gap-2 cursor-pointer">
+                  <Plus className="h-4 w-4" />
+                  도구 추가
+                </Button>
+              </Link>
             </div>
           </div>
         </CardContent>
