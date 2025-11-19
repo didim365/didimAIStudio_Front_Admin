@@ -27,8 +27,6 @@ import {
   FileText,
   Tag,
   Globe,
-  Lock,
-  Settings,
   UserPlus,
   Info,
 } from "lucide-react";
@@ -52,10 +50,8 @@ export function PersonaAddPage() {
     description: "",
     system_prompt: "",
     category: "CUSTOM" as PersonaCategoryEnum,
-    user_persona_title: "",
-    user_persona_description: "",
     is_public: false,
-    is_system: false,
+    is_system: true,
   });
 
   // 페르소나 생성 mutation
@@ -84,8 +80,6 @@ export function PersonaAddPage() {
       description: formData.description,
       system_prompt: formData.system_prompt,
       category: formData.category,
-      user_persona_title: formData.user_persona_title || null,
-      user_persona_description: formData.user_persona_description || null,
       is_public: formData.is_public,
       is_system: formData.is_system,
     });
@@ -140,7 +134,7 @@ export function PersonaAddPage() {
         {/* Main Content */}
         <div className="grid gap-6 md:grid-cols-2">
           {/* 기본 정보 Card */}
-          <Card className="md:col-span-2">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5" />
@@ -148,9 +142,31 @@ export function PersonaAddPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-6">
+                {/* 공개 여부 */}
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label
+                      htmlFor="is_public"
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <Globe className="h-4 w-4" />
+                      <span>공개 페르소나</span>
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      다른 사용자에게 공개할지 여부를 설정합니다
+                    </p>
+                  </div>
+                  <Switch
+                    id="is_public"
+                    checked={formData.is_public}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, is_public: checked })
+                    }
+                  />
+                </div>
                 {/* 페르소나 이름 */}
-                <div className="space-y-2 md:col-span-2">
+                <div className="space-y-2">
                   <Label htmlFor="name" className="flex items-center gap-2">
                     <Tag className="h-4 w-4" />
                     <span>페르소나 이름 *</span>
@@ -209,7 +225,7 @@ export function PersonaAddPage() {
                 </div>
 
                 {/* 설명 */}
-                <div className="space-y-2 md:col-span-2">
+                <div className="space-y-2">
                   <Label
                     htmlFor="description"
                     className="flex items-center gap-2"
@@ -227,7 +243,7 @@ export function PersonaAddPage() {
                       })
                     }
                     placeholder="페르소나의 목적과 전문성을 설명하세요"
-                    className="min-h-[100px]"
+                    className="pl-6 field-sizing-content"
                     required
                   />
                   <p className="text-xs text-muted-foreground">
@@ -239,7 +255,7 @@ export function PersonaAddPage() {
           </Card>
 
           {/* 시스템 프롬프트 Card */}
-          <Card className="md:col-span-2">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5" />
@@ -266,147 +282,13 @@ export function PersonaAddPage() {
                       })
                     }
                     placeholder="예: <ROLE>당신은 10년 경력의 Python 개발 전문가입니다.</ROLE><INSTRUCTIONS>사용자의 Python 코드를 분석하고 개선 사항을 제안하세요. 명확하고 실용적인 조언을 제공하세요.</INSTRUCTIONS>"
-                    className="min-h-[200px] font-mono text-sm"
+                    className="pl-6 font-mono text-sm field-sizing-content"
                     required
                   />
                   <p className="text-xs text-muted-foreground">
-                    AI 모델에 전달될 페르소나의 핵심 정의입니다. ROLE과
-                    INSTRUCTIONS 태그를 사용하여 구조화할 수 있습니다.
+                    AI 모델에 전달될 페르소나의 핵심 정의입니다.
                   </p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 개인 설정 Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                개인 설정
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* 개인 페르소나 제목 */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="user_persona_title"
-                    className="flex items-center gap-2"
-                  >
-                    <User className="h-4 w-4" />
-                    <span>개인 페르소나 제목</span>
-                  </Label>
-                  <Input
-                    id="user_persona_title"
-                    value={formData.user_persona_title}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        user_persona_title: e.target.value,
-                      })
-                    }
-                    placeholder="예: 팀 Python 멘토"
-                    className="pl-6"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    소유자만 볼 수 있는 개인적인 페르소나 제목입니다
-                  </p>
-                </div>
-
-                {/* 개인 페르소나 설명 */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="user_persona_description"
-                    className="flex items-center gap-2"
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span>개인 페르소나 설명</span>
-                  </Label>
-                  <Textarea
-                    id="user_persona_description"
-                    value={formData.user_persona_description}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        user_persona_description: e.target.value,
-                      })
-                    }
-                    placeholder="개인적인 메모나 설명을 입력하세요"
-                    className="min-h-[100px]"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    소유자만 볼 수 있는 개인적인 메모입니다
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 공개 설정 Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Globe className="h-5 w-5" />
-                공개 설정
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* 공개 여부 */}
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label
-                      htmlFor="is_public"
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <Globe className="h-4 w-4" />
-                      <span>공개 페르소나</span>
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      다른 사용자에게 공개할지 여부를 설정합니다
-                    </p>
-                  </div>
-                  <Switch
-                    id="is_public"
-                    checked={formData.is_public}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, is_public: checked })
-                    }
-                  />
-                </div>
-
-                {/* 시스템 페르소나 */}
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label
-                      htmlFor="is_system"
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <Lock className="h-4 w-4" />
-                      <span>시스템 페르소나</span>
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      시스템 제공 페르소나로 설정합니다 (관리자만 가능)
-                    </p>
-                  </div>
-                  <Switch
-                    id="is_system"
-                    checked={formData.is_system}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, is_system: checked })
-                    }
-                  />
-                </div>
-
-                {/* 정보 알림 */}
-                <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertDescription className="text-sm">
-                    공개 페르소나는 모든 사용자가 사용할 수 있으며, 시스템
-                    페르소나는 관리자만 설정할 수 있습니다.
-                  </AlertDescription>
-                </Alert>
               </div>
             </CardContent>
           </Card>
