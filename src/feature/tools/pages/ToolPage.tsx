@@ -49,22 +49,6 @@ import { useDeleteMcpTool } from "../hooks/useDeleteMcpTool";
 import { GetMcpToolConfigResponse } from "../api/getMcpToolConfig";
 import { ServerConfigCard } from "../components/ServerConfigCard";
 
-// Config 데이터 타입 정의
-export interface ConfigData {
-  id: number;
-  mcp_tool_id: number;
-  server_config: Record<string, unknown>;
-  has_secrets: boolean;
-  env_keys: string[];
-  capabilities: string[];
-  config_schema_version: string;
-  is_verified: boolean;
-  last_verification_at?: string | null;
-  verification_error?: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
 function ToolPage({
   tool,
   config,
@@ -487,13 +471,6 @@ function ToolPage({
                       </div>
                     </div>
                   )}
-
-                  {(!tool.tags || tool.tags.length === 0) &&
-                    (!tool.keywords || tool.keywords.length === 0) && (
-                      <p className="text-xs text-muted-foreground">
-                        태그 및 키워드 없음
-                      </p>
-                    )}
                 </div>
               </div>
             </div>

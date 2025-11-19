@@ -221,7 +221,6 @@ const ConfigValue = ({ value }: { value: unknown }) => {
 };
 
 export function ServerConfigCard({ config }: ServerConfigCardProps) {
-  console.log({ config });
   const serverConfigEntries = Object.entries(config?.server_config || {});
 
   return (
