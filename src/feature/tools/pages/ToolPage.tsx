@@ -214,7 +214,7 @@ function ToolPage({
               {/* Icon */}
               <div className="flex flex-col items-center gap-4">
                 <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
-                  {tool.icon_url ? (
+                  {tool.icon_url && (
                     <Image
                       src={tool.icon_url}
                       alt={tool.name}
@@ -222,7 +222,8 @@ function ToolPage({
                       height={128}
                       className="object-cover w-full h-full"
                     />
-                  ) : (
+                  )}
+                  {!tool.icon_url && (
                     <Wrench className="h-16 w-16 text-primary" />
                   )}
                 </div>

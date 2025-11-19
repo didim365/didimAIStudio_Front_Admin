@@ -265,13 +265,6 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
                         <span className="font-mono font-bold text-sm text-foreground">
                           {key}
                         </span>
-                        <Badge variant="outline" className="ml-auto text-xs">
-                          {typeof value === "object" && value !== null
-                            ? Array.isArray(value)
-                              ? "array"
-                              : "object"
-                            : typeof value}
-                        </Badge>
                       </div>
 
                       {/* Value */}
@@ -282,31 +275,6 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
                   </div>
                 );
               })}
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Config Metadata Grid */}
-          <div className="grid gap-4 md:grid-cols-2">
-            {/* Has Secrets */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Shield className="h-3.5 w-3.5" />
-                <span className="font-medium">민감 정보 포함</span>
-              </div>
-              <div className="pl-5">
-                {config.has_secrets ? (
-                  <Badge className="bg-orange-50 text-orange-700 border-orange-200 border">
-                    <Key className="h-3 w-3 mr-1" />
-                    있음
-                  </Badge>
-                ) : (
-                  <Badge className="bg-gray-50 text-gray-700 border-gray-200 border">
-                    없음
-                  </Badge>
-                )}
-              </div>
             </div>
           </div>
         </CardContent>
