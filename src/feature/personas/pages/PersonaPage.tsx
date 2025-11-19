@@ -135,24 +135,6 @@ function PersonaPage({ persona }: PersonaPageProps) {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col md:flex-row gap-6">
-              {/* Icon */}
-              <div className="flex flex-col items-center gap-4">
-                <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl from-primary/20 to-primary/5 flex items-center justify-center">
-                  <Sparkles className="h-16 w-16 text-primary" />
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <Badge className={`${categoryInfo.color} border`}>
-                    {categoryInfo.label}
-                  </Badge>
-                  {isCustomized && (
-                    <Badge className="bg-green-100 text-green-800 border-green-200 border">
-                      <Shield className="h-3 w-3 mr-1" />
-                      커스터마이징됨
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
               {/* Persona Info Grid */}
               <div className="flex-1 grid gap-4 md:grid-cols-2">
                 {/* Title */}
@@ -165,9 +147,11 @@ function PersonaPage({ persona }: PersonaPageProps) {
                   </div>
                   <p className="text-lg font-semibold pl-6">{personaTitle}</p>
                   {persona.user_persona_title && persona.name && (
-                    <p className="text-sm text-muted-foreground pl-6">
-                      원본: {persona.name}
-                    </p>
+                    <>
+                      <p className="text-sm text-muted-foreground pl-6">
+                        원본: {persona.name}
+                      </p>
+                    </>
                   )}
                 </div>
 
@@ -211,6 +195,32 @@ function PersonaPage({ persona }: PersonaPageProps) {
                   </p>
                 </div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* System Prompt Card */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5" />
+              시스템 프롬프트
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Sparkles className="h-4 w-4" />
+                <span className="font-medium">AI 모델에 전달되는 프롬프트</span>
+              </div>
+              <div className="ml-6 p-4 bg-muted rounded-lg border border-border">
+                <pre className="text-sm font-mono whitespace-pre-wrap wrap-break-word">
+                  {persona.system_prompt}
+                </pre>
+              </div>
+              <p className="text-xs text-muted-foreground pl-6">
+                이 프롬프트는 AI 모델의 동작을 정의하는 핵심 설정입니다.
+              </p>
             </div>
           </CardContent>
         </Card>
