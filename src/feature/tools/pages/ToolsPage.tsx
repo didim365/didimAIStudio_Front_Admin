@@ -16,6 +16,7 @@ import { ToolsTable } from "../components/ToolsTable";
 import { statusConfig } from "../constants/toolConfigs";
 import { Pagination } from "@/shared/ui/pagination";
 import Link from "next/link";
+import { cn } from "@/shared/lib/utils";
 
 export default function ToolsPage() {
   const [statusFilter, setStatusFilter] = useQueryParam<string>(
@@ -72,7 +73,7 @@ export default function ToolsPage() {
                 disabled={isLoading}
               >
                 <RefreshCw
-                  className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                  className={cn("h-4 w-4", isLoading && "animate-spin")}
                 />
                 새로고침
               </Button>

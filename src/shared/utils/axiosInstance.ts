@@ -23,7 +23,7 @@ const axiosInstance = {} as AxiosInstanceWithGateways;
 
 // 배열 파라미터를 반복되는 키-값 쌍으로 직렬화
 // category=[3,4,5] -> category=3&category=4&category=5
-const paramsSerializer = (params: Record<string, any>): string => {
+const paramsSerializer = (params: Record<string, unknown>): string => {
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
