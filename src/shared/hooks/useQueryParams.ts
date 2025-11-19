@@ -43,9 +43,12 @@ export function useQueryParam<T extends QueryParamValue>(
 
   // URL에서 현재 값 읽기
   const urlValue = searchParams.get(key);
-  const valueFromUrl = urlValue === null
-    ? initialValue
-    : (typeof initialValue === 'number' ? Number(urlValue) as T : urlValue as T);
+  const valueFromUrl =
+    urlValue === null
+      ? initialValue
+      : typeof initialValue === "number"
+      ? (Number(urlValue) as T)
+      : (urlValue as T);
 
   // 로컬 상태 (debounce 중 입력 값 저장)
   const [localValue, setLocalValue] = useState<T>(valueFromUrl);

@@ -25,24 +25,10 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/shared/utils/formatDate";
 import { useState } from "react";
-
-interface ConfigData {
-  id: number;
-  mcp_tool_id: number;
-  server_config: Record<string, unknown>;
-  has_secrets: boolean;
-  env_keys: string[];
-  capabilities: string[];
-  config_schema_version: string;
-  is_verified: boolean;
-  last_verification_at?: string | null;
-  verification_error?: string | null;
-  created_at: string;
-  updated_at: string;
-}
+import { GetMcpToolConfigResponse } from "../api/getMcpToolConfig";
 
 interface ServerConfigCardProps {
-  config: ConfigData;
+  config: GetMcpToolConfigResponse;
 }
 
 // 값 타입에 따른 아이콘 반환
@@ -241,7 +227,8 @@ const ConfigValue = ({ value }: { value: unknown }) => {
 };
 
 export function ServerConfigCard({ config }: ServerConfigCardProps) {
-  const serverConfigEntries = Object.entries(config.server_config);
+  console.log({ config });
+  const serverConfigEntries = Object.entries(config?.server_config || {});
 
   return (
     <>
@@ -253,63 +240,9 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
               <Settings className="h-5 w-5 text-primary" />
               서버 설정 정보
             </CardTitle>
-            <div className="flex items-center gap-2">
-              {config.is_verified ? (
-                <Badge className="bg-green-50 text-green-700 border-green-200 border">
-                  <CheckCircle2 className="h-3 w-3 mr-1" />
-                  검증 완료
-                </Badge>
-              ) : (
-                <Badge
-                  variant="outline"
-                  className="bg-amber-50 text-amber-700 border-amber-200"
-                >
-                  <AlertCircle className="h-3 w-3 mr-1" />
-                  미검증
-                </Badge>
-              )}
-            </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            도구 템플릿 설정 ID: #{config.id}
-          </p>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Verification Info */}
-          {config.last_verification_at && (
-            <div className="p-4 bg-linear-to-br from-green-50/50 to-emerald-50/50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg border border-green-200/50 dark:border-green-800/50">
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium text-green-900 dark:text-green-100">
-                    마지막 검증 완료
-                  </p>
-                  <p className="text-xs font-mono text-green-700 dark:text-green-300">
-                    {formatDate(config.last_verification_at)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {config.verification_error && (
-            <div className="p-4 bg-linear-to-br from-red-50/50 to-rose-50/50 dark:from-red-950/20 dark:to-rose-950/20 rounded-lg border border-red-200/50 dark:border-red-800/50">
-              <div className="flex items-start gap-3">
-                <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium text-red-900 dark:text-red-100">
-                    검증 오류
-                  </p>
-                  <p className="text-xs text-red-700 dark:text-red-300">
-                    {config.verification_error}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <Separator />
-
           {/* Server Config List */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-semibold">
@@ -363,17 +296,6 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
 
           {/* Config Metadata Grid */}
           <div className="grid gap-4 md:grid-cols-2">
-            {/* Config Schema Version */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <GitBranch className="h-3.5 w-3.5" />
-                <span className="font-medium">설정 스키마 버전</span>
-              </div>
-              <p className="text-base font-mono font-semibold pl-5">
-                {config.config_schema_version}
-              </p>
-            </div>
-
             {/* Has Secrets */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -392,28 +314,6 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
                   </Badge>
                 )}
               </div>
-            </div>
-
-            {/* Created At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Calendar className="h-3.5 w-3.5" />
-                <span className="font-medium">설정 생성일</span>
-              </div>
-              <p className="text-base font-mono pl-5">
-                {formatDate(config.created_at)}
-              </p>
-            </div>
-
-            {/* Updated At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Calendar className="h-3.5 w-3.5" />
-                <span className="font-medium">설정 수정일</span>
-              </div>
-              <p className="text-base font-mono pl-5">
-                {formatDate(config.updated_at)}
-              </p>
             </div>
           </div>
         </CardContent>
