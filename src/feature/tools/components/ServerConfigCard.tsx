@@ -2,47 +2,34 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Separator } from "@/shared/ui/separator";
 import {
   Settings,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
-  GitBranch,
-  Shield,
   Key,
-  Calendar,
   ChevronDown,
-  ChevronRight,
   Braces,
   List,
-  Link2,
   FileCode,
   Hash,
   Type,
   ToggleLeft,
   Database,
 } from "lucide-react";
-import { formatDate } from "@/shared/utils/formatDate";
 import { useState } from "react";
-
-interface ConfigData {
-  id: number;
-  mcp_tool_id: number;
-  server_config: Record<string, unknown>;
-  has_secrets: boolean;
-  env_keys: string[];
-  capabilities: string[];
-  config_schema_version: string;
-  is_verified: boolean;
-  last_verification_at?: string | null;
-  verification_error?: string | null;
-  created_at: string;
-  updated_at: string;
-}
+import { GetMcpToolConfigResponse } from "../api/getMcpToolConfig";
+import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Textarea } from "@/shared/ui/textarea";
+import { usePutMcpToolConfig } from "../hooks/usePutMcpToolConfig";
+import { useQueryClient } from "@tanstack/react-query";
+import { Save, Loader2, Edit2 } from "lucide-react";
+import { toast } from "sonner";
+import ReactJson from "react-json-view";
+import { useTheme } from "next-themes";
 
 interface ServerConfigCardProps {
-  config: ConfigData;
+  config: GetMcpToolConfigResponse;
+  toolId: number;
 }
 
 // 값 타입에 따른 아이콘 반환
@@ -81,92 +68,274 @@ const getValueBgColor = (value: unknown) => {
   return "bg-gray-50/50 dark:bg-gray-950/20 border-gray-200 dark:border-gray-800";
 };
 
+// null 값과 빈 값들을 검증하는 함수
+const isEmptyValue = (value: unknown): boolean => {
+  if (value === null) return true;
+  if (Array.isArray(value) && value.length === 0) return true;
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    Object.keys(value).length === 0
+  ) {
+    return true;
+  }
+  return false;
+};
+
 // 값 렌더링 컴포넌트
-const ConfigValue = ({ value }: { value: unknown }) => {
+const ConfigValue = ({
+  value,
+  onChange,
+}: {
+  value: unknown;
+  onChange?: (newValue: unknown) => void;
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const ValueIcon = getValueIcon(value);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState("");
+  const { theme } = useTheme();
   const colorClass = getValueColor(value);
   const bgColorClass = getValueBgColor(value);
 
-  // null 처리
-  if (value === null) {
-    return (
-      <span className="text-xs font-mono text-muted-foreground italic">
-        null
-      </span>
-    );
-  }
+  const handleSave = () => {
+    if (!onChange) return;
+    try {
+      let parsedValue: unknown = editValue;
+      if (typeof value === "number") {
+        parsedValue = Number(editValue);
+      } else if (typeof value === "boolean") {
+        parsedValue = editValue === "true";
+      } else if (
+        Array.isArray(value) ||
+        (typeof value === "object" && value !== null)
+      ) {
+        parsedValue = JSON.parse(editValue);
+      }
+      onChange(parsedValue);
+      setIsEditing(false);
+    } catch (e) {
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : "설정 값을 저장하는 중 오류가 발생했습니다."
+      );
+    }
+  };
 
   // String 타입
   if (typeof value === "string") {
-    // URL 감지
-    const isUrl = value.startsWith("http://") || value.startsWith("https://");
-    if (isUrl) {
+    if (isEditing) {
       return (
-        <div className="flex items-center gap-2">
-          <Link2 className={`h-3 w-3 ${colorClass}`} />
-          <a
-            href={value}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`text-xs font-mono ${colorClass} hover:underline break-all`}
-          >
-            {value}
-          </a>
+        <div className="space-y-2">
+          <Input
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="text-xs font-mono"
+          />
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleSave}>
+              저장
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setIsEditing(false);
+                setEditValue(String(value));
+              }}
+            >
+              취소
+            </Button>
+          </div>
         </div>
       );
     }
     return (
-      <span className={`text-xs font-mono ${colorClass} break-all`}>
-        &quot;{value}&quot;
-      </span>
+      <div className="flex items-center gap-2">
+        <span className={`text-xs font-mono ${colorClass} break-all`}>
+          &quot;{value}&quot;
+        </span>
+        {onChange && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-6 px-2"
+            onClick={() => {
+              setIsEditing(true);
+              setEditValue(value);
+            }}
+          >
+            <Edit2 className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
     );
   }
 
   // Number 타입
   if (typeof value === "number") {
+    if (isEditing) {
+      return (
+        <div className="space-y-2">
+          <Input
+            type="number"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="text-xs font-mono"
+          />
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleSave}>
+              저장
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setIsEditing(false);
+                setEditValue(String(value));
+              }}
+            >
+              취소
+            </Button>
+          </div>
+        </div>
+      );
+    }
     return (
-      <span className={`text-xs font-mono font-semibold ${colorClass}`}>
-        {value}
-      </span>
+      <div className="flex items-center gap-2">
+        <span className={`text-xs font-mono font-semibold ${colorClass}`}>
+          {value}
+        </span>
+        {onChange && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-6 px-2"
+            onClick={() => {
+              setIsEditing(true);
+              setEditValue(String(value));
+            }}
+          >
+            <Edit2 className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
     );
   }
 
   // Boolean 타입
   if (typeof value === "boolean") {
+    if (isEditing) {
+      return (
+        <div className="space-y-2">
+          <select
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="text-xs font-mono px-2 py-1 rounded border bg-background"
+          >
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleSave}>
+              저장
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setIsEditing(false);
+                setEditValue(String(value));
+              }}
+            >
+              취소
+            </Button>
+          </div>
+        </div>
+      );
+    }
     return (
-      <Badge
-        className={`${bgColorClass} ${colorClass} border text-xs font-mono`}
-      >
-        {value ? "true" : "false"}
-      </Badge>
+      <div className="flex items-center gap-2">
+        <Badge
+          className={`${bgColorClass} ${colorClass} border text-xs font-mono`}
+        >
+          {value ? "true" : "false"}
+        </Badge>
+        {onChange && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-6 px-2"
+            onClick={() => {
+              setIsEditing(true);
+              setEditValue(String(value));
+            }}
+          >
+            <Edit2 className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
     );
   }
 
   // Array 타입
   if (Array.isArray(value)) {
-    if (value.length === 0) {
+    if (isEditing) {
       return (
-        <span className="text-xs font-mono text-muted-foreground">[]</span>
+        <div className="space-y-2">
+          <Textarea
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="text-xs font-mono resize-none field-sizing-content"
+          />
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleSave}>
+              저장
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setIsEditing(false);
+                setEditValue(JSON.stringify(value, null, 2));
+              }}
+            >
+              취소
+            </Button>
+          </div>
+        </div>
       );
     }
-
     return (
       <div className="space-y-2">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-xs font-medium hover:underline"
-        >
-          {isExpanded ? (
-            <ChevronDown className="h-3 w-3" />
-          ) : (
-            <ChevronRight className="h-3 w-3" />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2 text-xs font-medium hover:underline"
+          >
+            <ChevronDown
+              className={cn(
+                "h-3 w-3 transition-transform duration-300",
+                !isExpanded && "rotate-180"
+              )}
+            />
+            <span className={colorClass}>Array {value.length}</span>
+          </button>
+          {onChange && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-2"
+              onClick={() => {
+                setIsEditing(true);
+                setEditValue(JSON.stringify(value, null, 2));
+              }}
+            >
+              <Edit2 className="h-3 w-3" />
+            </Button>
           )}
-          <span className={colorClass}>
-            Array ({value.length} {value.length === 1 ? "item" : "items"})
-          </span>
-        </button>
-        {isExpanded && (
+        </div>
+        {isExpanded && !isEditing && (
           <div className="ml-4 space-y-1.5 border-l-2 border-orange-200 dark:border-orange-800 pl-3">
             {value.map((item, index) => (
               <div
@@ -188,46 +357,104 @@ const ConfigValue = ({ value }: { value: unknown }) => {
   // Object 타입
   if (typeof value === "object" && value !== null) {
     const entries = Object.entries(value);
-    if (entries.length === 0) {
+
+    if (isEditing) {
       return (
-        <span className="text-xs font-mono text-muted-foreground">{"{}"}</span>
+        <div className="space-y-2">
+          <div className="border rounded-lg overflow-hidden bg-background">
+            <ReactJson
+              src={value as Record<string, unknown>}
+              theme={theme === "dark" ? "monokai" : "rjv-default"}
+              onEdit={(edit) => {
+                if (onChange) {
+                  onChange(edit.updated_src);
+                }
+              }}
+              onAdd={(add) => {
+                if (onChange) {
+                  onChange(add.updated_src);
+                }
+              }}
+              onDelete={(del) => {
+                if (onChange) {
+                  onChange(del.updated_src);
+                }
+              }}
+              displayDataTypes={false}
+              displayObjectSize={false}
+              enableClipboard={false}
+              style={{
+                padding: "12px",
+                fontSize: "12px",
+              }}
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setIsEditing(false);
+              }}
+            >
+              닫기
+            </Button>
+          </div>
+        </div>
       );
     }
-
     return (
       <div className="space-y-2">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-xs font-medium hover:underline"
-        >
-          {isExpanded ? (
-            <ChevronDown className="h-3 w-3" />
-          ) : (
-            <ChevronRight className="h-3 w-3" />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2 text-xs font-medium hover:underline"
+          >
+            <ChevronDown
+              className={cn(
+                "h-3 w-3 transition-transform duration-300",
+                !isExpanded && "rotate-180"
+              )}
+            />
+            <span className={colorClass}>Object</span>
+          </button>
+          {onChange && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-2"
+              onClick={() => {
+                setIsEditing(true);
+                setEditValue(JSON.stringify(value, null, 2));
+              }}
+            >
+              <Edit2 className="h-3 w-3" />
+            </Button>
           )}
-          <span className={colorClass}>
-            Object ({entries.length}{" "}
-            {entries.length === 1 ? "property" : "properties"})
-          </span>
-        </button>
-        {isExpanded && (
+        </div>
+        {isExpanded && !isEditing && (
           <div className="ml-4 space-y-2 border-l-2 border-pink-200 dark:border-pink-800 pl-3">
-            {entries.map(([key, val]) => (
-              <div
-                key={key}
-                className="p-2 bg-pink-50/30 dark:bg-pink-950/10 rounded space-y-1"
-              >
-                <div className="flex items-center gap-2">
-                  <Key className="h-3 w-3 text-pink-600 dark:text-pink-400" />
-                  <span className="text-xs font-mono font-semibold text-pink-700 dark:text-pink-300">
-                    {key}:
-                  </span>
+            {entries.map(([key, val]) => {
+              if (isEmptyValue(val)) {
+                return null;
+              }
+              return (
+                <div
+                  key={key}
+                  className="p-2 bg-pink-50/30 dark:bg-pink-950/10 rounded space-y-1"
+                >
+                  <div className="flex items-center gap-2">
+                    <Key className="h-3 w-3 text-pink-600 dark:text-pink-400" />
+                    <span className="text-xs font-mono font-semibold text-pink-700 dark:text-pink-300">
+                      {key}:
+                    </span>
+                  </div>
+                  <div className="ml-5">
+                    <ConfigValue value={val} />
+                  </div>
                 </div>
-                <div className="ml-5">
-                  <ConfigValue value={val} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -241,8 +468,36 @@ const ConfigValue = ({ value }: { value: unknown }) => {
   );
 };
 
-export function ServerConfigCard({ config }: ServerConfigCardProps) {
-  const serverConfigEntries = Object.entries(config.server_config);
+export function ServerConfigCard({ config, toolId }: ServerConfigCardProps) {
+  const [editedConfig, setEditedConfig] =
+    useState<GetMcpToolConfigResponse>(config);
+  const serverConfigEntries = Object.entries(editedConfig);
+  const queryClient = useQueryClient();
+
+  const { mutate: updateConfig, isPending } = usePutMcpToolConfig({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["mcp-tool-config", toolId],
+      });
+    },
+    meta: {
+      successMessage: "설정이 성공적으로 저장되었습니다.",
+    },
+  });
+
+  const handleSave = () => {
+    updateConfig({
+      params: { tool_id: toolId },
+      data: editedConfig,
+    });
+  };
+
+  const handleValueChange = (key: string, newValue: unknown) => {
+    setEditedConfig((prev) => ({
+      ...prev,
+      [key]: newValue,
+    }));
+  };
 
   return (
     <>
@@ -254,78 +509,36 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
               <Settings className="h-5 w-5 text-primary" />
               서버 설정 정보
             </CardTitle>
-            <div className="flex items-center gap-2">
-              {config.is_verified ? (
-                <Badge className="bg-green-50 text-green-700 border-green-200 border">
-                  <CheckCircle2 className="h-3 w-3 mr-1" />
-                  검증 완료
-                </Badge>
+            <Button onClick={handleSave} disabled={isPending} size="sm">
+              {isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  저장 중...
+                </>
               ) : (
-                <Badge
-                  variant="outline"
-                  className="bg-amber-50 text-amber-700 border-amber-200"
-                >
-                  <AlertCircle className="h-3 w-3 mr-1" />
-                  미검증
-                </Badge>
+                <>
+                  <Save className="h-4 w-4" />
+                  저장
+                </>
               )}
-            </div>
+            </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            도구 템플릿 설정 ID: #{config.id}
-          </p>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Verification Info */}
-          {config.last_verification_at && (
-            <div className="p-4 bg-linear-to-br from-green-50/50 to-emerald-50/50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg border border-green-200/50 dark:border-green-800/50">
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium text-green-900 dark:text-green-100">
-                    마지막 검증 완료
-                  </p>
-                  <p className="text-xs font-mono text-green-700 dark:text-green-300">
-                    {formatDate(config.last_verification_at)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {config.verification_error && (
-            <div className="p-4 bg-linear-to-br from-red-50/50 to-rose-50/50 dark:from-red-950/20 dark:to-rose-950/20 rounded-lg border border-red-200/50 dark:border-red-800/50">
-              <div className="flex items-start gap-3">
-                <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium text-red-900 dark:text-red-100">
-                    검증 오류
-                  </p>
-                  <p className="text-xs text-red-700 dark:text-red-300">
-                    {config.verification_error}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <Separator />
-
           {/* Server Config List */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-semibold">
               <Database className="h-4 w-4 text-primary" />
               <span>서버 설정 항목</span>
-              <Badge variant="outline" className="ml-auto">
-                {serverConfigEntries.length} 항목
-              </Badge>
             </div>
 
             <div className="space-y-3">
               {serverConfigEntries.map(([key, value]) => {
                 const ValueIcon = getValueIcon(value);
                 const bgColorClass = getValueBgColor(value);
-
+                if (isEmptyValue(value)) {
+                  return null;
+                }
                 return (
                   <div
                     key={key}
@@ -340,18 +553,16 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
                         <span className="font-mono font-bold text-sm text-foreground">
                           {key}
                         </span>
-                        <Badge variant="outline" className="ml-auto text-xs">
-                          {typeof value === "object" && value !== null
-                            ? Array.isArray(value)
-                              ? "array"
-                              : "object"
-                            : typeof value}
-                        </Badge>
                       </div>
 
                       {/* Value */}
                       <div className="ml-9 pl-4 border-l-2 border-border">
-                        <ConfigValue value={value} />
+                        <ConfigValue
+                          value={value}
+                          onChange={(newValue) =>
+                            handleValueChange(key, newValue)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -359,67 +570,8 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
               })}
             </div>
           </div>
-
-          <Separator />
-
-          {/* Config Metadata Grid */}
-          <div className="grid gap-4 md:grid-cols-2">
-            {/* Config Schema Version */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <GitBranch className="h-3.5 w-3.5" />
-                <span className="font-medium">설정 스키마 버전</span>
-              </div>
-              <p className="text-base font-mono font-semibold pl-5">
-                {config.config_schema_version}
-              </p>
-            </div>
-
-            {/* Has Secrets */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Shield className="h-3.5 w-3.5" />
-                <span className="font-medium">민감 정보 포함</span>
-              </div>
-              <div className="pl-5">
-                {config.has_secrets ? (
-                  <Badge className="bg-orange-50 text-orange-700 border-orange-200 border">
-                    <Key className="h-3 w-3 mr-1" />
-                    있음
-                  </Badge>
-                ) : (
-                  <Badge className="bg-gray-50 text-gray-700 border-gray-200 border">
-                    없음
-                  </Badge>
-                )}
-              </div>
-            </div>
-
-            {/* Created At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Calendar className="h-3.5 w-3.5" />
-                <span className="font-medium">설정 생성일</span>
-              </div>
-              <p className="text-base font-mono pl-5">
-                {formatDate(config.created_at)}
-              </p>
-            </div>
-
-            {/* Updated At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Calendar className="h-3.5 w-3.5" />
-                <span className="font-medium">설정 수정일</span>
-              </div>
-              <p className="text-base font-mono pl-5">
-                {formatDate(config.updated_at)}
-              </p>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </>
   );
 }
-

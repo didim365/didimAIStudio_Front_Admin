@@ -14,6 +14,7 @@ import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { useGetMcpTools } from "../hooks/useGetMcpTools";
 import { ToolsTable } from "../components/ToolsTable";
 import { statusConfig } from "../constants/toolConfigs";
+import { Pagination } from "@/shared/ui/pagination";
 import Link from "next/link";
 
 export default function ToolsPage() {
@@ -22,11 +23,9 @@ export default function ToolsPage() {
     "all"
   );
   const [page, setPage] = useQueryParam<number>("page", 1);
-  const pageSize = 20;
 
   const queryParams = {
     page,
-    size: pageSize,
     status_filter:
       statusFilter === "all"
         ? undefined
@@ -37,14 +36,6 @@ export default function ToolsPage() {
   const { data, isLoading, refetch } = useGetMcpTools(queryParams);
 
   const tools = data?.items || [];
-
-  const handlePrevPage = () => {
-    setPage(Math.max(1, page - 1));
-  };
-
-  const handleNextPage = () => {
-    setPage(page + 1);
-  };
 
   return (
     <div>
@@ -115,26 +106,15 @@ export default function ToolsPage() {
 
       {/* 페이지네이션 */}
       {data && data.pages > 1 && (
-        <div className="mt-6 flex justify-center gap-2">
-          <Button
-            variant="outline"
-            onClick={handlePrevPage}
-            disabled={!data.has_prev || isLoading}
-          >
-            이전
-          </Button>
-          <div className="flex items-center gap-2 px-4">
-            <span className="text-sm text-slate-600">
-              {data.page} / {data.pages}
-            </span>
-          </div>
-          <Button
-            variant="outline"
-            onClick={handleNextPage}
-            disabled={!data.has_next || isLoading}
-          >
-            다음
-          </Button>
+        <div className="mt-6">
+          <Pagination
+            currentPage={data.page}
+            totalPages={data.pages}
+            onPageChange={(newPage) => setPage(newPage)}
+            hasPrevious={data.has_prev}
+            hasNext={data.has_next}
+            isLoading={isLoading}
+          />
         </div>
       )}
     </div>

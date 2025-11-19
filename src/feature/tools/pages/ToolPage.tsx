@@ -30,12 +30,7 @@ import {
   TrendingUp,
   Zap,
   Calendar,
-  Link2,
   Code2,
-  Settings,
-  Container,
-  Key,
-  Layers,
   FileCode,
   GitBranch,
   Loader2,
@@ -54,22 +49,6 @@ import { useDeleteMcpTool } from "../hooks/useDeleteMcpTool";
 import { GetMcpToolConfigResponse } from "../api/getMcpToolConfig";
 import { ServerConfigCard } from "../components/ServerConfigCard";
 
-// Config 데이터 타입 정의
-export interface ConfigData {
-  id: number;
-  mcp_tool_id: number;
-  server_config: Record<string, unknown>;
-  has_secrets: boolean;
-  env_keys: string[];
-  capabilities: string[];
-  config_schema_version: string;
-  is_verified: boolean;
-  last_verification_at?: string | null;
-  verification_error?: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
 function ToolPage({
   tool,
   config,
@@ -77,8 +56,6 @@ function ToolPage({
   tool: GetMcpToolResponse;
   config: GetMcpToolConfigResponse;
 }) {
-  // 타입 단언으로 config 타입 변환
-  const configData = config as unknown as ConfigData;
   const router = useRouter();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -237,7 +214,7 @@ function ToolPage({
               {/* Icon */}
               <div className="flex flex-col items-center gap-4">
                 <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
-                  {tool.icon_url ? (
+                  {tool.icon_url && (
                     <Image
                       src={tool.icon_url}
                       alt={tool.name}
@@ -245,7 +222,8 @@ function ToolPage({
                       height={128}
                       className="object-cover w-full h-full"
                     />
-                  ) : (
+                  )}
+                  {!tool.icon_url && (
                     <Wrench className="h-16 w-16 text-primary" />
                   )}
                 </div>
@@ -494,255 +472,14 @@ function ToolPage({
                       </div>
                     </div>
                   )}
-
-                  {(!tool.tags || tool.tags.length === 0) &&
-                    (!tool.keywords || tool.keywords.length === 0) && (
-                      <p className="text-xs text-muted-foreground">
-                        태그 및 키워드 없음
-                      </p>
-                    )}
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* URLs and Links Card */}
-        {(tool.repo_url || tool.server_url) && (
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Link2 className="h-5 w-5" />
-                링크 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {tool.repo_url && (
-                <>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <GitBranch className="h-4 w-4 text-muted-foreground" />
-                      <span>저장소 URL</span>
-                    </div>
-                    <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                      <a
-                        href={tool.repo_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-mono text-primary hover:underline break-all"
-                      >
-                        {tool.repo_url}
-                      </a>
-                    </div>
-                  </div>
-                  {tool.server_url && <Separator />}
-                </>
-              )}
-
-              {tool.server_url && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Server className="h-4 w-4 text-muted-foreground" />
-                    <span>서버 URL</span>
-                  </div>
-                  <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                    <a
-                      href={tool.server_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-mono text-primary hover:underline break-all"
-                    >
-                      {tool.server_url}
-                    </a>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Container Configuration Card */}
-        {(tool.container_image ||
-          tool.docker_compose_config ||
-          tool.transport ||
-          tool.server_type) && (
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Container className="h-5 w-5" />
-                컨테이너 설정
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {tool.container_image && (
-                <>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <Container className="h-4 w-4 text-muted-foreground" />
-                      <span>컨테이너 이미지</span>
-                    </div>
-                    <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                      <p className="text-sm font-mono break-all">
-                        {tool.container_image}
-                      </p>
-                    </div>
-                  </div>
-                  {(tool.docker_compose_config ||
-                    tool.transport ||
-                    tool.server_type) && <Separator />}
-                </>
-              )}
-
-              {tool.transport && (
-                <>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <Layers className="h-4 w-4 text-muted-foreground" />
-                      <span>전송 방식</span>
-                    </div>
-                    <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                      <p className="text-sm font-mono">{tool.transport}</p>
-                    </div>
-                  </div>
-                  {(tool.docker_compose_config || tool.server_type) && (
-                    <Separator />
-                  )}
-                </>
-              )}
-
-              {tool.server_type && (
-                <>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <Server className="h-4 w-4 text-muted-foreground" />
-                      <span>서버 타입</span>
-                    </div>
-                    <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                      <p className="text-sm font-mono">{tool.server_type}</p>
-                    </div>
-                  </div>
-                  {tool.docker_compose_config && <Separator />}
-                </>
-              )}
-
-              {tool.docker_compose_config && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Settings className="h-4 w-4 text-muted-foreground" />
-                    <span>Docker Compose 설정</span>
-                  </div>
-                  <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                    <pre className="text-xs font-mono overflow-x-auto">
-                      {JSON.stringify(tool.docker_compose_config, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Environment Variables Card */}
-        {tool.environment_variables &&
-          Object.keys(tool.environment_variables).length > 0 && (
-            <Card className="md:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Key className="h-5 w-5" />
-                  환경 변수
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  <div className="space-y-2">
-                    {Object.entries(tool.environment_variables).map(
-                      ([key, value]) => (
-                        <div
-                          key={key}
-                          className="flex items-start gap-2 text-sm"
-                        >
-                          <span className="font-mono font-semibold text-primary min-w-[150px]">
-                            {key}:
-                          </span>
-                          <span className="font-mono text-muted-foreground break-all">
-                            {value}
-                          </span>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
         {/* Config Data Section */}
-        {config && configData && (
-          <>
-            {/* Server Configuration Card */}
-            <ServerConfigCard config={configData} />
-
-            {/* Environment Variables Keys Card */}
-            {configData.env_keys && configData.env_keys.length > 0 && (
-              <Card className="md:col-span-1">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Key className="h-5 w-5 text-amber-600" />
-                    환경 변수 키 목록
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    설정에서 사용되는 환경 변수 키들입니다
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {configData.env_keys.map((key, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-3 p-3 bg-linear-to-r from-amber-50/50 to-yellow-50/50 dark:from-amber-950/20 dark:to-yellow-950/20 rounded-lg border border-amber-200/50 dark:border-amber-800/50 hover:shadow-sm transition-shadow"
-                      >
-                        <div className="flex items-center justify-center h-8 w-8 bg-amber-100 dark:bg-amber-900 rounded-md">
-                          <Key className="h-4 w-4 text-amber-700 dark:text-amber-300" />
-                        </div>
-                        <span className="font-mono text-sm font-semibold text-amber-900 dark:text-amber-100">
-                          {key}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Capabilities Card */}
-            {configData.capabilities && configData.capabilities.length > 0 && (
-              <Card className="md:col-span-1">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-purple-600" />
-                    지원 기능
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    이 도구가 제공하는 기능 목록입니다
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {configData.capabilities.map((capability, index) => (
-                      <Badge
-                        key={index}
-                        className="bg-linear-to-r from-purple-50 to-violet-50 dark:from-purple-950 dark:to-violet-950 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 border px-3 py-1.5 text-sm font-medium"
-                      >
-                        <Zap className="h-3 w-3 mr-1.5" />
-                        {capability}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </>
-        )}
+        {config && <ServerConfigCard config={config} toolId={tool.id} />}
       </div>
     </div>
   );
