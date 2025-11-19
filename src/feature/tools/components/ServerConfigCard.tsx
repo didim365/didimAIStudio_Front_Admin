@@ -109,13 +109,6 @@ const ConfigValue = ({
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             className="text-xs font-mono"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSave();
-              if (e.key === "Escape") {
-                setIsEditing(false);
-                setEditValue(String(value));
-              }
-            }}
           />
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleSave}>
@@ -167,13 +160,6 @@ const ConfigValue = ({
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             className="text-xs font-mono"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSave();
-              if (e.key === "Escape") {
-                setIsEditing(false);
-                setEditValue(String(value));
-              }
-            }}
           />
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleSave}>
@@ -224,13 +210,6 @@ const ConfigValue = ({
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             className="text-xs font-mono px-2 py-1 rounded border bg-background"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSave();
-              if (e.key === "Escape") {
-                setIsEditing(false);
-                setEditValue(String(value));
-              }
-            }}
           >
             <option value="true">true</option>
             <option value="false">false</option>
@@ -286,12 +265,6 @@ const ConfigValue = ({
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             className="text-xs font-mono min-h-[100px]"
-            onKeyDown={(e) => {
-              if (e.key === "Escape") {
-                setIsEditing(false);
-                setEditValue(JSON.stringify(value, null, 2));
-              }
-            }}
           />
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleSave}>
@@ -370,12 +343,6 @@ const ConfigValue = ({
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             className="text-xs font-mono min-h-[100px]"
-            onKeyDown={(e) => {
-              if (e.key === "Escape") {
-                setIsEditing(false);
-                setEditValue(JSON.stringify(value, null, 2));
-              }
-            }}
           />
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleSave}>
