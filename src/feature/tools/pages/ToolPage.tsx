@@ -479,7 +479,7 @@ function ToolPage({
         </Card>
 
         {/* Config Data Section */}
-        {config && <ServerConfigCard config={config} />}
+        {config && <ServerConfigCard config={config} toolId={tool.id} />}
       </div>
     </div>
   );

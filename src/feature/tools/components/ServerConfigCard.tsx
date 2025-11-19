@@ -14,12 +14,19 @@ import {
   ToggleLeft,
   Database,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GetMcpToolConfigResponse } from "../api/getMcpToolConfig";
 import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Textarea } from "@/shared/ui/textarea";
+import { usePutMcpToolConfig } from "../hooks/usePutMcpToolConfig";
+import { useQueryClient } from "@tanstack/react-query";
+import { Save, Loader2, Edit2 } from "lucide-react";
 
 interface ServerConfigCardProps {
   config: GetMcpToolConfigResponse;
+  toolId: number;
 }
 
 // 값 타입에 따른 아이콘 반환
@@ -59,57 +66,281 @@ const getValueBgColor = (value: unknown) => {
 };
 
 // 값 렌더링 컴포넌트
-const ConfigValue = ({ value }: { value: unknown }) => {
+const ConfigValue = ({
+  value,
+  onChange,
+}: {
+  value: unknown;
+  onChange?: (newValue: unknown) => void;
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState("");
   const colorClass = getValueColor(value);
   const bgColorClass = getValueBgColor(value);
 
+  const handleSave = () => {
+    if (!onChange) return;
+    try {
+      let parsedValue: unknown = editValue;
+      if (typeof value === "number") {
+        parsedValue = Number(editValue);
+      } else if (typeof value === "boolean") {
+        parsedValue = editValue === "true";
+      } else if (
+        Array.isArray(value) ||
+        (typeof value === "object" && value !== null)
+      ) {
+        parsedValue = JSON.parse(editValue);
+      }
+      onChange(parsedValue);
+      setIsEditing(false);
+    } catch (e) {
+      // JSON 파싱 실패 시 무시
+    }
+  };
+
   // String 타입
   if (typeof value === "string") {
+    if (isEditing) {
+      return (
+        <div className="space-y-2">
+          <Input
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="text-xs font-mono"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSave();
+              if (e.key === "Escape") {
+                setIsEditing(false);
+                setEditValue(String(value));
+              }
+            }}
+          />
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleSave}>
+              저장
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setIsEditing(false);
+                setEditValue(String(value));
+              }}
+            >
+              취소
+            </Button>
+          </div>
+        </div>
+      );
+    }
     return (
-      <span className={`text-xs font-mono ${colorClass} break-all`}>
-        &quot;{value}&quot;
-      </span>
+      <div className="flex items-center gap-2">
+        <span className={`text-xs font-mono ${colorClass} break-all`}>
+          &quot;{value}&quot;
+        </span>
+        {onChange && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-6 px-2"
+            onClick={() => {
+              setIsEditing(true);
+              setEditValue(value);
+            }}
+          >
+            <Edit2 className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
     );
   }
 
   // Number 타입
   if (typeof value === "number") {
+    if (isEditing) {
+      return (
+        <div className="space-y-2">
+          <Input
+            type="number"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="text-xs font-mono"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSave();
+              if (e.key === "Escape") {
+                setIsEditing(false);
+                setEditValue(String(value));
+              }
+            }}
+          />
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleSave}>
+              저장
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setIsEditing(false);
+                setEditValue(String(value));
+              }}
+            >
+              취소
+            </Button>
+          </div>
+        </div>
+      );
+    }
     return (
-      <span className={`text-xs font-mono font-semibold ${colorClass}`}>
-        {value}
-      </span>
+      <div className="flex items-center gap-2">
+        <span className={`text-xs font-mono font-semibold ${colorClass}`}>
+          {value}
+        </span>
+        {onChange && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-6 px-2"
+            onClick={() => {
+              setIsEditing(true);
+              setEditValue(String(value));
+            }}
+          >
+            <Edit2 className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
     );
   }
 
   // Boolean 타입
   if (typeof value === "boolean") {
+    if (isEditing) {
+      return (
+        <div className="space-y-2">
+          <select
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="text-xs font-mono px-2 py-1 rounded border bg-background"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSave();
+              if (e.key === "Escape") {
+                setIsEditing(false);
+                setEditValue(String(value));
+              }
+            }}
+          >
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleSave}>
+              저장
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setIsEditing(false);
+                setEditValue(String(value));
+              }}
+            >
+              취소
+            </Button>
+          </div>
+        </div>
+      );
+    }
     return (
-      <Badge
-        className={`${bgColorClass} ${colorClass} border text-xs font-mono`}
-      >
-        {value ? "true" : "false"}
-      </Badge>
+      <div className="flex items-center gap-2">
+        <Badge
+          className={`${bgColorClass} ${colorClass} border text-xs font-mono`}
+        >
+          {value ? "true" : "false"}
+        </Badge>
+        {onChange && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-6 px-2"
+            onClick={() => {
+              setIsEditing(true);
+              setEditValue(String(value));
+            }}
+          >
+            <Edit2 className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
     );
   }
 
   // Array 타입
   if (Array.isArray(value)) {
+    if (isEditing) {
+      return (
+        <div className="space-y-2">
+          <Textarea
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="text-xs font-mono min-h-[100px]"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setIsEditing(false);
+                setEditValue(JSON.stringify(value, null, 2));
+              }
+            }}
+          />
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleSave}>
+              저장
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setIsEditing(false);
+                setEditValue(JSON.stringify(value, null, 2));
+              }}
+            >
+              취소
+            </Button>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="space-y-2">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-xs font-medium hover:underline"
-        >
-          <ChevronDown
-            className={cn(
-              "h-3 w-3 transition-transform duration-300",
-              !isExpanded && "rotate-180"
-            )}
-          />
-          <span className={colorClass}>Array {value.length}</span>
-        </button>
-        {isExpanded && (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2 text-xs font-medium hover:underline"
+          >
+            <ChevronDown
+              className={cn(
+                "h-3 w-3 transition-transform duration-300",
+                !isExpanded && "rotate-180"
+              )}
+            />
+            <span className={colorClass}>Array {value.length}</span>
+          </button>
+          {onChange && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-2"
+              onClick={() => {
+                setIsEditing(true);
+                setEditValue(JSON.stringify(value, null, 2));
+              }}
+            >
+              <Edit2 className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
+        {isExpanded && !isEditing && (
           <div className="ml-4 space-y-1.5 border-l-2 border-orange-200 dark:border-orange-800 pl-3">
             {value.map((item, index) => (
               <div
@@ -132,21 +363,68 @@ const ConfigValue = ({ value }: { value: unknown }) => {
   if (typeof value === "object" && value !== null) {
     const entries = Object.entries(value);
 
+    if (isEditing) {
+      return (
+        <div className="space-y-2">
+          <Textarea
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="text-xs font-mono min-h-[100px]"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setIsEditing(false);
+                setEditValue(JSON.stringify(value, null, 2));
+              }
+            }}
+          />
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleSave}>
+              저장
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setIsEditing(false);
+                setEditValue(JSON.stringify(value, null, 2));
+              }}
+            >
+              취소
+            </Button>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="space-y-2">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-xs font-medium hover:underline"
-        >
-          <ChevronDown
-            className={cn(
-              "h-3 w-3 transition-transform duration-300",
-              !isExpanded && "rotate-180"
-            )}
-          />
-          <span className={colorClass}>Object</span>
-        </button>
-        {isExpanded && (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2 text-xs font-medium hover:underline"
+          >
+            <ChevronDown
+              className={cn(
+                "h-3 w-3 transition-transform duration-300",
+                !isExpanded && "rotate-180"
+              )}
+            />
+            <span className={colorClass}>Object</span>
+          </button>
+          {onChange && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-2"
+              onClick={() => {
+                setIsEditing(true);
+                setEditValue(JSON.stringify(value, null, 2));
+              }}
+            >
+              <Edit2 className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
+        {isExpanded && !isEditing && (
           <div className="ml-4 space-y-2 border-l-2 border-pink-200 dark:border-pink-800 pl-3">
             {entries.map(([key, val]) => {
               if (val === null) {
@@ -192,8 +470,40 @@ const ConfigValue = ({ value }: { value: unknown }) => {
   );
 };
 
-export function ServerConfigCard({ config }: ServerConfigCardProps) {
-  const serverConfigEntries = Object.entries(config);
+export function ServerConfigCard({ config, toolId }: ServerConfigCardProps) {
+  const [editedConfig, setEditedConfig] =
+    useState<GetMcpToolConfigResponse>(config);
+  const serverConfigEntries = Object.entries(editedConfig);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    setEditedConfig(config);
+  }, [config]);
+
+  const { mutate: updateConfig, isPending } = usePutMcpToolConfig({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["mcp-tool-config", toolId],
+      });
+    },
+    meta: {
+      successMessage: "설정이 성공적으로 저장되었습니다.",
+    },
+  });
+
+  const handleSave = () => {
+    updateConfig({
+      params: { tool_id: toolId },
+      data: editedConfig,
+    });
+  };
+
+  const handleValueChange = (key: string, newValue: unknown) => {
+    setEditedConfig((prev) => ({
+      ...prev,
+      [key]: newValue,
+    }));
+  };
 
   return (
     <>
@@ -205,6 +515,19 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
               <Settings className="h-5 w-5 text-primary" />
               서버 설정 정보
             </CardTitle>
+            <Button onClick={handleSave} disabled={isPending} size="sm">
+              {isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  저장 중...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  저장
+                </>
+              )}
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -246,7 +569,12 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
 
                       {/* Value */}
                       <div className="ml-9 pl-4 border-l-2 border-border">
-                        <ConfigValue value={value} />
+                        <ConfigValue
+                          value={value}
+                          onChange={(newValue) =>
+                            handleValueChange(key, newValue)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
