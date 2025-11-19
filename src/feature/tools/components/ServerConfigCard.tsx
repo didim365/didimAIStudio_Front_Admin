@@ -5,13 +5,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
 import {
   Settings,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
-  GitBranch,
-  Shield,
   Key,
-  Calendar,
   ChevronDown,
   ChevronRight,
   Braces,
@@ -22,8 +16,8 @@ import {
   Type,
   ToggleLeft,
   Database,
+  Shield,
 } from "lucide-react";
-import { formatDate } from "@/shared/utils/formatDate";
 import { useState } from "react";
 import { GetMcpToolConfigResponse } from "../api/getMcpToolConfig";
 

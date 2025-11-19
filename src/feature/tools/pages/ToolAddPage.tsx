@@ -25,7 +25,7 @@ import {
   Tag,
   Hash,
   Link,
-  Image,
+  Image as ImageIcon,
   Server,
   Container,
   CloudUpload,
@@ -324,7 +324,7 @@ function ToolAddPage() {
                 {/* 아이콘 URL */}
                 <div className="space-y-2">
                   <Label htmlFor="icon_url" className="flex items-center gap-2">
-                    <Image className="h-4 w-4" />
+                    <ImageIcon className="h-4 w-4" />
                     <span>아이콘 URL</span>
                   </Label>
                   <Input

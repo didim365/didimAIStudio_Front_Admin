@@ -31,7 +31,6 @@ import {
   Zap,
   Calendar,
   Code2,
-  Key,
   FileCode,
   GitBranch,
   Loader2,
