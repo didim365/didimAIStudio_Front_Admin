@@ -114,7 +114,11 @@ const ConfigValue = ({
       onChange(parsedValue);
       setIsEditing(false);
     } catch (e) {
-      toast.error("설정 값을 저장하는 중 오류가 발생했습니다.");
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : "설정 값을 저장하는 중 오류가 발생했습니다."
+      );
     }
   };
 
