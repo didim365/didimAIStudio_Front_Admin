@@ -9,7 +9,7 @@ services:
       - app-network
     environment:
       - NODE_ENV=production
-      - NGINX_INTERNAL_URL=http://nginx:4000
+      - API_BACKEND_URL=http://49.50.129.74
     restart: unless-stopped
   nginx:
     image: nginx:latest

@@ -1,5 +1,4 @@
-import axios from "axios";
-import { SERVER_API_BASE_URL } from "@/shared/constants";
+import axiosInstance from "@/shared/utils/axiosInstance";
 import { cookies } from "next/headers";
 import { paths } from "@/shared/types/api/tools";
 
@@ -26,8 +25,8 @@ const getMcpTool = async (
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
-  const response = await axios.get<GetMcpToolResponse>(
-    `${SERVER_API_BASE_URL}/api/mcp-tools/v1/mcp-tools/${params.tool_id}`,
+  const response = await axiosInstance.tools.get<GetMcpToolResponse>(
+    `/mcp-tools/${params.tool_id}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
