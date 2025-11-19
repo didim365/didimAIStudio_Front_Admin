@@ -17,8 +17,11 @@ export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get("access_token");
 
   // 시작 지점 `/`가 아닌 페이지에 접근하는데 토큰이 없으면 redirect
-  if (pathname !== "/" && !accessToken) {
+  if (!accessToken) {
     return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  if (pathname === "/") {
   }
 
   return NextResponse.next();
