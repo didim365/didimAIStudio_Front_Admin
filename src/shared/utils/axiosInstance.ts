@@ -65,6 +65,23 @@ Object.entries(HTTP_API_GATEWAY).forEach(([key, path]) => {
     }
   );
 
+  // Response interceptor: 401 에러 처리
+  instance.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      // 401 Unauthorized 에러 발생 시
+      if (error.response?.status === 401) {
+        // access_token 제거
+        tokenStorage.clearAccessToken();
+
+        window.location.href = "/";
+      }
+      return Promise.reject(error);
+    }
+  );
+
   axiosInstance[key as GatewayKey] = instance;
 });
 
