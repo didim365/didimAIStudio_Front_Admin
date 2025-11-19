@@ -1,5 +1,4 @@
-import axios from "axios";
-import { SERVER_API_BASE_URL } from "@/shared/constants";
+import axiosInstance from "@/shared/utils/axiosInstance";
 import { cookies } from "next/headers";
 import { paths } from "@/shared/types/api/auth";
 
@@ -21,8 +20,8 @@ const postRefreshToken = async (): Promise<RefreshTokenResponse> => {
     throw new Error("Refresh token not found in cookies");
   }
 
-  const response = await axios.post<RefreshTokenResponse>(
-    `${SERVER_API_BASE_URL}/api/auth/v1/refresh`,
+  const response = await axiosInstance.auth.post<RefreshTokenResponse>(
+    "/refresh",
     undefined,
     {
       params: {
