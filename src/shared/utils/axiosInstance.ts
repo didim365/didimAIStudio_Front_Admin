@@ -21,9 +21,34 @@ type AxiosInstanceWithGateways = {
 // gateway별 인스턴스 생성
 const axiosInstance = {} as AxiosInstanceWithGateways;
 
+// 배열 파라미터를 반복되는 키-값 쌍으로 직렬화
+// category=[3,4,5] -> category=3&category=4&category=5
+const paramsSerializer = (params: Record<string, any>): string => {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === null || value === undefined) {
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => {
+        if (item !== null && item !== undefined) {
+          searchParams.append(key, String(item));
+        }
+      });
+    } else {
+      searchParams.append(key, String(value));
+    }
+  });
+
+  return searchParams.toString();
+};
+
 Object.entries(HTTP_API_GATEWAY).forEach(([key, path]) => {
   const instance = axios.create({
     baseURL: `/api${path}/v1`,
+    paramsSerializer: paramsSerializer,
   });
 
   // Request interceptor: 모든 요청에 Authorization 헤더 추가
