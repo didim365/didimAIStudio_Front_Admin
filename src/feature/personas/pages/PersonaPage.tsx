@@ -199,6 +199,32 @@ function PersonaPage({ persona }: PersonaPageProps) {
           </CardContent>
         </Card>
 
+        {/* System Prompt Card */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5" />
+              시스템 프롬프트
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Sparkles className="h-4 w-4" />
+                <span className="font-medium">AI 모델에 전달되는 프롬프트</span>
+              </div>
+              <div className="ml-6 p-4 bg-muted rounded-lg border border-border">
+                <pre className="text-sm font-mono whitespace-pre-wrap wrap-break-word">
+                  {persona.system_prompt}
+                </pre>
+              </div>
+              <p className="text-xs text-muted-foreground pl-6">
+                이 프롬프트는 AI 모델의 동작을 정의하는 핵심 설정입니다.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Activity Timeline Card */}
         <Card>
           <CardHeader>
