@@ -4,9 +4,7 @@ import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePutPersona } from "../hooks/usePutPersona";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Badge } from "@/shared/ui/badge";
 import {
-  Shield,
   Lock,
   Unlock,
   ArrowLeft,
@@ -82,11 +80,6 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
         is_public: formData.is_public,
       },
     });
-  };
-
-  const categoryInfo = categoryConfig[persona.category] || {
-    label: persona.category,
-    color: "bg-gray-100 text-gray-800 border-gray-200",
   };
 
   if (!persona) {
