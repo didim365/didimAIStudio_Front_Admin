@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { Search, RefreshCw } from "lucide-react";
+import { Pagination } from "@/shared/ui/pagination";
 
 type AICategoryEnum = components["schemas"]["AICategoryEnum"];
 
@@ -182,27 +183,14 @@ function ModelsPage() {
       </Card>
 
       {/* 페이지네이션 */}
-      {data && data.total_pages > 1 && (
-        <div className="mt-6 flex justify-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setPage(Math.max(1, page - 1))}
-            disabled={page === 1 || isLoading}
-          >
-            이전
-          </Button>
-          <div className="flex items-center gap-2 px-4">
-            <span className="text-sm text-slate-600">
-              {data.page} / {data.total_pages}
-            </span>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => setPage(page + 1)}
-            disabled={page === data.total_pages || isLoading}
-          >
-            다음
-          </Button>
+      {data && (
+        <div className="mt-6">
+          <Pagination
+            currentPage={data.page}
+            totalPages={data.total_pages}
+            onPageChange={(newPage) => setPage(newPage)}
+            isLoading={isLoading}
+          />
         </div>
       )}
     </div>
