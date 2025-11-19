@@ -6,10 +6,8 @@ import {
   Settings,
   Key,
   ChevronDown,
-  ChevronRight,
   Braces,
   List,
-  Link2,
   FileCode,
   Hash,
   Type,
@@ -146,26 +144,41 @@ const ConfigValue = ({ value }: { value: unknown }) => {
               !isExpanded && "rotate-180"
             )}
           />
-          <span className={colorClass}>Object {entries.length}</span>
+          <span className={colorClass}>Object</span>
         </button>
         {isExpanded && (
           <div className="ml-4 space-y-2 border-l-2 border-pink-200 dark:border-pink-800 pl-3">
-            {entries.map(([key, val]) => (
-              <div
-                key={key}
-                className="p-2 bg-pink-50/30 dark:bg-pink-950/10 rounded space-y-1"
-              >
-                <div className="flex items-center gap-2">
-                  <Key className="h-3 w-3 text-pink-600 dark:text-pink-400" />
-                  <span className="text-xs font-mono font-semibold text-pink-700 dark:text-pink-300">
-                    {key}:
-                  </span>
+            {entries.map(([key, val]) => {
+              if (val === null) {
+                return null;
+              }
+              if (Array.isArray(val) && val.length === 0) {
+                return null;
+              }
+              if (
+                typeof val === "object" &&
+                val !== null &&
+                Object.keys(val).length === 0
+              ) {
+                return null;
+              }
+              return (
+                <div
+                  key={key}
+                  className="p-2 bg-pink-50/30 dark:bg-pink-950/10 rounded space-y-1"
+                >
+                  <div className="flex items-center gap-2">
+                    <Key className="h-3 w-3 text-pink-600 dark:text-pink-400" />
+                    <span className="text-xs font-mono font-semibold text-pink-700 dark:text-pink-300">
+                      {key}:
+                    </span>
+                  </div>
+                  <div className="ml-5">
+                    <ConfigValue value={val} />
+                  </div>
                 </div>
-                <div className="ml-5">
-                  <ConfigValue value={val} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -180,7 +193,7 @@ const ConfigValue = ({ value }: { value: unknown }) => {
 };
 
 export function ServerConfigCard({ config }: ServerConfigCardProps) {
-  const serverConfigEntries = Object.entries(config?.server_config || {});
+  const serverConfigEntries = Object.entries(config);
 
   return (
     <>
@@ -200,9 +213,6 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
             <div className="flex items-center gap-2 text-sm font-semibold">
               <Database className="h-4 w-4 text-primary" />
               <span>서버 설정 항목</span>
-              <Badge variant="outline" className="ml-auto">
-                {serverConfigEntries.length} 항목
-              </Badge>
             </div>
 
             <div className="space-y-3">
