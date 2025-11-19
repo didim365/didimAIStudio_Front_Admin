@@ -45,9 +45,8 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
-    user_persona_title: persona.user_persona_title || persona.name,
-    user_persona_description:
-      persona.user_persona_description || persona.description,
+    name: persona.name,
+    description: persona.description,
     category: persona.category,
     is_public: persona.is_public ?? true,
   });
@@ -80,8 +79,6 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
         is_system: persona.is_system,
         category: formData.category,
         is_public: formData.is_public,
-        user_persona_title: formData.user_persona_title,
-        user_persona_description: formData.user_persona_description,
       },
     });
   };
@@ -151,20 +148,17 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
                 <div className="flex-1 space-y-6">
                   {/* Title */}
                   <div className="space-y-2">
-                    <Label
-                      htmlFor="user_persona_title"
-                      className="flex items-center gap-2"
-                    >
+                    <Label htmlFor="name" className="flex items-center gap-2">
                       <FileText className="h-4 w-4" />
                       <span>제목 *</span>
                     </Label>
                     <Input
-                      id="user_persona_title"
-                      value={formData.user_persona_title}
+                      id="name"
+                      value={formData.name}
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          user_persona_title: e.target.value,
+                          name: e.target.value,
                         })
                       }
                       placeholder="페르소나 제목을 입력하세요"
@@ -183,12 +177,12 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
                       <span>설명 *</span>
                     </Label>
                     <Textarea
-                      id="user_persona_description"
-                      value={formData.user_persona_description}
+                      id="description"
+                      value={formData.description}
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          user_persona_description: e.target.value,
+                          description: e.target.value,
                         })
                       }
                       placeholder="페르소나 설명을 입력하세요"

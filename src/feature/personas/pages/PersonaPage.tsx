@@ -135,24 +135,6 @@ function PersonaPage({ persona }: PersonaPageProps) {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col md:flex-row gap-6">
-              {/* Icon */}
-              <div className="flex flex-col items-center gap-4">
-                <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl from-primary/20 to-primary/5 flex items-center justify-center">
-                  <Sparkles className="h-16 w-16 text-primary" />
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <Badge className={`${categoryInfo.color} border`}>
-                    {categoryInfo.label}
-                  </Badge>
-                  {isCustomized && (
-                    <Badge className="bg-green-100 text-green-800 border-green-200 border">
-                      <Shield className="h-3 w-3 mr-1" />
-                      커스터마이징됨
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
               {/* Persona Info Grid */}
               <div className="flex-1 grid gap-4 md:grid-cols-2">
                 {/* Title */}
@@ -165,9 +147,11 @@ function PersonaPage({ persona }: PersonaPageProps) {
                   </div>
                   <p className="text-lg font-semibold pl-6">{personaTitle}</p>
                   {persona.user_persona_title && persona.name && (
-                    <p className="text-sm text-muted-foreground pl-6">
-                      원본: {persona.name}
-                    </p>
+                    <>
+                      <p className="text-sm text-muted-foreground pl-6">
+                        원본: {persona.name}
+                      </p>
+                    </>
                   )}
                 </div>
 
