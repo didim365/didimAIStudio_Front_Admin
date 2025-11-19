@@ -109,7 +109,11 @@ export function ToolEditPage({ tool }: { tool: GetMcpToolResponse }) {
         envVars = JSON.parse(envVarsText);
       }
     } catch (error) {
-      alert("환경 변수 JSON 형식이 올바르지 않습니다.");
+      alert(
+        error instanceof Error
+          ? error.message
+          : "환경 변수 JSON 형식이 올바르지 않습니다."
+      );
       return;
     }
 
@@ -118,7 +122,11 @@ export function ToolEditPage({ tool }: { tool: GetMcpToolResponse }) {
         dockerCompose = JSON.parse(dockerComposeText);
       }
     } catch (error) {
-      alert("Docker Compose 설정 JSON 형식이 올바르지 않습니다.");
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Docker Compose 설정 JSON 형식이 올바르지 않습니다."
+      );
       return;
     }
 
@@ -127,7 +135,11 @@ export function ToolEditPage({ tool }: { tool: GetMcpToolResponse }) {
         resourceReq = JSON.parse(resourceReqText);
       }
     } catch (error) {
-      alert("리소스 요구사항 JSON 형식이 올바르지 않습니다.");
+      alert(
+        error instanceof Error
+          ? error.message
+          : "리소스 요구사항 JSON 형식이 올바르지 않습니다."
+      );
       return;
     }
 
@@ -136,7 +148,11 @@ export function ToolEditPage({ tool }: { tool: GetMcpToolResponse }) {
         metadata = JSON.parse(metadataText);
       }
     } catch (error) {
-      alert("메타데이터 JSON 형식이 올바르지 않습니다.");
+      alert(
+        error instanceof Error
+          ? error.message
+          : "메타데이터 JSON 형식이 올바르지 않습니다."
+      );
       return;
     }
 
