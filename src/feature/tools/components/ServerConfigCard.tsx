@@ -279,7 +279,7 @@ const ConfigValue = ({
           <Textarea
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="text-xs font-mono h-fit"
+            className="text-xs font-mono resize-none field-sizing-content"
           />
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleSave}>
@@ -357,7 +357,7 @@ const ConfigValue = ({
           <Textarea
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="text-xs font-mono h-fit"
+            className="text-xs font-mono resize-none field-sizing-content"
           />
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleSave}>
