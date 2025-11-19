@@ -31,6 +31,7 @@ export function ToolsTable({ tools }: ToolsTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="text-center">ID</TableHead>
             <TableHead>도구 이름</TableHead>
             <TableHead>설명</TableHead>
             <TableHead className="text-center">제공업체</TableHead>
@@ -44,7 +45,7 @@ export function ToolsTable({ tools }: ToolsTableProps) {
           {tools.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={8}
+                colSpan={9}
                 className="text-center py-8 text-slate-500"
               >
                 등록된 도구가 없습니다.
@@ -57,6 +58,9 @@ export function ToolsTable({ tools }: ToolsTableProps) {
               className="hover:bg-slate-50 cursor-pointer"
               onClick={() => handleViewDetails(tool.id)}
             >
+              <TableCell className="text-center">
+                <span className="text-sm font-mono">{tool.id}</span>
+              </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
                   {tool.icon_url && (
