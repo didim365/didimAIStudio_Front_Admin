@@ -147,24 +147,6 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
             </CardHeader>
             <CardContent>
               <div className="flex flex-col md:flex-row gap-6">
-                {/* Icon */}
-                <div className="flex flex-col items-center gap-4">
-                  <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl from-primary/20 to-primary/5 flex items-center justify-center">
-                    <Sparkles className="h-16 w-16 text-primary" />
-                  </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <Badge className={`${categoryInfo.color} border`}>
-                      {categoryInfo.label}
-                    </Badge>
-                    {persona.is_system && (
-                      <Badge className="bg-purple-100 text-purple-800 border-purple-200 border">
-                        <Shield className="h-3 w-3 mr-1" />
-                        시스템
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-
                 {/* Persona Info Grid */}
                 <div className="flex-1 space-y-6">
                   {/* Title */}
@@ -210,7 +192,7 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
                         })
                       }
                       placeholder="페르소나 설명을 입력하세요"
-                      className="pl-6 min-h-[120px]"
+                      className="pl-6 field-sizing-content"
                       rows={5}
                       required
                     />
@@ -251,11 +233,8 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
                       htmlFor="is_public"
                       className="flex items-center gap-2"
                     >
-                      {formData.is_public ? (
-                        <Unlock className="h-4 w-4" />
-                      ) : (
-                        <Lock className="h-4 w-4" />
-                      )}
+                      {formData.is_public && <Unlock className="h-4 w-4" />}{" "}
+                      {!formData.is_public && <Lock className="h-4 w-4" />}
                       <span>공개 설정 *</span>
                     </Label>
                     <div className="pl-6 flex items-center gap-3">
