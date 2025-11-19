@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Separator } from "@/shared/ui/separator";
 import {
   Settings,
   Key,
@@ -16,10 +15,10 @@ import {
   Type,
   ToggleLeft,
   Database,
-  Shield,
 } from "lucide-react";
 import { useState } from "react";
 import { GetMcpToolConfigResponse } from "../api/getMcpToolConfig";
+import { cn } from "@/shared/lib/utils";
 
 interface ServerConfigCardProps {
   config: GetMcpToolConfigResponse;
@@ -67,34 +66,8 @@ const ConfigValue = ({ value }: { value: unknown }) => {
   const colorClass = getValueColor(value);
   const bgColorClass = getValueBgColor(value);
 
-  // null 처리
-  if (value === null) {
-    return (
-      <span className="text-xs font-mono text-muted-foreground italic">
-        null
-      </span>
-    );
-  }
-
   // String 타입
   if (typeof value === "string") {
-    // URL 감지
-    const isUrl = value.startsWith("http://") || value.startsWith("https://");
-    if (isUrl) {
-      return (
-        <div className="flex items-center gap-2">
-          <Link2 className={`h-3 w-3 ${colorClass}`} />
-          <a
-            href={value}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`text-xs font-mono ${colorClass} hover:underline break-all`}
-          >
-            {value}
-          </a>
-        </div>
-      );
-    }
     return (
       <span className={`text-xs font-mono ${colorClass} break-all`}>
         &quot;{value}&quot;
@@ -124,26 +97,19 @@ const ConfigValue = ({ value }: { value: unknown }) => {
 
   // Array 타입
   if (Array.isArray(value)) {
-    if (value.length === 0) {
-      return (
-        <span className="text-xs font-mono text-muted-foreground">[]</span>
-      );
-    }
-
     return (
       <div className="space-y-2">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="flex items-center gap-2 text-xs font-medium hover:underline"
         >
-          {isExpanded ? (
-            <ChevronDown className="h-3 w-3" />
-          ) : (
-            <ChevronRight className="h-3 w-3" />
-          )}
-          <span className={colorClass}>
-            Array ({value.length} {value.length === 1 ? "item" : "items"})
-          </span>
+          <ChevronDown
+            className={cn(
+              "h-3 w-3 transition-transform duration-300",
+              !isExpanded && "rotate-180"
+            )}
+          />
+          <span className={colorClass}>Array {value.length}</span>
         </button>
         {isExpanded && (
           <div className="ml-4 space-y-1.5 border-l-2 border-orange-200 dark:border-orange-800 pl-3">
@@ -167,11 +133,6 @@ const ConfigValue = ({ value }: { value: unknown }) => {
   // Object 타입
   if (typeof value === "object" && value !== null) {
     const entries = Object.entries(value);
-    if (entries.length === 0) {
-      return (
-        <span className="text-xs font-mono text-muted-foreground">{"{}"}</span>
-      );
-    }
 
     return (
       <div className="space-y-2">
@@ -179,15 +140,13 @@ const ConfigValue = ({ value }: { value: unknown }) => {
           onClick={() => setIsExpanded(!isExpanded)}
           className="flex items-center gap-2 text-xs font-medium hover:underline"
         >
-          {isExpanded ? (
-            <ChevronDown className="h-3 w-3" />
-          ) : (
-            <ChevronRight className="h-3 w-3" />
-          )}
-          <span className={colorClass}>
-            Object ({entries.length}{" "}
-            {entries.length === 1 ? "property" : "properties"})
-          </span>
+          <ChevronDown
+            className={cn(
+              "h-3 w-3 transition-transform duration-300",
+              !isExpanded && "rotate-180"
+            )}
+          />
+          <span className={colorClass}>Object {entries.length}</span>
         </button>
         {isExpanded && (
           <div className="ml-4 space-y-2 border-l-2 border-pink-200 dark:border-pink-800 pl-3">
@@ -250,7 +209,15 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
               {serverConfigEntries.map(([key, value]) => {
                 const ValueIcon = getValueIcon(value);
                 const bgColorClass = getValueBgColor(value);
-
+                if (
+                  value === null ||
+                  (Array.isArray(value) && value.length === 0) ||
+                  (typeof value === "object" &&
+                    value !== null &&
+                    Object.keys(value).length === 0)
+                ) {
+                  return null;
+                }
                 return (
                   <div
                     key={key}
