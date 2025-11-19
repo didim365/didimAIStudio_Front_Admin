@@ -23,6 +23,7 @@ import { Textarea } from "@/shared/ui/textarea";
 import { usePutMcpToolConfig } from "../hooks/usePutMcpToolConfig";
 import { useQueryClient } from "@tanstack/react-query";
 import { Save, Loader2, Edit2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface ServerConfigCardProps {
   config: GetMcpToolConfigResponse;
@@ -65,6 +66,20 @@ const getValueBgColor = (value: unknown) => {
   return "bg-gray-50/50 dark:bg-gray-950/20 border-gray-200 dark:border-gray-800";
 };
 
+// null 값과 빈 값들을 검증하는 함수
+const isEmptyValue = (value: unknown): boolean => {
+  if (value === null) return true;
+  if (Array.isArray(value) && value.length === 0) return true;
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    Object.keys(value).length === 0
+  ) {
+    return true;
+  }
+  return false;
+};
+
 // 값 렌더링 컴포넌트
 const ConfigValue = ({
   value,
@@ -96,7 +111,7 @@ const ConfigValue = ({
       onChange(parsedValue);
       setIsEditing(false);
     } catch (e) {
-      // JSON 파싱 실패 시 무시
+      toast.error("설정 값을 저장하는 중 오류가 발생했습니다.");
     }
   };
 
@@ -264,7 +279,7 @@ const ConfigValue = ({
           <Textarea
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="text-xs font-mono min-h-[100px]"
+            className="text-xs font-mono h-fit"
           />
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleSave}>
@@ -342,7 +357,7 @@ const ConfigValue = ({
           <Textarea
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="text-xs font-mono min-h-[100px]"
+            className="text-xs font-mono h-fit"
           />
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleSave}>
@@ -394,17 +409,7 @@ const ConfigValue = ({
         {isExpanded && !isEditing && (
           <div className="ml-4 space-y-2 border-l-2 border-pink-200 dark:border-pink-800 pl-3">
             {entries.map(([key, val]) => {
-              if (val === null) {
-                return null;
-              }
-              if (Array.isArray(val) && val.length === 0) {
-                return null;
-              }
-              if (
-                typeof val === "object" &&
-                val !== null &&
-                Object.keys(val).length === 0
-              ) {
+              if (isEmptyValue(val)) {
                 return null;
               }
               return (
@@ -509,13 +514,7 @@ export function ServerConfigCard({ config, toolId }: ServerConfigCardProps) {
               {serverConfigEntries.map(([key, value]) => {
                 const ValueIcon = getValueIcon(value);
                 const bgColorClass = getValueBgColor(value);
-                if (
-                  value === null ||
-                  (Array.isArray(value) && value.length === 0) ||
-                  (typeof value === "object" &&
-                    value !== null &&
-                    Object.keys(value).length === 0)
-                ) {
+                if (isEmptyValue(value)) {
                   return null;
                 }
                 return (
