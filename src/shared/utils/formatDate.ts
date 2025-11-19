@@ -9,7 +9,7 @@ import { ko } from "date-fns/locale";
 export function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return "정보 없음";
   try {
-    return format(new Date(dateString), "PPP HH:mm:ss", { locale: ko });
+    return format(new Date(dateString), "yyyy.MM.dd", { locale: ko });
   } catch {
     return dateString;
   }
