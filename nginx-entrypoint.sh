@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # 환경 변수로 nginx.conf 템플릿 처리
