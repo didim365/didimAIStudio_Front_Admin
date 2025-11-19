@@ -14,7 +14,7 @@ import {
   ToggleLeft,
   Database,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { GetMcpToolConfigResponse } from "../api/getMcpToolConfig";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
@@ -24,6 +24,8 @@ import { usePutMcpToolConfig } from "../hooks/usePutMcpToolConfig";
 import { useQueryClient } from "@tanstack/react-query";
 import { Save, Loader2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
+import ReactJson from "react-json-view";
+import { useTheme } from "next-themes";
 
 interface ServerConfigCardProps {
   config: GetMcpToolConfigResponse;
@@ -91,6 +93,7 @@ const ConfigValue = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState("");
+  const { theme } = useTheme();
   const colorClass = getValueColor(value);
   const bgColorClass = getValueBgColor(value);
 
@@ -354,24 +357,43 @@ const ConfigValue = ({
     if (isEditing) {
       return (
         <div className="space-y-2">
-          <Textarea
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            className="text-xs font-mono resize-none field-sizing-content"
-          />
+          <div className="border rounded-lg overflow-hidden bg-background">
+            <ReactJson
+              src={value as Record<string, unknown>}
+              theme={theme === "dark" ? "monokai" : "rjv-default"}
+              onEdit={(edit) => {
+                if (onChange) {
+                  onChange(edit.updated_src);
+                }
+              }}
+              onAdd={(add) => {
+                if (onChange) {
+                  onChange(add.updated_src);
+                }
+              }}
+              onDelete={(del) => {
+                if (onChange) {
+                  onChange(del.updated_src);
+                }
+              }}
+              displayDataTypes={false}
+              displayObjectSize={false}
+              enableClipboard={false}
+              style={{
+                padding: "12px",
+                fontSize: "12px",
+              }}
+            />
+          </div>
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={handleSave}>
-              저장
-            </Button>
             <Button
               size="sm"
               variant="ghost"
               onClick={() => {
                 setIsEditing(false);
-                setEditValue(JSON.stringify(value, null, 2));
               }}
             >
-              취소
+              닫기
             </Button>
           </div>
         </div>
@@ -447,10 +469,6 @@ export function ServerConfigCard({ config, toolId }: ServerConfigCardProps) {
     useState<GetMcpToolConfigResponse>(config);
   const serverConfigEntries = Object.entries(editedConfig);
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    setEditedConfig(config);
-  }, [config]);
 
   const { mutate: updateConfig, isPending } = usePutMcpToolConfig({
     onSuccess: () => {
