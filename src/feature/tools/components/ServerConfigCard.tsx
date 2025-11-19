@@ -84,7 +84,6 @@ const getValueBgColor = (value: unknown) => {
 // 값 렌더링 컴포넌트
 const ConfigValue = ({ value }: { value: unknown }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const ValueIcon = getValueIcon(value);
   const colorClass = getValueColor(value);
   const bgColorClass = getValueBgColor(value);
 
@@ -422,4 +421,3 @@ export function ServerConfigCard({ config }: ServerConfigCardProps) {
     </>
   );
 }
-
