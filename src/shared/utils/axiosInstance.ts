@@ -76,8 +76,6 @@ Object.entries(HTTP_API_GATEWAY).forEach(([key, path]) => {
       if (error.response?.status === 401) {
         // access_token 제거
         tokenStorage.clearAccessToken();
-
-        window.location.href = "/";
       }
       return Promise.reject(error);
     }
