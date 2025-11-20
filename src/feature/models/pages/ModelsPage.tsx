@@ -24,7 +24,7 @@ import {
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { Search, RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
+import { RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
 import { Pagination } from "@/shared/ui/pagination";
 import { formatDate } from "@/shared/utils/formatDate";
 import { useRouter } from "next/navigation";
@@ -41,9 +41,6 @@ function ModelsPage() {
   const router = useRouter();
 
   // URL 쿼리 파라미터 관리 - useState와 동일한 API
-  const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
-    debounce: 300,
-  });
   const [page, setPage] = useQueryParam<number>("page", 1);
   const [category, setCategory] = useQueryParam<string>("category", "all");
   const [provider, setProvider] = useQueryParam<string>("provider", "", {
@@ -62,16 +59,6 @@ function ModelsPage() {
   });
 
   const models = data?.items || [];
-  const filteredModels = !searchQuery
-    ? models
-    : models.filter((model) => {
-        const query = searchQuery.toLowerCase();
-        return (
-          model.model_name.toLowerCase().includes(query) ||
-          model.description?.toLowerCase().includes(query) ||
-          model.provider.toLowerCase().includes(query)
-        );
-      });
 
   function handleRowClick(modelId: number) {
     router.push(`/studio/models/${modelId}`);
@@ -83,25 +70,14 @@ function ModelsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold">모델 관리</h1>
         <p className="mt-2 text-slate-600">
-          시스템의 모든 AI 모델을 검색하고 관리하세요
+          시스템의 모든 AI 모델을 관리하세요
         </p>
       </div>
 
-      {/* 검색 및 필터 */}
+      {/* 필터 */}
       <Card className="mb-6">
         <CardContent>
           <div className="flex flex-col gap-4">
-            {/* 검색 바 */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="모델 이름, 설명, 제공자로 검색..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
             {/* 필터 옵션 */}
             <div className="flex flex-wrap gap-2">
               <Select value={category} onValueChange={setCategory}>
@@ -159,7 +135,7 @@ function ModelsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            모델 목록 ({filteredModels.length})
+            모델 목록 ({models.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -169,14 +145,14 @@ function ModelsPage() {
               <p className="text-slate-500">로딩 중...</p>
             </div>
           )}
-          {!isLoading && filteredModels.length === 0 && (
+          {!isLoading && models.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               <AlertCircle className="h-12 w-12 mb-4" />
               <p className="text-lg font-medium">모델을 찾을 수 없습니다</p>
               <p className="text-sm">필터 조건을 변경해보세요</p>
             </div>
           )}
-          {!isLoading && filteredModels.length > 0 && (
+          {!isLoading && models.length > 0 && (
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
@@ -210,7 +186,7 @@ function ModelsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredModels.map((model) => (
+                  {models.map((model) => (
                     <TableRow
                       key={model.id}
                       className="group cursor-pointer hover:bg-slate-50"
