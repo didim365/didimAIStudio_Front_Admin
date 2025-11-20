@@ -9,7 +9,7 @@ services:
       - app-network
     environment:
       - NODE_ENV=production
-      - NGINX_PROXY_URL=http://nginx:4000
+      - NGINX_PROXY_URL=http://admin-api:8001
       - NEXT_PUBLIC_API_BACKEND_URL=http://49.50.129.74
     restart: unless-stopped
   nginx:
