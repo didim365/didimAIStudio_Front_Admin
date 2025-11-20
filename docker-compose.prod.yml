@@ -9,7 +9,8 @@ services:
       - app-network
     environment:
       - NODE_ENV=production
-      - API_BACKEND_URL=http://49.50.129.74
+      - NGINX_PROXY_URL=http://nginx:4000
+      - NEXT_PUBLIC_API_BACKEND_URL=http://49.50.129.74
     restart: unless-stopped
   nginx:
     image: nginx:latest
@@ -22,9 +23,6 @@ services:
       - app-network
     depends_on:
       - nextjs
-    environment:
-      - API_BACKEND_URL=http://49.50.129.74
-      - API_BACKEND_HOST=http://49.50.129.74
     entrypoint: ["/bin/sh", "/docker-entrypoint.d/nginx-entrypoint.sh"]
     restart: unless-stopped
 
