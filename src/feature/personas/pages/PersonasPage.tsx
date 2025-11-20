@@ -170,7 +170,7 @@ export default function PersonasPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            페르소나 목록 ({personas.length})
+            페르소나 목록 ({data?.total})
           </CardTitle>
         </CardHeader>
         <CardContent>
