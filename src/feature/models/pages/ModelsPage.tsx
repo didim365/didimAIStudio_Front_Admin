@@ -3,7 +3,6 @@
 import { components } from "@/shared/types/api/models";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import useGetCatalog from "../hooks/useGetCatalog";
-import { ModelStatsCards } from "../components/ModelStatsCards";
 import { StatusBadge } from "../components/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
@@ -74,16 +73,6 @@ function ModelsPage() {
         );
       });
 
-  const stats = {
-    total: data?.total || 0,
-    privateVllm: models.filter(
-      (model) => model.deployment_type === "PRIVATE_VLLM"
-    ).length,
-    publicApi: models.filter((model) => model.deployment_type === "PUBLIC_API")
-      .length,
-    filtered: filteredModels.length,
-  };
-
   function handleRowClick(modelId: number) {
     router.push(`/studio/models/${modelId}`);
   }
@@ -97,9 +86,6 @@ function ModelsPage() {
           시스템의 모든 AI 모델을 검색하고 관리하세요
         </p>
       </div>
-
-      {/* 통계 카드 */}
-      <ModelStatsCards {...stats} />
 
       {/* 검색 및 필터 */}
       <Card className="mb-6">
@@ -179,7 +165,7 @@ function ModelsPage() {
         <CardContent>
           {isLoading && (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />
               <p className="text-slate-500">로딩 중...</p>
             </div>
           )}
