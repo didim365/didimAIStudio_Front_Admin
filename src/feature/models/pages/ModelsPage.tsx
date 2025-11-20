@@ -135,7 +135,7 @@ function ModelsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            모델 목록 ({models.length})
+            모델 목록 ({data?.total})
           </CardTitle>
         </CardHeader>
         <CardContent>
