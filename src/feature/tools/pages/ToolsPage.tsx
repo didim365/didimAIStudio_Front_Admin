@@ -94,7 +94,7 @@ export default function ToolsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            도구 목록 ({tools.length})
+            도구 목록 ({data?.total})
           </CardTitle>
         </CardHeader>
         <CardContent>
