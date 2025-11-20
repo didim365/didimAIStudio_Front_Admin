@@ -4,6 +4,7 @@ import { components } from "@/shared/types/api/models";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import useGetCatalog from "../hooks/useGetCatalog";
 import { ModelStatsCards } from "../components/ModelStatsCards";
+import { StatusBadge } from "../components/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -24,111 +25,18 @@ import {
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import {
-  Search,
-  RefreshCw,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  XCircle,
-  ExternalLink,
-} from "lucide-react";
+import { Search, RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
 import { Pagination } from "@/shared/ui/pagination";
 import { formatDate } from "@/shared/utils/formatDate";
 import { useRouter } from "next/navigation";
+import { CATEGORIES, DEPLOYMENT_TYPES } from "../constants/modelConstants";
+import {
+  getCategoryLabel,
+  formatNumber,
+  formatCost,
+} from "../utils/modelUtils";
 
 type AICategoryEnum = components["schemas"]["AICategoryEnum"];
-type GenAIModel = components["schemas"]["GenAIResponseDTO"];
-
-const CATEGORIES = [
-  { value: "TEXT", label: "텍스트" },
-  { value: "IMAGE", label: "이미지" },
-  { value: "MULTIMODAL", label: "멀티모달" },
-  { value: "EMBEDDING", label: "임베딩" },
-  { value: "AUDIO", label: "오디오" },
-  { value: "VIDEO", label: "비디오" },
-  { value: "CHAT", label: "채팅" },
-  { value: "COMPLETION", label: "완성" },
-  { value: "IMAGE_GENERATION", label: "이미지 생성" },
-  { value: "AUDIO_TRANSCRIPTION", label: "오디오 변환" },
-  { value: "AUDIO_SPEECH", label: "음성 합성" },
-];
-
-const DEPLOYMENT_TYPES = [
-  { value: "PRIVATE_VLLM", label: "Private vLLM" },
-  { value: "PUBLIC_API", label: "Public API" },
-];
-
-const getCategoryLabel = (category: string) => {
-  const labels: Record<string, string> = {
-    TEXT: "텍스트",
-    IMAGE: "이미지",
-    MULTIMODAL: "멀티모달",
-    EMBEDDING: "임베딩",
-    AUDIO: "오디오",
-    VIDEO: "비디오",
-    CHAT: "채팅",
-    COMPLETION: "완성",
-    IMAGE_GENERATION: "이미지 생성",
-    AUDIO_TRANSCRIPTION: "오디오 변환",
-    AUDIO_SPEECH: "음성 합성",
-  };
-  return labels[category] || category;
-};
-
-const getStatusBadge = (status: string) => {
-  const config: Record<
-    string,
-    {
-      label: string;
-      variant: "default" | "secondary" | "destructive";
-      icon: React.ReactNode;
-    }
-  > = {
-    STABLE: {
-      label: "안정",
-      variant: "default",
-      icon: <CheckCircle className="h-3 w-3" />,
-    },
-    BETA: {
-      label: "베타",
-      variant: "secondary",
-      icon: <Clock className="h-3 w-3" />,
-    },
-    ALPHA: {
-      label: "알파",
-      variant: "secondary",
-      icon: <AlertCircle className="h-3 w-3" />,
-    },
-    DEPRECATED: {
-      label: "지원종료",
-      variant: "destructive",
-      icon: <XCircle className="h-3 w-3" />,
-    },
-  };
-
-  const statusConfig = config[status] || config.STABLE;
-
-  return (
-    <Badge
-      variant={statusConfig.variant}
-      className="flex items-center gap-1 w-fit"
-    >
-      {statusConfig.icon}
-      {statusConfig.label}
-    </Badge>
-  );
-};
-
-const formatNumber = (num: number | null | undefined) => {
-  if (num === null || num === undefined) return "-";
-  return num.toLocaleString();
-};
-
-const formatCost = (cost: number | null | undefined) => {
-  if (cost === null || cost === undefined) return "-";
-  return `$${cost.toFixed(6)}`;
-};
 
 function ModelsPage() {
   const router = useRouter();
@@ -360,7 +268,7 @@ function ModelsPage() {
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex justify-center">
-                          {getStatusBadge(model.status)}
+                          <StatusBadge status={model.status} />
                         </div>
                       </TableCell>
                       <TableCell className="text-center font-mono text-sm">
