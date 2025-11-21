@@ -1,5 +1,5 @@
 function AgentsPage() {
-  return <div>에이전트12341234</div>;
+  return <div>agents</div>;
 }
 
 export default AgentsPage;
