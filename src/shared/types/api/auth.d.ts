@@ -261,7 +261,7 @@ export interface paths {
         };
         /**
          * 그룹 조회
-         * @description 특정 그룹 정보를 조회합니다.
+         * @description 특정 그룹 정보를 멤버 목록과 함께 조회합니다.
          */
         get: operations["get_group_api_v1_groups__group_id__get"];
         put?: never;
@@ -676,6 +676,66 @@ export interface paths {
         get: operations["get_api_keys_api_v1_auth_api_keys_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/password/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 비밀번호 재설정 요청
+         * @description 이메일 주소로 비밀번호 재설정 링크를 발송합니다. 보안상 이유로 계정 존재 여부와 관계없이 동일한 응답을 반환합니다.
+         */
+        post: operations["request_password_reset_api_v1_auth_password_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/password/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 토큰 유효성 검증
+         * @description 비밀번호 재설정 토큰이 유효한지 확인합니다.
+         */
+        get: operations["verify_reset_token_api_v1_auth_password_verify_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/password/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 비밀번호 변경 확인
+         * @description 새로운 비밀번호로 변경하고 모든 활성 세션을 무효화합니다.
+         */
+        post: operations["confirm_password_reset_api_v1_auth_password_confirm_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1829,6 +1889,100 @@ export interface components {
             role_permission?: {
                 [key: string]: components["schemas"]["RolePermissionSchema"];
             };
+        };
+        /**
+         * PasswordResetConfirmDTO
+         * @description 비밀번호 재설정 확인 DTO
+         * @example {
+         *       "confirm_password": "NewSecurePass123!",
+         *       "new_password": "NewSecurePass123!",
+         *       "token": "secure_reset_token_here"
+         *     }
+         */
+        PasswordResetConfirmDTO: {
+            /**
+             * Token
+             * @description 재설정 토큰
+             */
+            token: string;
+            /**
+             * New Password
+             * @description 새 비밀번호 (최소 8자)
+             */
+            new_password: string;
+            /**
+             * Confirm Password
+             * @description 비밀번호 확인
+             */
+            confirm_password: string;
+        };
+        /**
+         * PasswordResetRequestDTO
+         * @description 비밀번호 재설정 요청 DTO
+         * @example {
+         *       "email": "user@example.com"
+         *     }
+         */
+        PasswordResetRequestDTO: {
+            /**
+             * Email
+             * Format: email
+             * @description 사용자 이메일 주소
+             */
+            email: string;
+        };
+        /**
+         * PasswordResetSuccessDTO
+         * @description 비밀번호 재설정 성공 응답 DTO
+         * @example {
+         *       "message": "비밀번호가 변경되었어요.",
+         *       "redirect_url": "/login",
+         *       "success": true
+         *     }
+         */
+        PasswordResetSuccessDTO: {
+            /**
+             * Success
+             * @description 성공 여부
+             * @default true
+             */
+            success: boolean;
+            /**
+             * Message
+             * @description 성공 메시지
+             */
+            message: string;
+            /**
+             * Redirect Url
+             * @description 리다이렉트 URL
+             * @default /login
+             */
+            redirect_url: string | null;
+        };
+        /**
+         * PasswordResetVerifyResponseDTO
+         * @description 토큰 검증 응답 DTO
+         * @example {
+         *       "message": "유효한 토큰입니다.",
+         *       "valid": true
+         *     }
+         */
+        PasswordResetVerifyResponseDTO: {
+            /**
+             * Valid
+             * @description 토큰 유효성 여부
+             */
+            valid: boolean;
+            /**
+             * Message
+             * @description 응답 메시지
+             */
+            message: string;
+            /**
+             * Error Code
+             * @description 에러 코드 (실패 시)
+             */
+            error_code?: string | null;
         };
         /** PasswordUpdateRequest */
         PasswordUpdateRequest: {
@@ -4915,6 +5069,166 @@ export interface operations {
                 };
             };
             /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    request_password_reset_api_v1_auth_password_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordResetRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    verify_reset_token_api_v1_auth_password_verify_get: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PasswordResetVerifyResponseDTO"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    confirm_password_reset_api_v1_auth_password_confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordResetConfirmDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PasswordResetSuccessDTO"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Internal server error */
             500: {
                 headers: {
                     [name: string]: unknown;

@@ -10,7 +10,7 @@ services:
     environment:
       - NODE_ENV=production
       - NGINX_PROXY_URL=http://admin-api-service:8001
-      - NEXT_PUBLIC_API_BACKEND_URL=https://aistudio-admin.didim365.com/
+      - NEXT_PUBLIC_API_BACKEND_URL=https://aistudio-admin.didim365.com
     restart: unless-stopped
   nginx:
     image: nginx:latest

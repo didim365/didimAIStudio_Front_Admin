@@ -34,20 +34,12 @@ import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
 import { RolePrivileges } from "../components/RolePrivileges";
+import { GetRoleResponse } from "../api/getRole";
 
-interface RolePageProps {
-  roleId: string;
-}
-
-function RolePage({ roleId }: RolePageProps) {
+function RolePage({ role }: { role: GetRoleResponse }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const {
-    data: role,
-    isLoading,
-    error,
-  } = useGetRole({ role_id: Number(roleId) });
 
   // 역할 삭제 mutation
   const { mutate: deleteRole, isPending: isDeleting } = useDeleteRole({
@@ -61,52 +53,8 @@ function RolePage({ roleId }: RolePageProps) {
   });
 
   const handleDelete = () => {
-    deleteRole({ role_id: Number(roleId) });
+    deleteRole({ role_id: role.id });
   };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-[400px]" />
-          <Skeleton className="h-[400px]" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="py-8 px-4">
-        <Card className="border-destructive">
-          <CardHeader>
-            <CardTitle className="text-destructive">오류 발생</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              역할 정보를 불러오는 중 오류가 발생했습니다.
-            </p>
-            <p className="text-sm text-destructive mt-2">{error.message}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!role) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              역할을 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -130,7 +78,7 @@ function RolePage({ roleId }: RolePageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/roles/${roleId}/edit`}>
+          <Link href={`/roles/${role.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정
@@ -302,7 +250,7 @@ function RolePage({ roleId }: RolePageProps) {
       </div>
 
       {/* Privileges Section */}
-      <RolePrivileges roleId={Number(roleId)} />
+      <RolePrivileges roleId={role.id} />
     </div>
   );
 }
