@@ -3,7 +3,7 @@ import axiosInstance from "@/shared/utils/axiosInstance";
 
 // API 타입 추출
 type DeleteRolePrivilegeParams =
-  paths["/api/v1/roles/privileges/{privilege_id}"]["delete"]["parameters"]["path"];
+  paths["/api/v1/roles/{role_id}/privileges/{privilege_id}"]["delete"]["parameters"]["path"];
 
 /**
  * 역할에서 권한 제거 API
@@ -14,9 +14,12 @@ const deleteRolePrivilege = async (
   params: DeleteRolePrivilegeParams
 ): Promise<void> => {
   try {
-    await axiosInstance.auth.delete("/roles/remove_privilege", {
-      params,
-    });
+    await axiosInstance.auth.delete(
+      `/roles/${params.role_id}/privileges/${params.privilege_id}`,
+      {
+        params,
+      }
+    );
   } catch (error) {
     throw error;
   }
