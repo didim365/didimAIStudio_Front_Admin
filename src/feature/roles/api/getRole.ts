@@ -1,24 +1,29 @@
 import { paths } from "@/shared/types/api/auth";
 import axiosInstance from "@/shared/utils/axiosInstance";
+import { cookies } from "next/headers";
 
 // API 타입 추출
 export type GetRoleResponse =
   paths["/api/v1/roles/{role_id}"]["get"]["responses"]["200"]["content"]["application/json"];
 
 /**
- * 역할 조회 API
+ * 역할 조회 API (서버사이드용)
  * @param roleId - 조회할 역할 ID
  * @description 특정 역할 정보를 조회합니다.
  */
 const getRole = async (roleId: number): Promise<GetRoleResponse> => {
-  try {
-    const response = await axiosInstance.auth.get<GetRoleResponse>(
-      `/roles/${roleId}`
-    );
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+
+  const response = await axiosInstance.auth.get<GetRoleResponse>(
+    `/roles/${roleId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  return response.data;
 };
 
 export default getRole;
