@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import { tokenStorage } from "./tokenStorage";
-import { SERVER_API_BASE_URL } from "../constants";
+import { getBaseURL } from "./getBaseURL";
 
 const HTTP_API_GATEWAY = {
   models: "/models",
@@ -48,7 +48,7 @@ const paramsSerializer = (params: Record<string, unknown>): string => {
 
 Object.entries(HTTP_API_GATEWAY).forEach(([key, path]) => {
   const instance = axios.create({
-    baseURL: `${SERVER_API_BASE_URL}/api${path}/v1`,
+    baseURL: `${getBaseURL()}/api${path}/v1`,
     paramsSerializer: paramsSerializer,
   });
 
