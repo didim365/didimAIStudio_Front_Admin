@@ -15,7 +15,7 @@ services:
     environment:
       - NODE_ENV=development
       - NGINX_PROXY_URL=http://nginx:4000
-      - NEXT_PUBLIC_API_BACKEND_URL=http://49.50.129.74
+      - NEXT_PUBLIC_API_BACKEND_URL=https://aistudio-dev-admin.didim365.com/
 
   nginx:
     image: nginx:latest
