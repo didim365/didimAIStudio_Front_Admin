@@ -3,14 +3,11 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# pnpm 설치 (corepack 대신 npm으로 직접 설치)
-RUN npm install -g pnpm@latest
+COPY package.json package-lock.json* ./
 
-COPY package.json pnpm-lock.yaml* ./
-
-RUN pnpm install
+RUN npm ci --legacy-peer-deps
 
 EXPOSE 4000
 
-CMD ["pnpm", "dev", "--port", "4000"]
+CMD ["npm", "run", "dev", "--", "--port", "4000"]
 

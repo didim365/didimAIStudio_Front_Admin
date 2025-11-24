@@ -5,14 +5,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# pnpm 설치 (corepack 대신 npm으로 직접 설치)
-RUN npm install -g pnpm@latest
-
 # 의존성 파일 복사
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json package-lock.json* ./
 
 # 의존성 설치
-RUN pnpm install --frozen-lockfile
+RUN npm ci --legacy-peer-deps
 
 # 소스 코드 복사
 COPY . .
@@ -21,15 +18,12 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Next.js 빌드
-RUN pnpm build
+RUN npm run build
 
 # 런타임 단계
 FROM node:20-alpine AS runner
 
 WORKDIR /app
-
-# pnpm 설치 (런타임에서도 필요할 수 있음)
-RUN npm install -g pnpm@latest
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
