@@ -9,7 +9,7 @@ Next.js 기반 관리자 대시보드 애플리케이션
 - **TypeScript:** 5.x
 - **Styling:** Tailwind CSS 4 + SCSS
 - **UI Components:** Radix UI
-- **Package Manager:** pnpm
+- **Package Manager:** npm
 - **Reverse Proxy:** Nginx
 
 ## 로컬 개발
@@ -17,16 +17,16 @@ Next.js 기반 관리자 대시보드 애플리케이션
 ### 필수 요구사항
 
 - Node.js 20+
-- pnpm
+- npm
 
 ### 설치 및 실행
 
 ```bash
 # 의존성 설치
-pnpm install
+npm install
 
 # 개발 서버 시작
-pnpm dev
+npm run dev
 ```
 
 개발 서버는 [http://localhost:4000](http://localhost:4000)에서 실행됩니다.
@@ -34,8 +34,8 @@ pnpm dev
 ### 빌드
 
 ```bash
-pnpm build
-pnpm start
+npm run build
+npm start
 ```
 
 ## Docker 배포
@@ -44,21 +44,19 @@ pnpm start
 
 ```bash
 # 개발 환경 시작 (로그 확인)
-pnpm docker:dev
-# 또는
 docker-compose -f docker-compose.dev.yml up
 
 # 백그라운드 실행
 docker-compose -f docker-compose.dev.yml up -d
 
 # 빌드 강제 실행
-pnpm docker:dev:build
+docker-compose -f docker-compose.dev.yml build --no-cache
 
 # 로그 확인
 docker-compose -f docker-compose.dev.yml logs -f nextjs
 
 # 종료
-pnpm docker:dev:down
+docker-compose -f docker-compose.dev.yml down
 ```
 
 **개발 환경 특징:**
@@ -75,18 +73,16 @@ pnpm docker:dev:down
 
 ```bash
 # 프로덕션 빌드 및 실행
-pnpm docker:prod
-# 또는
 docker-compose -f docker-compose.prod.yml up -d
 
 # 빌드 강제 실행
-pnpm docker:prod:build
+docker-compose -f docker-compose.prod.yml build --no-cache
 
 # 로그 확인
 docker-compose -f docker-compose.prod.yml logs -f
 
 # 종료
-pnpm docker:prod:down
+docker-compose -f docker-compose.prod.yml down
 ```
 
 **프로덕션 환경 특징:**
@@ -188,7 +184,7 @@ Backend API (https://aistudio.hell0world.net:8000)
 ### Docker 최적화
 
 - **Multi-stage build**: 빌드 의존성과 런타임 분리
-- **pnpm fetch**: 레이어 캐싱으로 빌드 속도 향상
+- **npm ci**: 레이어 캐싱으로 빌드 속도 향상
 - **Alpine Linux**: 최소 이미지 크기 (~150MB)
 - **Standalone output**: 필요한 파일만 포함
 
@@ -200,11 +196,11 @@ Backend API (https://aistudio.hell0world.net:8000)
 
 ## 문제 해결
 
-### pnpm-lock.yaml이 없는 경우
+### package-lock.json이 없는 경우
 
 ```bash
-# pnpm-lock.yaml 생성
-pnpm install
+# package-lock.json 생성
+npm install
 ```
 
 ### Nginx SSL 인증서 설정
