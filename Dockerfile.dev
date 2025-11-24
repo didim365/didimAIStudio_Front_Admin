@@ -3,7 +3,8 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# pnpm 설치 (corepack 대신 npm으로 직접 설치)
+RUN npm install -g pnpm@latest
 
 COPY package.json pnpm-lock.yaml* ./
 

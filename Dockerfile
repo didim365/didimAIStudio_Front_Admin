@@ -5,8 +5,8 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# pnpm 설치
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# pnpm 설치 (corepack 대신 npm으로 직접 설치)
+RUN npm install -g pnpm@latest
 
 # 의존성 파일 복사
 COPY package.json pnpm-lock.yaml* ./
@@ -29,7 +29,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 # pnpm 설치 (런타임에서도 필요할 수 있음)
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm install -g pnpm@latest
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
