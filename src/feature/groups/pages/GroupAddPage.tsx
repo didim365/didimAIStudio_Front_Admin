@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostGroups } from "../hooks/usePostGroups";
-import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { paths } from "@/shared/types/api/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
@@ -29,7 +28,6 @@ import {
   FolderTree,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-import { Skeleton } from "@/shared/ui/skeleton";
 import ParentGroupSelect from "../components/ParentGroupSelect";
 import ManagerSelect from "../components/ManagerSelect";
 
@@ -40,11 +38,15 @@ type GroupType = "COMPANY" | "DEPARTMENT" | "TEAM" | "PERSONAL";
 type GetMyInfoResponse =
   paths["/api/v1/users/me"]["get"]["responses"]["200"]["content"]["application/json"];
 
+type GetRolesResponse =
+  paths["/api/v1/roles/"]["get"]["responses"]["200"]["content"]["application/json"];
+
 interface GroupAddPageProps {
   myInfo: GetMyInfoResponse;
+  roles: GetRolesResponse;
 }
 
-export default function GroupAddPage({ myInfo }: GroupAddPageProps) {
+export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -55,9 +57,6 @@ export default function GroupAddPage({ myInfo }: GroupAddPageProps) {
     manager: undefined as number | undefined,
     role_id: undefined as number | undefined,
   });
-
-  // 역할 목록 조회
-  const { data: roles, isLoading: isLoadingRoles } = useGetRoles();
 
   // 그룹 생성 mutation
   const { mutate: createGroup, isPending: isCreating } = usePostGroups({
@@ -116,11 +115,7 @@ export default function GroupAddPage({ myInfo }: GroupAddPageProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              type="submit"
-              className="shrink-0"
-              disabled={isCreating}
-            >
+            <Button type="submit" className="shrink-0" disabled={isCreating}>
               <Save className="h-4 w-4 mr-2" />
               {isCreating ? "생성 중..." : "그룹 생성"}
             </Button>
@@ -218,7 +213,6 @@ export default function GroupAddPage({ myInfo }: GroupAddPageProps) {
                     <Shield className="h-4 w-4" />
                     <span>역할 *</span>
                   </Label>
-                  {isLoadingRoles && <Skeleton className="h-10 w-full" />}
                   <Select
                     value={formData.role_id?.toString() || ""}
                     onValueChange={(value) =>
