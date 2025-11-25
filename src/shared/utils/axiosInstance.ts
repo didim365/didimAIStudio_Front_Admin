@@ -48,13 +48,13 @@ const paramsSerializer = (params: Record<string, unknown>): string => {
 
 Object.entries(HTTP_API_GATEWAY).forEach(([key, path]) => {
   const instance = axios.create({
-    baseURL: `${getAPIBaseURL()}/api${path}/v1`,
+    baseURL: `/api${path}/v1`,
     paramsSerializer: paramsSerializer,
   });
 
-  // Request interceptor: 모든 요청에 Authorization 헤더 추가
   instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
+      config.baseURL = `${getAPIBaseURL()}/api${path}/v1`;
       const accessToken = tokenStorage.getAccessToken();
       if (accessToken && config.headers) {
         config.headers.Authorization = `Bearer ${accessToken}`;
