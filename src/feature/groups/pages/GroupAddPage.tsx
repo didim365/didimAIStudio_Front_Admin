@@ -6,7 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostGroups } from "../hooks/usePostGroups";
 import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
-import { useGetMyInfo } from "@/shared/hooks/useGetMyInfo";
+import { paths } from "@/shared/types/api/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -37,12 +37,16 @@ import { GROUP_TYPE_OPTIONS } from "../constants/groupType";
 
 type GroupType = "COMPANY" | "DEPARTMENT" | "TEAM" | "PERSONAL";
 
-export default function GroupAddPage() {
+type GetMyInfoResponse =
+  paths["/api/v1/users/me"]["get"]["responses"]["200"]["content"]["application/json"];
+
+interface GroupAddPageProps {
+  myInfo: GetMyInfoResponse;
+}
+
+export default function GroupAddPage({ myInfo }: GroupAddPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  // 현재 사용자 정보 조회
-  const { data: myInfo, isLoading: isLoadingMyInfo } = useGetMyInfo();
 
   const [formData, setFormData] = useState({
     group_name: "",
@@ -87,22 +91,6 @@ export default function GroupAddPage() {
     });
   };
 
-  // 로딩 중일 때
-  if (isLoadingMyInfo) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-10 w-10" />
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-4 w-96" />
-          </div>
-        </div>
-        <Skeleton className="h-96 w-full" />
-      </div>
-    );
-  }
-
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-6">
@@ -131,7 +119,7 @@ export default function GroupAddPage() {
             <Button
               type="submit"
               className="shrink-0"
-              disabled={isCreating || !myInfo}
+              disabled={isCreating}
             >
               <Save className="h-4 w-4 mr-2" />
               {isCreating ? "생성 중..." : "그룹 생성"}
@@ -215,7 +203,7 @@ export default function GroupAddPage() {
                   </Label>
                   <Input
                     id="creator"
-                    value={myInfo?.full_name || myInfo?.email || ""}
+                    value={myInfo.full_name || myInfo.email || ""}
                     disabled
                     className="pl-6 bg-muted"
                   />
