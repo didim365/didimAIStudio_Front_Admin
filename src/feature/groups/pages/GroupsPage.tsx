@@ -2,7 +2,6 @@
 
 import { useGetGroups } from "../hooks/useGetGroups";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
-import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { Button } from "@/shared/ui/button";
 import {
   Table,
@@ -15,7 +14,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Plus } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { formatDate } from "@/shared/utils/formatDate";
 import { Pagination } from "@/shared/ui/pagination";
 import Link from "next/link";
@@ -28,12 +26,11 @@ import { useRouter } from "next/navigation";
 export function GroupsPage() {
   const [page, setPage] = useQueryParam<number>("page", 1);
   const router = useRouter();
-  const { data, isLoading, error } = useGetGroups({
+  const { data } = useGetGroups({
     page,
     include_members: true,
     size: 20,
   });
-  const { data: roles } = useGetRoles();
   const handleGroupClick = (groupId: number) => {
     router.push(`/groups/${groupId}`);
   };
@@ -62,7 +59,7 @@ export function GroupsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            전체 그룹 {!isLoading && data?.total}
+            전체 그룹 {data?.total}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -82,52 +79,6 @@ export function GroupsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading &&
-                // 로딩 스켈레톤
-                Array.from({ length: 5 }).map((_, index) => (
-                  <TableRow key={index} className="text-center">
-                    <TableCell className="text-center">
-                      <Skeleton className="h-4 w-12 mx-auto" />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Skeleton className="h-4 w-32 mx-auto" />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Skeleton className="h-6 w-16 mx-auto" />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Skeleton className="h-4 w-12 mx-auto" />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Skeleton className="h-4 w-12 mx-auto" />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Skeleton className="h-4 w-12 mx-auto" />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Skeleton className="h-4 w-12 mx-auto" />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Skeleton className="h-4 w-16 mx-auto" />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Skeleton className="h-4 w-32 mx-auto" />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Skeleton className="h-4 w-32 mx-auto" />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              {error && (
-                <TableRow className="text-center">
-                  <TableCell
-                    colSpan={10}
-                    className="h-32 text-center text-muted-foreground"
-                  >
-                    데이터를 불러오는 중 오류가 발생했습니다.
-                  </TableCell>
-                </TableRow>
-              )}
               {data?.items?.map((group) => (
                 <TableRow
                   key={group.id}
@@ -156,12 +107,7 @@ export function GroupsPage() {
                   </TableCell>
                   <TableCell className="text-center">{group.creator}</TableCell>
                   <TableCell className="text-center">
-                    {group.role_id && (
-                      <>
-                        {roles?.find((role) => role.id === group.role_id)
-                          ?.role_name || `#${group.role_id}`}
-                      </>
-                    )}
+                    {group.role_id && `#${group.role_id}`}
                     {!group.role_id && "-"}
                   </TableCell>
                   <TableCell className="text-center">
@@ -189,7 +135,6 @@ export function GroupsPage() {
             currentPage={data.page}
             totalPages={data.total_pages}
             onPageChange={(newPage) => setPage(newPage)}
-            isLoading={isLoading}
           />
         </div>
       )}
