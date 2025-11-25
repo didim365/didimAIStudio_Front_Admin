@@ -46,11 +46,13 @@ import { getInitials } from "@/feature/users/utils/getInitials";
 import AddMemberDialog from "../components/AddMemberDialog";
 import GroupRolesCard from "../components/GroupRolesCard";
 
+import type { GetGroupResponse } from "../api/getGroup";
+
 interface GroupPageProps {
-  groupId: string;
+  group: GetGroupResponse;
 }
 
-function GroupPage({ groupId }: GroupPageProps) {
+function GroupPage({ group }: GroupPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -58,11 +60,6 @@ function GroupPage({ groupId }: GroupPageProps) {
     id: number;
     name: string;
   } | null>(null);
-  const {
-    data: group,
-    isLoading,
-    error,
-  } = useGetGroup({ group_id: Number(groupId) });
 
   // 매니저 정보 조회 (옵션 B: 추가 API 호출)
   const { data: manager } = useGetUser(
@@ -97,52 +94,8 @@ function GroupPage({ groupId }: GroupPageProps) {
   });
 
   const handleDelete = () => {
-    deleteGroup({ group_id: Number(groupId) });
+    deleteGroup({ group_id: group.id });
   };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-[400px]" />
-          <Skeleton className="h-[400px]" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="py-8 px-4">
-        <Card className="border-destructive">
-          <CardHeader>
-            <CardTitle className="text-destructive">오류 발생</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              그룹 정보를 불러오는 중 오류가 발생했습니다.
-            </p>
-            <p className="text-sm text-destructive mt-2">{error.message}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!group) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              그룹을 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const GroupTypeIcon = GROUP_TYPE_ICONS[group.group_type] || Building2;
   const groupTypeColor =
@@ -171,7 +124,7 @@ function GroupPage({ groupId }: GroupPageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/groups/${groupId}/edit`}>
+          <Link href={`/groups/${group.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정
@@ -382,7 +335,7 @@ function GroupPage({ groupId }: GroupPageProps) {
                 <UsersIcon className="h-5 w-5" />
                 그룹 멤버 ({group.member_count})
               </CardTitle>
-              <AddMemberDialog groupId={Number(groupId)} />
+              <AddMemberDialog groupId={group.id} />
             </div>
           </CardHeader>
           <CardContent>
@@ -441,7 +394,7 @@ function GroupPage({ groupId }: GroupPageProps) {
         </Card>
 
         {/* Group Roles Card */}
-        <GroupRolesCard groupId={Number(groupId)} />
+        <GroupRolesCard groupId={group.id} />
       </div>
 
       {/* 멤버 제거 확인 다이얼로그 */}
