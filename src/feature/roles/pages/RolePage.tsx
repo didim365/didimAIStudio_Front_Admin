@@ -3,11 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useGetRole } from "../hooks/useGetRole";
 import { useDeleteRole } from "../hooks/useDeleteRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Separator } from "@/shared/ui/separator";
 import {
   AlertDialog,
