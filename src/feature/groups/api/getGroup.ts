@@ -15,7 +15,7 @@ type GetGroupParams =
 const getGroup = async (params: GetGroupParams): Promise<GetGroupResponse> => {
   try {
     const response = await axiosInstance.auth.get<GetGroupResponse>(
-      `/groups/${params.group_id}`
+      `/grops/${params.group_id}`
     );
     return response.data;
   } catch (error) {
