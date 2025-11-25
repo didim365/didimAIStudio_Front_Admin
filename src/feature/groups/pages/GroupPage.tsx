@@ -9,7 +9,6 @@ import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { useDeleteGroup } from "../hooks/useDeleteGroup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import {
   AlertDialog,
