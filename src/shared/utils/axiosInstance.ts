@@ -53,9 +53,9 @@ Object.entries(HTTP_API_GATEWAY).forEach(([key, path]) => {
   });
 
   instance.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
+    async (config: InternalAxiosRequestConfig) => {
       config.baseURL = `${getAPIBaseURL()}/api${path}/v1`;
-      const accessToken = tokenStorage.getAccessToken();
+      const accessToken = await tokenStorage.getAccessToken();
       if (accessToken && config.headers) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }

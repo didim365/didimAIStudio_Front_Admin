@@ -24,8 +24,10 @@ const setCookie = (
 
 /**
  * Cookie 조회 헬퍼 함수
+ * SSR과 CSR 환경 모두에서 동작합니다.
  */
-const getCookie = (name: string): string | null => {
+const getCookie = async (name: string): Promise<string | null> => {
+  // CSR 환경
   if (typeof document !== "undefined") {
     const nameEQ = name + "=";
     const ca = document.cookie.split(";");
@@ -34,8 +36,18 @@ const getCookie = (name: string): string | null => {
       while (c.charAt(0) === " ") c = c.substring(1, c.length);
       if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
     }
+    return null;
   }
-  return null;
+
+  // SSR 환경
+  try {
+    const { cookies: getCookies } = await import("next/headers");
+    const cookieStore = await getCookies();
+    return cookieStore.get(name)?.value ?? null;
+  } catch (error) {
+    // next/headers가 사용 불가능한 환경에서는 null 반환
+    return null;
+  }
 };
 
 /**
@@ -65,15 +77,15 @@ export const tokenStorage = {
   /**
    * Access Token 조회
    */
-  getAccessToken: (): string | null => {
-    return getCookie(ACCESS_TOKEN_KEY);
+  getAccessToken: async (): Promise<string | null> => {
+    return await getCookie(ACCESS_TOKEN_KEY);
   },
 
   /**
    * Refresh Token 조회
    */
-  getRefreshToken: (): string | null => {
-    return getCookie(REFRESH_TOKEN_KEY);
+  getRefreshToken: async (): Promise<string | null> => {
+    return await getCookie(REFRESH_TOKEN_KEY);
   },
 
   /**
