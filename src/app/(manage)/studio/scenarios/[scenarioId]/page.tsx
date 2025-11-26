@@ -1,13 +1,9 @@
-import ScenarioPage from "@/feature/scenarios/pages/ScenarioPage";
-import getScenario from "@/feature/scenarios/api/getScenario";
+import ScenarioPage from "@/feature/studio/scenarios/pages/ScenarioPage";
+import getScenario from "@/feature/studio/scenarios/api/getScenario";
 
 export const dynamic = "force-dynamic";
 
-async function Page({
-  params,
-}: {
-  params: Promise<{ scenarioId: string }>;
-}) {
+async function Page({ params }: { params: Promise<{ scenarioId: string }> }) {
   const { scenarioId } = await params;
 
   const scenario = await getScenario({
