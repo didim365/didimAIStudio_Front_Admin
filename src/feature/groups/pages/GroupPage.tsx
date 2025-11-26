@@ -61,11 +61,6 @@ function GroupPage({ group }: GroupPageProps) {
   } | null>(null);
 
 
-  // 생성자 정보 조회
-  const { data: creator } = useGetUser(
-    { user_id: group?.creator ?? 0 },
-    { enabled: !!group?.creator }
-  );
 
   // 상위 그룹 정보 조회
   const { data: parentGroup } = useGetGroup(
@@ -263,15 +258,12 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">생성자</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {creator && (
-                      <Link
-                        href={`/users/${creator.id}`}
-                        className="text-primary hover:underline cursor-pointer"
-                      >
-                        {creator.full_name || creator.email}
-                      </Link>
-                    )}
-                    {!creator && `#${group.creator}`}
+                    <Link
+                      href={`/users/${group.creator}`}
+                      className="text-primary hover:underline cursor-pointer"
+                    >
+                      {group.creator}
+                    </Link>
                   </p>
                 </div>
 
