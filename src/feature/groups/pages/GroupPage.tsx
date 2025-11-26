@@ -3,13 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useGetGroup } from "../hooks/useGetGroup";
-import { useGetUser } from "@/feature/users/hooks/useGetUser";
-import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { useDeleteGroup } from "../hooks/useDeleteGroup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import {
   AlertDialog,
@@ -60,27 +56,6 @@ function GroupPage({ group }: GroupPageProps) {
     id: number;
     name: string;
   } | null>(null);
-
-  // 매니저 정보 조회 (옵션 B: 추가 API 호출)
-  const { data: manager } = useGetUser(
-    { user_id: group?.manager ?? 0 },
-    { enabled: !!group?.manager }
-  );
-
-  // 생성자 정보 조회
-  const { data: creator } = useGetUser(
-    { user_id: group?.creator ?? 0 },
-    { enabled: !!group?.creator }
-  );
-
-  // 상위 그룹 정보 조회
-  const { data: parentGroup } = useGetGroup(
-    { group_id: group?.parent_group_id ?? 0 },
-    { enabled: !!group?.parent_group_id }
-  );
-
-  // 역할 정보 조회
-  const { data: roles } = useGetRoles();
 
   // 그룹 삭제 mutation
   const { mutate: deleteGroup, isPending: isDeleting } = useDeleteGroup({
@@ -223,15 +198,12 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">상위 그룹</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {parentGroup && (
-                      <Link
-                        href={`/groups/${parentGroup.id}`}
-                        className="text-primary hover:underline cursor-pointer"
-                      >
-                        {parentGroup.group_name}
-                      </Link>
-                    )}
-                    {!parentGroup && "없음"}
+                    <Link
+                      href={`/groups/${group.parent_group_id}`}
+                      className="text-primary hover:underline cursor-pointer"
+                    >
+                      {group.id}
+                    </Link>
                   </p>
                 </div>
 
@@ -253,15 +225,12 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">매니저</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {manager && (
-                      <Link
-                        href={`/users/${manager.id}`}
-                        className="text-primary hover:underline cursor-pointer"
-                      >
-                        {manager.full_name || manager.email}
-                      </Link>
-                    )}
-                    {!manager && "미지정"}
+                    <Link
+                      href={`/users/${group.manager}`}
+                      className="text-primary hover:underline cursor-pointer"
+                    >
+                      {group.manager}
+                    </Link>
                   </p>
                 </div>
 
@@ -272,15 +241,12 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">생성자</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {creator && (
-                      <Link
-                        href={`/users/${creator.id}`}
-                        className="text-primary hover:underline cursor-pointer"
-                      >
-                        {creator.full_name || creator.email}
-                      </Link>
-                    )}
-                    {!creator && `#${group.creator}`}
+                    <Link
+                      href={`/users/${group.creator}`}
+                      className="text-primary hover:underline cursor-pointer"
+                    >
+                      {group.creator}
+                    </Link>
                   </p>
                 </div>
 
@@ -290,15 +256,7 @@ function GroupPage({ group }: GroupPageProps) {
                     <Shield className="h-4 w-4" />
                     <span className="font-medium">역할</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">
-                    {group.role_id && (
-                      <>
-                        {roles?.find((role) => role.id === group.role_id)
-                          ?.role_name || `#${group.role_id}`}
-                      </>
-                    )}
-                    {!group.role_id && "미지정"}
-                  </p>
+                  <p className="text-lg font-semibold pl-6">{group.role_id}</p>
                 </div>
 
                 {/* Created At */}

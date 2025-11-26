@@ -45,6 +45,7 @@ const getCookie = async (name: string): Promise<string | null> => {
     const cookieStore = await getCookies();
     return cookieStore.get(name)?.value ?? null;
   } catch (error) {
+    console.error(error);
     // next/headers가 사용 불가능한 환경에서는 null 반환
     return null;
   }

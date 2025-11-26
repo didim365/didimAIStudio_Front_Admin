@@ -3,7 +3,6 @@
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePatchGroup } from "../hooks/usePatchGroup";
-import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import ParentGroupSelect from "../components/ParentGroupSelect";
 import ManagerSelect from "../components/ManagerSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -34,13 +33,20 @@ import {
   GROUP_TYPE_OPTIONS,
 } from "../constants/groupType";
 import { GetGroupResponse } from "../api/getGroup";
+import { GetRolesResponse } from "@/feature/roles/api/getRoles";
 
-export function GroupEditPage({ group }: { group: GetGroupResponse }) {
+export function GroupEditPage({
+  group,
+  roles,
+}: {
+  group: GetGroupResponse;
+  roles: GetRolesResponse;
+}) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
-    group_name: group.group_name || "",
+    group_name: group.group_name,
     group_type: group.group_type as
       | "COMPANY"
       | "DEPARTMENT"
@@ -50,9 +56,6 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
     manager: group.manager || null,
     role_id: group.role_id || null,
   });
-
-  // 역할 목록 조회
-  const { data: roles } = useGetRoles();
 
   const { mutate: updateGroup, isPending: isUpdating } = usePatchGroup({
     onSuccess: () => {
@@ -77,20 +80,6 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
       },
     });
   };
-
-  if (!group) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              그룹을 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const GroupTypeIcon = GROUP_TYPE_ICONS[formData.group_type] || Building2;
   const groupTypeColor =
@@ -246,7 +235,7 @@ export function GroupEditPage({ group }: { group: GetGroupResponse }) {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">미지정</SelectItem>
-                        {roles?.map((role) => (
+                        {roles.map((role) => (
                           <SelectItem key={role.id} value={role.id.toString()}>
                             {role.role_name}
                           </SelectItem>
