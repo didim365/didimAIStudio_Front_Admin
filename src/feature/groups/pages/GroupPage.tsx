@@ -57,10 +57,6 @@ function GroupPage({ group }: GroupPageProps) {
     name: string;
   } | null>(null);
 
-
-
-
-
   // 그룹 삭제 mutation
   const { mutate: deleteGroup, isPending: isDeleting } = useDeleteGroup({
     onSuccess: () => {
