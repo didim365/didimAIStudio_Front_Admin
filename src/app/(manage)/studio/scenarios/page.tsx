@@ -1,5 +1,7 @@
-import ScenariosPage from "@/feature/scenarios/page/ScenariosPage";
+import ScenariosPage from "@/feature/scenarios/pages/ScenariosPage";
 import { Suspense } from "react";
+
+export const dynamic = "force-dynamic";
 
 function Page() {
   return (
