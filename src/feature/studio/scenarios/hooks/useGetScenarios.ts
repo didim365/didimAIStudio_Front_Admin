@@ -20,6 +20,8 @@ export const useGetScenarios = (
   return useQuery<GetScenariosResponse, Error>({
     queryKey: ["scenarios", params],
     queryFn: () => getScenarios(params),
+    staleTime: 0,
+    refetchOnMount: "always",
     ...options,
   });
 };
