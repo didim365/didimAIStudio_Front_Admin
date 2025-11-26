@@ -60,11 +60,6 @@ function GroupPage({ group }: GroupPageProps) {
     name: string;
   } | null>(null);
 
-  // 매니저 정보 조회 (옵션 B: 추가 API 호출)
-  const { data: manager } = useGetUser(
-    { user_id: group?.manager ?? 0 },
-    { enabled: !!group?.manager }
-  );
 
   // 생성자 정보 조회
   const { data: creator } = useGetUser(
@@ -252,15 +247,12 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">매니저</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {manager && (
-                      <Link
-                        href={`/users/${manager.id}`}
-                        className="text-primary hover:underline cursor-pointer"
-                      >
-                        {manager.full_name || manager.email}
-                      </Link>
-                    )}
-                    {!manager && "미지정"}
+                    <Link
+                      href={`/users/${group.manager}`}
+                      className="text-primary hover:underline cursor-pointer"
+                    >
+                      {group.manager}
+                    </Link>
                   </p>
                 </div>
 
