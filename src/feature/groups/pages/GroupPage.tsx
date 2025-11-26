@@ -3,9 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useGetGroup } from "../hooks/useGetGroup";
-import { useGetUser } from "@/feature/users/hooks/useGetUser";
-import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { useDeleteGroup } from "../hooks/useDeleteGroup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -63,8 +60,6 @@ function GroupPage({ group }: GroupPageProps) {
 
 
 
-  // 역할 정보 조회
-  const { data: roles } = useGetRoles();
 
   // 그룹 삭제 mutation
   const { mutate: deleteGroup, isPending: isDeleting } = useDeleteGroup({
@@ -265,15 +260,7 @@ function GroupPage({ group }: GroupPageProps) {
                     <Shield className="h-4 w-4" />
                     <span className="font-medium">역할</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">
-                    {group.role_id && (
-                      <>
-                        {roles?.find((role) => role.id === group.role_id)
-                          ?.role_name || `#${group.role_id}`}
-                      </>
-                    )}
-                    {!group.role_id && "미지정"}
-                  </p>
+                  <p className="text-lg font-semibold pl-6">{group.role_id}</p>
                 </div>
 
                 {/* Created At */}
