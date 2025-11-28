@@ -59,15 +59,14 @@ function RolePage({ role }: { role: GetRoleResponse }) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/roles">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="shrink-0 cursor-pointer"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0 cursor-pointer"
+            onClick={() => router.back()}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               역할 상세 정보
