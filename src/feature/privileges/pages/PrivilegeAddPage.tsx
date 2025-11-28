@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostPrivilege } from "../hooks/usePostPrivilege";
@@ -101,15 +102,16 @@ function PrivilegeAddPage() {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push("/privileges")}
-              className="shrink-0"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+            <Link href="/privileges">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="shrink-0 cursor-pointer"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
             <div>
               <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
                 <Shield className="h-8 w-8" />새 권한 추가
