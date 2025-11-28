@@ -86,20 +86,6 @@ function PrivilegeEditPage({ privilege }: PrivilegeEditPageProps) {
     });
   };
 
-  if (!privilege) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              권한을 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   const actionTypeColor =
     ACTION_TYPE_COLORS[formData.action_type] ||
     "bg-gray-100 text-gray-700 border-gray-200";
