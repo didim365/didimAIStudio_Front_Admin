@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostUser } from "../hooks/usePostUser";
-import { useGetRoles } from "../hooks/useGetRoles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -30,9 +29,13 @@ import {
 } from "lucide-react";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-import { Skeleton } from "@/shared/ui/skeleton";
+import type { GetRolesResponse } from "@/feature/roles/api/getRoles";
 
-export function UserAddPage() {
+interface UserAddPageProps {
+  roles: GetRolesResponse;
+}
+
+export function UserAddPage({ roles }: UserAddPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -47,9 +50,6 @@ export function UserAddPage() {
   });
 
   const [passwordError, setPasswordError] = useState("");
-
-  // 역할 목록 조회
-  const { data: roles, isLoading: isLoadingRoles } = useGetRoles();
 
   // 사용자 생성 mutation
   const { mutate: createUser, isPending: isCreating } = usePostUser({
@@ -334,7 +334,6 @@ export function UserAddPage() {
                       <Shield className="h-4 w-4" />
                       <span>역할</span>
                     </Label>
-                    {isLoadingRoles && <Skeleton className="h-10 w-full" />}
                     <Select
                       value={formData.role_id?.toString() || "none"}
                       onValueChange={(value) =>
