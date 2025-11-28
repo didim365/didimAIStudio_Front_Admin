@@ -34,6 +34,7 @@ import {
 } from "../constants/groupType";
 import { GetGroupResponse } from "../api/getGroup";
 import { GetRolesResponse } from "@/feature/roles/api/getRoles";
+import Link from "next/link";
 
 export function GroupEditPage({
   group,
@@ -92,15 +93,16 @@ export function GroupEditPage({
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push(`/groups/${group.id}`)}
-              className="shrink-0"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+            <Link href={`/groups/${group.id}`}>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="shrink-0 cursor-pointer"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
                 그룹 정보 수정
