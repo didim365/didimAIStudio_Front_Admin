@@ -20,6 +20,7 @@ import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Textarea } from "@/shared/ui/textarea";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
 import { GetRoleResponse } from "../api/getRole";
 
@@ -54,35 +55,22 @@ export function RoleEditPage({ role }: { role: GetRoleResponse }) {
     });
   };
 
-  if (!role) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              역할을 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push(`/roles/${role.id}`)}
-              className="shrink-0"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+            <Link href={`/roles/${role.id}`} className="shrink-0">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="shrink-0 cursor-pointer"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
                 역할 정보 수정
