@@ -7,6 +7,13 @@ services:
       dockerfile: Dockerfile
     expose:
       - "3000" # 내부 포트
+    volumes:
+      # 소스 코드 볼륨 마운트 (핫 리로드를 위해 필수)
+      - .:/app
+      # node_modules는 컨테이너 내부 것을 사용 (호스트와 충돌 방지)
+      - /app/node_modules
+      # .next 빌드 캐시도 볼륨으로 마운트하여 변경사항 반영
+      - /app/.next
     networks:
       - app-network
     environment:
