@@ -1,18 +1,9 @@
 import { RoleEditPage } from "@/feature/roles/pages/RoleEditPage";
-
-import axiosInstance from "@/shared/utils/axiosInstance";
-import { cookies } from "next/headers";
+import getRole from "@/feature/roles/api/getRole";
 
 async function Page({ params }: { params: Promise<{ roleId: string }> }) {
   const { roleId } = await params;
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-  const response = await axiosInstance.auth.get(`/roles/${roleId}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const role = response.data;
+  const role = await getRole(Number(roleId));
   return <RoleEditPage role={role} />;
 }
 

@@ -35,7 +35,6 @@ import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
 import type { GetUserResponse } from "../api/getUser";
-import { useRouter } from "next/navigation";
 
 interface UserPageProps {
   user: GetUserResponse;
@@ -43,7 +42,6 @@ interface UserPageProps {
 
 export function UserPage({ user }: UserPageProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const router = useRouter();
 
   const handleDelete = () => {
     // TODO: 사용자 삭제 API 호출
@@ -57,14 +55,15 @@ export function UserPage({ user }: UserPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.back()}
-            className="shrink-0 cursor-pointer"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+          <Link href="/users">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0 cursor-pointer"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               사용자 상세 정보
