@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { Sidebar } from "@/shared/layout/sidebar";
 import { ThemeSettings } from "@/shared/layout/theme-settings";
