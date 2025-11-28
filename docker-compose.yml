@@ -4,7 +4,7 @@ services:
   nextjs:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     expose:
       - "3000" # 내부 포트
     volumes:
