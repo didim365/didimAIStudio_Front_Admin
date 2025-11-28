@@ -54,20 +54,6 @@ export function RoleEditPage({ role }: { role: GetRoleResponse }) {
     });
   };
 
-  if (!role) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              역할을 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-6">
