@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SERVER_API_BASE_URL } from "@/shared/constants/index";
+import axiosInstance from "@/shared/utils/axiosInstance";
 import { cookies } from "next/headers";
 import { paths } from "@/shared/types/api/agents";
 
@@ -21,8 +21,8 @@ const getScenario = async (
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
-  const response = await axios.get<GetScenarioResponse>(
-    `${SERVER_API_BASE_URL}/api/agents/v1/scenarios/data/${params.scenario_id}`,
+  const response = await axiosInstance.agent.get<GetScenarioResponse>(
+    `api/agents/v1/scenarios/data/${params.scenario_id}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
