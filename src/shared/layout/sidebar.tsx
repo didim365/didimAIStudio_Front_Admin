@@ -8,11 +8,14 @@ import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { tokenStorage } from "@/shared/utils/tokenStorage";
 import MENU from "@/shared/constants/menu";
+import useGetMyInfo from "../hooks/useGetMyInfo";
 
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [expandedMenus, setExpandedMenus] = useState<string[]>([""]);
+
+  const { data: myInfo } = useGetMyInfo();
 
   const toggleMenu = (menuName: string) => {
     setExpandedMenus((prev) =>
@@ -35,8 +38,10 @@ export function Sidebar() {
             관
           </div>
           <div>
-            <p className="text-sm font-semibold">관리자님</p>
-            <p className="text-xs">admin@example.com</p>
+            <p className="text-sm font-semibold">
+              {myInfo?.full_name ?? "관리자"}님
+            </p>
+            <p className="text-xs">{myInfo?.email}</p>
           </div>
         </div>
         <Button

@@ -16,6 +16,7 @@ import { components } from "@/shared/types/api/agents";
 import { PersonasTable } from "../components/PersonasTable";
 import useGetPersonas from "../hooks/useGetPersonas";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
+import { Pagination } from "@/shared/ui/pagination";
 import Link from "next/link";
 
 export default function PersonasPage() {
@@ -33,11 +34,9 @@ export default function PersonasPage() {
     "all"
   );
   const [page, setPage] = useQueryParam<number>("page", 1);
-  const pageSize = 20;
 
   const queryParams = {
     page,
-    size: pageSize,
     category:
       categoryFilter === "all"
         ? undefined
@@ -171,7 +170,7 @@ export default function PersonasPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            페르소나 목록 ({personas.length})
+            페르소나 목록 ({data?.total})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -192,26 +191,13 @@ export default function PersonasPage() {
 
       {/* 페이지네이션 */}
       {data && data.total_pages > 1 && (
-        <div className="mt-6 flex justify-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setPage(Math.max(1, page - 1))}
-            disabled={page === 1 || isLoading}
-          >
-            이전
-          </Button>
-          <div className="flex items-center gap-2 px-4">
-            <span className="text-sm text-slate-600">
-              {data.page} / {data.total_pages}
-            </span>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => setPage(page + 1)}
-            disabled={page === data.total_pages || isLoading}
-          >
-            다음
-          </Button>
+        <div className="mt-6">
+          <Pagination
+            currentPage={data.page}
+            totalPages={data.total_pages}
+            onPageChange={(newPage) => setPage(newPage)}
+            isLoading={isLoading}
+          />
         </div>
       )}
     </div>

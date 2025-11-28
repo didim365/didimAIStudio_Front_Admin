@@ -1,5 +1,5 @@
-import axios from "axios";
-import { SERVER_API_BASE_URL } from "@/shared/constants/index";
+
+import axiosInstance from "@/shared/utils/axiosInstance";
 import { cookies } from "next/headers";
 import { paths } from "@/shared/types/api/models";
 
@@ -21,8 +21,8 @@ const getCatalog = async (
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
-  const response = await axios.get<GetCatalogResponse>(
-    `${SERVER_API_BASE_URL}/api/models/v1/catalog/${params.model_id}`,
+  const response = await axiosInstance.models.get<GetCatalogResponse>(
+    `/catalog/${params.model_id}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

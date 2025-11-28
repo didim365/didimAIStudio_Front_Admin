@@ -1,7 +1,6 @@
 import { GroupEditPage } from "@/feature/groups/pages/GroupEditPage";
-import { cookies } from "next/headers";
-import axios from "axios";
-import { SERVER_API_BASE_URL } from "@/shared/constants/index";
+import getGroup from "@/feature/groups/api/getGroup";
+import getRoles from "@/feature/roles/api/getRoles";
 
 interface PageProps {
   params: Promise<{ groupId: string }>;
@@ -9,20 +8,12 @@ interface PageProps {
 
 async function Page({ params }: PageProps) {
   const { groupId } = await params;
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
 
-  const response = await axios.get(
-    `${SERVER_API_BASE_URL}/api/auth/v1/groups/${groupId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-
-  const group = response.data;
-  return <GroupEditPage group={group} />;
+  const [group, roles] = await Promise.all([
+    getGroup({ group_id: Number(groupId) }),
+    getRoles(),
+  ]);
+  return <GroupEditPage group={group} roles={roles} />;
 }
 
 export default Page;

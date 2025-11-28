@@ -1,7 +1,5 @@
-import axios from "axios";
-import { SERVER_API_BASE_URL } from "@/shared/constants/index";
-import { cookies } from "next/headers";
 import { paths } from "@/shared/types/api/agents";
+import axiosInstance from "@/shared/utils/axiosInstance";
 
 // API 타입 추출
 export type GetPersonaResponse =
@@ -18,16 +16,8 @@ type GetPersonaParams = {
 const getPersona = async (
   params: GetPersonaParams
 ): Promise<GetPersonaResponse> => {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-
-  const response = await axios.get<GetPersonaResponse>(
-    `${SERVER_API_BASE_URL}/api/agents/v1/personas/data/${params.persona_id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
+  const response = await axiosInstance.agent.get<GetPersonaResponse>(
+    `/personas/data/${params.persona_id}`
   );
   return response.data;
 };

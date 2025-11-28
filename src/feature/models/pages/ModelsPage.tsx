@@ -3,8 +3,7 @@
 import { components } from "@/shared/types/api/models";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import useGetCatalog from "../hooks/useGetCatalog";
-import ModelTable from "../components/ModelTable";
-import { ModelStatsCards } from "../components/ModelStatsCards";
+import { StatusBadge } from "../components/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -15,34 +14,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { Search, RefreshCw } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/ui/table";
+import { Badge } from "@/shared/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
+import { Pagination } from "@/shared/ui/pagination";
+import { formatDate } from "@/shared/utils/formatDate";
+import { useRouter } from "next/navigation";
+import { CATEGORIES, DEPLOYMENT_TYPES } from "../constants/modelConstants";
+import {
+  getCategoryLabel,
+  formatNumber,
+  formatCost,
+} from "../utils/modelUtils";
 
 type AICategoryEnum = components["schemas"]["AICategoryEnum"];
 
-const CATEGORIES = [
-  { value: "TEXT", label: "텍스트" },
-  { value: "IMAGE", label: "이미지" },
-  { value: "MULTIMODAL", label: "멀티모달" },
-  { value: "EMBEDDING", label: "임베딩" },
-  { value: "AUDIO", label: "오디오" },
-  { value: "VIDEO", label: "비디오" },
-  { value: "CHAT", label: "채팅" },
-  { value: "COMPLETION", label: "완성" },
-  { value: "IMAGE_GENERATION", label: "이미지 생성" },
-  { value: "AUDIO_TRANSCRIPTION", label: "오디오 변환" },
-  { value: "AUDIO_SPEECH", label: "음성 합성" },
-];
-
-const DEPLOYMENT_TYPES = [
-  { value: "PRIVATE_VLLM", label: "Private vLLM" },
-  { value: "PUBLIC_API", label: "Public API" },
-];
-
 function ModelsPage() {
+  const router = useRouter();
+
   // URL 쿼리 파라미터 관리 - useState와 동일한 API
-  const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
-    debounce: 300,
-  });
   const [page, setPage] = useQueryParam<number>("page", 1);
   const [category, setCategory] = useQueryParam<string>("category", "all");
   const [provider, setProvider] = useQueryParam<string>("provider", "", {
@@ -61,26 +59,10 @@ function ModelsPage() {
   });
 
   const models = data?.items || [];
-  const filteredModels = !searchQuery
-    ? models
-    : models.filter((model) => {
-        const query = searchQuery.toLowerCase();
-        return (
-          model.model_name.toLowerCase().includes(query) ||
-          model.description?.toLowerCase().includes(query) ||
-          model.provider.toLowerCase().includes(query)
-        );
-      });
 
-  const stats = {
-    total: data?.total || 0,
-    privateVllm: models.filter(
-      (model) => model.deployment_type === "PRIVATE_VLLM"
-    ).length,
-    publicApi: models.filter((model) => model.deployment_type === "PUBLIC_API")
-      .length,
-    filtered: filteredModels.length,
-  };
+  function handleRowClick(modelId: number) {
+    router.push(`/studio/models/${modelId}`);
+  }
 
   return (
     <div>
@@ -88,28 +70,14 @@ function ModelsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold">모델 관리</h1>
         <p className="mt-2 text-slate-600">
-          시스템의 모든 AI 모델을 검색하고 관리하세요
+          시스템의 모든 AI 모델을 관리하세요
         </p>
       </div>
 
-      {/* 통계 카드 */}
-      <ModelStatsCards {...stats} />
-
-      {/* 검색 및 필터 */}
+      {/* 필터 */}
       <Card className="mb-6">
         <CardContent>
           <div className="flex flex-col gap-4">
-            {/* 검색 바 */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="모델 이름, 설명, 제공자로 검색..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
             {/* 필터 옵션 */}
             <div className="flex flex-wrap gap-2">
               <Select value={category} onValueChange={setCategory}>
@@ -167,42 +135,156 @@ function ModelsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            모델 목록 ({filteredModels.length})
+            모델 목록 ({data?.total})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading && (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />
               <p className="text-slate-500">로딩 중...</p>
             </div>
           )}
-          {!isLoading && <ModelTable models={filteredModels} />}
+          {!isLoading && models.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+              <AlertCircle className="h-12 w-12 mb-4" />
+              <p className="text-lg font-medium">모델을 찾을 수 없습니다</p>
+              <p className="text-sm">필터 조건을 변경해보세요</p>
+            </div>
+          )}
+          {!isLoading && models.length > 0 && (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-center w-[5%]">ID</TableHead>
+                    <TableHead className="text-left w-[15%]">모델</TableHead>
+                    <TableHead className="text-center w-[8%]">
+                      카테고리
+                    </TableHead>
+                    <TableHead className="text-left w-[6%]">버전</TableHead>
+                    <TableHead className="text-center w-[7%]">상태</TableHead>
+                    <TableHead className="text-center w-[8%]">
+                      최대 토큰
+                    </TableHead>
+                    <TableHead className="text-center w-[8%]">
+                      입력 토큰
+                    </TableHead>
+                    <TableHead className="text-center w-[8%]">
+                      출력 토큰
+                    </TableHead>
+                    <TableHead className="text-center w-[9%]">
+                      입력 비용
+                    </TableHead>
+                    <TableHead className="text-center w-[9%]">
+                      출력 비용
+                    </TableHead>
+                    <TableHead className="text-center w-[10%]">
+                      생성일
+                    </TableHead>
+                    <TableHead className="text-center w-[7%]">작업</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {models.map((model) => (
+                    <TableRow
+                      key={model.id}
+                      className="group cursor-pointer hover:bg-slate-50"
+                      onClick={() => handleRowClick(model.id)}
+                    >
+                      <TableCell className="text-center font-mono text-sm text-muted-foreground">
+                        {model.id}
+                      </TableCell>
+                      <TableCell className="text-left">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage
+                              src={model.logo || undefined}
+                              alt={model.model_name}
+                            />
+                            <AvatarFallback>
+                              {model.model_name.substring(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col">
+                            <span className="font-medium">
+                              {model.model_name}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {model.provider}
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <div className="flex justify-center">
+                          <Badge variant="outline">
+                            {getCategoryLabel(model.category)}
+                          </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-left">
+                        <code className="text-xs bg-muted px-2 py-1 rounded">
+                          v{model.version}
+                        </code>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <div className="flex justify-center">
+                          <StatusBadge status={model.status} />
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center font-mono text-sm">
+                        {formatNumber(model.max_tokens)}
+                      </TableCell>
+                      <TableCell className="text-center font-mono text-sm">
+                        {formatNumber(model.max_input_tokens)}
+                      </TableCell>
+                      <TableCell className="text-center font-mono text-sm">
+                        {formatNumber(model.max_output_tokens)}
+                      </TableCell>
+                      <TableCell className="text-center font-mono text-sm">
+                        {formatCost(model.input_cost_per_token)}
+                      </TableCell>
+                      <TableCell className="text-center font-mono text-sm">
+                        {formatCost(model.output_cost_per_token)}
+                      </TableCell>
+                      <TableCell className="text-center text-sm text-muted-foreground">
+                        {formatDate(model.created_at)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {model.endpoints_url && (
+                          <div className="flex justify-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(model.endpoints_url!, "_blank");
+                              }}
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* 페이지네이션 */}
-      {data && data.total_pages > 1 && (
-        <div className="mt-6 flex justify-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setPage(Math.max(1, page - 1))}
-            disabled={page === 1 || isLoading}
-          >
-            이전
-          </Button>
-          <div className="flex items-center gap-2 px-4">
-            <span className="text-sm text-slate-600">
-              {data.page} / {data.total_pages}
-            </span>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => setPage(page + 1)}
-            disabled={page === data.total_pages || isLoading}
-          >
-            다음
-          </Button>
+      {data && (
+        <div className="mt-6">
+          <Pagination
+            currentPage={data.page}
+            totalPages={data.total_pages}
+            onPageChange={(newPage) => setPage(newPage)}
+            isLoading={isLoading}
+          />
         </div>
       )}
     </div>

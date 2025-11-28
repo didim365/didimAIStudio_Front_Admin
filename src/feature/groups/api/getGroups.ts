@@ -17,7 +17,9 @@ const getGroups = async (
   try {
     const response = await axiosInstance.auth.get<GetGroupsResponse>(
       "/groups",
-      { params }
+      {
+        params,
+      }
     );
     return response.data;
   } catch (error) {

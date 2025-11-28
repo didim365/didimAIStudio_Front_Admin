@@ -3,13 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useGetGroup } from "../hooks/useGetGroup";
-import { useGetUser } from "@/feature/users/hooks/useGetUser";
-import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { useDeleteGroup } from "../hooks/useDeleteGroup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import {
   AlertDialog,
@@ -46,11 +42,13 @@ import { getInitials } from "@/feature/users/utils/getInitials";
 import AddMemberDialog from "../components/AddMemberDialog";
 import GroupRolesCard from "../components/GroupRolesCard";
 
+import type { GetGroupResponse } from "../api/getGroup";
+
 interface GroupPageProps {
-  groupId: string;
+  group: GetGroupResponse;
 }
 
-function GroupPage({ groupId }: GroupPageProps) {
+function GroupPage({ group }: GroupPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -58,32 +56,6 @@ function GroupPage({ groupId }: GroupPageProps) {
     id: number;
     name: string;
   } | null>(null);
-  const {
-    data: group,
-    isLoading,
-    error,
-  } = useGetGroup({ group_id: Number(groupId) });
-
-  // 매니저 정보 조회 (옵션 B: 추가 API 호출)
-  const { data: manager } = useGetUser(
-    { user_id: group?.manager ?? 0 },
-    { enabled: !!group?.manager }
-  );
-
-  // 생성자 정보 조회
-  const { data: creator } = useGetUser(
-    { user_id: group?.creator ?? 0 },
-    { enabled: !!group?.creator }
-  );
-
-  // 상위 그룹 정보 조회
-  const { data: parentGroup } = useGetGroup(
-    { group_id: group?.parent_group_id ?? 0 },
-    { enabled: !!group?.parent_group_id }
-  );
-
-  // 역할 정보 조회
-  const { data: roles } = useGetRoles();
 
   // 그룹 삭제 mutation
   const { mutate: deleteGroup, isPending: isDeleting } = useDeleteGroup({
@@ -97,52 +69,8 @@ function GroupPage({ groupId }: GroupPageProps) {
   });
 
   const handleDelete = () => {
-    deleteGroup({ group_id: Number(groupId) });
+    deleteGroup({ group_id: group.id });
   };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-[400px]" />
-          <Skeleton className="h-[400px]" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="py-8 px-4">
-        <Card className="border-destructive">
-          <CardHeader>
-            <CardTitle className="text-destructive">오류 발생</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              그룹 정보를 불러오는 중 오류가 발생했습니다.
-            </p>
-            <p className="text-sm text-destructive mt-2">{error.message}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!group) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              그룹을 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const GroupTypeIcon = GROUP_TYPE_ICONS[group.group_type] || Building2;
   const groupTypeColor =
@@ -171,7 +99,7 @@ function GroupPage({ groupId }: GroupPageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/groups/${groupId}/edit`}>
+          <Link href={`/groups/${group.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정
@@ -270,15 +198,12 @@ function GroupPage({ groupId }: GroupPageProps) {
                     <span className="font-medium">상위 그룹</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {parentGroup && (
-                      <Link
-                        href={`/groups/${parentGroup.id}`}
-                        className="text-primary hover:underline cursor-pointer"
-                      >
-                        {parentGroup.group_name}
-                      </Link>
-                    )}
-                    {!parentGroup && "없음"}
+                    <Link
+                      href={`/groups/${group.parent_group_id}`}
+                      className="text-primary hover:underline cursor-pointer"
+                    >
+                      {group.id}
+                    </Link>
                   </p>
                 </div>
 
@@ -300,15 +225,12 @@ function GroupPage({ groupId }: GroupPageProps) {
                     <span className="font-medium">매니저</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {manager && (
-                      <Link
-                        href={`/users/${manager.id}`}
-                        className="text-primary hover:underline cursor-pointer"
-                      >
-                        {manager.full_name || manager.email}
-                      </Link>
-                    )}
-                    {!manager && "미지정"}
+                    <Link
+                      href={`/users/${group.manager}`}
+                      className="text-primary hover:underline cursor-pointer"
+                    >
+                      {group.manager}
+                    </Link>
                   </p>
                 </div>
 
@@ -319,15 +241,12 @@ function GroupPage({ groupId }: GroupPageProps) {
                     <span className="font-medium">생성자</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {creator && (
-                      <Link
-                        href={`/users/${creator.id}`}
-                        className="text-primary hover:underline cursor-pointer"
-                      >
-                        {creator.full_name || creator.email}
-                      </Link>
-                    )}
-                    {!creator && `#${group.creator}`}
+                    <Link
+                      href={`/users/${group.creator}`}
+                      className="text-primary hover:underline cursor-pointer"
+                    >
+                      {group.creator}
+                    </Link>
                   </p>
                 </div>
 
@@ -337,15 +256,7 @@ function GroupPage({ groupId }: GroupPageProps) {
                     <Shield className="h-4 w-4" />
                     <span className="font-medium">역할</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">
-                    {group.role_id && (
-                      <>
-                        {roles?.find((role) => role.id === group.role_id)
-                          ?.role_name || `#${group.role_id}`}
-                      </>
-                    )}
-                    {!group.role_id && "미지정"}
-                  </p>
+                  <p className="text-lg font-semibold pl-6">{group.role_id}</p>
                 </div>
 
                 {/* Created At */}
@@ -382,7 +293,7 @@ function GroupPage({ groupId }: GroupPageProps) {
                 <UsersIcon className="h-5 w-5" />
                 그룹 멤버 ({group.member_count})
               </CardTitle>
-              <AddMemberDialog groupId={Number(groupId)} />
+              <AddMemberDialog groupId={group.id} />
             </div>
           </CardHeader>
           <CardContent>
@@ -441,7 +352,7 @@ function GroupPage({ groupId }: GroupPageProps) {
         </Card>
 
         {/* Group Roles Card */}
-        <GroupRolesCard groupId={Number(groupId)} />
+        <GroupRolesCard groupId={group.id} />
       </div>
 
       {/* 멤버 제거 확인 다이얼로그 */}

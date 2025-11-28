@@ -21,7 +21,6 @@ import { getActionTypeInfo } from "@/feature/privileges/constants/actionType";
 import { AddPrivilegeDialog } from "./AddPrivilegeDialog";
 import Link from "next/link";
 import { useState } from "react";
-import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface RolePrivilegesListProps {
@@ -52,13 +51,10 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
       queryClient.invalidateQueries({
         queryKey: ["roles", roleId, "privileges"],
       });
-      toast.success("권한이 성공적으로 삭제되었습니다.");
       setPrivilegeToDelete(null);
     },
-    onError: (error) => {
-      toast.error("권한 삭제에 실패했습니다.", {
-        description: error.message,
-      });
+    meta: {
+      successMessage: "권한이 성공적으로 삭제되었습니다.",
     },
   });
 
@@ -78,6 +74,7 @@ export function RolePrivileges({ roleId }: RolePrivilegesListProps) {
     if (!privilegeToDelete) return;
 
     deletePrivilegeMutation.mutate({
+      role_id: roleId,
       privilege_id: privilegeToDelete.id,
     });
   };

@@ -2,7 +2,7 @@ import { paths } from "@/shared/types/api/auth";
 import axiosInstance from "@/shared/utils/axiosInstance";
 
 // API 타입 추출
-type GetRolesResponse =
+export type GetRolesResponse =
   paths["/api/v1/roles/"]["get"]["responses"]["200"]["content"]["application/json"];
 
 /**
