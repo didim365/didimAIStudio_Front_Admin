@@ -1,4 +1,4 @@
-import { UserDetailPage } from "@/feature/users/pages/UserDetailPage";
+import { UserPage } from "@/feature/users/pages/UserPage";
 import getUser from "@/feature/users/api/getUser";
 
 async function Page({ params }: { params: Promise<{ userId: string }> }) {
@@ -7,7 +7,7 @@ async function Page({ params }: { params: Promise<{ userId: string }> }) {
   // SSR 데이터 패칭
   const userData = await getUser({ user_id: Number(userId) });
 
-  return <UserDetailPage user={userData} />;
+  return <UserPage user={userData} />;
 }
 
 export default Page;

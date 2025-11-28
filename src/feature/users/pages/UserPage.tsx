@@ -36,11 +36,11 @@ import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
 import type { GetUserResponse } from "../api/getUser";
 
-interface UserDetailPageProps {
+interface UserPageProps {
   user: GetUserResponse;
 }
 
-export function UserDetailPage({ user }: UserDetailPageProps) {
+export function UserPage({ user }: UserPageProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleDelete = () => {
