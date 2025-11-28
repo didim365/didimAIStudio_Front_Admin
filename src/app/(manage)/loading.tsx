@@ -1,7 +1,8 @@
 import { Loading } from "@/shared/components/Loading";
 
-function GroupsLoading() {
+function ManageLoading() {
   return <Loading fullScreen />;
 }
 
-export default GroupsLoading;
+export default ManageLoading;
+
