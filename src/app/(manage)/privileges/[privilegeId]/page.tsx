@@ -1,5 +1,5 @@
 import PrivilegePage from "@/feature/privileges/pages/PrivilegePage";
-import { SERVER_API_BASE_URL } from "@/shared/constants";
+import { SERVER_API_BASE_URL } from "@/shared/constants/index";
 import axios from "axios";
 import { cookies } from "next/headers";
 

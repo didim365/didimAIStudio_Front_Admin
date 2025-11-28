@@ -1,7 +1,7 @@
 import { UserEditPage } from "@/feature/users/pages/UserEditPage";
 import { cookies } from "next/headers";
 import axios from "axios";
-import { SERVER_API_BASE_URL } from "@/shared/constants";
+import { SERVER_API_BASE_URL } from "@/shared/constants/index";
 
 async function Page({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params;

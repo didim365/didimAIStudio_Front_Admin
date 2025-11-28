@@ -1,7 +1,7 @@
 import { GroupEditPage } from "@/feature/groups/pages/GroupEditPage";
 import { cookies } from "next/headers";
 import axios from "axios";
-import { SERVER_API_BASE_URL } from "@/shared/constants";
+import { SERVER_API_BASE_URL } from "@/shared/constants/index";
 
 interface PageProps {
   params: Promise<{ groupId: string }>;

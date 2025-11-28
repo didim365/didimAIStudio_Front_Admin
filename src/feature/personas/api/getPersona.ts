@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SERVER_API_BASE_URL } from "@/shared/constants";
+import { SERVER_API_BASE_URL } from "@/shared/constants/index";
 import { cookies } from "next/headers";
 import { paths } from "@/shared/types/api/agents";
 
