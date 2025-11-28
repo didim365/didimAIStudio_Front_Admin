@@ -330,8 +330,8 @@ function PrivilegeEditPage({ privilege }: PrivilegeEditPageProps) {
                   <p className="text-sm">
                     <span className="font-semibold">
                       {formData.resource_type || "리소스"}
-                    </span>{" "}
-                    에 대한{" "}
+                    </span>
+                    에 대한
                     <Badge
                       variant={
                         ACTION_TYPE_VARIANTS[formData.action_type] || "default"
@@ -340,7 +340,7 @@ function PrivilegeEditPage({ privilege }: PrivilegeEditPageProps) {
                     >
                       {ACTION_TYPE_LABELS[formData.action_type] ||
                         formData.action_type}
-                    </Badge>{" "}
+                    </Badge>
                     권한
                   </p>
                 </div>
