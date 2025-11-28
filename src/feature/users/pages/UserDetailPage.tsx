@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useGetUser } from "../hooks/useGetUser";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Separator } from "@/shared/ui/separator";
 import {
@@ -36,69 +34,21 @@ import Link from "next/link";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
+import type { GetUserResponse } from "../api/getUser";
 
 interface UserDetailPageProps {
-  userId: string;
+  user: GetUserResponse;
 }
 
-export function UserDetailPage({ userId }: UserDetailPageProps) {
+export function UserDetailPage({ user }: UserDetailPageProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useGetUser({ user_id: Number(userId) });
 
   const handleDelete = () => {
     // TODO: 사용자 삭제 API 호출
-    console.log("사용자 삭제:", userId);
+    console.log("사용자 삭제:", user.id);
     setShowDeleteDialog(false);
     // TODO: 삭제 후 사용자 목록 페이지로 이동하거나 리프레시
   };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-[400px]" />
-          <Skeleton className="h-[400px]" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="py-8 px-4">
-        <Card className="border-destructive">
-          <CardHeader>
-            <CardTitle className="text-destructive">오류 발생</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              사용자 정보를 불러오는 중 오류가 발생했습니다.
-            </p>
-            <p className="text-sm text-destructive mt-2">{error.message}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              사용자를 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -122,7 +72,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/users/${userId}/edit`}>
+          <Link href={`/users/${user.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정
