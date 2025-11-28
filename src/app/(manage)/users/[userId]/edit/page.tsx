@@ -1,5 +1,6 @@
 import { UserEditPage } from "@/feature/users/pages/UserEditPage";
 import { cookies } from "next/headers";
+
 import axiosInstance from "@/shared/utils/axiosInstance";
 
 async function Page({ params }: { params: Promise<{ userId: string }> }) {
