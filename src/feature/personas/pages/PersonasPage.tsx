@@ -12,8 +12,8 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { Search, RefreshCw, UserPlus } from "lucide-react";
-import { components } from "@/shared/types/api/agents";
 import { PersonasTable } from "../components/PersonasTable";
+import { PersonaCategoryEnum } from "../api/getPersona";
 import useGetPersonas from "../hooks/useGetPersonas";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
@@ -40,7 +40,7 @@ export default function PersonasPage() {
     category:
       categoryFilter === "all"
         ? undefined
-        : [categoryFilter as components["schemas"]["PersonaCategoryEnum"]],
+        : [categoryFilter as PersonaCategoryEnum],
     is_system: typeFilter === "all" ? undefined : typeFilter === "system",
     is_public: publicFilter === "all" ? undefined : publicFilter === "public",
     name: searchQuery || undefined,

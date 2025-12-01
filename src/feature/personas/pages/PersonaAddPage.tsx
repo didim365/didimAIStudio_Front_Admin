@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostPersona } from "../hooks/usePostPersona";
-import { useGetMyInfo } from "@/shared/hooks/useGetMyInfo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -31,19 +30,17 @@ import {
   Info,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
-import { paths } from "@/shared/types/api/agents";
+import { PersonaCategoryEnum } from "../api/getPersona";
+import { GetMyInfoResponse } from "@/shared/api/getMyInfo";
 
-type PersonaCategoryEnum =
-  paths["/v1/personas/data"]["post"]["requestBody"]["content"]["application/json"]["category"];
+interface PersonaAddPageProps {
+  myInfo: GetMyInfoResponse;
+}
 
-export function PersonaAddPage() {
+export function PersonaAddPage({ myInfo }: PersonaAddPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  // 현재 사용자 정보 조회
-  const { data: myInfo, isLoading: isLoadingMyInfo } = useGetMyInfo();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -57,12 +54,14 @@ export function PersonaAddPage() {
   // 페르소나 생성 mutation
   const { mutate: createPersona, isPending: isCreating } = usePostPersona({
     onSuccess: (data) => {
-      toast.success("페르소나가 성공적으로 생성되었습니다.");
       queryClient.invalidateQueries({
         queryKey: ["personas"],
       });
       // 생성된 페르소나 상세 페이지로 이동
       router.push(`/studio/personas/${data.id}`);
+    },
+    meta: {
+      successMessage: "페르소나가 성공적으로 생성되었습니다.",
     },
   });
 
@@ -85,19 +84,10 @@ export function PersonaAddPage() {
     });
   };
 
-  const selectedCategory = categoryConfig[formData.category] || {
+  const selectedCategory = categoryConfig[formData.category] ?? {
     label: formData.category,
     color: "bg-neutral-100 text-neutral-800 border-neutral-200",
   };
-
-  if (isLoadingMyInfo) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={handleSubmit}>
