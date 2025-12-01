@@ -28,11 +28,7 @@ import {
 import { Switch } from "@/shared/ui/switch";
 import { useRouter } from "next/navigation";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
-import { GetPersonaResponse } from "../api/getPersona";
-import { paths } from "@/shared/types/api/agents";
-
-type PersonaCategoryEnum =
-  paths["/v1/personas/data/{persona_id}"]["put"]["requestBody"]["content"]["application/json"]["category"];
+import { GetPersonaResponse, PersonaCategoryEnum } from "../api/getPersona";
 
 interface PersonaEditPageProps {
   persona: GetPersonaResponse;
@@ -81,20 +77,6 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
       },
     });
   };
-
-  if (!persona) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              페르소나를 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={handleSubmit}>

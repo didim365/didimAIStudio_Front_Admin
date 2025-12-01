@@ -31,11 +31,8 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
-import { paths } from "@/shared/types/api/agents";
+import { PersonaCategoryEnum } from "../api/getPersona";
 import { GetMyInfoResponse } from "@/shared/api/getMyInfo";
-
-type PersonaCategoryEnum =
-  paths["/v1/personas/data"]["post"]["requestBody"]["content"]["application/json"]["category"];
 
 interface PersonaAddPageProps {
   myInfo: GetMyInfoResponse;
