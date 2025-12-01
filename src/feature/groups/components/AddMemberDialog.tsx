@@ -13,12 +13,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shared/ui/dialog";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Pagination } from "@/shared/ui/pagination";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { UserPlus, Search, Check, Loader2, Shield } from "lucide-react";
 import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
-import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { usePostGroupUser } from "../hooks/usePostGroupUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/shared/lib/utils";
@@ -30,12 +28,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
+import { GetGroupResponse } from "../api/getGroup";
+import useGetGroupRoles from "../hooks/useGetGroupRoles";
 
 interface AddMemberDialogProps {
-  groupId: number;
+  group: GetGroupResponse;
 }
 
-export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
+export default function AddMemberDialog({ group }: AddMemberDialogProps) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,16 +49,19 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
     size: 10,
     search: searchQuery || undefined,
   });
+  const joinedUserIds = group.members?.map((member) => member.user_id);
+  const setUserIds = new Set(joinedUserIds);
+  const filteredUsers = users?.items.filter((user) => !setUserIds.has(user.id));
 
-  // 역할 목록 조회
-  const { data: roles, isLoading: isLoadingRoles } = useGetRoles();
+  // 그룹 역할 조회
+  const { data: groupRoles } = useGetGroupRoles({ group_id: group.id });
 
   // 그룹 멤버 추가 mutation
   const { mutate: addGroupUser, isPending: isAddingMember } = usePostGroupUser({
     onSuccess: () => {
       // 그룹 정보 새로고침
       queryClient.invalidateQueries({
-        queryKey: ["groups", groupId],
+        queryKey: ["groups", group.id],
       });
       // 다이얼로그 닫기 및 초기화
       setOpen(false);
@@ -79,7 +82,7 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
     if (!selectedUserId || !selectedRoleId) return;
 
     addGroupUser({
-      group_id: groupId,
+      group_id: group.id,
       user_id: selectedUserId,
       status: "ACTIVE",
       role_id: selectedRoleId,
@@ -137,53 +140,43 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
           <div className="space-y-2">
             <Label>사용자 선택</Label>
             <div className="border rounded-lg max-h-[300px] overflow-y-auto">
-              {isLoadingUsers && (
-                <div className="space-y-2 p-2">
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                </div>
-              )}
-
-              {!isLoadingUsers && (
-                <div className="p-2 space-y-2">
-                  {users?.items.map((user) => {
-                    const isSelected = selectedUserId === user.id;
-                    return (
-                      <Button
-                        key={user.id}
-                        type="button"
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start h-auto py-3 px-3",
-                          isSelected && "border-primary bg-primary/5"
-                        )}
-                        onClick={() => setSelectedUserId(user.id)}
-                        disabled={isAddingMember}
-                      >
-                        <div className="flex items-center gap-3 w-full">
-                          <Avatar className="h-9 w-9">
-                            <AvatarFallback className="text-xs">
-                              {getInitials(user.full_name, user.email)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 text-left min-w-0">
-                            <p className="font-medium text-sm truncate">
-                              {user.full_name || user.email}
-                            </p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {user.email}
-                            </p>
-                          </div>
-                          {isSelected && (
-                            <Check className="h-5 w-5 text-primary shrink-0" />
-                          )}
+              <div className="p-2 space-y-2">
+                {filteredUsers?.map((user) => {
+                  const isSelected = selectedUserId === user.id;
+                  return (
+                    <Button
+                      key={user.id}
+                      type="button"
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start h-auto py-3 px-3",
+                        isSelected && "border-primary bg-primary/5"
+                      )}
+                      onClick={() => setSelectedUserId(user.id)}
+                      disabled={isAddingMember}
+                    >
+                      <div className="flex items-center gap-3 w-full">
+                        <Avatar className="h-9 w-9">
+                          <AvatarFallback className="text-xs">
+                            {getInitials(user.full_name, user.email)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 text-left min-w-0">
+                          <p className="font-medium text-sm truncate">
+                            {user.full_name || user.email}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {user.email}
+                          </p>
                         </div>
-                      </Button>
-                    );
-                  })}
-                </div>
-              )}
+                        {isSelected && (
+                          <Check className="h-5 w-5 text-primary shrink-0" />
+                        )}
+                      </div>
+                    </Button>
+                  );
+                })}
+              </div>
 
               {!isLoadingUsers &&
                 (!users?.items || users.items.length === 0) && (
@@ -219,33 +212,30 @@ export default function AddMemberDialog({ groupId }: AddMemberDialogProps) {
               <Shield className="h-4 w-4" />
               역할 선택 *
             </Label>
-            {isLoadingRoles && <Skeleton className="h-10 w-full" />}
-            {!isLoadingRoles && (
-              <Select
-                value={selectedRoleId?.toString() || ""}
-                onValueChange={(value) => setSelectedRoleId(Number(value))}
-                disabled={isAddingMember}
-                required
-              >
-                <SelectTrigger id="role_id" className="w-full">
-                  <SelectValue placeholder="역할을 선택하세요" />
-                </SelectTrigger>
-                <SelectContent>
-                  {roles?.map((role) => (
-                    <SelectItem key={role.id} value={role.id.toString()}>
-                      <div className="flex flex-col items-start">
-                        <span className="font-medium">{role.role_name}</span>
-                        {role.description && (
-                          <span className="text-xs text-muted-foreground">
-                            {role.description}
-                          </span>
-                        )}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+            <Select
+              value={selectedRoleId?.toString() || ""}
+              onValueChange={(value) => setSelectedRoleId(Number(value))}
+              disabled={isAddingMember}
+              required
+            >
+              <SelectTrigger id="role_id" className="w-full">
+                <SelectValue placeholder="역할을 선택하세요" />
+              </SelectTrigger>
+              <SelectContent>
+                {groupRoles?.map((role) => (
+                  <SelectItem key={role.id} value={role.id.toString()}>
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">{role.role_name}</span>
+                      {role.description && (
+                        <span className="text-xs text-muted-foreground">
+                          {role.description}
+                        </span>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <p className="text-xs text-muted-foreground">
               그룹 멤버에게 할당할 역할을 선택하세요
             </p>
