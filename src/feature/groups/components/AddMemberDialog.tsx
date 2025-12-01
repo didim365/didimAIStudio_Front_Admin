@@ -13,12 +13,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shared/ui/dialog";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Pagination } from "@/shared/ui/pagination";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { UserPlus, Search, Check, Loader2, Shield } from "lucide-react";
 import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
-import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
 import { usePostGroupUser } from "../hooks/usePostGroupUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/shared/lib/utils";
@@ -31,6 +29,7 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { GetGroupResponse } from "../api/getGroup";
+import useGetGroupRoles from "../hooks/useGetGroupRoles";
 
 interface AddMemberDialogProps {
   group: GetGroupResponse;
@@ -43,19 +42,19 @@ export default function AddMemberDialog({ group }: AddMemberDialogProps) {
   const [userPage, setUserPage] = useState(1);
   const [selectedUserId, setSelectedUserId] = useState<number | undefined>();
   const [selectedRoleId, setSelectedRoleId] = useState<number | undefined>();
+
   // 사용자 목록 조회
   const { data: users, isLoading: isLoadingUsers } = useGetUsers({
     page: userPage,
     size: 10,
     search: searchQuery || undefined,
   });
-
   const joinedUserIds = group.members?.map((member) => member.user_id);
   const setUserIds = new Set(joinedUserIds);
   const filteredUsers = users?.items.filter((user) => !setUserIds.has(user.id));
 
-  // 역할 목록 조회
-  const { data: roles, isLoading: isLoadingRoles } = useGetRoles();
+  // 그룹 역할 조회
+  const { data: groupRoles } = useGetGroupRoles({ group_id: group.id });
 
   // 그룹 멤버 추가 mutation
   const { mutate: addGroupUser, isPending: isAddingMember } = usePostGroupUser({
@@ -213,33 +212,30 @@ export default function AddMemberDialog({ group }: AddMemberDialogProps) {
               <Shield className="h-4 w-4" />
               역할 선택 *
             </Label>
-            {isLoadingRoles && <Skeleton className="h-10 w-full" />}
-            {!isLoadingRoles && (
-              <Select
-                value={selectedRoleId?.toString() || ""}
-                onValueChange={(value) => setSelectedRoleId(Number(value))}
-                disabled={isAddingMember}
-                required
-              >
-                <SelectTrigger id="role_id" className="w-full">
-                  <SelectValue placeholder="역할을 선택하세요" />
-                </SelectTrigger>
-                <SelectContent>
-                  {roles?.map((role) => (
-                    <SelectItem key={role.id} value={role.id.toString()}>
-                      <div className="flex flex-col items-start">
-                        <span className="font-medium">{role.role_name}</span>
-                        {role.description && (
-                          <span className="text-xs text-muted-foreground">
-                            {role.description}
-                          </span>
-                        )}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+            <Select
+              value={selectedRoleId?.toString() || ""}
+              onValueChange={(value) => setSelectedRoleId(Number(value))}
+              disabled={isAddingMember}
+              required
+            >
+              <SelectTrigger id="role_id" className="w-full">
+                <SelectValue placeholder="역할을 선택하세요" />
+              </SelectTrigger>
+              <SelectContent>
+                {groupRoles?.map((role) => (
+                  <SelectItem key={role.id} value={role.id.toString()}>
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">{role.role_name}</span>
+                      {role.description && (
+                        <span className="text-xs text-muted-foreground">
+                          {role.description}
+                        </span>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <p className="text-xs text-muted-foreground">
               그룹 멤버에게 할당할 역할을 선택하세요
             </p>
