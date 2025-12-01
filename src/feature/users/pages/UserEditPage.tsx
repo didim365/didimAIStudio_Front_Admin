@@ -35,6 +35,7 @@ import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { GetUserResponse } from "../api/getUser";
+import Link from "next/link";
 
 export function UserEditPage({ user }: { user: GetUserResponse }) {
   const router = useRouter();
@@ -86,35 +87,22 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
     });
   };
 
-  if (!user) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              사용자를 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push("/users")}
-              className="shrink-0"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+            <Link href={`/users/${user.id}`}>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="shrink-0 cursor-pointer"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
                 사용자 정보 수정

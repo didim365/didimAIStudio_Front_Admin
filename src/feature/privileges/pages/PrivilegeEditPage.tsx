@@ -86,20 +86,6 @@ function PrivilegeEditPage({ privilege }: PrivilegeEditPageProps) {
     });
   };
 
-  if (!privilege) {
-    return (
-      <div className="py-8 px-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              권한을 찾을 수 없습니다.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   const actionTypeColor =
     ACTION_TYPE_COLORS[formData.action_type] ||
     "bg-gray-100 text-gray-700 border-gray-200";
@@ -344,8 +330,8 @@ function PrivilegeEditPage({ privilege }: PrivilegeEditPageProps) {
                   <p className="text-sm">
                     <span className="font-semibold">
                       {formData.resource_type || "리소스"}
-                    </span>{" "}
-                    에 대한{" "}
+                    </span>
+                    에 대한
                     <Badge
                       variant={
                         ACTION_TYPE_VARIANTS[formData.action_type] || "default"
@@ -354,7 +340,7 @@ function PrivilegeEditPage({ privilege }: PrivilegeEditPageProps) {
                     >
                       {ACTION_TYPE_LABELS[formData.action_type] ||
                         formData.action_type}
-                    </Badge>{" "}
+                    </Badge>
                     권한
                   </p>
                 </div>

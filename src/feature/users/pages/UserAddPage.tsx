@@ -2,10 +2,10 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostUser } from "../hooks/usePostUser";
-import { useGetRoles } from "../hooks/useGetRoles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -30,9 +30,13 @@ import {
 } from "lucide-react";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-import { Skeleton } from "@/shared/ui/skeleton";
+import type { GetRolesResponse } from "@/feature/roles/api/getRoles";
 
-export function UserAddPage() {
+interface UserAddPageProps {
+  roles: GetRolesResponse;
+}
+
+export function UserAddPage({ roles }: UserAddPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -47,9 +51,6 @@ export function UserAddPage() {
   });
 
   const [passwordError, setPasswordError] = useState("");
-
-  // 역할 목록 조회
-  const { data: roles, isLoading: isLoadingRoles } = useGetRoles();
 
   // 사용자 생성 mutation
   const { mutate: createUser, isPending: isCreating } = usePostUser({
@@ -109,288 +110,296 @@ export function UserAddPage() {
   const selectedRole = roles?.find((r) => r.id === formData.role_id);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push("/users")}
-              className="shrink-0"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                <UserPlus className="h-8 w-8" />새 사용자 추가
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                새로운 사용자 계정을 생성합니다
-              </p>
+    <div className="py-8 px-4">
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Link href="/users">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 cursor-pointer"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              </Link>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+                  <UserPlus className="h-8 w-8" />새 사용자 추가
+                </h1>
+                <p className="text-muted-foreground mt-1">
+                  새로운 사용자 계정을 생성합니다
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button type="submit" className="shrink-0" disabled={isCreating}>
+                <Save className="h-4 w-4 mr-2" />
+                {isCreating ? "생성 중..." : "사용자 생성"}
+              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button type="submit" className="shrink-0" disabled={isCreating}>
-              <Save className="h-4 w-4 mr-2" />
-              {isCreating ? "생성 중..." : "사용자 생성"}
-            </Button>
-          </div>
-        </div>
 
-        {/* Main Content */}
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* 기본 정보 Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                기본 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 md:grid-cols-2">
-                {/* 이름 */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="full_name"
-                    className="flex items-center gap-2"
-                  >
-                    <User className="h-4 w-4" />
-                    <span>이름 *</span>
-                  </Label>
-                  <Input
-                    id="full_name"
-                    value={formData.full_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, full_name: e.target.value })
-                    }
-                    placeholder="홍길동"
-                    className="pl-6"
-                    required
-                  />
-                </div>
-
-                {/* 이메일 */}
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
-                    <span>이메일 *</span>
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    placeholder="user@example.com"
-                    className="pl-6"
-                    required
-                  />
-                </div>
-
-                {/* 전화번호 */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="phone_number"
-                    className="flex items-center gap-2"
-                  >
-                    <Phone className="h-4 w-4" />
-                    <span>전화번호 *</span>
-                  </Label>
-                  <Input
-                    id="phone_number"
-                    type="tel"
-                    value={formData.phone_number}
-                    onChange={(e) => handlePhoneNumberChange(e.target.value)}
-                    placeholder="010-1234-5678"
-                    className="pl-6"
-                    maxLength={13}
-                    required
-                  />
-                </div>
-
-                {/* 상태 */}
-                <div className="space-y-2">
-                  <Label htmlFor="status" className="flex items-center gap-2">
-                    <Activity className="h-4 w-4" />
-                    <span>상태 *</span>
-                  </Label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={(
-                      value: "ACTIVE" | "INACTIVE" | "SUSPENDED"
-                    ) => setFormData({ ...formData, status: value })}
-                    required
-                  >
-                    <SelectTrigger id="status" className="pl-6 w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ACTIVE">활성</SelectItem>
-                      <SelectItem value="INACTIVE">비활성</SelectItem>
-                      <SelectItem value="SUSPENDED">정지</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 보안 정보 Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lock className="h-5 w-5" />
-                보안 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* 비밀번호 */}
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="flex items-center gap-2">
-                    <Lock className="h-4 w-4" />
-                    <span>비밀번호 *</span>
-                  </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => {
-                      setFormData({ ...formData, password: e.target.value });
-                      setPasswordError("");
-                    }}
-                    placeholder="최소 8자 이상"
-                    className="pl-6"
-                    minLength={8}
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    최소 8자 이상의 비밀번호를 입력하세요
-                  </p>
-                </div>
-
-                {/* 비밀번호 확인 */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="password_confirm"
-                    className="flex items-center gap-2"
-                  >
-                    <Lock className="h-4 w-4" />
-                    <span>비밀번호 확인 *</span>
-                  </Label>
-                  <Input
-                    id="password_confirm"
-                    type="password"
-                    value={formData.password_confirm}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        password_confirm: e.target.value,
-                      });
-                      setPasswordError("");
-                    }}
-                    placeholder="비밀번호를 다시 입력하세요"
-                    className="pl-6"
-                    minLength={8}
-                    required
-                  />
-                </div>
-
-                {/* 비밀번호 에러 메시지 */}
-                {passwordError && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{passwordError}</AlertDescription>
-                  </Alert>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 역할 정보 Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                역할 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* 역할 선택 */}
-                <div className="space-y-2">
-                  <Label htmlFor="role_id" className="flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    <span>역할</span>
-                  </Label>
-                  {isLoadingRoles && <Skeleton className="h-10 w-full" />}
-                  <Select
-                    value={formData.role_id?.toString() || "none"}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        role_id: value === "none" ? undefined : Number(value),
-                      })
-                    }
-                  >
-                    <SelectTrigger id="role_id" className="pl-6 w-full">
-                      <SelectValue placeholder="역할을 선택하세요 (선택사항)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">역할 없음</SelectItem>
-                      {roles?.map((role) => (
-                        <SelectItem key={role.id} value={role.id.toString()}>
-                          <div className="flex flex-col items-start">
-                            <span className="font-medium">
-                              {role.role_name}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    사용자에게 할당할 역할을 선택하세요 (선택사항)
-                  </p>
-                </div>
-
-                {/* 역할 정보 표시 */}
-                {selectedRole && (
-                  <div className="p-4 bg-muted rounded-lg border border-border">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-primary" />
-                        <span className="font-semibold">
-                          {selectedRole.role_name}
-                        </span>
-                      </div>
-                      {selectedRole.description && (
-                        <p className="text-sm text-muted-foreground">
-                          {selectedRole.description}
-                        </p>
-                      )}
-                    </div>
+          {/* Main Content */}
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* 기본 정보 Card */}
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  기본 정보
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-6 md:grid-cols-2">
+                  {/* 이름 */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="full_name"
+                      className="flex items-center gap-2"
+                    >
+                      <User className="h-4 w-4" />
+                      <span>이름 *</span>
+                    </Label>
+                    <Input
+                      id="full_name"
+                      value={formData.full_name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, full_name: e.target.value })
+                      }
+                      placeholder="홍길동"
+                      className="pl-6"
+                      required
+                    />
                   </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
-        {/* Info Alert */}
-        <Alert>
-          <AlertDescription className="flex items-center gap-2">
-            <span className="text-sm">
-              * 표시된 필드는 필수 입력 항목입니다. 사용자 생성 후 추가 정보는
-              사용자 상세 페이지에서 수정할 수 있습니다.
-            </span>
-          </AlertDescription>
-        </Alert>
-      </div>
-    </form>
+                  {/* 이메일 */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      <span>이메일 *</span>
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      placeholder="user@example.com"
+                      className="pl-6"
+                      required
+                    />
+                  </div>
+
+                  {/* 전화번호 */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="phone_number"
+                      className="flex items-center gap-2"
+                    >
+                      <Phone className="h-4 w-4" />
+                      <span>전화번호 *</span>
+                    </Label>
+                    <Input
+                      id="phone_number"
+                      type="tel"
+                      value={formData.phone_number}
+                      onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                      placeholder="010-1234-5678"
+                      className="pl-6"
+                      maxLength={13}
+                      required
+                    />
+                  </div>
+
+                  {/* 상태 */}
+                  <div className="space-y-2">
+                    <Label htmlFor="status" className="flex items-center gap-2">
+                      <Activity className="h-4 w-4" />
+                      <span>상태 *</span>
+                    </Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(
+                        value: "ACTIVE" | "INACTIVE" | "SUSPENDED"
+                      ) => setFormData({ ...formData, status: value })}
+                      required
+                    >
+                      <SelectTrigger id="status" className="pl-6 w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ACTIVE">활성</SelectItem>
+                        <SelectItem value="INACTIVE">비활성</SelectItem>
+                        <SelectItem value="SUSPENDED">정지</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 보안 정보 Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Lock className="h-5 w-5" />
+                  보안 정보
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* 비밀번호 */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="password"
+                      className="flex items-center gap-2"
+                    >
+                      <Lock className="h-4 w-4" />
+                      <span>비밀번호 *</span>
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => {
+                        setFormData({ ...formData, password: e.target.value });
+                        setPasswordError("");
+                      }}
+                      placeholder="최소 8자 이상"
+                      className="pl-6"
+                      minLength={8}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      최소 8자 이상의 비밀번호를 입력하세요
+                    </p>
+                  </div>
+
+                  {/* 비밀번호 확인 */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="password_confirm"
+                      className="flex items-center gap-2"
+                    >
+                      <Lock className="h-4 w-4" />
+                      <span>비밀번호 확인 *</span>
+                    </Label>
+                    <Input
+                      id="password_confirm"
+                      type="password"
+                      value={formData.password_confirm}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          password_confirm: e.target.value,
+                        });
+                        setPasswordError("");
+                      }}
+                      placeholder="비밀번호를 다시 입력하세요"
+                      className="pl-6"
+                      minLength={8}
+                      required
+                    />
+                  </div>
+
+                  {/* 비밀번호 에러 메시지 */}
+                  {passwordError && (
+                    <Alert variant="destructive">
+                      <AlertDescription>{passwordError}</AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 역할 정보 Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  역할 정보
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* 역할 선택 */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="role_id"
+                      className="flex items-center gap-2"
+                    >
+                      <Shield className="h-4 w-4" />
+                      <span>역할</span>
+                    </Label>
+                    <Select
+                      value={formData.role_id?.toString() || "none"}
+                      onValueChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          role_id: value === "none" ? undefined : Number(value),
+                        })
+                      }
+                    >
+                      <SelectTrigger id="role_id" className="pl-6 w-full">
+                        <SelectValue placeholder="역할을 선택하세요 (선택사항)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">역할 없음</SelectItem>
+                        {roles?.map((role) => (
+                          <SelectItem key={role.id} value={role.id.toString()}>
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">
+                                {role.role_name}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      사용자에게 할당할 역할을 선택하세요 (선택사항)
+                    </p>
+                  </div>
+
+                  {/* 역할 정보 표시 */}
+                  {selectedRole && (
+                    <div className="p-4 bg-muted rounded-lg border border-border">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Shield className="h-4 w-4 text-primary" />
+                          <span className="font-semibold">
+                            {selectedRole.role_name}
+                          </span>
+                        </div>
+                        {selectedRole.description && (
+                          <p className="text-sm text-muted-foreground">
+                            {selectedRole.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Info Alert */}
+          <Alert>
+            <AlertDescription className="flex items-center gap-2">
+              <span className="text-sm">
+                * 표시된 필드는 필수 입력 항목입니다. 사용자 생성 후 추가 정보는
+                사용자 상세 페이지에서 수정할 수 있습니다.
+              </span>
+            </AlertDescription>
+          </Alert>
+        </div>
+      </form>
+    </div>
   );
 }

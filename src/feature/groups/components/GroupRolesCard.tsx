@@ -20,6 +20,7 @@ import { useGetGroupRoles } from "../hooks/useGetGroupRoles";
 import { useDeleteGroupRole } from "../hooks/useDeleteGroupRole";
 import { useQueryClient } from "@tanstack/react-query";
 import AddGroupRoleDialog from "./AddGroupRoleDialog";
+import Link from "next/link";
 
 interface GroupRolesCardProps {
   groupId: number;
@@ -97,8 +98,9 @@ export default function GroupRolesCard({ groupId }: GroupRolesCardProps) {
           <>
             <div className="space-y-3">
               {groupRoles?.map((role) => (
-                <div
+                <Link
                   key={role.id}
+                  href={`/roles/${role.id}`}
                   className="relative flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group"
                 >
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -117,6 +119,7 @@ export default function GroupRolesCard({ groupId }: GroupRolesCardProps) {
                       </p>
                     )}
                   </div>
+
                   <div className="flex items-center gap-2 shrink-0">
                     <Badge variant="secondary" className="text-xs">
                       역할
@@ -125,15 +128,17 @@ export default function GroupRolesCard({ groupId }: GroupRolesCardProps) {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                      onClick={() =>
-                        handleOpenDeleteDialog(role.id, role.role_name)
-                      }
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleOpenDeleteDialog(role.id, role.role_name);
+                      }}
                       disabled={deleteRoleMutation.isPending}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
             {!groupRoles?.length && (
