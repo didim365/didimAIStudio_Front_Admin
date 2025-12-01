@@ -293,7 +293,7 @@ function GroupPage({ group }: GroupPageProps) {
                 <UsersIcon className="h-5 w-5" />
                 그룹 멤버 ({group.member_count})
               </CardTitle>
-              <AddMemberDialog groupId={group.id} />
+              <AddMemberDialog group={group} />
             </div>
           </CardHeader>
           <CardContent>
