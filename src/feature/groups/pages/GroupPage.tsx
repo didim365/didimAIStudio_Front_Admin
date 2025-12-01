@@ -293,14 +293,14 @@ function GroupPage({ group }: GroupPageProps) {
                 <UsersIcon className="h-5 w-5" />
                 그룹 멤버 ({group.member_count})
               </CardTitle>
-              <AddMemberDialog groupId={group.id} />
+              <AddMemberDialog group={group} />
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-1">
               {group?.members?.map((member) => (
                 <div
-                  key={member.user_id}
+                  key={`group-${group.id}, member-${member.user_id}`}
                   className="relative flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group"
                 >
                   <Link
@@ -317,7 +317,7 @@ function GroupPage({ group }: GroupPageProps) {
                         {member.full_name}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        ID: #{member.user_id}
+                        {member.email}
                       </p>
                     </div>
                   </Link>
