@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -18,8 +17,6 @@ import Link from "next/link";
 import { useGetScenarios } from "../hooks/useGetScenarios";
 
 export default function ScenariosPage() {
-  const router = useRouter();
-
   // URL 쿼리 파라미터 관리
   const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
     debounce: 300,
@@ -59,10 +56,6 @@ export default function ScenariosPage() {
         return true; // name은 이미 서버에서 필터링됨
     }
   });
-
-  const handleViewDetails = (scenarioId: number) => {
-    router.push(`/studio/scenarios/${scenarioId}`);
-  };
 
   const handleRefresh = () => {
     refetch();
@@ -164,12 +157,7 @@ export default function ScenariosPage() {
               <p className="text-slate-500">로딩 중...</p>
             </div>
           )}
-          {!isLoading && (
-            <ScenariosTable
-              scenarios={filteredScenarios}
-              onViewDetails={handleViewDetails}
-            />
-          )}
+          {!isLoading && <ScenariosTable scenarios={filteredScenarios} />}
         </CardContent>
       </Card>
 

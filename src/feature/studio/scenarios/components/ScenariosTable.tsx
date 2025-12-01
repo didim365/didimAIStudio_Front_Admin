@@ -25,7 +25,6 @@ interface Scenario {
 
 interface ScenariosTableProps {
   scenarios: Scenario[];
-  onViewDetails: (scenarioId: number) => void;
 }
 
 const getTypeBadge = (scenario: Scenario) => {
