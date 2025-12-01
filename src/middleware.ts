@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import getMyInfo from "./shared/api/getMyInfo";
+import { tokenStorage } from "./shared/utils/tokenStorage";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -26,6 +27,7 @@ export async function middleware(request: NextRequest) {
   try {
     await getMyInfo();
   } catch (err) {
+    await tokenStorage.clearTokens();
     return NextResponse.redirect(new URL("/", request.url));
   }
 
