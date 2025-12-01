@@ -1,6 +1,6 @@
 "use client";
 
-import { MetricCard } from "@/shared/components/dashboard/MetricCard";
+import { MetricCard } from "../components/MetricCard";
 import { useDashboard } from "../hooks/useDashboard";
 import {
   userGrowthData,
