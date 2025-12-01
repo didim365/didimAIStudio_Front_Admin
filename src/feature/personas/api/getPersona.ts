@@ -1,9 +1,12 @@
-import { paths } from "@/shared/types/api/agents";
+import { paths, components } from "@/shared/types/api/agents";
 import axiosInstance from "@/shared/utils/axiosInstance";
 
 // API 타입 추출
 export type GetPersonaResponse =
   paths["/v1/personas/data/{persona_id}"]["get"]["responses"]["200"]["content"]["application/json"];
+
+// PersonaCategoryEnum 타입 export
+export type PersonaCategoryEnum = components["schemas"]["PersonaCategoryEnum"];
 
 type GetPersonaParams = {
   persona_id: number;
