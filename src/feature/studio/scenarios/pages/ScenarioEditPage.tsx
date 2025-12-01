@@ -20,7 +20,6 @@ import { categoryConfig } from "../constants/categoryConfig";
 import type { GetScenarioResponse } from "../api/getScenario";
 import usePutScenario from "../hooks/usePutScenario";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ScenarioEditPageProps {
@@ -30,7 +29,11 @@ interface ScenarioEditPageProps {
 function ScenarioEditPage({ scenario }: ScenarioEditPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { mutate: putScenario, isPending } = usePutScenario();
+  const { mutate: putScenario, isPending } = usePutScenario({
+    meta: {
+      successMessage: "시나리오가 성공적으로 수정되었습니다.",
+    },
+  });
 
   const [formData, setFormData] = useState({
     name: scenario.name,
@@ -61,13 +64,8 @@ function ScenarioEditPage({ scenario }: ScenarioEditPageProps) {
       },
       {
         onSuccess: () => {
-          // React Query 캐시 무효화
           queryClient.invalidateQueries({ queryKey: ["scenarios"] });
-          toast.success("시나리오가 성공적으로 수정되었습니다.");
           router.push(`/studio/scenarios/${scenario.id}`);
-        },
-        onError: (error) => {
-          toast.error(error.message || "시나리오 수정에 실패했습니다.");
         },
       }
     );
@@ -92,9 +90,7 @@ function ScenarioEditPage({ scenario }: ScenarioEditPageProps) {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              시나리오 수정
-            </h1>
+            <h1 className="text-3xl font-bold tracking-tight">시나리오 수정</h1>
             <p className="text-muted-foreground">시나리오 ID: {scenario.id}</p>
           </div>
         </div>
