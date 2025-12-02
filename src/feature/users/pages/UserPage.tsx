@@ -43,11 +43,9 @@ export function UserPage({ user }: UserPageProps) {
 
   const handleDelete = () => {
     // TODO: 사용자 삭제 API 호출
-    console.log("사용자 삭제:", user.id);
     setShowDeleteDialog(false);
     // TODO: 삭제 후 사용자 목록 페이지로 이동하거나 리프레시
   };
-  console.log({ user });
   return (
     <div className="space-y-6">
       {/* Header */}

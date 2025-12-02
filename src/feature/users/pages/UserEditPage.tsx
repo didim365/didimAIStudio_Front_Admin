@@ -4,19 +4,13 @@ import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePatchUser } from "../hooks/usePatchUser";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { Separator } from "@/shared/ui/separator";
 import {
   User,
   Mail,
   Phone,
-  Calendar,
-  Clock,
   Activity,
-  Settings,
   UserCircle,
-  Image as ImageIcon,
   ArrowLeft,
   Save,
 } from "lucide-react";
@@ -31,7 +25,6 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
-import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { GetUserResponse } from "../api/getUser";
@@ -44,7 +37,7 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
   const [formData, setFormData] = useState({
     email: user.email || "",
     full_name: user.full_name || "",
-    phone_number: user.phone || "",
+    phone_number: formatPhoneNumber(user.phone),
     status: user.status as "ACTIVE" | "INACTIVE" | "SUSPENDED",
     preferences: user.preferences || {},
   });
@@ -62,10 +55,12 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
   // 전화번호 입력 핸들러 - 입력 시 자동 포맷팅
   const handlePhoneNumberChange = (value: string) => {
     const formatted = formatPhoneNumber(value);
+    // formatPhoneNumber가 "-"를 반환하는 경우 빈 문자열로 처리
+    const phoneValue = formatted === "-" ? "" : formatted;
 
     setFormData({
       ...formData,
-      phone_number: formatted,
+      phone_number: phoneValue,
     });
   };
 
@@ -138,13 +133,36 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
                       {getInitials(user.full_name, user.email)}
                     </AvatarFallback>
                   </Avatar>
-                  <Badge className="bg-muted text-muted-foreground hover:bg-muted/80">
-                    {user.status}
-                  </Badge>
+                  {/* Status Select */}
+                  <div className="space-y-2 w-full">
+                    <Label
+                      htmlFor="status"
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <Activity className="h-4 w-4" />
+                      <span>상태 *</span>
+                    </Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(
+                        value: "ACTIVE" | "INACTIVE" | "SUSPENDED"
+                      ) => setFormData({ ...formData, status: value })}
+                      required
+                    >
+                      <SelectTrigger id="status" className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ACTIVE">활성</SelectItem>
+                        <SelectItem value="INACTIVE">비활성</SelectItem>
+                        <SelectItem value="SUSPENDED">정지</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {/* User Info Grid */}
-                <div className="flex-1 grid gap-4 md:grid-cols-2">
+                <div className="flex-1 space-y-4">
                   {/* Full Name */}
                   <div className="space-y-2">
                     <Label
@@ -205,136 +223,6 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
                       required
                     />
                   </div>
-
-                  {/* Status */}
-                  <div className="space-y-2">
-                    <Label htmlFor="status" className="flex items-center gap-2">
-                      <Activity className="h-4 w-4" />
-                      <span>상태 *</span>
-                    </Label>
-                    <Select
-                      value={formData.status}
-                      onValueChange={(
-                        value: "ACTIVE" | "INACTIVE" | "SUSPENDED"
-                      ) => setFormData({ ...formData, status: value })}
-                      required
-                    >
-                      <SelectTrigger id="status" className="pl-6 w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ACTIVE">활성</SelectItem>
-                        <SelectItem value="INACTIVE">비활성</SelectItem>
-                        <SelectItem value="SUSPENDED">정지</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Activity Timeline Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                활동 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Created At */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>계정 생성일</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  <p className="text-sm font-mono">
-                    {formatDate(user.created_at)}
-                  </p>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Updated At */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>마지막 업데이트</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  <p className="text-sm font-mono">
-                    {formatDate(user.updated_at)}
-                  </p>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Last Login */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>마지막 로그인</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  <p className="text-sm font-mono">
-                    {formatDate(user.last_login)}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Additional Info Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                추가 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Profile Image URL */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                  <span>프로필 이미지 URL</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  {user.profile_image_url ? (
-                    <p className="text-sm font-mono break-all">
-                      {user.profile_image_url}
-                    </p>
-                  ) : (
-                    <p className="text-sm text-muted-foreground italic">
-                      프로필 이미지가 설정되지 않았습니다
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Preferences */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Settings className="h-4 w-4 text-muted-foreground" />
-                  <span>사용자 설정</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  {user.preferences &&
-                  Object.keys(user.preferences).length > 0 ? (
-                    <pre className="text-sm font-mono overflow-x-auto">
-                      {JSON.stringify(user.preferences, null, 2)}
-                    </pre>
-                  ) : (
-                    <p className="text-sm text-muted-foreground italic">
-                      설정된 값이 없습니다
-                    </p>
-                  )}
                 </div>
               </div>
             </CardContent>
