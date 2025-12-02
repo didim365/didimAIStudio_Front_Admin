@@ -24,8 +24,10 @@ import { usePutMcpToolConfig } from "../hooks/usePutMcpToolConfig";
 import { useQueryClient } from "@tanstack/react-query";
 import { Save, Loader2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
-import ReactJson from "react-json-view";
 import { useTheme } from "next-themes";
+import CodeMirror from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
+import { oneDark } from "@codemirror/theme-one-dark";
 
 interface ServerConfigCardProps {
   config: GetMcpToolConfigResponse;
@@ -114,11 +116,8 @@ const ConfigValue = ({
       onChange(parsedValue);
       setIsEditing(false);
     } catch (e) {
-      toast.error(
-        e instanceof Error
-          ? e.message
-          : "설정 값을 저장하는 중 오류가 발생했습니다."
-      );
+      console.error("도구 설정 값 저장 도중 에러 발생: " + e);
+      toast.error("설정 JSON 형태가 올바르지 않습니다.");
     }
   };
 
@@ -359,45 +358,73 @@ const ConfigValue = ({
     const entries = Object.entries(value);
 
     if (isEditing) {
+      const handleCodeChange = (value: string) => {
+        if (!onChange) return;
+        try {
+          const parsed = JSON.parse(value);
+          onChange(parsed);
+        } catch (e) {
+          // JSON 파싱 오류는 무시 (사용자가 입력 중일 수 있음)
+        }
+      };
+
       return (
         <div className="space-y-2">
           <div className="border rounded-lg overflow-hidden bg-background">
-            <ReactJson
-              src={value as Record<string, unknown>}
-              theme={theme === "dark" ? "monokai" : "rjv-default"}
-              onEdit={(edit) => {
-                if (onChange) {
-                  onChange(edit.updated_src);
-                }
+            <CodeMirror
+              value={editValue}
+              onChange={(value) => {
+                setEditValue(value);
+                handleCodeChange(value);
               }}
-              onAdd={(add) => {
-                if (onChange) {
-                  onChange(add.updated_src);
-                }
+              extensions={[json()]}
+              theme={theme === "dark" ? oneDark : undefined}
+              basicSetup={{
+                lineNumbers: true,
+                foldGutter: true,
+                dropCursor: false,
+                allowMultipleSelections: false,
+                indentOnInput: true,
+                bracketMatching: true,
+                closeBrackets: true,
+                autocompletion: true,
+                highlightSelectionMatches: false,
               }}
-              onDelete={(del) => {
-                if (onChange) {
-                  onChange(del.updated_src);
-                }
-              }}
-              displayDataTypes={false}
-              displayObjectSize={false}
-              enableClipboard={false}
-              style={{
-                padding: "12px",
-                fontSize: "12px",
-              }}
+              minHeight="200px"
+              maxHeight="400px"
             />
           </div>
           <div className="flex gap-2">
             <Button
               size="sm"
+              variant="outline"
+              onClick={() => {
+                try {
+                  const parsed = JSON.parse(editValue);
+                  if (onChange) {
+                    onChange(parsed);
+                  }
+                  setIsEditing(false);
+                } catch (e) {
+                  toast.error(
+                    e instanceof Error
+                      ? e.message
+                      : "유효하지 않은 JSON 형식입니다."
+                  );
+                }
+              }}
+            >
+              저장
+            </Button>
+            <Button
+              size="sm"
               variant="ghost"
               onClick={() => {
                 setIsEditing(false);
+                setEditValue(JSON.stringify(value, null, 2));
               }}
             >
-              닫기
+              취소
             </Button>
           </div>
         </div>
