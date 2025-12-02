@@ -71,11 +71,11 @@ Object.entries(HTTP_API_GATEWAY).forEach(([key, path]) => {
     (response) => {
       return response;
     },
-    (error) => {
+    async (error) => {
       // 401 Unauthorized 에러 발생 시
       if (error.response?.status === 401) {
         // access_token 제거
-        tokenStorage.clearAccessToken();
+        await tokenStorage.clearAccessToken();
       }
       return Promise.reject(error);
     }

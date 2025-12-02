@@ -25,8 +25,8 @@ export function Sidebar() {
     );
   };
 
-  const handleLogout = () => {
-    tokenStorage.clearTokens();
+  const handleLogout = async () => {
+    await tokenStorage.clearTokens();
     router.push("/");
   };
 
