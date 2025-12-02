@@ -21,10 +21,8 @@ import {
   Phone,
   Calendar,
   Clock,
-  Activity,
   Settings,
   UserCircle,
-  Image as ImageIcon,
   ArrowLeft,
   Pencil,
   Trash2,
@@ -95,7 +93,7 @@ export function UserPage({ user }: UserPageProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>사용자 삭제 확인</AlertDialogTitle>
             <AlertDialogDescription>
-              정말{" "}
+              정말
               <span className="font-semibold">
                 {user.full_name || user.email}
               </span>
@@ -172,15 +170,6 @@ export function UserPage({ user }: UserPageProps) {
                     {formatPhoneNumber(user.phone || "") || "정보 없음"}
                   </p>
                 </div>
-
-                {/* Status */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Activity className="h-4 w-4" />
-                    <span className="font-medium">사용자 ID</span>
-                  </div>
-                  <p className="text-lg font-semibold pl-6">#{user.id}</p>
-                </div>
               </div>
             </div>
           </CardContent>
@@ -249,27 +238,6 @@ export function UserPage({ user }: UserPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Profile Image URL */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                <span>프로필 이미지 URL</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                {user.profile_image_url ? (
-                  <p className="text-sm font-mono break-all">
-                    {user.profile_image_url}
-                  </p>
-                ) : (
-                  <p className="text-sm text-muted-foreground italic">
-                    프로필 이미지가 설정되지 않았습니다
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <Separator />
-
             {/* Preferences */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
