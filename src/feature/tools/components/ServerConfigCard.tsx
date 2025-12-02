@@ -364,6 +364,7 @@ const ConfigValue = ({
           const parsed = JSON.parse(value);
           onChange(parsed);
         } catch (e) {
+          console.error(e);
           // JSON 파싱 오류는 무시 (사용자가 입력 중일 수 있음)
         }
       };

@@ -89,6 +89,7 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
         }
       }
     } catch (error) {
+      console.error(error);
       toast.error("사용자 개인설정 JSON 형식이 올바르지 않습니다.");
       return;
     }
