@@ -13,6 +13,7 @@ import {
   UserCircle,
   ArrowLeft,
   Save,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -29,17 +30,23 @@ import { getInitials } from "@/feature/users/utils/getInitials";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { GetUserResponse } from "../api/getUser";
 import Link from "next/link";
+import { Separator } from "@/shared/ui/separator";
+import CodeMirror from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { useTheme } from "next-themes";
 
 export function UserEditPage({ user }: { user: GetUserResponse }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { theme } = useTheme();
 
   const [formData, setFormData] = useState({
     email: user.email || "",
     full_name: user.full_name || "",
     phone_number: formatPhoneNumber(user.phone),
     status: user.status as "ACTIVE" | "INACTIVE" | "SUSPENDED",
-    preferences: user.preferences || {},
+    preferencesText: JSON.stringify(user.preferences || {}, null, 2),
   });
 
   const { mutate: updateUser, isPending: isUpdating } = usePatchUser({
@@ -70,13 +77,34 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
     // 전화번호에서 숫자만 추출하여 전송
     const phoneDigits = formData.phone_number.replace(/\D/g, "");
 
+    // JSON 파싱 및 검증
+    let preferences: Record<string, unknown> | null = null;
+    try {
+      const trimmedText = formData.preferencesText.trim();
+      if (trimmedText) {
+        const parsed = JSON.parse(trimmedText);
+        if (typeof parsed === "object" && parsed !== null) {
+          preferences = parsed as Record<string, unknown>;
+        }
+      }
+    } catch (error) {
+      // JSON 파싱 오류 시 사용자에게 알림 (추후 toast 추가 가능)
+      alert(
+        "JSON 형식이 올바르지 않습니다. 올바른 JSON 형식으로 입력해주세요."
+      );
+      return;
+    }
+
     updateUser({
       user_id: user.id,
       email: formData.email || null,
       full_name: formData.full_name || null,
       phone_number: phoneDigits || null,
       status: formData.status || null,
-      preferences: formData.preferences,
+      preferences:
+        preferences && Object.keys(preferences).length > 0
+          ? (preferences as Record<string, never>)
+          : null,
     });
   };
 
@@ -221,6 +249,48 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
                       required
                     />
                   </div>
+                </div>
+              </div>
+
+              <Separator className="my-6" />
+
+              {/* Preferences */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2 text-sm font-medium">
+                  <Settings className="h-4 w-4 text-muted-foreground" />
+                  <span>사용자 개인설정 (테마, 언어 등)</span>
+                </Label>
+                <div className="ml-6">
+                  <div className="border rounded-lg overflow-hidden">
+                    <CodeMirror
+                      value={formData.preferencesText}
+                      onChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          preferencesText: value,
+                        })
+                      }
+                      extensions={[json()]}
+                      theme={theme === "dark" ? oneDark : undefined}
+                      basicSetup={{
+                        lineNumbers: true,
+                        foldGutter: true,
+                        dropCursor: false,
+                        allowMultipleSelections: false,
+                        indentOnInput: true,
+                        bracketMatching: true,
+                        closeBrackets: true,
+                        autocompletion: true,
+                        highlightSelectionMatches: false,
+                      }}
+                      placeholder='{\n  "theme": "dark",\n  "language": "ko"\n}'
+                      minHeight="200px"
+                      maxHeight="400px"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    JSON 형식으로 입력하세요. 탭 키로 들여쓰기가 가능합니다.
+                  </p>
                 </div>
               </div>
             </CardContent>
