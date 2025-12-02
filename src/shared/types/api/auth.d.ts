@@ -682,6 +682,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/scenarios/{scenario_id}/api-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * 시나리오 API-Key 일괄 비활성화
+         * @description 시나리오가 삭제될 때 해당 시나리오의 모든 API-Key를 비활성화합니다.
+         */
+        delete: operations["deactivate_scenario_api_keys_api_v1_auth_scenarios__scenario_id__api_keys_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/password/reset": {
         parameters: {
             query?: never;
@@ -1151,7 +1171,7 @@ export interface components {
          * @example {
          *       "email": "updated.user@example.com",
          *       "full_name": "Updated Name",
-         *       "phone_number": "010-1234-5678",
+         *       "phone": "010-1234-5678",
          *       "preferences": {
          *         "theme": "dark"
          *       },
@@ -1170,14 +1190,20 @@ export interface components {
             email?: string | null;
             /** Full Name */
             full_name?: string | null;
-            /** Phone Number */
-            phone_number?: string | null;
+            /** Phone */
+            phone?: string | null;
             status?: components["schemas"]["UserStatus"] | null;
             /** Preferences */
             preferences?: Record<string, never> | null;
             /** Role Id */
             role_id?: number | null;
         };
+        /**
+         * ApiKeyDeactivationReason
+         * @description API-Key 비활성화 사유
+         * @enum {string}
+         */
+        ApiKeyDeactivationReason: "EXPIRED" | "SCG_DELETE" | "USER_REVOKED";
         /**
          * ApiKeyGenerateRequest
          * @description API-Key JWT 생성 요청 모델
@@ -1326,6 +1352,13 @@ export interface components {
              * @description 만료 여부
              */
             is_expired: boolean;
+            /** @description 비활성화 사유 */
+            deactivation_reason?: components["schemas"]["ApiKeyDeactivationReason"] | null;
+            /**
+             * Deactivated At
+             * @description 비활성화 시각
+             */
+            deactivated_at?: string | null;
         };
         /**
          * ApiKeyListResponse
@@ -5050,6 +5083,51 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiKeyListResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deactivate_scenario_api_keys_api_v1_auth_scenarios__scenario_id__api_keys_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
                 };
             };
             /** @description Unauthorized */

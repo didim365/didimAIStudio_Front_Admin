@@ -35,6 +35,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { useTheme } from "next-themes";
+import { toast } from "sonner";
 
 export function UserEditPage({ user }: { user: GetUserResponse }) {
   const router = useRouter();
@@ -44,7 +45,7 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
   const [formData, setFormData] = useState({
     email: user.email || "",
     full_name: user.full_name || "",
-    phone_number: formatPhoneNumber(user.phone),
+    phone: formatPhoneNumber(user.phone),
     status: user.status as "ACTIVE" | "INACTIVE" | "SUSPENDED",
     preferencesText: JSON.stringify(user.preferences || {}, null, 2),
   });
@@ -67,7 +68,7 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
 
     setFormData({
       ...formData,
-      phone_number: phoneValue,
+      phone: phoneValue,
     });
   };
 
@@ -75,7 +76,7 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
     e.preventDefault();
 
     // 전화번호에서 숫자만 추출하여 전송
-    const phoneDigits = formData.phone_number.replace(/\D/g, "");
+    const phoneDigits = formData.phone.replace(/\D/g, "");
 
     // JSON 파싱 및 검증
     let preferences: Record<string, unknown> | null = null;
@@ -88,10 +89,8 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
         }
       }
     } catch (error) {
-      // JSON 파싱 오류 시 사용자에게 알림 (추후 toast 추가 가능)
-      alert(
-        "JSON 형식이 올바르지 않습니다. 올바른 JSON 형식으로 입력해주세요."
-      );
+      toast.error("사용자 개인설정 JSON 형식이 올바르지 않습니다.");
+
       return;
     }
 
@@ -99,7 +98,7 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
       user_id: user.id,
       email: formData.email || null,
       full_name: formData.full_name || null,
-      phone_number: phoneDigits || null,
+      phone: phoneDigits || null,
       status: formData.status || null,
       preferences:
         preferences && Object.keys(preferences).length > 0
@@ -231,17 +230,14 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
 
                   {/* Phone */}
                   <div className="space-y-2">
-                    <Label
-                      htmlFor="phone_number"
-                      className="flex items-center gap-2"
-                    >
+                    <Label htmlFor="phone" className="flex items-center gap-2">
                       <Phone className="h-4 w-4" />
                       <span>전화번호 *</span>
                     </Label>
                     <Input
-                      id="phone_number"
+                      id="phone"
                       type="tel"
-                      value={formData.phone_number}
+                      value={formData.phone}
                       onChange={(e) => handlePhoneNumberChange(e.target.value)}
                       placeholder="010-1234-5678"
                       className="pl-6"
