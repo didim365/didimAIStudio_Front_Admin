@@ -47,7 +47,7 @@ export function UserPage({ user }: UserPageProps) {
     setShowDeleteDialog(false);
     // TODO: 삭제 후 사용자 목록 페이지로 이동하거나 리프레시
   };
-
+  console.log({ user });
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -170,91 +170,56 @@ export function UserPage({ user }: UserPageProps) {
                     {formatPhoneNumber(user.phone || "") || "정보 없음"}
                   </p>
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Activity Timeline Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              활동 정보
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Created At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>계정 생성일</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-sm font-mono">
-                  {formatDate(user.created_at)}
-                </p>
-              </div>
-            </div>
+                {/* Created At */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span className="font-medium">계정 생성일</span>
+                  </div>
+                  <p className="text-lg font-semibold pl-6">
+                    {formatDate(user.created_at)}
+                  </p>
+                </div>
 
-            <Separator />
+                {/* Updated At */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span className="font-medium">마지막 업데이트</span>
+                  </div>
+                  <p className="text-lg font-semibold pl-6">
+                    {formatDate(user.updated_at)}
+                  </p>
+                </div>
 
-            {/* Updated At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>마지막 업데이트</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-sm font-mono">
-                  {formatDate(user.updated_at)}
-                </p>
+                {/* Last Login */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span className="font-medium">마지막 로그인</span>
+                  </div>
+                  <p className="text-lg font-semibold pl-6">
+                    {formatDate(user.last_login)}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <Separator />
+            <Separator className="my-6" />
 
-            {/* Last Login */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span>마지막 로그인</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-sm font-mono">
-                  {formatDate(user.last_login)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Additional Info Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              추가 정보
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
             {/* Preferences */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
                 <Settings className="h-4 w-4 text-muted-foreground" />
-                <span>사용자 설정</span>
+                <span>사용자 개인설정 (테마, 언어 등)</span>
               </div>
               <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                {user.preferences &&
-                Object.keys(user.preferences).length > 0 ? (
-                  <pre className="text-sm font-mono overflow-x-auto">
-                    {JSON.stringify(user.preferences, null, 2)}
-                  </pre>
-                ) : (
-                  <p className="text-sm text-muted-foreground italic">
-                    설정된 값이 없습니다
-                  </p>
-                )}
+                <pre className="text-sm font-mono overflow-x-auto">
+                  {user.preferences
+                    ? JSON.stringify(user.preferences, null, 2)
+                    : "없음"}
+                </pre>
               </div>
             </div>
           </CardContent>
