@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { tokenStorage, isValidJWTToken } from "./shared/utils/tokenStorage";
+import { tokenStorage } from "./shared/utils/tokenStorage";
+import getMyInfo from "./shared/api/getMyInfo";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -23,8 +24,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // JWT 토큰 형식 및 만료 시간 검증
-  if (!isValidJWTToken(accessToken.value)) {
+  try {
+    await getMyInfo();
+  } catch (error) {
     await tokenStorage.clearTokens();
     return NextResponse.redirect(new URL("/", request.url));
   }
