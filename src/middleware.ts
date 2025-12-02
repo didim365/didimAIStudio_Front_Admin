@@ -27,6 +27,7 @@ export async function middleware(request: NextRequest) {
   try {
     await getMyInfo();
   } catch (error) {
+    console.error("토큰 검증 실패:", error);
     await tokenStorage.clearTokens();
     return NextResponse.redirect(new URL("/", request.url));
   }
