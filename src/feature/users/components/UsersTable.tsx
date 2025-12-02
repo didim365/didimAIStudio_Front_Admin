@@ -10,6 +10,7 @@ import { Badge } from "@/shared/ui/badge";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { GetUsersResponse } from "../hooks/useGetUsers";
 import { getInitials } from "../utils/getInitials";
+import { formatUserStatus } from "../utils/formatUserStatus";
 import { useRouter } from "next/navigation";
 
 export function UsersTable({ users }: { users: GetUsersResponse["items"] }) {
@@ -61,9 +62,7 @@ export function UsersTable({ users }: { users: GetUsersResponse["items"] }) {
             </TableCell>
             <TableCell className="text-center">
               <Badge variant="outline">
-                {user.status === "ACTIVE" && "활성"}
-                {user.status === "INACTIVE" && "비활성"}
-                {user.status === "SUSPENDED" && "정지"}
+                {formatUserStatus(user.status)}
               </Badge>
             </TableCell>
             <TableCell className="text-center">

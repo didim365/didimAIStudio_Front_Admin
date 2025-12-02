@@ -32,6 +32,7 @@ import Link from "next/link";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
+import { formatUserStatus } from "@/feature/users/utils/formatUserStatus";
 import type { GetUserResponse } from "../api/getUser";
 import JsonView from "@uiw/react-json-view";
 
@@ -131,7 +132,7 @@ export function UserPage({ user }: UserPageProps) {
                   </AvatarFallback>
                 </Avatar>
                 <Badge className="bg-muted text-muted-foreground hover:bg-muted/80">
-                  {user.status}
+                  {formatUserStatus(user.status)}
                 </Badge>
               </div>
 
