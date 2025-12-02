@@ -33,6 +33,7 @@ import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
 import type { GetUserResponse } from "../api/getUser";
+import JsonView from "@uiw/react-json-view";
 
 interface UserPageProps {
   user: GetUserResponse;
@@ -212,12 +213,22 @@ export function UserPage({ user }: UserPageProps) {
                 <Settings className="h-4 w-4 text-muted-foreground" />
                 <span>사용자 개인설정 (테마, 언어 등)</span>
               </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <pre className="text-sm font-mono overflow-x-auto">
-                  {user.preferences
-                    ? JSON.stringify(user.preferences, null, 2)
-                    : "없음"}
-                </pre>
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border overflow-x-auto">
+                {user.preferences ? (
+                  <JsonView
+                    value={user.preferences}
+                    style={{
+                      backgroundColor: "transparent",
+                      fontSize: "0.875rem",
+                    }}
+                    displayDataTypes={false}
+                    displayObjectSize={false}
+                    enableClipboard={true}
+                    collapsed={false}
+                  />
+                ) : (
+                  <span className="text-sm text-muted-foreground">없음</span>
+                )}
               </div>
             </div>
           </CardContent>
