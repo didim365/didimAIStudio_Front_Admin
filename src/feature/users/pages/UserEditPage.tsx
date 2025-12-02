@@ -68,9 +68,7 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
     e.preventDefault();
 
     // 전화번호에서 숫자만 추출하여 전송
-    const phoneDigits = formData.phone_number
-      ? formData.phone_number.replace(/\D/g, "")
-      : null;
+    const phoneDigits = formData.phone_number.replace(/\D/g, "");
 
     updateUser({
       user_id: user.id,
