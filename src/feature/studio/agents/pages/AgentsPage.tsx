@@ -81,7 +81,7 @@ export default function AgentsPage() {
   // 카테고리 (단일 선택)
   const [categoryFilter, setCategoryFilter] = useQueryParam<string>(
     "category",
-    "",
+    "all",
     { debounce: 0 }
   );
 
@@ -124,7 +124,10 @@ export default function AgentsPage() {
       fallback_model_my_page_id: fallbackModelIdFilter
         ? [Number(fallbackModelIdFilter)]
         : undefined,
-      category: categoryFilter ? [categoryFilter as any] : undefined,
+      category:
+        categoryFilter && categoryFilter !== "all"
+          ? [categoryFilter as any]
+          : undefined,
       is_system:
         isSystemFilter === "all"
           ? undefined
@@ -183,7 +186,7 @@ export default function AgentsPage() {
     setPersonaIdFilter("");
     setToolIdFilter("");
     setFallbackModelIdFilter("");
-    setCategoryFilter("");
+    setCategoryFilter("all");
     setIsSystemFilter("all");
     setIsPublicFilter("all");
     setOperationType("all");
@@ -322,7 +325,7 @@ export default function AgentsPage() {
                     <SelectValue placeholder="전체" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">전체</SelectItem>
+                    <SelectItem value="all">전체</SelectItem>
                     {CATEGORY_OPTIONS.map((cat) => (
                       <SelectItem key={cat} value={cat}>
                         {categoryConfig[cat]?.label || cat}
