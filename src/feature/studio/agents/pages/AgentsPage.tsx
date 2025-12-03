@@ -36,7 +36,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/shared/lib/utils";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { formatDate } from "@/shared/utils/formatDate";
-import { parseBooleanFilter } from "@/shared/utils/parseBooleanFilter";
+import { parseBooleanFilter } from "@/feature/studio/agents/utils/parseBooleanFilter";
 
 export default function AgentsPage() {
   const router = useRouter();
@@ -92,7 +92,7 @@ export default function AgentsPage() {
       categoryFilter && categoryFilter !== "all"
         ? [categoryFilter as any]
         : undefined,
-    is_system: parseBooleanFilter(isSystemFilter),
+    is_system: true, // 항상 시스템 제공 에이전트만 조회
     is_public: parseBooleanFilter(isPublicFilter),
     operation_type:
       operationType === "all" ? undefined : (operationType as "AND" | "OR"),
@@ -113,7 +113,6 @@ export default function AgentsPage() {
     setName("");
     setDescription("");
     setCategoryFilter("all");
-    setIsSystemFilter("all");
     setIsPublicFilter("all");
     setOperationType("all");
     setSortBy("none");
@@ -174,7 +173,7 @@ export default function AgentsPage() {
             </div>
 
             {/* 카테고리 및 불린 필터 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">
                   카테고리
@@ -193,24 +192,6 @@ export default function AgentsPage() {
                         {categoryConfig[cat]?.label || cat}
                       </SelectItem>
                     ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  시스템 제공
-                </label>
-                <Select
-                  value={isSystemFilter}
-                  onValueChange={setIsSystemFilter}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="전체" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">전체</SelectItem>
-                    <SelectItem value="true">시스템 제공</SelectItem>
-                    <SelectItem value="false">사용자 생성</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
