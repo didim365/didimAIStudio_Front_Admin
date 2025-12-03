@@ -26,13 +26,8 @@ const MENU = [
     href: "/privileges",
     icon: Key,
   },
-  // {
-  //   name: "감사 로그",
-  //   href: "/audit-logs",
-  //   icon: FileText,
-  // },
   {
-    name: "스튜디오 관리",
+    name: "스튜디오 템플릿 관리",
     href: "/studio",
     icon: Brain,
     children: [
