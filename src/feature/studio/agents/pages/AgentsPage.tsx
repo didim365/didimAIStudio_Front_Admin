@@ -18,7 +18,7 @@ import { Pagination } from "@/shared/ui/pagination";
 import { useRouter } from "next/navigation";
 import { cn } from "@/shared/lib/utils";
 import { categoryConfig } from "../constants/categoryConfig";
-import { paths } from "@/shared/types/api/agents";
+import { formatDate } from "@/shared/utils/formatDate";
 
 export default function AgentsPage() {
   const router = useRouter();
@@ -32,16 +32,6 @@ export default function AgentsPage() {
     page,
     size: 20,
   });
-
-  const agents = agentsData?.items ?? [];
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-  };
 
   const handleViewDetails = (agentId: number) => {
     router.push(`/studio/agents/${agentId}`);
@@ -96,17 +86,7 @@ export default function AgentsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {agents.length === 0 && (
-                  <TableRow>
-                    <TableCell
-                      colSpan={9}
-                      className="text-center py-12 text-slate-500"
-                    >
-                      등록된 에이전트가 없습니다.
-                    </TableCell>
-                  </TableRow>
-                )}
-                {agents.map((agent) => {
+                {agentsData?.items.map((agent) => {
                   const agentTitle = agent.user_agent_title ?? agent.name;
                   const agentDescription =
                     agent.user_agent_description ?? agent.description;
