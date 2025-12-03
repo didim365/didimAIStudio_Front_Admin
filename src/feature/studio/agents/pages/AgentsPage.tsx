@@ -53,31 +53,6 @@ export default function AgentsPage() {
     }
   );
 
-  // 단일 값 필터들
-  const [idFilter, setIdFilter] = useQueryParam<string>("id", "", {
-    debounce: 300,
-  });
-  const [userIdFilter, setUserIdFilter] = useQueryParam<string>("user_id", "", {
-    debounce: 300,
-  });
-  const [modelIdFilter, setModelIdFilter] = useQueryParam<string>(
-    "model_my_page_id",
-    "",
-    { debounce: 300 }
-  );
-  const [personaIdFilter, setPersonaIdFilter] = useQueryParam<string>(
-    "persona_my_page_id",
-    "",
-    { debounce: 300 }
-  );
-  const [toolIdFilter, setToolIdFilter] = useQueryParam<string>(
-    "tool_my_page_id",
-    "",
-    { debounce: 300 }
-  );
-  const [fallbackModelIdFilter, setFallbackModelIdFilter] =
-    useQueryParam<string>("fallback_model_my_page_id", "", { debounce: 300 });
-
   // 카테고리 (단일 선택)
   const [categoryFilter, setCategoryFilter] = useQueryParam<string>(
     "category",
@@ -114,16 +89,6 @@ export default function AgentsPage() {
     return {
       name: name || undefined,
       description: description || undefined,
-      id: idFilter ? [Number(idFilter)] : undefined,
-      user_id: userIdFilter ? [userIdFilter] : undefined,
-      model_my_page_id: modelIdFilter ? [Number(modelIdFilter)] : undefined,
-      persona_my_page_id: personaIdFilter
-        ? [Number(personaIdFilter)]
-        : undefined,
-      tool_my_page_id: toolIdFilter ? [Number(toolIdFilter)] : undefined,
-      fallback_model_my_page_id: fallbackModelIdFilter
-        ? [Number(fallbackModelIdFilter)]
-        : undefined,
       category:
         categoryFilter && categoryFilter !== "all"
           ? [categoryFilter as any]
@@ -154,12 +119,6 @@ export default function AgentsPage() {
   }, [
     name,
     description,
-    idFilter,
-    userIdFilter,
-    modelIdFilter,
-    personaIdFilter,
-    toolIdFilter,
-    fallbackModelIdFilter,
     categoryFilter,
     isSystemFilter,
     isPublicFilter,
@@ -180,12 +139,6 @@ export default function AgentsPage() {
   const handleResetFilters = () => {
     setName("");
     setDescription("");
-    setIdFilter("");
-    setUserIdFilter("");
-    setModelIdFilter("");
-    setPersonaIdFilter("");
-    setToolIdFilter("");
-    setFallbackModelIdFilter("");
     setCategoryFilter("all");
     setIsSystemFilter("all");
     setIsPublicFilter("all");
@@ -243,70 +196,6 @@ export default function AgentsPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="pl-10"
-                />
-              </div>
-            </div>
-
-            {/* ID 필터들 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  에이전트 ID
-                </label>
-                <Input
-                  placeholder="예: 1"
-                  value={idFilter}
-                  onChange={(e) => setIdFilter(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  사용자 ID
-                </label>
-                <Input
-                  placeholder="예: user1"
-                  value={userIdFilter}
-                  onChange={(e) => setUserIdFilter(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  모델 ID
-                </label>
-                <Input
-                  placeholder="예: 1"
-                  value={modelIdFilter}
-                  onChange={(e) => setModelIdFilter(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  페르소나 ID
-                </label>
-                <Input
-                  placeholder="예: 1"
-                  value={personaIdFilter}
-                  onChange={(e) => setPersonaIdFilter(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  도구 ID
-                </label>
-                <Input
-                  placeholder="예: 1"
-                  value={toolIdFilter}
-                  onChange={(e) => setToolIdFilter(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Fallback 모델 ID
-                </label>
-                <Input
-                  placeholder="예: 1"
-                  value={fallbackModelIdFilter}
-                  onChange={(e) => setFallbackModelIdFilter(e.target.value)}
                 />
               </div>
             </div>
