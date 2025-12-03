@@ -39,6 +39,7 @@ import {
 import { Badge } from "@/shared/ui/badge";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { parseBooleanFilter } from "@/feature/studio/agents/utils/parseBooleanFilter";
+import { formatDate } from "@/shared/utils/formatDate";
 
 export default function PersonasPage() {
   const router = useRouter();
@@ -128,14 +129,6 @@ export default function PersonasPage() {
     setOrder("ASC");
     setPage(1);
     setSize(20);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
   };
 
   return (
