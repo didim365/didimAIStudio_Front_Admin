@@ -1,5 +1,6 @@
 "use client";
 
+import { Activity, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import {
@@ -28,6 +29,9 @@ import {
   Bot,
   Filter,
   X,
+  Plus,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useGetAgents } from "../hooks/useGetAgents";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
@@ -37,9 +41,11 @@ import { cn } from "@/shared/lib/utils";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { formatDate } from "@/shared/utils/formatDate";
 import { parseBooleanFilter } from "@/feature/studio/agents/utils/parseBooleanFilter";
+import Link from "next/link";
 
 export default function AgentsPage() {
   const router = useRouter();
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // 검색 필드들
   const [name, setName] = useQueryParam<string>("name", "", {
@@ -134,156 +140,192 @@ export default function AgentsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              검색 및 필터
+              <Search className="h-5 w-5" />
+              검색
             </CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleResetFilters}
-              className="flex items-center gap-2"
-            >
-              <X className="h-4 w-4" />
-              필터 초기화
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className="flex items-center gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                {isFilterOpen ? "필터 닫기" : "필터 열기"}
+                {isFilterOpen ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResetFilters}
+                className="flex items-center gap-2"
+              >
+                <X className="h-4 w-4" />
+                필터 초기화
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {/* 기본 검색 필드 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <Input
-                  placeholder="에이전트 이름 검색"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="pl-10"
-                />
+            {/* 검색 필드 */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="에이전트 이름 검색"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="설명 검색"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </div>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <Input
-                  placeholder="설명 검색"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-
-            {/* 카테고리 및 불린 필터 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  카테고리
-                </label>
-                <Select
-                  value={categoryFilter}
-                  onValueChange={setCategoryFilter}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="전체" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">전체</SelectItem>
-                    {CATEGORY_OPTIONS.map((cat) => (
-                      <SelectItem key={cat} value={cat}>
-                        {categoryConfig[cat]?.label || cat}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  공개 여부
-                </label>
-                <Select
-                  value={isPublicFilter}
-                  onValueChange={setIsPublicFilter}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="전체" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">전체</SelectItem>
-                    <SelectItem value="true">공개</SelectItem>
-                    <SelectItem value="false">비공개</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  검색 조건 결합
-                </label>
-                <Select value={operationType} onValueChange={setOperationType}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="기본값" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">기본값</SelectItem>
-                    <SelectItem value="AND">AND (모든 조건 만족)</SelectItem>
-                    <SelectItem value="OR">OR (하나 이상 만족)</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex gap-2">
+                <Link href="/studio/agents/new">
+                  <Button className="gap-2 cursor-pointer">
+                    <Plus className="h-4 w-4" />
+                    에이전트 생성
+                  </Button>
+                </Link>
               </div>
             </div>
 
-            {/* 정렬 및 페이지 크기 */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  정렬 기준
-                </label>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="정렬 기준 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">기본값</SelectItem>
-                    <SelectItem value="id">ID</SelectItem>
-                    <SelectItem value="name">이름</SelectItem>
-                    <SelectItem value="category">카테고리</SelectItem>
-                    <SelectItem value="created_at">생성일</SelectItem>
-                    <SelectItem value="updated_at">수정일</SelectItem>
-                  </SelectContent>
-                </Select>
+            {/* 필터 */}
+            <Activity mode="visible">
+              <div className="space-y-6 pt-4 border-t">
+                {/* 카테고리 및 불린 필터 */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      카테고리
+                    </label>
+                    <Select
+                      value={categoryFilter}
+                      onValueChange={setCategoryFilter}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="전체" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">전체</SelectItem>
+                        {CATEGORY_OPTIONS.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            {categoryConfig[cat]?.label || cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      공개 여부
+                    </label>
+                    <Select
+                      value={isPublicFilter}
+                      onValueChange={setIsPublicFilter}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="전체" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">전체</SelectItem>
+                        <SelectItem value="true">공개</SelectItem>
+                        <SelectItem value="false">비공개</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      검색 조건 결합
+                    </label>
+                    <Select
+                      value={operationType}
+                      onValueChange={setOperationType}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="기본값" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">기본값</SelectItem>
+                        <SelectItem value="AND">
+                          AND (모든 조건 만족)
+                        </SelectItem>
+                        <SelectItem value="OR">OR (하나 이상 만족)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* 정렬 및 페이지 크기 */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      정렬 기준
+                    </label>
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="정렬 기준 선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">기본값</SelectItem>
+                        <SelectItem value="id">ID</SelectItem>
+                        <SelectItem value="name">이름</SelectItem>
+                        <SelectItem value="category">카테고리</SelectItem>
+                        <SelectItem value="created_at">생성일</SelectItem>
+                        <SelectItem value="updated_at">수정일</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      정렬 순서
+                    </label>
+                    <Select value={order} onValueChange={setOrder}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ASC">오름차순</SelectItem>
+                        <SelectItem value="DESC">내림차순</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      페이지 크기
+                    </label>
+                    <Select
+                      value={String(size)}
+                      onValueChange={(v) => setSize(Number(v))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="10">10개</SelectItem>
+                        <SelectItem value="20">20개</SelectItem>
+                        <SelectItem value="50">50개</SelectItem>
+                        <SelectItem value="100">100개</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  정렬 순서
-                </label>
-                <Select value={order} onValueChange={setOrder}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ASC">오름차순</SelectItem>
-                    <SelectItem value="DESC">내림차순</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  페이지 크기
-                </label>
-                <Select
-                  value={String(size)}
-                  onValueChange={(v) => setSize(Number(v))}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10개</SelectItem>
-                    <SelectItem value="20">20개</SelectItem>
-                    <SelectItem value="50">50개</SelectItem>
-                    <SelectItem value="100">100개</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            </Activity>
           </div>
         </CardContent>
       </Card>
