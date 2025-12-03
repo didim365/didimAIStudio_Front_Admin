@@ -38,27 +38,6 @@ import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { formatDate } from "@/shared/utils/formatDate";
 import { useMemo } from "react";
 
-// 배열 파라미터를 파싱하는 헬퍼 함수
-const parseArrayParam = (value: string): number[] | undefined => {
-  if (!value || value.trim() === "") return undefined;
-  const parsed = value
-    .split(",")
-    .map((v) => v.trim())
-    .filter((v) => v !== "")
-    .map((v) => Number(v))
-    .filter((v) => !isNaN(v));
-  return parsed.length > 0 ? parsed : undefined;
-};
-
-const parseStringArrayParam = (value: string): string[] | undefined => {
-  if (!value || value.trim() === "") return undefined;
-  const parsed = value
-    .split(",")
-    .map((v) => v.trim())
-    .filter((v) => v !== "");
-  return parsed.length > 0 ? parsed : undefined;
-};
-
 export default function AgentsPage() {
   const router = useRouter();
 
@@ -74,7 +53,7 @@ export default function AgentsPage() {
     }
   );
 
-  // 배열 필터들 (콤마로 구분된 문자열로 입력)
+  // 단일 값 필터들
   const [idFilter, setIdFilter] = useQueryParam<string>("id", "", {
     debounce: 300,
   });
@@ -99,7 +78,7 @@ export default function AgentsPage() {
   const [fallbackModelIdFilter, setFallbackModelIdFilter] =
     useQueryParam<string>("fallback_model_my_page_id", "", { debounce: 300 });
 
-  // 카테고리 (다중 선택을 위해 콤마로 구분)
+  // 카테고리 (단일 선택)
   const [categoryFilter, setCategoryFilter] = useQueryParam<string>(
     "category",
     "",
@@ -132,23 +111,20 @@ export default function AgentsPage() {
 
   // 파라미터 변환
   const params = useMemo(() => {
-    const categoryArray = categoryFilter
-      ? (categoryFilter
-          .split(",")
-          .map((c) => c.trim())
-          .filter((c) => c !== "") as any[])
-      : undefined;
-
     return {
       name: name || undefined,
       description: description || undefined,
-      id: parseArrayParam(idFilter),
-      user_id: parseStringArrayParam(userIdFilter),
-      model_my_page_id: parseArrayParam(modelIdFilter),
-      persona_my_page_id: parseArrayParam(personaIdFilter),
-      tool_my_page_id: parseArrayParam(toolIdFilter),
-      fallback_model_my_page_id: parseArrayParam(fallbackModelIdFilter),
-      category: categoryArray,
+      id: idFilter ? [Number(idFilter)] : undefined,
+      user_id: userIdFilter ? [userIdFilter] : undefined,
+      model_my_page_id: modelIdFilter ? [Number(modelIdFilter)] : undefined,
+      persona_my_page_id: personaIdFilter
+        ? [Number(personaIdFilter)]
+        : undefined,
+      tool_my_page_id: toolIdFilter ? [Number(toolIdFilter)] : undefined,
+      fallback_model_my_page_id: fallbackModelIdFilter
+        ? [Number(fallbackModelIdFilter)]
+        : undefined,
+      category: categoryFilter ? [categoryFilter as any] : undefined,
       is_system:
         isSystemFilter === "all"
           ? undefined
@@ -268,64 +244,64 @@ export default function AgentsPage() {
               </div>
             </div>
 
-            {/* ID 필터들 (콤마로 구분) */}
+            {/* ID 필터들 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  에이전트 ID (콤마로 구분)
+                  에이전트 ID
                 </label>
                 <Input
-                  placeholder="예: 1, 2, 3"
+                  placeholder="예: 1"
                   value={idFilter}
                   onChange={(e) => setIdFilter(e.target.value)}
                 />
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  사용자 ID (콤마로 구분)
+                  사용자 ID
                 </label>
                 <Input
-                  placeholder="예: user1, user2"
+                  placeholder="예: user1"
                   value={userIdFilter}
                   onChange={(e) => setUserIdFilter(e.target.value)}
                 />
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  모델 ID (콤마로 구분)
+                  모델 ID
                 </label>
                 <Input
-                  placeholder="예: 1, 2, 3"
+                  placeholder="예: 1"
                   value={modelIdFilter}
                   onChange={(e) => setModelIdFilter(e.target.value)}
                 />
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  페르소나 ID (콤마로 구분)
+                  페르소나 ID
                 </label>
                 <Input
-                  placeholder="예: 1, 2, 3"
+                  placeholder="예: 1"
                   value={personaIdFilter}
                   onChange={(e) => setPersonaIdFilter(e.target.value)}
                 />
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  도구 ID (콤마로 구분)
+                  도구 ID
                 </label>
                 <Input
-                  placeholder="예: 1, 2, 3"
+                  placeholder="예: 1"
                   value={toolIdFilter}
                   onChange={(e) => setToolIdFilter(e.target.value)}
                 />
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  Fallback 모델 ID (콤마로 구분)
+                  Fallback 모델 ID
                 </label>
                 <Input
-                  placeholder="예: 1, 2, 3"
+                  placeholder="예: 1"
                   value={fallbackModelIdFilter}
                   onChange={(e) => setFallbackModelIdFilter(e.target.value)}
                 />
@@ -336,43 +312,24 @@ export default function AgentsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  카테고리 (콤마로 구분)
+                  카테고리
                 </label>
-                <Input
-                  placeholder="예: CHATBOT, REACT"
+                <Select
                   value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                />
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {CATEGORY_OPTIONS.map((cat) => {
-                    const isSelected = categoryFilter
-                      .split(",")
-                      .map((c) => c.trim())
-                      .includes(cat);
-                    return (
-                      <Badge
-                        key={cat}
-                        variant={isSelected ? "default" : "outline"}
-                        className="cursor-pointer"
-                        onClick={() => {
-                          const categories = categoryFilter
-                            .split(",")
-                            .map((c) => c.trim())
-                            .filter((c) => c !== "");
-                          if (isSelected) {
-                            setCategoryFilter(
-                              categories.filter((c) => c !== cat).join(", ")
-                            );
-                          } else {
-                            setCategoryFilter([...categories, cat].join(", "));
-                          }
-                        }}
-                      >
+                  onValueChange={setCategoryFilter}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="전체" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">전체</SelectItem>
+                    {CATEGORY_OPTIONS.map((cat) => (
+                      <SelectItem key={cat} value={cat}>
                         {categoryConfig[cat]?.label || cat}
-                      </Badge>
-                    );
-                  })}
-                </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">
