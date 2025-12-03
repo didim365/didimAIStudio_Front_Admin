@@ -188,7 +188,7 @@ export default function AgentsPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Link href="/studio/agents/new">
+                <Link href="/studio/agents/add">
                   <Button className="gap-2 cursor-pointer">
                     <Plus className="h-4 w-4" />
                     에이전트 생성
