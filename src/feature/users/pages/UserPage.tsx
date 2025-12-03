@@ -21,10 +21,8 @@ import {
   Phone,
   Calendar,
   Clock,
-  Activity,
   Settings,
   UserCircle,
-  Image as ImageIcon,
   ArrowLeft,
   Pencil,
   Trash2,
@@ -34,7 +32,9 @@ import Link from "next/link";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
+import { formatUserStatus } from "@/feature/users/utils/formatUserStatus";
 import type { GetUserResponse } from "../api/getUser";
+import JsonView from "@uiw/react-json-view";
 
 interface UserPageProps {
   user: GetUserResponse;
@@ -45,11 +45,9 @@ export function UserPage({ user }: UserPageProps) {
 
   const handleDelete = () => {
     // TODO: 사용자 삭제 API 호출
-    console.log("사용자 삭제:", user.id);
     setShowDeleteDialog(false);
     // TODO: 삭제 후 사용자 목록 페이지로 이동하거나 리프레시
   };
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -95,7 +93,7 @@ export function UserPage({ user }: UserPageProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>사용자 삭제 확인</AlertDialogTitle>
             <AlertDialogDescription>
-              정말{" "}
+              정말
               <span className="font-semibold">
                 {user.full_name || user.email}
               </span>
@@ -134,7 +132,7 @@ export function UserPage({ user }: UserPageProps) {
                   </AvatarFallback>
                 </Avatar>
                 <Badge className="bg-muted text-muted-foreground hover:bg-muted/80">
-                  {user.status}
+                  {formatUserStatus(user.status)}
                 </Badge>
               </div>
 
@@ -173,119 +171,64 @@ export function UserPage({ user }: UserPageProps) {
                   </p>
                 </div>
 
-                {/* Status */}
+                {/* Created At */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Activity className="h-4 w-4" />
-                    <span className="font-medium">사용자 ID</span>
+                    <Calendar className="h-4 w-4" />
+                    <span className="font-medium">계정 생성일</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">#{user.id}</p>
+                  <p className="text-lg font-semibold pl-6">
+                    {formatDate(user.created_at)}
+                  </p>
+                </div>
+
+                {/* Updated At */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span className="font-medium">마지막 업데이트</span>
+                  </div>
+                  <p className="text-lg font-semibold pl-6">
+                    {formatDate(user.updated_at)}
+                  </p>
+                </div>
+
+                {/* Last Login */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span className="font-medium">마지막 로그인</span>
+                  </div>
+                  <p className="text-lg font-semibold pl-6">
+                    {formatDate(user.last_login)}
+                  </p>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Activity Timeline Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              활동 정보
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Created At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>계정 생성일</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-sm font-mono">
-                  {formatDate(user.created_at)}
-                </p>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Updated At */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>마지막 업데이트</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-sm font-mono">
-                  {formatDate(user.updated_at)}
-                </p>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Last Login */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span>마지막 로그인</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <p className="text-sm font-mono">
-                  {formatDate(user.last_login)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Additional Info Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              추가 정보
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Profile Image URL */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                <span>프로필 이미지 URL</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                {user.profile_image_url ? (
-                  <p className="text-sm font-mono break-all">
-                    {user.profile_image_url}
-                  </p>
-                ) : (
-                  <p className="text-sm text-muted-foreground italic">
-                    프로필 이미지가 설정되지 않았습니다
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <Separator />
+            <Separator className="my-6" />
 
             {/* Preferences */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
                 <Settings className="h-4 w-4 text-muted-foreground" />
-                <span>사용자 설정</span>
+                <span>사용자 개인설정 (테마, 언어 등)</span>
               </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                {user.preferences &&
-                Object.keys(user.preferences).length > 0 ? (
-                  <pre className="text-sm font-mono overflow-x-auto">
-                    {JSON.stringify(user.preferences, null, 2)}
-                  </pre>
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border overflow-x-auto">
+                {user.preferences ? (
+                  <JsonView
+                    value={user.preferences}
+                    style={{
+                      backgroundColor: "transparent",
+                      fontSize: "0.875rem",
+                    }}
+                    displayDataTypes={false}
+                    displayObjectSize={false}
+                    enableClipboard={true}
+                    collapsed={false}
+                  />
                 ) : (
-                  <p className="text-sm text-muted-foreground italic">
-                    설정된 값이 없습니다
-                  </p>
+                  <span className="text-sm text-muted-foreground">없음</span>
                 )}
               </div>
             </div>

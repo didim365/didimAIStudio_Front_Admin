@@ -4,21 +4,16 @@ import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePatchUser } from "../hooks/usePatchUser";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { Separator } from "@/shared/ui/separator";
 import {
   User,
   Mail,
   Phone,
-  Calendar,
-  Clock,
   Activity,
-  Settings,
   UserCircle,
-  Image as ImageIcon,
   ArrowLeft,
   Save,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -31,22 +26,28 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
-import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/utils/getInitials";
 import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
 import { GetUserResponse } from "../api/getUser";
 import Link from "next/link";
+import { Separator } from "@/shared/ui/separator";
+import CodeMirror from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { useTheme } from "next-themes";
+import { toast } from "sonner";
 
 export function UserEditPage({ user }: { user: GetUserResponse }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { theme } = useTheme();
 
   const [formData, setFormData] = useState({
     email: user.email || "",
     full_name: user.full_name || "",
-    phone_number: user.phone || "",
+    phone: formatPhoneNumber(user.phone),
     status: user.status as "ACTIVE" | "INACTIVE" | "SUSPENDED",
-    preferences: user.preferences || {},
+    preferencesText: JSON.stringify(user.preferences || {}, null, 2),
   });
 
   const { mutate: updateUser, isPending: isUpdating } = usePatchUser({
@@ -62,10 +63,12 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
   // 전화번호 입력 핸들러 - 입력 시 자동 포맷팅
   const handlePhoneNumberChange = (value: string) => {
     const formatted = formatPhoneNumber(value);
+    // formatPhoneNumber가 "-"를 반환하는 경우 빈 문자열로 처리
+    const phoneValue = formatted === "-" ? "" : formatted;
 
     setFormData({
       ...formData,
-      phone_number: formatted,
+      phone: phoneValue,
     });
   };
 
@@ -73,17 +76,34 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
     e.preventDefault();
 
     // 전화번호에서 숫자만 추출하여 전송
-    const phoneDigits = formData.phone_number
-      ? formData.phone_number.replace(/\D/g, "")
-      : null;
+    const phoneDigits = formData.phone.replace(/\D/g, "");
+
+    // JSON 파싱 및 검증
+    let preferences: Record<string, unknown> | null = null;
+    try {
+      const trimmedText = formData.preferencesText.trim();
+      if (trimmedText) {
+        const parsed = JSON.parse(trimmedText);
+        if (typeof parsed === "object" && parsed !== null) {
+          preferences = parsed as Record<string, unknown>;
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("사용자 개인설정 JSON 형식이 올바르지 않습니다.");
+      return;
+    }
 
     updateUser({
       user_id: user.id,
       email: formData.email || null,
       full_name: formData.full_name || null,
-      phone_number: phoneDigits || null,
+      phone: phoneDigits || null,
       status: formData.status || null,
-      preferences: formData.preferences,
+      preferences:
+        preferences && Object.keys(preferences).length > 0
+          ? (preferences as Record<string, never>)
+          : null,
     });
   };
 
@@ -138,13 +158,36 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
                       {getInitials(user.full_name, user.email)}
                     </AvatarFallback>
                   </Avatar>
-                  <Badge className="bg-muted text-muted-foreground hover:bg-muted/80">
-                    {user.status}
-                  </Badge>
+                  {/* Status Select */}
+                  <div className="space-y-2 w-full">
+                    <Label
+                      htmlFor="status"
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <Activity className="h-4 w-4" />
+                      <span>상태 *</span>
+                    </Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(
+                        value: "ACTIVE" | "INACTIVE" | "SUSPENDED"
+                      ) => setFormData({ ...formData, status: value })}
+                      required
+                    >
+                      <SelectTrigger id="status" className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ACTIVE">활성</SelectItem>
+                        <SelectItem value="INACTIVE">비활성</SelectItem>
+                        <SelectItem value="SUSPENDED">정지</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {/* User Info Grid */}
-                <div className="flex-1 grid gap-4 md:grid-cols-2">
+                <div className="flex-1 space-y-4">
                   {/* Full Name */}
                   <div className="space-y-2">
                     <Label
@@ -187,17 +230,14 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
 
                   {/* Phone */}
                   <div className="space-y-2">
-                    <Label
-                      htmlFor="phone_number"
-                      className="flex items-center gap-2"
-                    >
+                    <Label htmlFor="phone" className="flex items-center gap-2">
                       <Phone className="h-4 w-4" />
                       <span>전화번호 *</span>
                     </Label>
                     <Input
-                      id="phone_number"
+                      id="phone"
                       type="tel"
-                      value={formData.phone_number}
+                      value={formData.phone}
                       onChange={(e) => handlePhoneNumberChange(e.target.value)}
                       placeholder="010-1234-5678"
                       className="pl-6"
@@ -205,136 +245,48 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
                       required
                     />
                   </div>
-
-                  {/* Status */}
-                  <div className="space-y-2">
-                    <Label htmlFor="status" className="flex items-center gap-2">
-                      <Activity className="h-4 w-4" />
-                      <span>상태 *</span>
-                    </Label>
-                    <Select
-                      value={formData.status}
-                      onValueChange={(
-                        value: "ACTIVE" | "INACTIVE" | "SUSPENDED"
-                      ) => setFormData({ ...formData, status: value })}
-                      required
-                    >
-                      <SelectTrigger id="status" className="pl-6 w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ACTIVE">활성</SelectItem>
-                        <SelectItem value="INACTIVE">비활성</SelectItem>
-                        <SelectItem value="SUSPENDED">정지</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Activity Timeline Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                활동 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Created At */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>계정 생성일</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  <p className="text-sm font-mono">
-                    {formatDate(user.created_at)}
-                  </p>
                 </div>
               </div>
 
-              <Separator />
-
-              {/* Updated At */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>마지막 업데이트</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  <p className="text-sm font-mono">
-                    {formatDate(user.updated_at)}
-                  </p>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Last Login */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>마지막 로그인</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  <p className="text-sm font-mono">
-                    {formatDate(user.last_login)}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Additional Info Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                추가 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Profile Image URL */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                  <span>프로필 이미지 URL</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  {user.profile_image_url ? (
-                    <p className="text-sm font-mono break-all">
-                      {user.profile_image_url}
-                    </p>
-                  ) : (
-                    <p className="text-sm text-muted-foreground italic">
-                      프로필 이미지가 설정되지 않았습니다
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <Separator />
+              <Separator className="my-6" />
 
               {/* Preferences */}
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
+                <Label className="flex items-center gap-2 text-sm font-medium">
                   <Settings className="h-4 w-4 text-muted-foreground" />
-                  <span>사용자 설정</span>
-                </div>
-                <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                  {user.preferences &&
-                  Object.keys(user.preferences).length > 0 ? (
-                    <pre className="text-sm font-mono overflow-x-auto">
-                      {JSON.stringify(user.preferences, null, 2)}
-                    </pre>
-                  ) : (
-                    <p className="text-sm text-muted-foreground italic">
-                      설정된 값이 없습니다
-                    </p>
-                  )}
+                  <span>사용자 개인설정 (테마, 언어 등)</span>
+                </Label>
+                <div className="ml-6">
+                  <div className="border rounded-lg overflow-hidden">
+                    <CodeMirror
+                      value={formData.preferencesText}
+                      onChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          preferencesText: value,
+                        })
+                      }
+                      extensions={[json()]}
+                      theme={theme === "dark" ? oneDark : undefined}
+                      basicSetup={{
+                        lineNumbers: true,
+                        foldGutter: true,
+                        dropCursor: false,
+                        allowMultipleSelections: false,
+                        indentOnInput: true,
+                        bracketMatching: true,
+                        closeBrackets: true,
+                        autocompletion: true,
+                        highlightSelectionMatches: false,
+                      }}
+                      placeholder='{\n  "theme": "dark",\n  "language": "ko"\n}'
+                      minHeight="200px"
+                      maxHeight="400px"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    JSON 형식으로 입력하세요. 탭 키로 들여쓰기가 가능합니다.
+                  </p>
                 </div>
               </div>
             </CardContent>
