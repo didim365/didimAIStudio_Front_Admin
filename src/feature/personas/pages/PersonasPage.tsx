@@ -16,10 +16,8 @@ import {
   Search,
   RefreshCw,
   UserPlus,
-  Shield,
   Lock,
   Unlock,
-  User,
   Filter,
   X,
   ChevronDown,
@@ -71,7 +69,6 @@ export default function PersonasPage() {
     "all",
     { debounce: 0 }
   );
-  const [typeFilter, setTypeFilter] = useQueryParam<string>("type", "all");
   const [publicFilter, setPublicFilter] = useQueryParam<string>(
     "public",
     "all"
@@ -99,7 +96,7 @@ export default function PersonasPage() {
       categoryFilter === "all"
         ? undefined
         : [categoryFilter as PersonaCategoryEnum],
-    is_system: typeFilter === "all" ? undefined : typeFilter === "system",
+    is_system: true,
     is_public: parseBooleanFilter(publicFilter),
     operation_type:
       operationType === "all" ? undefined : (operationType as "AND" | "OR"),
@@ -125,7 +122,6 @@ export default function PersonasPage() {
     setDescription("");
     setSystemPrompt("");
     setCategoryFilter("all");
-    setTypeFilter("all");
     setPublicFilter("all");
     setOperationType("all");
     setSortBy("none");
@@ -278,21 +274,6 @@ export default function PersonasPage() {
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      타입
-                    </label>
-                    <Select value={typeFilter} onValueChange={setTypeFilter}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="전체" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">전체</SelectItem>
-                        <SelectItem value="system">시스템 제공</SelectItem>
-                        <SelectItem value="user">사용자 생성</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
                       공개 여부
                     </label>
                     <Select
@@ -411,9 +392,6 @@ export default function PersonasPage() {
                     <TableHead className="min-w-[250px]">설명</TableHead>
                     <TableHead className="w-[120px]">카테고리</TableHead>
                     <TableHead className="w-[100px] text-center">
-                      타입
-                    </TableHead>
-                    <TableHead className="w-[100px] text-center">
                       공개
                     </TableHead>
                     <TableHead className="w-[120px]">생성일</TableHead>
@@ -423,7 +401,7 @@ export default function PersonasPage() {
                   {data?.items.length === 0 && (
                     <TableRow>
                       <TableCell
-                        colSpan={7}
+                        colSpan={6}
                         className="text-center py-12 text-slate-500"
                       >
                         등록된 페르소나가 없습니다.
@@ -461,28 +439,6 @@ export default function PersonasPage() {
                             {categoryConfig[persona.category]?.label ||
                               persona.category}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-center">
-                            {persona.is_system && (
-                              <Badge
-                                variant="outline"
-                                className="bg-purple-100 text-purple-800"
-                              >
-                                <Shield className="h-3 w-3 mr-1" />
-                                시스템
-                              </Badge>
-                            )}
-                            {!persona.is_system && (
-                              <Badge
-                                variant="outline"
-                                className="bg-green-100 text-green-800"
-                              >
-                                <User className="h-3 w-3 mr-1" />
-                                사용자
-                              </Badge>
-                            )}
-                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-center">
