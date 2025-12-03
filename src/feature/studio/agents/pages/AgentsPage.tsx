@@ -25,7 +25,6 @@ import {
   Shield,
   Lock,
   Unlock,
-  User,
   Bot,
   Filter,
   X,
@@ -37,7 +36,6 @@ import { useGetAgents } from "../hooks/useGetAgents";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
 import { useRouter } from "next/navigation";
-import { cn } from "@/shared/lib/utils";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { formatDate } from "@/shared/utils/formatDate";
 import { parseBooleanFilter } from "@/feature/studio/agents/utils/parseBooleanFilter";
@@ -336,12 +334,11 @@ export default function AgentsPage() {
           <div className="border rounded-lg overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow className="bg-slate-50">
+                <TableRow>
                   <TableHead className="w-[80px]">ID</TableHead>
                   <TableHead className="min-w-[200px]">에이전트 이름</TableHead>
                   <TableHead className="min-w-[250px]">설명</TableHead>
                   <TableHead className="w-[140px]">카테고리</TableHead>
-                  <TableHead className="min-w-[180px]">사용자 커스텀</TableHead>
                   <TableHead className="w-[100px] text-center">타입</TableHead>
                   <TableHead className="w-[100px] text-center">공개</TableHead>
                   <TableHead className="w-[120px]">생성일</TableHead>
@@ -350,12 +347,6 @@ export default function AgentsPage() {
               </TableHeader>
               <TableBody>
                 {agentsData?.items.map((agent) => {
-                  const agentTitle = agent.user_agent_title ?? agent.name;
-                  const agentDescription =
-                    agent.user_agent_description ?? agent.description;
-                  const isCustomTitle = !!agent.user_agent_title;
-                  const isCustomDescription = !!agent.user_agent_description;
-
                   return (
                     <TableRow
                       key={agent.id}
@@ -366,31 +357,13 @@ export default function AgentsPage() {
                         {agent.id}
                       </TableCell>
                       <TableCell>
-                        <div
-                          className={cn(
-                            "font-semibold line-clamp-2 text-slate-900",
-                            isCustomTitle &&
-                              "text-blue-700 flex items-center gap-1.5"
-                          )}
-                        >
-                          {isCustomTitle && (
-                            <User className="h-4 w-4 shrink-0 text-blue-600" />
-                          )}
-                          {agentTitle}
+                        <div className="font-semibold line-clamp-2 text-slate-900">
+                          {agent.name}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div
-                          className={cn(
-                            "text-sm line-clamp-2 text-slate-700",
-                            isCustomDescription &&
-                              "text-blue-700 flex items-start gap-1.5"
-                          )}
-                        >
-                          {isCustomDescription && (
-                            <User className="h-4 w-4 shrink-0 mt-0.5 text-blue-600" />
-                          )}
-                          {agentDescription}
+                        <div className="text-sm line-clamp-2 text-slate-700">
+                          {agent.description}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -404,19 +377,6 @@ export default function AgentsPage() {
                           {categoryConfig[agent.category]?.label ||
                             agent.category}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-slate-600">
-                        {(agent.user_agent_title ||
-                          agent.user_agent_description) && (
-                          <div className="flex items-center gap-1 text-green-600">
-                            <Shield className="h-4 w-4" />
-                            커스터마이징됨
-                          </div>
-                        )}
-                        {!agent.user_agent_title &&
-                          !agent.user_agent_description && (
-                            <span className="text-slate-400">기본</span>
-                          )}
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-center">
