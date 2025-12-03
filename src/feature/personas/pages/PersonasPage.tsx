@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
@@ -19,6 +20,10 @@ import {
   Lock,
   Unlock,
   User,
+  Filter,
+  X,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { PersonaCategoryEnum } from "../api/getPersona";
 import useGetPersonas from "../hooks/useGetPersonas";
@@ -35,33 +40,87 @@ import {
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
 import { cn } from "@/shared/lib/utils";
-import { categoryConfig } from "../constants/categoryConfig";
+import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
+import { parseBooleanFilter } from "@/feature/studio/agents/utils/parseBooleanFilter";
 
 export default function PersonasPage() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // 검색 필드들
+  const [name, setName] = useQueryParam<string>("name", "", {
     debounce: 300,
   });
+  const [description, setDescription] = useQueryParam<string>(
+    "description",
+    "",
+    {
+      debounce: 300,
+    }
+  );
+  const [systemPrompt, setSystemPrompt] = useQueryParam<string>(
+    "system_prompt",
+    "",
+    {
+      debounce: 300,
+    }
+  );
+  const [userPersonaTitle, setUserPersonaTitle] = useQueryParam<string>(
+    "user_persona_title",
+    "",
+    {
+      debounce: 300,
+    }
+  );
+  const [userPersonaDescription, setUserPersonaDescription] =
+    useQueryParam<string>("user_persona_description", "", {
+      debounce: 300,
+    });
+
+  // 필터 옵션들
   const [categoryFilter, setCategoryFilter] = useQueryParam<string>(
     "category",
-    "all"
+    "all",
+    { debounce: 0 }
   );
   const [typeFilter, setTypeFilter] = useQueryParam<string>("type", "all");
   const [publicFilter, setPublicFilter] = useQueryParam<string>(
     "public",
     "all"
   );
+
+  // 검색 조건 결합 연산자
+  const [operationType, setOperationType] = useQueryParam<string>(
+    "operation_type",
+    "all"
+  );
+
+  // 정렬
+  const [sortBy, setSortBy] = useQueryParam<string>("sort_by", "none");
+  const [order, setOrder] = useQueryParam<string>("order", "ASC");
+
+  // 페이지네이션
   const [page, setPage] = useQueryParam<number>("page", 1);
+  const [size, setSize] = useQueryParam<number>("size", 20);
 
   const queryParams = {
-    page,
+    name: name || undefined,
+    description: description || undefined,
+    system_prompt: systemPrompt || undefined,
+    user_persona_title: userPersonaTitle || undefined,
+    user_persona_description: userPersonaDescription || undefined,
     category:
       categoryFilter === "all"
         ? undefined
         : [categoryFilter as PersonaCategoryEnum],
     is_system: typeFilter === "all" ? undefined : typeFilter === "system",
-    is_public: publicFilter === "all" ? undefined : publicFilter === "public",
-    name: searchQuery || undefined,
+    is_public: parseBooleanFilter(publicFilter),
+    operation_type:
+      operationType === "all" ? undefined : (operationType as "AND" | "OR"),
+    sort_by: sortBy === "none" ? undefined : sortBy || undefined,
+    order: (order as "ASC" | "DESC") || undefined,
+    page,
+    size,
   };
 
   const { data, isLoading, refetch } = useGetPersonas(queryParams);
@@ -72,6 +131,23 @@ export default function PersonasPage() {
 
   const handleRefresh = () => {
     refetch();
+  };
+
+  // 필터 초기화
+  const handleResetFilters = () => {
+    setName("");
+    setDescription("");
+    setSystemPrompt("");
+    setUserPersonaTitle("");
+    setUserPersonaDescription("");
+    setCategoryFilter("all");
+    setTypeFilter("all");
+    setPublicFilter("all");
+    setOperationType("all");
+    setSortBy("none");
+    setOrder("ASC");
+    setPage(1);
+    setSize(20);
   };
 
   const formatDate = (dateString: string) => {
@@ -94,21 +170,104 @@ export default function PersonasPage() {
 
       {/* 검색 및 필터 */}
       <Card className="mb-6">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Search className="h-5 w-5" />
+              검색
+            </CardTitle>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className="flex items-center gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                {isFilterOpen ? "필터 닫기" : "필터 열기"}
+                {isFilterOpen ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResetFilters}
+                className="flex items-center gap-2"
+              >
+                <X className="h-4 w-4" />
+                필터 초기화
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-4">
-            {/* 검색 바 */}
+          <div className="space-y-6">
+            {/* 검색 필드 */}
             <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <Input
-                  placeholder="이름으로 검색..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setPage(1); // 검색 시 첫 페이지로 리셋
-                  }}
-                  className="pl-10"
-                />
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="이름 검색"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setPage(1);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="설명 검색"
+                    value={description}
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                      setPage(1);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="시스템 프롬프트 검색"
+                    value={systemPrompt}
+                    onChange={(e) => {
+                      setSystemPrompt(e.target.value);
+                      setPage(1);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="사용자 제목 검색"
+                    value={userPersonaTitle}
+                    onChange={(e) => {
+                      setUserPersonaTitle(e.target.value);
+                      setPage(1);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="사용자 설명 검색"
+                    value={userPersonaDescription}
+                    onChange={(e) => {
+                      setUserPersonaDescription(e.target.value);
+                      setPage(1);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
               </div>
               <div className="flex gap-2">
                 <Link href="/studio/personas/add">
@@ -117,75 +276,157 @@ export default function PersonasPage() {
                     페르소나 생성
                   </Button>
                 </Link>
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={handleRefresh}
+                  disabled={isLoading}
+                >
+                  <RefreshCw
+                    className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                  />
+                  새로고침
+                </Button>
               </div>
             </div>
 
-            {/* 필터 옵션 */}
-            <div className="flex flex-wrap gap-2">
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="카테고리 필터" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체 카테고리</SelectItem>
-                  <SelectItem value="IT">IT</SelectItem>
-                  <SelectItem value="Medical">의료</SelectItem>
-                  <SelectItem value="Education">교육</SelectItem>
-                  <SelectItem value="Finance">금융</SelectItem>
-                  <SelectItem value="Marketing">마케팅</SelectItem>
-                  <SelectItem value="Art">예술</SelectItem>
-                  <SelectItem value="Engineering">공학</SelectItem>
-                  <SelectItem value="Legal">법률</SelectItem>
-                  <SelectItem value="Science">과학</SelectItem>
-                  <SelectItem value="Sports">스포츠</SelectItem>
-                  <SelectItem value="Environment">환경</SelectItem>
-                  <SelectItem value="Media">미디어</SelectItem>
-                  <SelectItem value="Culinary">요리</SelectItem>
-                  <SelectItem value="Politics">정치</SelectItem>
-                  <SelectItem value="Psychology">심리</SelectItem>
-                  <SelectItem value="Fashion">패션</SelectItem>
-                  <SelectItem value="Travel">여행</SelectItem>
-                  <SelectItem value="Agriculture">농업</SelectItem>
-                  <SelectItem value="Gaming">게임</SelectItem>
-                  <SelectItem value="Automotive">자동차</SelectItem>
-                  <SelectItem value="CUSTOM">커스텀</SelectItem>
-                </SelectContent>
-              </Select>
+            {/* 필터 */}
+            {isFilterOpen && (
+              <div className="space-y-6 pt-4 border-t">
+                {/* 카테고리 및 불린 필터 */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      카테고리
+                    </label>
+                    <Select
+                      value={categoryFilter}
+                      onValueChange={setCategoryFilter}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="전체" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">전체</SelectItem>
+                        {CATEGORY_OPTIONS.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            {categoryConfig[cat]?.label || cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      타입
+                    </label>
+                    <Select value={typeFilter} onValueChange={setTypeFilter}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="전체" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">전체</SelectItem>
+                        <SelectItem value="system">시스템 제공</SelectItem>
+                        <SelectItem value="user">사용자 생성</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      공개 여부
+                    </label>
+                    <Select
+                      value={publicFilter}
+                      onValueChange={setPublicFilter}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="전체" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">전체</SelectItem>
+                        <SelectItem value="true">공개</SelectItem>
+                        <SelectItem value="false">비공개</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      검색 조건 결합
+                    </label>
+                    <Select
+                      value={operationType}
+                      onValueChange={setOperationType}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="기본값" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">기본값</SelectItem>
+                        <SelectItem value="AND">
+                          AND (모든 조건 만족)
+                        </SelectItem>
+                        <SelectItem value="OR">OR (하나 이상 만족)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-              <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="타입 필터" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체 타입</SelectItem>
-                  <SelectItem value="system">시스템 제공</SelectItem>
-                  <SelectItem value="user">사용자 생성</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={publicFilter} onValueChange={setPublicFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="공개 상태" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체 상태</SelectItem>
-                  <SelectItem value="public">공개</SelectItem>
-                  <SelectItem value="private">비공개</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={handleRefresh}
-                disabled={isLoading}
-              >
-                <RefreshCw
-                  className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-                />
-                새로고침
-              </Button>
-            </div>
+                {/* 정렬 및 페이지 크기 */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      정렬 기준
+                    </label>
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="정렬 기준 선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">기본값</SelectItem>
+                        <SelectItem value="id">ID</SelectItem>
+                        <SelectItem value="name">이름</SelectItem>
+                        <SelectItem value="category">카테고리</SelectItem>
+                        <SelectItem value="created_at">생성일</SelectItem>
+                        <SelectItem value="updated_at">수정일</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      정렬 순서
+                    </label>
+                    <Select value={order} onValueChange={setOrder}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ASC">오름차순</SelectItem>
+                        <SelectItem value="DESC">내림차순</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      페이지 크기
+                    </label>
+                    <Select
+                      value={String(size)}
+                      onValueChange={(v) => setSize(Number(v))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="10">10개</SelectItem>
+                        <SelectItem value="20">20개</SelectItem>
+                        <SelectItem value="50">50개</SelectItem>
+                        <SelectItem value="100">100개</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
