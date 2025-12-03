@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
+import { cn } from "@/shared/lib/utils";
 
 export function AgentAddPage() {
   const router = useRouter();
@@ -47,7 +48,6 @@ export function AgentAddPage() {
     fallback_model_my_page_id: "",
     persona_my_page_id: "",
     tool_my_page_id: "",
-    user_agent_title: "",
     user_agent_description: "",
   });
 
@@ -153,7 +153,6 @@ export function AgentAddPage() {
         ? Number(formData.persona_my_page_id)
         : null,
       tool_my_page_id: toolIds && toolIds.length > 0 ? toolIds : null,
-      user_agent_title: formData.user_agent_title.trim() || null,
       user_agent_description: formData.user_agent_description.trim() || null,
       is_system: true,
       is_public: true,
@@ -208,8 +207,49 @@ export function AgentAddPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-6 md:grid-cols-2">
+                  {/* 카테고리 */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="category"
+                      className="flex items-center gap-2"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      <span>카테고리 *</span>
+                    </Label>
+                    <Select
+                      value={formData.category}
+                      onValueChange={(value: string) =>
+                        setFormData({
+                          ...formData,
+                          category: value as (typeof CATEGORY_OPTIONS)[number],
+                        })
+                      }
+                      required
+                    >
+                      <SelectTrigger id="category" className="pl-6 w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CATEGORY_OPTIONS.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={cn(
+                                  "px-2 py-1 rounded text-xs",
+                                  categoryConfig[category]?.color
+                                )}
+                              >
+                                {categoryConfig[category]?.label || category}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   {/* 에이전트 이름 */}
-                  <div className="space-y-2 md:col-span-2">
+                  <div className="space-y-2">
                     <Label htmlFor="name" className="flex items-center gap-2">
                       <FileText className="h-4 w-4" />
                       <span>에이전트 이름 *</span>
@@ -263,77 +303,6 @@ export function AgentAddPage() {
                         {errors.description}
                       </p>
                     )}
-                  </div>
-
-                  {/* 카테고리 */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="category"
-                      className="flex items-center gap-2"
-                    >
-                      <Sparkles className="h-4 w-4" />
-                      <span>카테고리 *</span>
-                    </Label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value: string) =>
-                        setFormData({
-                          ...formData,
-                          category: value as (typeof CATEGORY_OPTIONS)[number],
-                        })
-                      }
-                      required
-                    >
-                      <SelectTrigger id="category" className="pl-6 w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CATEGORY_OPTIONS.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={`px-2 py-1 rounded text-xs ${
-                                  categoryConfig[category]?.color || ""
-                                }`}
-                              >
-                                {categoryConfig[category]?.label || category}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {selectedCategory && (
-                      <p className="text-xs text-muted-foreground">
-                        {selectedCategory.label} 타입의 에이전트입니다
-                      </p>
-                    )}
-                  </div>
-
-                  {/* 사용자 정의 제목 */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="user_agent_title"
-                      className="flex items-center gap-2"
-                    >
-                      <User className="h-4 w-4" />
-                      <span>사용자 정의 제목</span>
-                    </Label>
-                    <Input
-                      id="user_agent_title"
-                      value={formData.user_agent_title}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          user_agent_title: e.target.value,
-                        })
-                      }
-                      placeholder="내 개인 챗봇"
-                      className="pl-6"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      사용자가 정의하는 에이전트 제목 (선택사항)
-                    </p>
                   </div>
                 </div>
               </CardContent>
