@@ -36,7 +36,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/shared/lib/utils";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { formatDate } from "@/shared/utils/formatDate";
-import { useMemo } from "react";
+import { parseBooleanFilter } from "@/shared/utils/parseBooleanFilter";
 
 export default function AgentsPage() {
   const router = useRouter();
@@ -85,49 +85,22 @@ export default function AgentsPage() {
   const [size, setSize] = useQueryParam<number>("size", 20);
 
   // 파라미터 변환
-  const params = useMemo(() => {
-    return {
-      name: name || undefined,
-      description: description || undefined,
-      category:
-        categoryFilter && categoryFilter !== "all"
-          ? [categoryFilter as any]
-          : undefined,
-      is_system:
-        isSystemFilter === "all"
-          ? undefined
-          : isSystemFilter === "true"
-          ? true
-          : isSystemFilter === "false"
-          ? false
-          : undefined,
-      is_public:
-        isPublicFilter === "all"
-          ? undefined
-          : isPublicFilter === "true"
-          ? true
-          : isPublicFilter === "false"
-          ? false
-          : undefined,
-      operation_type:
-        operationType === "all" ? undefined : (operationType as "AND" | "OR"),
-      sort_by: sortBy === "none" ? undefined : sortBy || undefined,
-      order: (order as "ASC" | "DESC") || undefined,
-      page,
-      size,
-    };
-  }, [
-    name,
-    description,
-    categoryFilter,
-    isSystemFilter,
-    isPublicFilter,
-    operationType,
-    sortBy,
-    order,
+  const params = {
+    name: name || undefined,
+    description: description || undefined,
+    category:
+      categoryFilter && categoryFilter !== "all"
+        ? [categoryFilter as any]
+        : undefined,
+    is_system: parseBooleanFilter(isSystemFilter),
+    is_public: parseBooleanFilter(isPublicFilter),
+    operation_type:
+      operationType === "all" ? undefined : (operationType as "AND" | "OR"),
+    sort_by: sortBy === "none" ? undefined : sortBy || undefined,
+    order: (order as "ASC" | "DESC") || undefined,
     page,
     size,
-  ]);
+  };
 
   const { data: agentsData, isLoading } = useGetAgents(params);
 
