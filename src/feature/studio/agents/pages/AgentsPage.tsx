@@ -66,11 +66,6 @@ export default function AgentsPage() {
     { debounce: 0 }
   );
 
-  // 불린 필터들
-  const [isSystemFilter, setIsSystemFilter] = useQueryParam<string>(
-    "is_system",
-    "all"
-  );
   const [isPublicFilter, setIsPublicFilter] = useQueryParam<string>(
     "is_public",
     "all"
@@ -205,7 +200,7 @@ export default function AgentsPage() {
             </div>
 
             {/* 필터 */}
-            <Activity mode="visible">
+            <Activity mode={isFilterOpen ? "visible" : "hidden"}>
               <div className="space-y-6 pt-4 border-t">
                 {/* 카테고리 및 불린 필터 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -3,10 +3,10 @@ import type { NextRequest } from "next/server";
 import { tokenStorage } from "./shared/utils/tokenStorage";
 import getMyInfo from "./shared/api/getMyInfo";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 정적 파일과 API 요청은 미들웨어를 건너뜀
+  // 정적 파일과 API 요청은 프록시를 건너뜀
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
