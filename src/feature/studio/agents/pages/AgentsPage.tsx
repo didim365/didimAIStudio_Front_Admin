@@ -73,16 +73,6 @@ export default function AgentsPage() {
       debounce: 300,
     }
   );
-  const [userAgentTitle, setUserAgentTitle] = useQueryParam<string>(
-    "user_agent_title",
-    "",
-    { debounce: 300 }
-  );
-  const [userAgentDescription, setUserAgentDescription] = useQueryParam<string>(
-    "user_agent_description",
-    "",
-    { debounce: 300 }
-  );
 
   // 배열 필터들 (콤마로 구분된 문자열로 입력)
   const [idFilter, setIdFilter] = useQueryParam<string>("id", "", {
@@ -152,8 +142,6 @@ export default function AgentsPage() {
     return {
       name: name || undefined,
       description: description || undefined,
-      user_agent_title: userAgentTitle || undefined,
-      user_agent_description: userAgentDescription || undefined,
       id: parseArrayParam(idFilter),
       user_id: parseStringArrayParam(userIdFilter),
       model_my_page_id: parseArrayParam(modelIdFilter),
@@ -187,8 +175,6 @@ export default function AgentsPage() {
   }, [
     name,
     description,
-    userAgentTitle,
-    userAgentDescription,
     idFilter,
     userIdFilter,
     modelIdFilter,
@@ -215,8 +201,6 @@ export default function AgentsPage() {
   const handleResetFilters = () => {
     setName("");
     setDescription("");
-    setUserAgentTitle("");
-    setUserAgentDescription("");
     setIdFilter("");
     setUserIdFilter("");
     setModelIdFilter("");
@@ -279,24 +263,6 @@ export default function AgentsPage() {
                   placeholder="설명 검색"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <Input
-                  placeholder="사용자 제목 검색"
-                  value={userAgentTitle}
-                  onChange={(e) => setUserAgentTitle(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <Input
-                  placeholder="사용자 설명 검색"
-                  value={userAgentDescription}
-                  onChange={(e) => setUserAgentDescription(e.target.value)}
                   className="pl-10"
                 />
               </div>
