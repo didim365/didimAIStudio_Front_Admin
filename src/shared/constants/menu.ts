@@ -44,6 +44,10 @@ const MENU = [
         href: "/studio/personas",
       },
       {
+        name: "에이전트 관리",
+        href: "/studio/agents",
+      },
+      {
         name: "시나리오 관리",
         href: "/studio/scenarios",
       },
