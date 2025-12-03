@@ -47,7 +47,7 @@ export function PersonaAddPage({ myInfo }: PersonaAddPageProps) {
     description: "",
     system_prompt: "",
     category: "CUSTOM" as PersonaCategoryEnum,
-    is_public: false,
+    is_public: true,
     is_system: true,
   });
 
