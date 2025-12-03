@@ -39,7 +39,6 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { cn } from "@/shared/lib/utils";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { parseBooleanFilter } from "@/feature/studio/agents/utils/parseBooleanFilter";
 
@@ -65,17 +64,6 @@ export default function PersonasPage() {
       debounce: 300,
     }
   );
-  const [userPersonaTitle, setUserPersonaTitle] = useQueryParam<string>(
-    "user_persona_title",
-    "",
-    {
-      debounce: 300,
-    }
-  );
-  const [userPersonaDescription, setUserPersonaDescription] =
-    useQueryParam<string>("user_persona_description", "", {
-      debounce: 300,
-    });
 
   // 필터 옵션들
   const [categoryFilter, setCategoryFilter] = useQueryParam<string>(
@@ -107,8 +95,6 @@ export default function PersonasPage() {
     name: name || undefined,
     description: description || undefined,
     system_prompt: systemPrompt || undefined,
-    user_persona_title: userPersonaTitle || undefined,
-    user_persona_description: userPersonaDescription || undefined,
     category:
       categoryFilter === "all"
         ? undefined
@@ -138,8 +124,6 @@ export default function PersonasPage() {
     setName("");
     setDescription("");
     setSystemPrompt("");
-    setUserPersonaTitle("");
-    setUserPersonaDescription("");
     setCategoryFilter("all");
     setTypeFilter("all");
     setPublicFilter("all");
@@ -239,30 +223,6 @@ export default function PersonasPage() {
                     value={systemPrompt}
                     onChange={(e) => {
                       setSystemPrompt(e.target.value);
-                      setPage(1);
-                    }}
-                    className="pl-10"
-                  />
-                </div>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    placeholder="사용자 제목 검색"
-                    value={userPersonaTitle}
-                    onChange={(e) => {
-                      setUserPersonaTitle(e.target.value);
-                      setPage(1);
-                    }}
-                    className="pl-10"
-                  />
-                </div>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    placeholder="사용자 설명 검색"
-                    value={userPersonaDescription}
-                    onChange={(e) => {
-                      setUserPersonaDescription(e.target.value);
                       setPage(1);
                     }}
                     className="pl-10"
@@ -450,9 +410,6 @@ export default function PersonasPage() {
                     </TableHead>
                     <TableHead className="min-w-[250px]">설명</TableHead>
                     <TableHead className="w-[120px]">카테고리</TableHead>
-                    <TableHead className="min-w-[180px]">
-                      사용자 커스텀
-                    </TableHead>
                     <TableHead className="w-[100px] text-center">
                       타입
                     </TableHead>
@@ -466,7 +423,7 @@ export default function PersonasPage() {
                   {data?.items.length === 0 && (
                     <TableRow>
                       <TableCell
-                        colSpan={8}
+                        colSpan={7}
                         className="text-center py-12 text-slate-500"
                       >
                         등록된 페르소나가 없습니다.
@@ -474,13 +431,6 @@ export default function PersonasPage() {
                     </TableRow>
                   )}
                   {data?.items.map((persona) => {
-                    const personaTitle =
-                      persona.user_persona_title ?? persona.name;
-                    const personaDescription =
-                      persona.user_persona_description ?? persona.description;
-                    const isCustomTitle = !!persona.user_persona_title;
-                    const isCustomDescription =
-                      !!persona.user_persona_description;
                     return (
                       <TableRow
                         key={persona.id}
@@ -491,31 +441,13 @@ export default function PersonasPage() {
                           {persona.id}
                         </TableCell>
                         <TableCell>
-                          <div
-                            className={cn(
-                              "font-semibold line-clamp-2 text-slate-900",
-                              isCustomTitle &&
-                                "text-blue-700 flex items-center gap-1.5"
-                            )}
-                          >
-                            {isCustomTitle && (
-                              <User className="h-4 w-4 shrink-0 text-blue-600" />
-                            )}
-                            {personaTitle}
+                          <div className="font-semibold line-clamp-2 text-slate-900">
+                            {persona.name}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div
-                            className={cn(
-                              "text-sm line-clamp-2 text-slate-700",
-                              isCustomDescription &&
-                                "text-blue-700 flex items-start gap-1.5"
-                            )}
-                          >
-                            {isCustomDescription && (
-                              <User className="h-4 w-4 shrink-0 mt-0.5 text-blue-600" />
-                            )}
-                            {personaDescription}
+                          <div className="text-sm line-clamp-2 text-slate-700">
+                            {persona.description}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -529,19 +461,6 @@ export default function PersonasPage() {
                             {categoryConfig[persona.category]?.label ||
                               persona.category}
                           </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-slate-600">
-                          {(persona.user_persona_title ||
-                            persona.user_persona_description) && (
-                            <div className="flex items-center gap-1 text-green-600">
-                              <Shield className="h-4 w-4" />
-                              커스터마이징됨
-                            </div>
-                          )}
-                          {!persona.user_persona_title &&
-                            !persona.user_persona_description && (
-                              <span className="text-slate-400">기본</span>
-                            )}
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-center">
