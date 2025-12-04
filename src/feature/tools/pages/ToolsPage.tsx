@@ -11,7 +11,7 @@ import {
 } from "@/shared/ui/select";
 import { RefreshCw, Plus } from "lucide-react";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
-import { useGetMcpTools } from "../hooks/useGetMcpTools";
+import { useGetTools } from "../hooks/useGetTools";
 import { ToolsTable } from "../components/ToolsTable";
 import { statusConfig } from "../constants/toolConfigs";
 import { Pagination } from "@/shared/ui/pagination";
@@ -34,7 +34,7 @@ export default function ToolsPage() {
     include_config: false,
   };
 
-  const { data, isLoading, refetch } = useGetMcpTools(queryParams);
+  const { data, isLoading, refetch } = useGetTools(queryParams);
 
   const tools = data?.items || [];
 

@@ -44,24 +44,24 @@ import {
   providerConfig,
   deploymentTypeConfig,
 } from "../constants/toolConfigs";
-import { GetMcpToolResponse } from "../api/getMcpTool";
-import { useDeleteMcpTool } from "../hooks/useDeleteMcpTool";
-import { GetMcpToolConfigResponse } from "../api/getMcpToolConfig";
+import { GetToolResponse } from "../api/getTool";
+import { useDeleteTool } from "../hooks/useDeleteTool";
+import { GetToolConfigResponse } from "../api/getToolConfig";
 import { ServerConfigCard } from "../components/ServerConfigCard";
 
 function ToolPage({
   tool,
   config,
 }: {
-  tool: GetMcpToolResponse;
-  config: GetMcpToolConfigResponse;
+  tool: GetToolResponse;
+  config: GetToolConfigResponse;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // 도구 삭제 mutation
-  const { mutate: deleteTool, isPending: isDeleting } = useDeleteMcpTool({
+  const { mutate: deleteTool, isPending: isDeleting } = useDeleteTool({
     onSuccess: () => {
       // 도구 목록 쿼리 무효화
       queryClient.invalidateQueries({

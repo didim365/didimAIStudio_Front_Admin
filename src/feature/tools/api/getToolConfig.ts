@@ -3,10 +3,10 @@ import { cookies } from "next/headers";
 import { paths } from "@/shared/types/api/tools";
 
 // API 타입 추출
-type GetMcpToolConfigParams =
+type GetToolConfigParams =
   paths["/v1/mcp-tools/{tool_id}/config"]["get"]["parameters"]["path"];
 
-export type GetMcpToolConfigResponse =
+export type GetToolConfigResponse =
   paths["/v1/mcp-tools/{tool_id}/config"]["get"]["responses"]["200"]["content"]["application/json"];
 
 /**
@@ -14,13 +14,13 @@ export type GetMcpToolConfigResponse =
  * @param params - 도구 ID를 포함한 파라미터
  * @description 특정 도구의 템플릿(공용) 설정을 조회합니다.
  */
-const getMcpToolConfig = async (
-  params: GetMcpToolConfigParams
-): Promise<GetMcpToolConfigResponse> => {
+const getToolConfig = async (
+  params: GetToolConfigParams
+): Promise<GetToolConfigResponse> => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
-  const response = await axiosInstance.tools.get<GetMcpToolConfigResponse>(
+  const response = await axiosInstance.tools.get<GetToolConfigResponse>(
     `/mcp-tools/${params.tool_id}/config`,
     {
       headers: {
@@ -31,4 +31,4 @@ const getMcpToolConfig = async (
   return response.data;
 };
 
-export default getMcpToolConfig;
+export default getToolConfig;

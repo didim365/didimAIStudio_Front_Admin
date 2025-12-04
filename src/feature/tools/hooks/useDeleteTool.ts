@@ -2,9 +2,9 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/tools";
-import deleteMcpTool from "../api/deleteMcpTool";
+import deleteTool from "../api/deleteTool";
 
-type DeleteMcpToolParams =
+type DeleteToolParams =
   paths["/v1/mcp-tools/{tool_id}"]["delete"]["parameters"]["path"];
 
 /**
@@ -12,16 +12,16 @@ type DeleteMcpToolParams =
  * @param options - 추가 mutation 옵션 (onSuccess, onError, meta 등)
  * @description MCP 도구를 삭제하는 mutation 훅입니다.
  */
-export const useDeleteMcpTool = (
+export const useDeleteTool = (
   options?: Omit<
-    UseMutationOptions<void, Error, DeleteMcpToolParams>,
+    UseMutationOptions<void, Error, DeleteToolParams>,
     "mutationFn"
   >
 ) => {
-  return useMutation<void, Error, DeleteMcpToolParams>({
-    mutationFn: (params: DeleteMcpToolParams) => deleteMcpTool(params),
+  return useMutation<void, Error, DeleteToolParams>({
+    mutationFn: (params: DeleteToolParams) => deleteTool(params),
     ...options,
   });
 };
 
-export default useDeleteMcpTool;
+export default useDeleteTool;

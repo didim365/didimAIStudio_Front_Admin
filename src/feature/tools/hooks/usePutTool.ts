@@ -2,20 +2,20 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/tools";
-import putMcpTool from "../api/putMcpTool";
+import putTool from "../api/putTool";
 
-type PutMcpToolParams =
+type PutToolParams =
   paths["/v1/mcp-tools/{tool_id}"]["put"]["parameters"]["path"];
 
-type PutMcpToolRequest =
+type PutToolRequest =
   paths["/v1/mcp-tools/{tool_id}"]["put"]["requestBody"]["content"]["application/json"];
 
-type PutMcpToolResponse =
+type PutToolResponse =
   paths["/v1/mcp-tools/{tool_id}"]["put"]["responses"]["200"]["content"]["application/json"];
 
-type PutMcpToolVariables = {
-  params: PutMcpToolParams;
-  data: PutMcpToolRequest;
+type PutToolVariables = {
+  params: PutToolParams;
+  data: PutToolRequest;
 };
 
 /**
@@ -23,17 +23,17 @@ type PutMcpToolVariables = {
  * @param options - 추가 mutation 옵션 (onSuccess, onError, meta 등)
  * @description MCP 도구를 수정하는 mutation 훅입니다.
  */
-export const usePutMcpTool = (
+export const usePutTool = (
   options?: Omit<
-    UseMutationOptions<PutMcpToolResponse, Error, PutMcpToolVariables>,
+    UseMutationOptions<PutToolResponse, Error, PutToolVariables>,
     "mutationFn"
   >
 ) => {
-  return useMutation<PutMcpToolResponse, Error, PutMcpToolVariables>({
-    mutationFn: ({ params, data }: PutMcpToolVariables) =>
-      putMcpTool(params, data),
+  return useMutation<PutToolResponse, Error, PutToolVariables>({
+    mutationFn: ({ params, data }: PutToolVariables) =>
+      putTool(params, data),
     ...options,
   });
 };
 
-export default usePutMcpTool;
+export default usePutTool;

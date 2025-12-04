@@ -1,14 +1,14 @@
 import { paths } from "@/shared/types/api/tools";
 import axiosInstance from "@/shared/utils/axiosInstance";
 
-type GetMcpToolsResponse =
+type GetToolsResponse =
   paths["/v1/mcp-tools/"]["get"]["responses"]["200"]["content"]["application/json"];
 
-type GetMcpToolsParams = paths["/v1/mcp-tools/"]["get"]["parameters"]["query"];
+type GetToolsParams = paths["/v1/mcp-tools/"]["get"]["parameters"]["query"];
 
-const getMcpTools = async (params?: GetMcpToolsParams) => {
+const getTools = async (params?: GetToolsParams) => {
   try {
-    const response = await axiosInstance.tools.get<GetMcpToolsResponse>(
+    const response = await axiosInstance.tools.get<GetToolsResponse>(
       "/mcp-tools/",
       {
         params,
@@ -20,4 +20,4 @@ const getMcpTools = async (params?: GetMcpToolsParams) => {
   }
 };
 
-export default getMcpTools;
+export default getTools;

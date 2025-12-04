@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePutMcpTool } from "../hooks/usePutMcpTool";
+import { usePutTool } from "../hooks/usePutTool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
@@ -36,7 +36,7 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
-import { GetMcpToolResponse } from "../api/getMcpTool";
+import { GetToolResponse } from "../api/getTool";
 import {
   statusConfig,
   providerConfig,
@@ -44,7 +44,7 @@ import {
 } from "../constants/toolConfigs";
 import Link from "next/link";
 
-export function ToolEditPage({ tool }: { tool: GetMcpToolResponse }) {
+export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -85,7 +85,7 @@ export function ToolEditPage({ tool }: { tool: GetMcpToolResponse }) {
     formData.metadata ? JSON.stringify(formData.metadata, null, 2) : ""
   );
 
-  const { mutate: updateTool, isPending: isUpdating } = usePutMcpTool({
+  const { mutate: updateTool, isPending: isUpdating } = usePutTool({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["mcp-tools"],

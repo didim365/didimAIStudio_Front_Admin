@@ -2,13 +2,13 @@ import { paths } from "@/shared/types/api/tools";
 import axiosInstance from "@/shared/utils/axiosInstance";
 
 // API 타입 추출
-type PutMcpToolConfigResponse =
+type PutToolConfigResponse =
   paths["/v1/mcp-tools/{tool_id}/config"]["put"]["responses"]["200"]["content"]["application/json"];
 
-type PutMcpToolConfigParams =
+type PutToolConfigParams =
   paths["/v1/mcp-tools/{tool_id}/config"]["put"]["parameters"]["path"];
 
-type PutMcpToolConfigRequest =
+type PutToolConfigRequest =
   paths["/v1/mcp-tools/{tool_id}/config"]["put"]["requestBody"]["content"]["application/json"];
 
 /**
@@ -17,12 +17,12 @@ type PutMcpToolConfigRequest =
  * @param data - 도구 설정 업데이트 요청 데이터
  * @description 특정 도구의 JSON 기반 확장 설정을 업데이트합니다.
  */
-const putMcpToolConfig = async (
-  params: PutMcpToolConfigParams,
-  data: PutMcpToolConfigRequest
-): Promise<PutMcpToolConfigResponse> => {
+const putToolConfig = async (
+  params: PutToolConfigParams,
+  data: PutToolConfigRequest
+): Promise<PutToolConfigResponse> => {
   try {
-    const response = await axiosInstance.tools.put<PutMcpToolConfigResponse>(
+    const response = await axiosInstance.tools.put<PutToolConfigResponse>(
       `/mcp-tools/${params.tool_id}/config`,
       data
     );
@@ -32,4 +32,4 @@ const putMcpToolConfig = async (
   }
 };
 
-export default putMcpToolConfig;
+export default putToolConfig;

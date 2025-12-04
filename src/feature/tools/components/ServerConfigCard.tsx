@@ -15,12 +15,12 @@ import {
   Database,
 } from "lucide-react";
 import { useState } from "react";
-import { GetMcpToolConfigResponse } from "../api/getMcpToolConfig";
+import { GetToolConfigResponse } from "../api/getToolConfig";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
-import { usePutMcpToolConfig } from "../hooks/usePutMcpToolConfig";
+import { usePutToolConfig } from "../hooks/usePutToolConfig";
 import { useQueryClient } from "@tanstack/react-query";
 import { Save, Loader2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
@@ -30,7 +30,7 @@ import { json } from "@codemirror/lang-json";
 import { oneDark } from "@codemirror/theme-one-dark";
 
 interface ServerConfigCardProps {
-  config: GetMcpToolConfigResponse;
+  config: GetToolConfigResponse;
   toolId: number;
 }
 
@@ -498,11 +498,11 @@ const ConfigValue = ({
 
 export function ServerConfigCard({ config, toolId }: ServerConfigCardProps) {
   const [editedConfig, setEditedConfig] =
-    useState<GetMcpToolConfigResponse>(config);
+    useState<GetToolConfigResponse>(config);
   const serverConfigEntries = Object.entries(editedConfig);
   const queryClient = useQueryClient();
 
-  const { mutate: updateConfig, isPending } = usePutMcpToolConfig({
+  const { mutate: updateConfig, isPending } = usePutToolConfig({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["mcp-tool-config", toolId],

@@ -1,5 +1,5 @@
-import getMcpTool from "@/feature/tools/api/getMcpTool";
-import getMcpToolConfig from "@/feature/tools/api/getMcpToolConfig";
+import getTool from "@/feature/tools/api/getTool";
+import getToolConfig from "@/feature/tools/api/getToolConfig";
 import ToolPage from "@/feature/tools/pages/ToolPage";
 
 interface PageProps {
@@ -8,13 +8,13 @@ interface PageProps {
 
 async function Page({ params }: PageProps) {
   const { toolId } = await params;
-  const tool = await getMcpTool(
+  const tool = await getTool(
     { tool_id: Number(toolId) },
     {
       include_config: false,
     }
   );
-  const config = await getMcpToolConfig({ tool_id: Number(toolId) });
+  const config = await getToolConfig({ tool_id: Number(toolId) });
   return <ToolPage tool={tool} config={config} />;
 }
 

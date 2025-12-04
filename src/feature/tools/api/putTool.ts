@@ -2,13 +2,13 @@ import { paths } from "@/shared/types/api/tools";
 import axiosInstance from "@/shared/utils/axiosInstance";
 
 // API 타입 추출
-type PutMcpToolResponse =
+type PutToolResponse =
   paths["/v1/mcp-tools/{tool_id}"]["put"]["responses"]["200"]["content"]["application/json"];
 
-type PutMcpToolParams =
+type PutToolParams =
   paths["/v1/mcp-tools/{tool_id}"]["put"]["parameters"]["path"];
 
-type PutMcpToolRequest =
+type PutToolRequest =
   paths["/v1/mcp-tools/{tool_id}"]["put"]["requestBody"]["content"]["application/json"];
 
 /**
@@ -17,12 +17,12 @@ type PutMcpToolRequest =
  * @param data - 도구 수정 요청 데이터
  * @description 기존 MCP 도구의 정보를 수정합니다.
  */
-const putMcpTool = async (
-  params: PutMcpToolParams,
-  data: PutMcpToolRequest
-): Promise<PutMcpToolResponse> => {
+const putTool = async (
+  params: PutToolParams,
+  data: PutToolRequest
+): Promise<PutToolResponse> => {
   try {
-    const response = await axiosInstance.tools.put<PutMcpToolResponse>(
+    const response = await axiosInstance.tools.put<PutToolResponse>(
       `/mcp-tools/${params.tool_id}`,
       data
     );
@@ -32,4 +32,4 @@ const putMcpTool = async (
   }
 };
 
-export default putMcpTool;
+export default putTool;

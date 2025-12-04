@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { usePostMcpTool } from "../hooks/usePostMcpTool";
+import { usePostTool } from "../hooks/usePostTool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -59,7 +59,7 @@ function ToolAddPage() {
   });
 
   // 도구 생성 mutation
-  const { mutate: createTool, isPending: isCreating } = usePostMcpTool({
+  const { mutate: createTool, isPending: isCreating } = usePostTool({
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["mcp-tools"],
