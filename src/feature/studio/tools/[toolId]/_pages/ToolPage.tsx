@@ -62,7 +62,7 @@ function ToolPage({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDeployDialog, setShowDeployDialog] = useState(false);
   const [showStopDialog, setShowStopDialog] = useState(false);
-
+  console.log({ tool });
   // 도구 삭제 mutation
   const { mutate: deleteTool, isPending: isDeleting } = useDeleteTool({
     onSuccess: () => {
