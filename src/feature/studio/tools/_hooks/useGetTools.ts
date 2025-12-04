@@ -2,7 +2,7 @@
 
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/tools";
-import getTools from "../api/getTools";
+import getTools from "../_api/getTools";
 
 type GetToolsResponse =
   paths["/v1/mcp-tools/"]["get"]["responses"]["200"]["content"]["application/json"];

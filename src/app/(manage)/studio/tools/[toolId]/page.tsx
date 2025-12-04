@@ -1,6 +1,6 @@
-import getTool from "@/feature/tools/api/getTool";
-import getToolConfig from "@/feature/tools/api/getToolConfig";
-import ToolPage from "@/feature/tools/pages/ToolPage";
+import getTool from "@/feature/studio/tools/[toolId]/_api/getTool";
+import getToolConfig from "@/feature/studio/tools/[toolId]/_api/getToolConfig";
+import ToolPage from "@/feature/studio/tools/[toolId]/_pages/ToolPage";
 
 interface PageProps {
   params: Promise<{ toolId: string }>;

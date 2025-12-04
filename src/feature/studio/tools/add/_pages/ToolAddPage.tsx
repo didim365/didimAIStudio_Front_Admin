@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { usePostTool } from "../hooks/usePostTool";
+import { usePostTool } from "../_hooks/usePostTool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -39,7 +39,7 @@ import {
   PROVIDER_OPTIONS,
   CATEGORY_OPTIONS,
   DEPLOYMENT_TYPE_OPTIONS,
-} from "../constants/toolConfigs";
+} from "../../_constants/toolConfigs";
 
 function ToolAddPage() {
   const router = useRouter();

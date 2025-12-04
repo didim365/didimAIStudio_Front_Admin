@@ -12,7 +12,7 @@ import { Badge } from "@/shared/ui/badge";
 import { paths } from "@/shared/types/api/tools";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { statusConfig, providerConfig } from "../constants/toolConfigs";
+import { providerConfig, statusConfig } from "../_constants/toolConfigs";
 
 type MCPToolResponseDTO =
   paths["/v1/mcp-tools/"]["get"]["responses"]["200"]["content"]["application/json"]["items"][0];

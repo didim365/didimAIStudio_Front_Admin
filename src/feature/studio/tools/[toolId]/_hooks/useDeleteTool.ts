@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/tools";
-import deleteTool from "../api/deleteTool";
+import deleteTool from "../_api/deleteTool";
 
 type DeleteToolParams =
   paths["/v1/mcp-tools/{tool_id}"]["delete"]["parameters"]["path"];

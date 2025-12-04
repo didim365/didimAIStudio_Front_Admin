@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/tools";
-import putToolConfig from "../api/putToolConfig";
+import putToolConfig from "../_api/putToolConfig";
 
 type PutToolConfigParams =
   paths["/v1/mcp-tools/{tool_id}/config"]["put"]["parameters"]["path"];

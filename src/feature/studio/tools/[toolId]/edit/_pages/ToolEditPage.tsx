@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePutTool } from "../hooks/usePutTool";
+import { usePutTool } from "../_hooks/usePutTool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
@@ -36,12 +36,12 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
-import { GetToolResponse } from "../api/getTool";
+import { GetToolResponse } from "../../_api/getTool";
 import {
   statusConfig,
   providerConfig,
   deploymentTypeConfig,
-} from "../constants/toolConfigs";
+} from "../../../_constants/toolConfigs";
 import Link from "next/link";
 
 export function ToolEditPage({ tool }: { tool: GetToolResponse }) {

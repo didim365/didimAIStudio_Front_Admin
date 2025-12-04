@@ -11,9 +11,9 @@ import {
 } from "@/shared/ui/select";
 import { RefreshCw, Plus } from "lucide-react";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
-import { useGetTools } from "../hooks/useGetTools";
-import { ToolsTable } from "../components/ToolsTable";
-import { statusConfig } from "../constants/toolConfigs";
+import { useGetTools } from "../_hooks/useGetTools";
+import { ToolsTable } from "../_components/ToolsTable";
+import { statusConfig } from "../_constants/toolConfigs";
 import { Pagination } from "@/shared/ui/pagination";
 import Link from "next/link";
 import { cn } from "@/shared/lib/utils";

@@ -44,12 +44,12 @@ import {
   statusConfig,
   providerConfig,
   deploymentTypeConfig,
-} from "../constants/toolConfigs";
-import { GetToolResponse } from "../api/getTool";
-import { useDeleteTool } from "../hooks/useDeleteTool";
-import { usePostDeployTool } from "../hooks/usePostDeployTool";
-import { GetToolConfigResponse } from "../api/getToolConfig";
-import { ServerConfigCard } from "../components/ServerConfigCard";
+} from "../../_constants/toolConfigs";
+import { GetToolResponse } from "../_api/getTool";
+import { useDeleteTool } from "../_hooks/useDeleteTool";
+import { usePostDeployTool } from "../_hooks/usePostDeployTool";
+import { GetToolConfigResponse } from "../_api/getToolConfig";
+import { ServerConfigCard } from "../_components/ServerConfigCard";
 
 function ToolPage({
   tool,

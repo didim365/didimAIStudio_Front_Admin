@@ -15,12 +15,12 @@ import {
   Database,
 } from "lucide-react";
 import { useState } from "react";
-import { GetToolConfigResponse } from "../api/getToolConfig";
+import { GetToolConfigResponse } from "../_api/getToolConfig";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
-import { usePutToolConfig } from "../hooks/usePutToolConfig";
+import { usePutToolConfig } from "../_hooks/usePutToolConfig";
 import { useQueryClient } from "@tanstack/react-query";
 import { Save, Loader2, Edit2 } from "lucide-react";
 import { toast } from "sonner";

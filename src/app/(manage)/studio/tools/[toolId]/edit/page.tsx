@@ -1,5 +1,5 @@
-import ToolEditPage from "@/feature/tools/pages/ToolEditPage";
-import getTool from "@/feature/tools/api/getTool";
+import ToolEditPage from "@/feature/studio/tools/[toolId]/edit/_pages/ToolEditPage";
+import getTool from "@/feature/studio/tools/[toolId]/_api/getTool";
 
 async function Page({
   params,

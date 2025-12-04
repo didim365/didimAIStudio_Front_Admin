@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/tools";
-import postDeployTool from "../api/postDeployTool";
+import postDeployTool from "../_api/postDeployTool";
 
 type PostDeployToolParams =
   paths["/v1/mcp-tools/{tool_id}:deploy"]["post"]["parameters"]["path"];
