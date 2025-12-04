@@ -2,7 +2,7 @@
 
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/models";
-import getCatalogs from "../api/getCatalogs";
+import getCatalogs from "../_api/getCatalogs";
 
 type GetCatalogResponse =
   paths["/v1/catalog/"]["get"]["responses"]["200"]["content"]["application/json"];

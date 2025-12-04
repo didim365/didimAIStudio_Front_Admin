@@ -2,8 +2,8 @@
 
 import { components } from "@/shared/types/api/models";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
-import useGetCatalog from "../hooks/useGetCatalog";
-import { StatusBadge } from "../components/StatusBadge";
+import useGetCatalog from "../_hooks/useGetCatalog";
+import { StatusBadge } from "../_components/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -28,12 +28,12 @@ import { RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
 import { Pagination } from "@/shared/ui/pagination";
 import { formatDate } from "@/shared/utils/formatDate";
 import { useRouter } from "next/navigation";
-import { CATEGORIES, DEPLOYMENT_TYPES } from "../constants/modelConstants";
+import { CATEGORIES, DEPLOYMENT_TYPES } from "../_constants/modelConstants";
 import {
   getCategoryLabel,
   formatNumber,
   formatCost,
-} from "../utils/modelUtils";
+} from "../_utils/modelUtils";
 
 type AICategoryEnum = components["schemas"]["AICategoryEnum"];
 
