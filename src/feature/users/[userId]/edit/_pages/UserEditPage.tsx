@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePatchUser } from "../hooks/usePatchUser";
+import { usePatchUser } from "../../_hooks/usePatchUser";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import {
@@ -26,9 +26,9 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
-import { getInitials } from "@/feature/users/utils/getInitials";
-import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
-import { GetUserResponse } from "../api/getUser";
+import { getInitials } from "@/feature/users/_utils/getInitials";
+import { formatPhoneNumber } from "@/feature/users/_utils/formatPhoneNumber";
+import { GetUserResponse } from "../../_api/getUser";
 import Link from "next/link";
 import { Separator } from "@/shared/ui/separator";
 import CodeMirror from "@uiw/react-codemirror";
@@ -296,3 +296,4 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
     </form>
   );
 }
+

@@ -7,10 +7,10 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
-import { GetUsersResponse } from "../hooks/useGetUsers";
-import { getInitials } from "../utils/getInitials";
-import { formatUserStatus } from "../utils/formatUserStatus";
+import { formatPhoneNumber } from "@/feature/users/_utils/formatPhoneNumber";
+import { GetUsersResponse } from "../_hooks/useGetUsers";
+import { getInitials } from "../_utils/getInitials";
+import { formatUserStatus } from "../_utils/formatUserStatus";
 import { useRouter } from "next/navigation";
 
 export function UsersTable({ users }: { users: GetUsersResponse["items"] }) {
@@ -95,3 +95,4 @@ export function UsersTable({ users }: { users: GetUsersResponse["items"] }) {
     </Table>
   );
 }
+

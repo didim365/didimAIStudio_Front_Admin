@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { usePostUser } from "../hooks/usePostUser";
+import { usePostUser } from "../../_hooks/usePostUser";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -28,9 +28,9 @@ import {
   Shield,
   UserPlus,
 } from "lucide-react";
-import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
+import { formatPhoneNumber } from "@/feature/users/_utils/formatPhoneNumber";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-import type { GetRolesResponse } from "@/feature/roles/api/getRoles";
+import type { GetRolesResponse } from "@/feature/roles/_api/getRoles";
 
 interface UserAddPageProps {
   roles: GetRolesResponse;
@@ -107,7 +107,9 @@ export function UserAddPage({ roles }: UserAddPageProps) {
     });
   };
 
-  const selectedRole = roles?.find((r) => r.id === formData.role_id);
+  const selectedRole = roles?.find(
+    (r: GetRolesResponse[number]) => r.id === formData.role_id
+  );
 
   return (
     <div className="py-8 px-4">
@@ -350,7 +352,7 @@ export function UserAddPage({ roles }: UserAddPageProps) {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">역할 없음</SelectItem>
-                        {roles?.map((role) => (
+                        {roles?.map((role: GetRolesResponse[number]) => (
                           <SelectItem key={role.id} value={role.id.toString()}>
                             <div className="flex flex-col items-start">
                               <span className="font-medium">

@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import postUser from "../api/postUser";
+import postUser from "../_api/postUser";
 
 type PostUserRequest =
   paths["/api/v1/users/admin/user"]["post"]["requestBody"]["content"]["application/json"];
@@ -23,3 +23,4 @@ export const usePostUser = (
 };
 
 export default usePostUser;
+

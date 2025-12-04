@@ -38,7 +38,7 @@ import {
   GROUP_TYPE_ICONS,
   GROUP_TYPE_COLORS,
 } from "../../_constants/groupType";
-import { getInitials } from "@/feature/users/utils/getInitials";
+import { getInitials } from "@/feature/users/_utils/getInitials";
 import AddMemberDialog from "../_components/AddMemberDialog";
 import GroupRolesCard from "../_components/GroupRolesCard";
 

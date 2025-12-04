@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import getRoles, { GetRolesResponse } from "../api/getRoles";
+import getRoles, { GetRolesResponse } from "../_api/getRoles";
 
 export const useGetRoles = (
   options?: Omit<
@@ -17,3 +17,4 @@ export const useGetRoles = (
 };
 
 export default useGetRoles;
+

@@ -29,11 +29,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
-import { formatPhoneNumber } from "@/feature/users/utils/formatPhoneNumber";
+import { formatPhoneNumber } from "@/feature/users/_utils/formatPhoneNumber";
 import { formatDate } from "@/shared/utils/formatDate";
-import { getInitials } from "@/feature/users/utils/getInitials";
-import { formatUserStatus } from "@/feature/users/utils/formatUserStatus";
-import type { GetUserResponse } from "../api/getUser";
+import { getInitials } from "@/feature/users/_utils/getInitials";
+import { formatUserStatus } from "@/feature/users/_utils/formatUserStatus";
+import type { GetUserResponse } from "../_api/getUser";
 import JsonView from "@uiw/react-json-view";
 
 interface UserPageProps {
@@ -238,3 +238,4 @@ export function UserPage({ user }: UserPageProps) {
     </div>
   );
 }
+

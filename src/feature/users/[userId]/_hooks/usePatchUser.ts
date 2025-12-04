@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import patchUser from "../api/patchUser";
+import patchUser from "../_api/patchUser";
 
 type PatchUserRequest =
   paths["/api/v1/users/admin/user"]["patch"]["requestBody"]["content"]["application/json"];
@@ -23,3 +23,4 @@ export const usePatchUser = (
 };
 
 export default usePatchUser;
+

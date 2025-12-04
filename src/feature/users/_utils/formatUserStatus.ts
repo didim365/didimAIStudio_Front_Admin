@@ -14,3 +14,4 @@ export const USER_STATUS_LABELS: Record<UserStatus, string> = {
 export function formatUserStatus(status: UserStatus | string): string {
   return USER_STATUS_LABELS[status as UserStatus] || status;
 }
+

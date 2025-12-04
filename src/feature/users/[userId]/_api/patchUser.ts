@@ -22,3 +22,4 @@ const patchUser = async (
 };
 
 export default patchUser;
+

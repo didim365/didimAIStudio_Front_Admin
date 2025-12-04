@@ -22,3 +22,4 @@ export const statusColors: Record<string, string> = {
   active: "bg-green-100 text-green-700 border-green-200",
   inactive: "bg-slate-100 text-slate-700 border-slate-200",
 };
+

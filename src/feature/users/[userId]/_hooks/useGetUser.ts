@@ -2,7 +2,7 @@
 
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import getUser from "../api/getUser";
+import getUser from "../_api/getUser";
 
 type GetUserResponse =
   paths["/api/v1/users/account/{user_id}"]["get"]["responses"]["200"]["content"]["application/json"];
@@ -25,3 +25,4 @@ export const useGetUser = (
 };
 
 export default useGetUser;
+

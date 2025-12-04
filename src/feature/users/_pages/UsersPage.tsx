@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import { Search, UserPlus } from "lucide-react";
-import { useGetUsers } from "../hooks/useGetUsers";
-import { UsersTable } from "../components/UsersTable";
+import { useGetUsers } from "../_hooks/useGetUsers";
+import { UsersTable } from "../_components/UsersTable";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
 import Link from "next/link";
@@ -81,3 +81,4 @@ export default function UsersPage() {
     </div>
   );
 }
+

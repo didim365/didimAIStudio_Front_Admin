@@ -14,7 +14,7 @@ import {
 } from "@/shared/ui/dialog";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { ShieldPlus, Loader2, Shield, Check } from "lucide-react";
-import { useGetRoles } from "@/feature/users/hooks/useGetRoles";
+import { useGetRoles } from "@/feature/users/_hooks/useGetRoles";
 import { usePostGroupRole } from "../_hooks/usePostGroupRole";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/shared/lib/utils";

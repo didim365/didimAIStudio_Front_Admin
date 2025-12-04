@@ -16,11 +16,11 @@ import {
 import { Pagination } from "@/shared/ui/pagination";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { UserPlus, Search, Check, Loader2, Shield } from "lucide-react";
-import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
+import { useGetUsers } from "@/feature/users/_hooks/useGetUsers";
 import { usePostGroupUser } from "../_hooks/usePostGroupUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/shared/lib/utils";
-import { getInitials } from "@/feature/users/utils/getInitials";
+import { getInitials } from "@/feature/users/_utils/getInitials";
 import {
   Select,
   SelectContent,

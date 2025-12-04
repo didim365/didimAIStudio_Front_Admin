@@ -6,7 +6,7 @@ import { Input } from "@/shared/ui/input";
 import { Check, Search } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Pagination } from "@/shared/ui/pagination";
-import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
+import { useGetUsers } from "@/feature/users/_hooks/useGetUsers";
 import { cn } from "@/shared/lib/utils";
 
 interface ManagerSelectProps {

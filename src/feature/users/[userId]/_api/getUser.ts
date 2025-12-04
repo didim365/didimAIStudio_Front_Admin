@@ -19,3 +19,4 @@ const getUser = async (params: GetUserParams): Promise<GetUserResponse> => {
 };
 
 export default getUser;
+

@@ -20,3 +20,4 @@ const getUsers = async (params?: GetUsersParams) => {
 };
 
 export default getUsers;
+

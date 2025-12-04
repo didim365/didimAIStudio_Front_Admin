@@ -19,3 +19,4 @@ export function getInitials(
   return email[0].toUpperCase();
 }
 
+

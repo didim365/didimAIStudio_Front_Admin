@@ -20,3 +20,4 @@ const postUser = async (data: PostUserRequest): Promise<PostUserResponse> => {
 };
 
 export default postUser;
+
