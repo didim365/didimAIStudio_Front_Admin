@@ -32,6 +32,7 @@ import {
   GitBranch,
   Loader2,
   Rocket,
+  StopCircle,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
@@ -45,6 +46,7 @@ import {
 import { GetToolResponse } from "../_api/getTool";
 import { useDeleteTool } from "../_hooks/useDeleteTool";
 import { usePostDeployTool } from "../_hooks/usePostDeployTool";
+import { usePostToolStop } from "../_hooks/usePostToolStop";
 import { GetToolConfigResponse } from "../_api/getToolConfig";
 import { ServerConfigCard } from "../_components/ServerConfigCard";
 
@@ -59,6 +61,7 @@ function ToolPage({
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDeployDialog, setShowDeployDialog] = useState(false);
+  const [showStopDialog, setShowStopDialog] = useState(false);
 
   // 도구 삭제 mutation
   const { mutate: deleteTool, isPending: isDeleting } = useDeleteTool({
@@ -91,6 +94,23 @@ function ToolPage({
     },
   });
 
+  // 도구 중지 mutation
+  const { mutate: stopTool, isPending: isStopping } = usePostToolStop({
+    onSuccess: () => {
+      // 도구 상세 정보 쿼리 무효화하여 최신 상태 가져오기
+      queryClient.invalidateQueries({
+        queryKey: ["mcp-tools", tool.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["mcp-tools"],
+      });
+      setShowStopDialog(false);
+    },
+    meta: {
+      successMessage: "도구 중지가 시작되었습니다.",
+    },
+  });
+
   const handleDelete = () => {
     deleteTool({ tool_id: tool.id });
   };
@@ -101,6 +121,16 @@ function ToolPage({
       data: {
         timeout_seconds: 300,
         force_restart: false,
+      },
+    });
+  };
+
+  const handleStop = () => {
+    stopTool({
+      params: { tool_id: tool.id },
+      data: {
+        graceful: true,
+        timeout_seconds: 30,
       },
     });
   };
@@ -141,7 +171,7 @@ function ToolPage({
               variant="ghost"
               size="icon"
               className="shrink-0 cursor-pointer"
-              disabled={isDeleting}
+              disabled={isDeleting || isStopping}
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -157,7 +187,7 @@ function ToolPage({
           <Button
             className="cursor-pointer bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
             onClick={() => setShowDeployDialog(true)}
-            disabled={isDeleting || isDeploying}
+            disabled={isDeleting || isDeploying || isStopping}
           >
             {isDeploying && (
               <>
@@ -172,10 +202,28 @@ function ToolPage({
               </>
             )}
           </Button>
+          <Button
+            className="cursor-pointer bg-linear-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+            onClick={() => setShowStopDialog(true)}
+            disabled={isDeleting || isDeploying || isStopping}
+          >
+            {isStopping && (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                중지 중...
+              </>
+            )}
+            {!isStopping && (
+              <>
+                <StopCircle className="h-4 w-4 mr-2" />
+                중지
+              </>
+            )}
+          </Button>
           <Link href={`/studio/tools/${tool.id}/edit`}>
             <Button
               className="cursor-pointer"
-              disabled={isDeleting || isDeploying}
+              disabled={isDeleting || isDeploying || isStopping}
             >
               <Pencil className="h-4 w-4 mr-2" />
               수정
@@ -185,7 +233,7 @@ function ToolPage({
             variant="destructive"
             className="cursor-pointer"
             onClick={() => setShowDeleteDialog(true)}
-            disabled={isDeleting || isDeploying}
+            disabled={isDeleting || isDeploying || isStopping}
           >
             {isDeleting && (
               <>
@@ -261,6 +309,69 @@ function ToolPage({
             >
               {isDeploying && <Loader2 className="h-4 w-4 animate-spin" />}
               {isDeploying ? "배포 중..." : "배포 시작"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Stop Confirmation Dialog */}
+      <AlertDialog
+        open={showStopDialog}
+        onOpenChange={(open) => {
+          // 중지 중일 때는 모달을 닫을 수 없도록 함
+          if (!isStopping) {
+            setShowStopDialog(open);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <StopCircle className="h-5 w-5 text-orange-600" />
+              도구 중지 {isStopping ? "중" : "확인"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              <>
+                <span className="font-semibold">{tool.name}</span>을(를)
+                중지하시겠습니까?
+                <br />
+                <div className="mt-4 space-y-2 text-sm">
+                  <div className="flex items-start gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-orange-600 mt-1.5 shrink-0" />
+                    <span className="text-muted-foreground">
+                      배포 타입:
+                      <span className="font-medium text-foreground">
+                        {deploymentTypeConfig[tool.deployment_type]?.label ||
+                          tool.deployment_type}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-orange-600 mt-1.5 shrink-0" />
+                    <span className="text-muted-foreground">
+                      현재 상태:
+                      <span className="font-medium text-foreground">
+                        {statusConfig[tool.status].label}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                <span className="text-muted-foreground mt-4 block text-xs">
+                  참고: 중지 작업은 비동기로 처리되며, 완료까지 시간이 걸릴 수
+                  있습니다.
+                </span>
+              </>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isStopping}>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleStop}
+              disabled={isStopping}
+              className="flex items-center gap-2 bg-linear-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800"
+            >
+              {isStopping && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isStopping ? "중지 중..." : "중지 시작"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
