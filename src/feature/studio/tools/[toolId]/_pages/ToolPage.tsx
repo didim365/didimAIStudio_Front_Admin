@@ -51,6 +51,7 @@ import { usePostToolStop } from "../_hooks/usePostToolStop";
 import { usePostToolStart } from "../_hooks/usePostToolStart";
 import { GetToolConfigResponse } from "../_api/getToolConfig";
 import { ServerConfigCard } from "../_components/ServerConfigCard";
+import { ActionButton } from "../_components/ActionButton";
 
 function ToolPage({
   tool,
@@ -213,60 +214,33 @@ function ToolPage({
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Button
-            className="cursor-pointer bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+          <ActionButton
             onClick={() => setShowDeployDialog(true)}
             disabled={isDeleting || isDeploying || isStopping || isStarting}
-          >
-            {isDeploying && (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                배포 중...
-              </>
-            )}
-            {!isDeploying && (
-              <>
-                <Rocket className="h-4 w-4 mr-2" />
-                배포
-              </>
-            )}
-          </Button>
-          <Button
-            className="cursor-pointer bg-linear-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+            isLoading={isDeploying}
+            icon={Rocket}
+            label="배포"
+            loadingLabel="배포 중..."
+            className="from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+          />
+          <ActionButton
             onClick={() => setShowStartDialog(true)}
             disabled={isDeleting || isDeploying || isStopping || isStarting}
-          >
-            {isStarting && (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                시작 중...
-              </>
-            )}
-            {!isStarting && (
-              <>
-                <Play className="h-4 w-4 mr-2" />
-                시작
-              </>
-            )}
-          </Button>
-          <Button
-            className="cursor-pointer bg-linear-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+            isLoading={isStarting}
+            icon={Play}
+            label="시작"
+            loadingLabel="시작 중..."
+            className="from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
+          />
+          <ActionButton
             onClick={() => setShowStopDialog(true)}
             disabled={isDeleting || isDeploying || isStopping || isStarting}
-          >
-            {isStopping && (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                중지 중...
-              </>
-            )}
-            {!isStopping && (
-              <>
-                <StopCircle className="h-4 w-4 mr-2" />
-                중지
-              </>
-            )}
-          </Button>
+            isLoading={isStopping}
+            icon={StopCircle}
+            label="중지"
+            loadingLabel="중지 중..."
+            className="from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800"
+          />
           <Link href={`/studio/tools/${tool.id}/edit`}>
             <Button
               className="cursor-pointer"
