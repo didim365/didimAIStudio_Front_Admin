@@ -1143,7 +1143,7 @@ export interface components {
              * Phone
              * @description 사용자 전화번호
              */
-            phone: string;
+            phone?: string | null;
             /**
              * Preferences
              * @description 사용자 설정 (JSON)
@@ -1516,8 +1516,12 @@ export interface components {
             /** Group Name */
             group_name: string;
             group_type: components["schemas"]["GroupTypeEnum"];
+            /** Description */
+            description?: string | null;
             /** Parent Group Id */
             parent_group_id?: number | null;
+            /** Child Group Ids */
+            child_group_ids?: number[] | null;
             /** Manager */
             manager?: number | null;
             /** Role Id */
@@ -1594,6 +1598,8 @@ export interface components {
             /** Group Name */
             group_name: string;
             group_type: components["schemas"]["GroupTypeEnum"];
+            /** Description */
+            description?: string | null;
             /** Parent Group Id */
             parent_group_id: number | null;
             /** Manager */
@@ -1656,10 +1662,20 @@ export interface components {
             /** @description 그룹 타입 */
             group_type?: components["schemas"]["GroupType"] | null;
             /**
+             * Description
+             * @description 그룹 설명
+             */
+            description?: string | null;
+            /**
              * Parent Group Id
              * @description 상위 그룹 ID
              */
             parent_group_id?: number | null;
+            /**
+             * Child Group Ids
+             * @description 자식 그룹 ID 리스트
+             */
+            child_group_ids?: number[] | null;
             /**
              * Manager
              * @description 그룹 관리자 ID
@@ -1681,6 +1697,8 @@ export interface components {
             /** Group Name */
             group_name: string;
             group_type: components["schemas"]["GroupTypeEnum"];
+            /** Description */
+            description?: string | null;
             /** Parent Group Id */
             parent_group_id: number | null;
             /** Manager */
@@ -2436,7 +2454,7 @@ export interface components {
              * Phone
              * @description 사용자 전화번호
              */
-            phone: string;
+            phone?: string | null;
             /**
              * Preferences
              * @description 사용자 설정 (JSON)
@@ -3588,6 +3606,8 @@ export interface operations {
                 size?: number;
                 /** @description 회원 정보 포함 여부 */
                 include_members?: boolean;
+                /** @description 부모가 없는 최상위 그룹만 조회 */
+                root_only?: boolean;
             };
             header?: never;
             path?: never;
