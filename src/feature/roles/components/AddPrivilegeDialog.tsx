@@ -17,10 +17,10 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { useGetPrivileges } from "@/feature/privileges/hooks/useGetPrivileges";
+import { useGetPrivileges } from "@/feature/privileges/_hooks/useGetPrivileges";
 import { usePostRolePrivilege } from "../hooks/usePostRolePrivilege";
 import { useGetRolePrivileges } from "../hooks/useGetRolePrivileges";
-import { getActionTypeInfo } from "@/feature/privileges/constants/actionType";
+import { getActionTypeInfo } from "@/feature/privileges/_constants/actionType";
 import { cn } from "@/shared/lib/utils";
 
 interface AddPrivilegeDialogProps {

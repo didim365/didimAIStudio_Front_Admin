@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePutPrivilege } from "../hooks/usePutPrivilege";
+import { usePutPrivilege } from "../_hooks/usePutPrivilege";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
@@ -33,8 +33,8 @@ import {
   ACTION_TYPE_LABELS,
   ACTION_TYPE_COLORS,
   ACTION_TYPE_OPTIONS,
-} from "../constants/actionType";
-import { GetPrivilegeResponse } from "../api/getPrivilege";
+} from "../../../_constants/actionType";
+import { GetPrivilegeResponse } from "../../_api/getPrivilege";
 
 interface PrivilegeEditPageProps {
   privilege: GetPrivilegeResponse;

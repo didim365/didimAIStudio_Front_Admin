@@ -17,7 +17,7 @@ import {
 import { Key, Lock, FileText, AlertCircle, Trash2 } from "lucide-react";
 import { useGetRolePrivileges } from "../hooks/useGetRolePrivileges";
 import { useDeleteRolePrivilege } from "../hooks/useDeleteRolePrivilege";
-import { getActionTypeInfo } from "@/feature/privileges/constants/actionType";
+import { getActionTypeInfo } from "@/feature/privileges/_constants/actionType";
 import { AddPrivilegeDialog } from "./AddPrivilegeDialog";
 import Link from "next/link";
 import { useState } from "react";

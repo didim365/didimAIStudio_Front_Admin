@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useDeletePrivilege } from "../hooks/useDeletePrivilege";
-import { GetPrivilegeResponse } from "../api/getPrivilege";
+import { useDeletePrivilege } from "../_hooks/useDeletePrivilege";
+import { GetPrivilegeResponse } from "../_api/getPrivilege";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
@@ -37,7 +37,7 @@ import {
   ACTION_TYPE_VARIANTS,
   ACTION_TYPE_LABELS,
   ACTION_TYPE_COLORS,
-} from "@/feature/privileges/constants/actionType";
+} from "../../_constants/actionType";
 
 interface PrivilegePageProps {
   privilege: GetPrivilegeResponse;

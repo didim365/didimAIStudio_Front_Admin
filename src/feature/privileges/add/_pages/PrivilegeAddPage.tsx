@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { usePostPrivilege } from "../hooks/usePostPrivilege";
+import { usePostPrivilege } from "../_hooks/usePostPrivilege";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -34,7 +34,7 @@ import {
   ACTION_TYPE_OPTIONS,
   ACTION_TYPE_LABELS,
   ACTION_TYPE_VARIANTS,
-} from "../constants/actionType";
+} from "../../_constants/actionType";
 
 type ActionType = "READ" | "WRITE" | "EXECUTE" | "DELETE" | "UPDATE" | "PATCH";
 

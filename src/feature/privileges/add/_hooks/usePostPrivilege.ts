@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import postPrivilege from "../api/postPrivilege";
+import postPrivilege from "../_api/postPrivilege";
 
 type PostPrivilegesRequest =
   paths["/api/v1/roles/privileges"]["post"]["requestBody"]["content"]["application/json"];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetPrivileges } from "../hooks/useGetPrivileges";
+import { useGetPrivileges } from "../_hooks/useGetPrivileges";
 import { Button } from "@/shared/ui/button";
 import {
   Table,
@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import {
   ACTION_TYPE_VARIANTS,
   ACTION_TYPE_LABELS,
-} from "@/feature/privileges/constants/actionType";
+} from "@/feature/privileges/_constants/actionType";
 
 export default function PrivilegesPage() {
   const router = useRouter();
