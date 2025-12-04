@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Button } from "@/shared/ui/button";
-import { usePostLogin } from "../hooks/usePostLogin";
+import { usePostLogin } from "../_hooks/usePostLogin";
 import MENU from "@/shared/constants/menu";
 
 export default function LoginPage() {

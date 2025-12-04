@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import postLogin from "../api/postLogin";
+import postLogin from "../_api/postLogin";
 import { tokenStorage } from "@/shared/utils/tokenStorage";
 
 type LoginRequest =
