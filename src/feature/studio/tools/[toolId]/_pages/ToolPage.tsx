@@ -165,6 +165,9 @@ function ToolPage({
     });
   };
 
+  const isActionDisabled =
+    isDeleting || isDeploying || isStopping || isStarting;
+
   const DeploymentIcon =
     deploymentTypeConfig[tool.deployment_type]?.icon || Server;
 
@@ -216,7 +219,7 @@ function ToolPage({
         <div className="flex items-center gap-2 shrink-0">
           <ActionButton
             onClick={() => setShowDeployDialog(true)}
-            disabled={isDeleting || isDeploying || isStopping || isStarting}
+            disabled={isActionDisabled}
             isLoading={isDeploying}
             icon={Rocket}
             label="배포"
@@ -225,7 +228,7 @@ function ToolPage({
           />
           <ActionButton
             onClick={() => setShowStartDialog(true)}
-            disabled={isDeleting || isDeploying || isStopping || isStarting}
+            disabled={isActionDisabled}
             isLoading={isStarting}
             icon={Play}
             label="시작"
@@ -234,7 +237,7 @@ function ToolPage({
           />
           <ActionButton
             onClick={() => setShowStopDialog(true)}
-            disabled={isDeleting || isDeploying || isStopping || isStarting}
+            disabled={isActionDisabled}
             isLoading={isStopping}
             icon={StopCircle}
             label="중지"
@@ -242,10 +245,7 @@ function ToolPage({
             className="from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800"
           />
           <Link href={`/studio/tools/${tool.id}/edit`}>
-            <Button
-              className="cursor-pointer"
-              disabled={isDeleting || isDeploying || isStopping || isStarting}
-            >
+            <Button className="cursor-pointer" disabled={isActionDisabled}>
               <Pencil className="h-4 w-4 mr-2" />
               수정
             </Button>
@@ -254,7 +254,7 @@ function ToolPage({
             variant="destructive"
             className="cursor-pointer"
             onClick={() => setShowDeleteDialog(true)}
-            disabled={isDeleting || isDeploying || isStopping || isStarting}
+            disabled={isActionDisabled}
           >
             {isDeleting && (
               <>
