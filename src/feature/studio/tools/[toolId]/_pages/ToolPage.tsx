@@ -158,6 +158,11 @@ function ToolPage({
   const isActionDisabled =
     isDeleting || isDeploying || isStopping || isStarting;
 
+  // 상태에 따른 버튼 비활성화 로직
+  const isDeployDisabled = isActionDisabled || tool.status === "ACTIVE";
+  const isStartDisabled = isActionDisabled || tool.status === "ACTIVE";
+  const isStopDisabled = isActionDisabled || tool.status !== "ACTIVE";
+
   const DeploymentIcon =
     deploymentTypeConfig[tool.deployment_type]?.icon || Server;
 
@@ -209,7 +214,7 @@ function ToolPage({
         <div className="flex items-center gap-2 shrink-0">
           <ActionButton
             onClick={() => setShowDeployDialog(true)}
-            disabled={isActionDisabled}
+            disabled={isDeployDisabled}
             isLoading={isDeploying}
             icon={Rocket}
             label="배포"
@@ -218,7 +223,7 @@ function ToolPage({
           />
           <ActionButton
             onClick={() => setShowStartDialog(true)}
-            disabled={isActionDisabled}
+            disabled={isStartDisabled}
             isLoading={isStarting}
             icon={Play}
             label="시작"
@@ -227,7 +232,7 @@ function ToolPage({
           />
           <ActionButton
             onClick={() => setShowStopDialog(true)}
-            disabled={isActionDisabled}
+            disabled={isStopDisabled}
             isLoading={isStopping}
             icon={StopCircle}
             label="중지"
