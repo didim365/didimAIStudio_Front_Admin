@@ -33,7 +33,7 @@ import {
   GROUP_TYPE_OPTIONS,
 } from "../../../_constants/groupType";
 import { GetGroupResponse } from "../../_api/getGroup";
-import { GetRolesResponse } from "@/feature/roles/api/getRoles";
+import { GetRolesResponse } from "@/feature/roles/_api/getRoles";
 import Link from "next/link";
 
 export function GroupEditPage({
