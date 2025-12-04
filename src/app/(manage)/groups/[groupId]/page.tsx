@@ -1,5 +1,5 @@
-import GroupPage from "@/feature/groups/pages/GroupPage";
-import getGroup from "@/feature/groups/api/getGroup";
+import GroupPage from "@/feature/groups/[groupId]/_pages/GroupPage";
+import getGroup from "@/feature/groups/[groupId]/_api/getGroup";
 
 async function Page({ params }: { params: Promise<{ groupId: string }> }) {
   const { groupId } = await params;

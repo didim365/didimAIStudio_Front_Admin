@@ -1,5 +1,5 @@
-import getPersona from "@/feature/personas/api/getPersona";
-import PersonaEditPage from "@/feature/personas/pages/PersonaEditPage";
+import getPersona from "@/feature/personas/[personaId]/_api/getPersona";
+import PersonaEditPage from "@/feature/personas/[personaId]/edit/_pages/PersonaEditPage";
 
 async function Page({ params }: { params: Promise<{ personaId: string }> }) {
   const { personaId } = await params;
