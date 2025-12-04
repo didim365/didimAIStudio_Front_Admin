@@ -1,6 +1,6 @@
 import GroupAddPage from "@/feature/groups/add/_pages/GroupAddPage";
 import getMyInfo from "@/shared/api/getMyInfo";
-import getRoles from "@/feature/roles/api/getRoles";
+import getRoles from "@/feature/roles/_api/getRoles";
 
 // 이 페이지는 쿠키를 사용하므로 동적 렌더링이 필요합니다
 export const dynamic = "force-dynamic";
