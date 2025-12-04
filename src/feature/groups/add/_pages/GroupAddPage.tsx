@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
+import { Textarea } from "@/shared/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -26,6 +27,7 @@ import {
   Network,
   UserCog,
   FolderTree,
+  FileText,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import ParentGroupSelect from "../../_components/ParentGroupSelect";
@@ -54,6 +56,7 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
   const [formData, setFormData] = useState({
     group_name: "",
     group_type: "COMPANY" as GroupType,
+    description: "",
     parent_group_id: undefined as number | undefined,
     manager: undefined as number | undefined,
     role_id: undefined as number | undefined,
@@ -85,6 +88,7 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
     createGroup({
       group_name: formData.group_name,
       group_type: formData.group_type,
+      description: formData.description || null,
       parent_group_id: formData.parent_group_id || null,
       manager: formData.manager || null,
       role_id: formData.role_id,
@@ -246,6 +250,30 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                   <p className="text-xs text-muted-foreground">
                     그룹에 할당할 역할을 선택하세요
                   </p>
+                </div>
+
+                {/* 설명 */}
+                <div className="space-y-2 md:col-span-2">
+                  <Label
+                    htmlFor="description"
+                    className="flex items-center gap-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>설명</span>
+                  </Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="그룹에 대한 설명을 입력하세요"
+                    rows={4}
+                    className="resize-none"
+                  />
                 </div>
               </div>
             </CardContent>
