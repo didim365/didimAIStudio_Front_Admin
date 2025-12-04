@@ -33,6 +33,7 @@ import {
   Loader2,
   Rocket,
   StopCircle,
+  Play,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
@@ -47,6 +48,7 @@ import { GetToolResponse } from "../_api/getTool";
 import { useDeleteTool } from "../_hooks/useDeleteTool";
 import { usePostDeployTool } from "../_hooks/usePostDeployTool";
 import { usePostToolStop } from "../_hooks/usePostToolStop";
+import { usePostToolStart } from "../_hooks/usePostToolStart";
 import { GetToolConfigResponse } from "../_api/getToolConfig";
 import { ServerConfigCard } from "../_components/ServerConfigCard";
 
@@ -62,6 +64,7 @@ function ToolPage({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDeployDialog, setShowDeployDialog] = useState(false);
   const [showStopDialog, setShowStopDialog] = useState(false);
+  const [showStartDialog, setShowStartDialog] = useState(false);
   console.log({ tool });
   // 도구 삭제 mutation
   const { mutate: deleteTool, isPending: isDeleting } = useDeleteTool({
@@ -94,6 +97,23 @@ function ToolPage({
     },
   });
 
+  // 도구 시작 mutation
+  const { mutate: startTool, isPending: isStarting } = usePostToolStart({
+    onSuccess: () => {
+      // 도구 상세 정보 쿼리 무효화하여 최신 상태 가져오기
+      queryClient.invalidateQueries({
+        queryKey: ["mcp-tools", tool.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["mcp-tools"],
+      });
+      setShowStartDialog(false);
+    },
+    meta: {
+      successMessage: "도구 시작이 시작되었습니다.",
+    },
+  });
+
   // 도구 중지 mutation
   const { mutate: stopTool, isPending: isStopping } = usePostToolStop({
     onSuccess: () => {
@@ -121,6 +141,15 @@ function ToolPage({
       data: {
         timeout_seconds: 300,
         force_restart: false,
+      },
+    });
+  };
+
+  const handleStart = () => {
+    startTool({
+      params: { tool_id: tool.id },
+      data: {
+        health_check_timeout: 60,
       },
     });
   };
@@ -171,7 +200,7 @@ function ToolPage({
               variant="ghost"
               size="icon"
               className="shrink-0 cursor-pointer"
-              disabled={isDeleting || isStopping}
+              disabled={isDeleting || isStopping || isStarting}
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -187,7 +216,7 @@ function ToolPage({
           <Button
             className="cursor-pointer bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
             onClick={() => setShowDeployDialog(true)}
-            disabled={isDeleting || isDeploying || isStopping}
+            disabled={isDeleting || isDeploying || isStopping || isStarting}
           >
             {isDeploying && (
               <>
@@ -203,9 +232,27 @@ function ToolPage({
             )}
           </Button>
           <Button
+            className="cursor-pointer bg-linear-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+            onClick={() => setShowStartDialog(true)}
+            disabled={isDeleting || isDeploying || isStopping || isStarting}
+          >
+            {isStarting && (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                시작 중...
+              </>
+            )}
+            {!isStarting && (
+              <>
+                <Play className="h-4 w-4 mr-2" />
+                시작
+              </>
+            )}
+          </Button>
+          <Button
             className="cursor-pointer bg-linear-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
             onClick={() => setShowStopDialog(true)}
-            disabled={isDeleting || isDeploying || isStopping}
+            disabled={isDeleting || isDeploying || isStopping || isStarting}
           >
             {isStopping && (
               <>
@@ -223,7 +270,7 @@ function ToolPage({
           <Link href={`/studio/tools/${tool.id}/edit`}>
             <Button
               className="cursor-pointer"
-              disabled={isDeleting || isDeploying || isStopping}
+              disabled={isDeleting || isDeploying || isStopping || isStarting}
             >
               <Pencil className="h-4 w-4 mr-2" />
               수정
@@ -233,7 +280,7 @@ function ToolPage({
             variant="destructive"
             className="cursor-pointer"
             onClick={() => setShowDeleteDialog(true)}
-            disabled={isDeleting || isDeploying || isStopping}
+            disabled={isDeleting || isDeploying || isStopping || isStarting}
           >
             {isDeleting && (
               <>
@@ -250,6 +297,69 @@ function ToolPage({
           </Button>
         </div>
       </div>
+
+      {/* Start Confirmation Dialog */}
+      <AlertDialog
+        open={showStartDialog}
+        onOpenChange={(open) => {
+          // 시작 중일 때는 모달을 닫을 수 없도록 함
+          if (!isStarting) {
+            setShowStartDialog(open);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Play className="h-5 w-5 text-green-600" />
+              도구 시작 {isStarting ? "중" : "확인"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              <>
+                <span className="font-semibold">{tool.name}</span>을(를)
+                시작하시겠습니까?
+                <br />
+                <div className="mt-4 space-y-2 text-sm">
+                  <div className="flex items-start gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-green-600 mt-1.5 shrink-0" />
+                    <span className="text-muted-foreground">
+                      배포 타입:
+                      <span className="font-medium text-foreground">
+                        {deploymentTypeConfig[tool.deployment_type]?.label ||
+                          tool.deployment_type}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-green-600 mt-1.5 shrink-0" />
+                    <span className="text-muted-foreground">
+                      현재 상태:
+                      <span className="font-medium text-foreground">
+                        {statusConfig[tool.status].label}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                <span className="text-muted-foreground mt-4 block text-xs">
+                  참고: 시작 작업은 비동기로 처리되며, 완료까지 시간이 걸릴 수
+                  있습니다.
+                </span>
+              </>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isStarting}>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleStart}
+              disabled={isStarting}
+              className="flex items-center gap-2 bg-linear-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
+            >
+              {isStarting && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isStarting ? "시작 중..." : "시작"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Deploy Confirmation Dialog */}
       <AlertDialog
