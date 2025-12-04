@@ -1,5 +1,5 @@
-import { UserEditPage } from "@/feature/users/pages/UserEditPage";
-import getUser from "@/feature/users/api/getUser";
+import { UserEditPage } from "@/feature/users/[userId]/edit/_pages/UserEditPage";
+import getUser from "@/feature/users/[userId]/_api/getUser";
 
 async function Page({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params;

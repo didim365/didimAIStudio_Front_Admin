@@ -1,5 +1,5 @@
-import { UserAddPage } from "@/feature/users/pages/UserAddPage";
-import getRoles from "@/feature/roles/api/getRoles";
+import { UserAddPage } from "@/feature/users/add/_pages/UserAddPage";
+import getRoles from "@/feature/roles/_api/getRoles";
 
 export const dynamic = "force-dynamic";
 

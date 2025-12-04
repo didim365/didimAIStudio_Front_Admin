@@ -1,4 +1,4 @@
-import UsersPage from "@/feature/users/pages/UsersPage";
+import UsersPage from "@/feature/users/_pages/UsersPage";
 
 export default function Page() {
   return <UsersPage />;

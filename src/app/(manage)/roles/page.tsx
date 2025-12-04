@@ -1,4 +1,4 @@
-import RolesPage from "@/feature/roles/pages/RolesPage";
+import RolesPage from "@/feature/roles/_pages/RolesPage";
 
 function Page() {
   return <RolesPage />;
