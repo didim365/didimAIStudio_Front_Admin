@@ -55,12 +55,14 @@ export function UserAddPage({ roles }: UserAddPageProps) {
   // 사용자 생성 mutation
   const { mutate: createUser, isPending: isCreating } = usePostUser({
     onSuccess: (data) => {
-      toast.success("사용자가 성공적으로 생성되었습니다.");
       queryClient.invalidateQueries({
         queryKey: ["users"],
       });
       // 생성된 사용자 상세 페이지로 이동
       router.push(`/users/${data.id}`);
+    },
+    meta: {
+      successMessage: "사용자가 성공적으로 생성되었습니다.",
     },
   });
 
@@ -92,14 +94,14 @@ export function UserAddPage({ roles }: UserAddPageProps) {
       return;
     }
 
-    // 전화번호에서 숫자만 추출하여 전송
+    // 전화번호에서 숫자만 추출하여 전송 (빈 문자열이면 null)
     const phoneDigits = formData.phone_number.replace(/\D/g, "");
 
     createUser({
       email: formData.email,
       password: formData.password,
       full_name: formData.full_name || null,
-      phone: phoneDigits,
+      phone: phoneDigits || null,
       status: formData.status,
       role_id: formData.role_id || null,
       preferences: null,
@@ -204,7 +206,7 @@ export function UserAddPage({ roles }: UserAddPageProps) {
                       className="flex items-center gap-2"
                     >
                       <Phone className="h-4 w-4" />
-                      <span>전화번호 *</span>
+                      <span>전화번호</span>
                     </Label>
                     <Input
                       id="phone_number"
@@ -214,7 +216,6 @@ export function UserAddPage({ roles }: UserAddPageProps) {
                       placeholder="010-1234-5678"
                       className="pl-6"
                       maxLength={13}
-                      required
                     />
                   </div>
 
