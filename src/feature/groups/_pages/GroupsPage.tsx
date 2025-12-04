@@ -67,7 +67,8 @@ export function GroupsPage() {
             <TableHeader>
               <TableRow className="text-center">
                 <TableHead className="w-[5%] text-center">ID</TableHead>
-                <TableHead className="w-[45%] text-center">그룹명</TableHead>
+                <TableHead className="w-[25%] text-center">그룹명</TableHead>
+                <TableHead className="w-[20%] text-center">설명</TableHead>
                 <TableHead className="w-[5%] text-center">그룹 타입</TableHead>
                 <TableHead className="w-[5%] text-center">상위 그룹</TableHead>
                 <TableHead className="w-[5%] text-center">관리자</TableHead>
@@ -90,6 +91,9 @@ export function GroupsPage() {
                   </TableCell>
                   <TableCell className="font-medium">
                     {group.group_name}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {group.description ?? "-"}
                   </TableCell>
                   <TableCell className="text-center">
                     <Badge

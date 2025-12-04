@@ -29,6 +29,7 @@ import {
   Hash,
   FolderTree,
   Shield,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
@@ -191,6 +192,17 @@ function GroupPage({ group }: GroupPageProps) {
                   <p className="text-lg font-semibold pl-6">#{group.id}</p>
                 </div>
 
+                {/* Description */}
+                <div className="space-y-2 md:col-span-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <FileText className="h-4 w-4" />
+                    <span className="font-medium">설명</span>
+                  </div>
+                  <p className="text-base pl-6 text-muted-foreground">
+                    {group.description || "-"}
+                  </p>
+                </div>
+
                 {/* Parent Group */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -198,12 +210,16 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">상위 그룹</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    <Link
-                      href={`/groups/${group.parent_group_id}`}
-                      className="text-primary hover:underline cursor-pointer"
-                    >
-                      {group.id}
-                    </Link>
+                    {group.parent_group_id ? (
+                      <Link
+                        href={`/groups/${group.parent_group_id}`}
+                        className="text-primary hover:underline cursor-pointer"
+                      >
+                        #{group.parent_group_id}
+                      </Link>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
                   </p>
                 </div>
 
@@ -225,12 +241,16 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">매니저</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    <Link
-                      href={`/users/${group.manager}`}
-                      className="text-primary hover:underline cursor-pointer"
-                    >
-                      {group.manager}
-                    </Link>
+                    {group.manager ? (
+                      <Link
+                        href={`/users/${group.manager}`}
+                        className="text-primary hover:underline cursor-pointer"
+                      >
+                        #{group.manager}
+                      </Link>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
                   </p>
                 </div>
 
@@ -245,18 +265,24 @@ function GroupPage({ group }: GroupPageProps) {
                       href={`/users/${group.creator}`}
                       className="text-primary hover:underline cursor-pointer"
                     >
-                      {group.creator}
+                      #{group.creator}
                     </Link>
                   </p>
                 </div>
 
                 {/* Role ID */}
-                <div className="space-y-2 md:col-span-2">
+                <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Shield className="h-4 w-4" />
                     <span className="font-medium">역할</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">{group.role_id}</p>
+                  <p className="text-lg font-semibold pl-6">
+                    {group.role_id ? (
+                      <span>#{group.role_id}</span>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </p>
                 </div>
 
                 {/* Created At */}
@@ -277,7 +303,7 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">마지막 업데이트</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {group.updated_at ? formatDate(group.updated_at) : "없음"}
+                    {group.updated_at ? formatDate(group.updated_at) : "-"}
                   </p>
                 </div>
               </div>

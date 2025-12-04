@@ -18,6 +18,7 @@ import {
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
+import { Textarea } from "@/shared/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -53,6 +54,7 @@ export function GroupEditPage({
       | "DEPARTMENT"
       | "TEAM"
       | "PERSONAL",
+    description: group.description || "",
     parent_group_id: group.parent_group_id || null,
     manager: group.manager || null,
     role_id: group.role_id || null,
@@ -75,6 +77,7 @@ export function GroupEditPage({
       data: {
         group_name: formData.group_name || null,
         group_type: formData.group_type || null,
+        description: formData.description || null,
         parent_group_id: formData.parent_group_id || null,
         manager: formData.manager || null,
         role_id: formData.role_id || null,
@@ -244,6 +247,30 @@ export function GroupEditPage({
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  {/* Description */}
+                  <div className="space-y-2 md:col-span-2">
+                    <Label
+                      htmlFor="description"
+                      className="flex items-center gap-2"
+                    >
+                      <Building2 className="h-4 w-4" />
+                      <span>설명</span>
+                    </Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      placeholder="그룹에 대한 설명을 입력하세요"
+                      rows={4}
+                      className="resize-none"
+                    />
                   </div>
                 </div>
               </div>
