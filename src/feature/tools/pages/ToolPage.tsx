@@ -34,6 +34,7 @@ import {
   FileCode,
   GitBranch,
   Loader2,
+  Rocket,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
@@ -46,6 +47,7 @@ import {
 } from "../constants/toolConfigs";
 import { GetToolResponse } from "../api/getTool";
 import { useDeleteTool } from "../hooks/useDeleteTool";
+import { usePostDeployTool } from "../hooks/usePostDeployTool";
 import { GetToolConfigResponse } from "../api/getToolConfig";
 import { ServerConfigCard } from "../components/ServerConfigCard";
 
@@ -59,6 +61,7 @@ function ToolPage({
   const router = useRouter();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showDeployDialog, setShowDeployDialog] = useState(false);
 
   // 도구 삭제 mutation
   const { mutate: deleteTool, isPending: isDeleting } = useDeleteTool({
@@ -74,8 +77,35 @@ function ToolPage({
     },
   });
 
+  // 도구 배포 mutation
+  const { mutate: deployTool, isPending: isDeploying } = usePostDeployTool({
+    onSuccess: () => {
+      // 도구 상세 정보 쿼리 무효화하여 최신 상태 가져오기
+      queryClient.invalidateQueries({
+        queryKey: ["mcp-tools", tool.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["mcp-tools"],
+      });
+      setShowDeployDialog(false);
+    },
+    meta: {
+      successMessage: "도구 배포가 시작되었습니다.",
+    },
+  });
+
   const handleDelete = () => {
     deleteTool({ tool_id: tool.id });
+  };
+
+  const handleDeploy = () => {
+    deployTool({
+      params: { tool_id: tool.id },
+      data: {
+        timeout_seconds: 300,
+        force_restart: false,
+      },
+    });
   };
 
   const DeploymentIcon =
@@ -127,8 +157,29 @@ function ToolPage({
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <Button
+            className="cursor-pointer bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+            onClick={() => setShowDeployDialog(true)}
+            disabled={isDeleting || isDeploying}
+          >
+            {isDeploying && (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                배포 중...
+              </>
+            )}
+            {!isDeploying && (
+              <>
+                <Rocket className="h-4 w-4 mr-2" />
+                배포
+              </>
+            )}
+          </Button>
           <Link href={`/studio/tools/${tool.id}/edit`}>
-            <Button className="cursor-pointer" disabled={isDeleting}>
+            <Button
+              className="cursor-pointer"
+              disabled={isDeleting || isDeploying}
+            >
               <Pencil className="h-4 w-4 mr-2" />
               수정
             </Button>
@@ -137,7 +188,7 @@ function ToolPage({
             variant="destructive"
             className="cursor-pointer"
             onClick={() => setShowDeleteDialog(true)}
-            disabled={isDeleting}
+            disabled={isDeleting || isDeploying}
           >
             {isDeleting && (
               <>
@@ -154,6 +205,69 @@ function ToolPage({
           </Button>
         </div>
       </div>
+
+      {/* Deploy Confirmation Dialog */}
+      <AlertDialog
+        open={showDeployDialog}
+        onOpenChange={(open) => {
+          // 배포 중일 때는 모달을 닫을 수 없도록 함
+          if (!isDeploying) {
+            setShowDeployDialog(open);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Rocket className="h-5 w-5 text-blue-600" />
+              도구 배포 {isDeploying ? "중" : "확인"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              <>
+                <span className="font-semibold">{tool.name}</span>을(를)
+                배포하시겠습니까?
+                <br />
+                <div className="mt-4 space-y-2 text-sm">
+                  <div className="flex items-start gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-blue-600 mt-1.5 shrink-0" />
+                    <span className="text-muted-foreground">
+                      배포 타입:
+                      <span className="font-medium text-foreground">
+                        {deploymentTypeConfig[tool.deployment_type]?.label ||
+                          tool.deployment_type}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-blue-600 mt-1.5 shrink-0" />
+                    <span className="text-muted-foreground">
+                      현재 상태:
+                      <span className="font-medium text-foreground">
+                        {statusConfig[tool.status].label}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                <span className="text-muted-foreground mt-4 block text-xs">
+                  참고: 배포 작업은 비동기로 처리되며, 완료까지 시간이 걸릴 수
+                  있습니다.
+                </span>
+              </>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeploying}>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeploy}
+              disabled={isDeploying}
+              className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+            >
+              {isDeploying && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isDeploying ? "배포 중..." : "배포 시작"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog
@@ -330,72 +444,8 @@ function ToolPage({
             <Separator />
 
             {/* Performance Metrics & Timeline & Tags Section */}
-            <div className="grid gap-6 md:grid-cols-3">
-              {/* Performance Metrics - Column 1 */}
-              <div className="space-y-4">
-                <h3 className="flex items-center gap-2 text-sm font-semibold">
-                  <Activity className="h-4 w-4" />
-                  성능 지표
-                </h3>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                  {/* Usage Count */}
-                  <div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                      <TrendingUp className="h-3.5 w-3.5" />
-                      <span>사용 횟수</span>
-                    </div>
-                    <p className="text-base font-semibold">
-                      {tool.usage_count?.toLocaleString() || 0}
-                      <span className="text-xs font-normal text-muted-foreground ml-1">
-                        회
-                      </span>
-                    </p>
-                  </div>
-
-                  {/* Success Rate */}
-                  <div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                      <Zap className="h-3.5 w-3.5" />
-                      <span>성공률</span>
-                    </div>
-                    <p className="text-base font-semibold">
-                      {tool.success_rate?.toFixed(1) || 0}
-                      <span className="text-xs font-normal text-muted-foreground ml-1">
-                        %
-                      </span>
-                    </p>
-                  </div>
-
-                  {/* Average Response Time */}
-                  <div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                      <Clock className="h-3.5 w-3.5" />
-                      <span>평균 응답 시간</span>
-                    </div>
-                    <p className="text-base font-semibold">
-                      {tool.average_response_time?.toFixed(0) || 0}
-                      <span className="text-xs font-normal text-muted-foreground ml-1">
-                        ms
-                      </span>
-                    </p>
-                  </div>
-
-                  {/* Last Used At */}
-                  <div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                      <Calendar className="h-3.5 w-3.5" />
-                      <span>마지막 사용</span>
-                    </div>
-                    <p className="text-base font-mono">
-                      {tool.last_used_at
-                        ? formatDate(tool.last_used_at)
-                        : "사용 기록 없음"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Timeline - Column 2 */}
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Timeline - Column 1 */}
               <div className="space-y-4">
                 <h3 className="flex items-center gap-2 text-sm font-semibold">
                   <Clock className="h-4 w-4" />
@@ -426,7 +476,7 @@ function ToolPage({
                 </div>
               </div>
 
-              {/* Tags and Keywords - Column 3 */}
+              {/* Tags and Keywords - Column 2 */}
               <div className="space-y-4">
                 <h3 className="flex items-center gap-2 text-sm font-semibold">
                   <Tag className="h-4 w-4" />
