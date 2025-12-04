@@ -2,20 +2,20 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/tools";
-import postDeployTool from "../_api/postDeployTool";
+import postToolDeploy from "../_api/postToolDeploy";
 
-type PostDeployToolParams =
+type PostToolDeployParams =
   paths["/v1/mcp-tools/{tool_id}:deploy"]["post"]["parameters"]["path"];
 
-type PostDeployToolRequest =
+type PostToolDeployRequest =
   paths["/v1/mcp-tools/{tool_id}:deploy"]["post"]["requestBody"]["content"]["application/json"];
 
-type PostDeployToolResponse =
+type PostToolDeployResponse =
   paths["/v1/mcp-tools/{tool_id}:deploy"]["post"]["responses"]["202"]["content"]["application/json"];
 
-type PostDeployToolVariables = {
-  params: PostDeployToolParams;
-  data: PostDeployToolRequest;
+type PostToolDeployVariables = {
+  params: PostToolDeployParams;
+  data: PostToolDeployRequest;
 };
 
 /**
@@ -27,13 +27,13 @@ type PostDeployToolVariables = {
  */
 export const usePostDeployTool = (
   options?: Omit<
-    UseMutationOptions<PostDeployToolResponse, Error, PostDeployToolVariables>,
+    UseMutationOptions<PostToolDeployResponse, Error, PostToolDeployVariables>,
     "mutationFn"
   >
 ) => {
-  return useMutation<PostDeployToolResponse, Error, PostDeployToolVariables>({
-    mutationFn: ({ params, data }: PostDeployToolVariables) =>
-      postDeployTool(params, data),
+  return useMutation<PostToolDeployResponse, Error, PostToolDeployVariables>({
+    mutationFn: ({ params, data }: PostToolDeployVariables) =>
+      postToolDeploy(params, data),
     ...options,
   });
 };
