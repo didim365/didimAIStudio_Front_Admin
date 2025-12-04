@@ -1,5 +1,5 @@
-import { RoleEditPage } from "@/feature/roles/pages/RoleEditPage";
-import getRole from "@/feature/roles/api/getRole";
+import { RoleEditPage } from "@/feature/roles/[roleId]/edit/_pages/RoleEditPage";
+import getRole from "@/feature/roles/[roleId]/_api/getRole";
 
 async function Page({ params }: { params: Promise<{ roleId: string }> }) {
   const { roleId } = await params;

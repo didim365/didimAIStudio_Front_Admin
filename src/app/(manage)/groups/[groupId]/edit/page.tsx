@@ -1,6 +1,6 @@
-import { GroupEditPage } from "@/feature/groups/pages/GroupEditPage";
-import getGroup from "@/feature/groups/api/getGroup";
-import getRoles from "@/feature/roles/api/getRoles";
+import { GroupEditPage } from "@/feature/groups/[groupId]/edit/_pages/GroupEditPage";
+import getGroup from "@/feature/groups/[groupId]/_api/getGroup";
+import getRoles from "@/feature/roles/_api/getRoles";
 
 interface PageProps {
   params: Promise<{ groupId: string }>;

@@ -1,5 +1,5 @@
-import ToolEditPage from "@/feature/tools/pages/ToolEditPage";
-import getMcpTool from "@/feature/tools/api/getMcpTool";
+import ToolEditPage from "@/feature/studio/tools/[toolId]/edit/_pages/ToolEditPage";
+import getTool from "@/feature/studio/tools/[toolId]/_api/getTool";
 
 async function Page({
   params,
@@ -7,7 +7,7 @@ async function Page({
   params: Promise<{ toolId: string }>;
 }) {
   const { toolId } = await params;
-  const tool = await getMcpTool({ tool_id: Number(toolId) });
+  const tool = await getTool({ tool_id: Number(toolId) });
 
   return <ToolEditPage tool={tool} />;
 }
