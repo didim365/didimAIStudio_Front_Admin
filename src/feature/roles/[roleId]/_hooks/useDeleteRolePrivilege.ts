@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import deleteRolePrivilege from "../api/deleteRolePrivilege";
+import deleteRolePrivilege from "../_api/deleteRolePrivilege";
 
 type DeleteRolePrivilegeParams =
   paths["/api/v1/roles/{role_id}/privileges/{privilege_id}"]["delete"]["parameters"]["path"];

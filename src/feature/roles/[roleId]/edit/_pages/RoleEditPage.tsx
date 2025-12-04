@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePutRole } from "../hooks/usePutRole";
+import { usePutRole } from "../_hooks/usePutRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
@@ -22,7 +22,7 @@ import { Textarea } from "@/shared/ui/textarea";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
-import { GetRoleResponse } from "../api/getRole";
+import { GetRoleResponse } from "../../_api/getRole";
 
 export function RoleEditPage({ role }: { role: GetRoleResponse }) {
   const router = useRouter();

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useDeleteRole } from "../hooks/useDeleteRole";
+import { useDeleteRole } from "../_hooks/useDeleteRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
@@ -31,8 +31,8 @@ import {
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
-import { RolePrivileges } from "../components/RolePrivileges";
-import { GetRoleResponse } from "../api/getRole";
+import { RolePrivileges } from "../_components/RolePrivileges";
+import { GetRoleResponse } from "../_api/getRole";
 
 function RolePage({ role }: { role: GetRoleResponse }) {
   const router = useRouter();

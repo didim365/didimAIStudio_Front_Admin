@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import deleteRole from "../api/deleteRole";
+import deleteRole from "../_api/deleteRole";
 
 type DeleteRoleParams =
   paths["/api/v1/roles/{role_id}"]["delete"]["parameters"]["path"];

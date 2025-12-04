@@ -2,7 +2,7 @@
 
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import getRolePrivileges from "../api/getRolePrivileges";
+import getRolePrivileges from "../_api/getRolePrivileges";
 
 type GetRolePrivilegesResponse =
   paths["/api/v1/roles/{role_id}/privileges"]["get"]["responses"]["200"]["content"]["application/json"];

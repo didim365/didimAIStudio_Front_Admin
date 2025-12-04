@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import putRole from "../api/putRole";
+import putRole from "../_api/putRole";
 
 type PutRoleParams =
   paths["/api/v1/roles/{role_id}"]["put"]["parameters"]["path"];

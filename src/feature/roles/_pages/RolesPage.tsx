@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetRoles } from "@/feature/roles/hooks/useGetRoles";
+import { useGetRoles } from "../_hooks/useGetRoles";
 import { Button } from "@/shared/ui/button";
 import {
   Table,

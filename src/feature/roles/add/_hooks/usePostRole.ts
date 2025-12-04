@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import postRole from "../api/postRole";
+import postRole from "../_api/postRole";
 
 type PostRoleRequest =
   paths["/api/v1/roles/"]["post"]["requestBody"]["content"]["application/json"];

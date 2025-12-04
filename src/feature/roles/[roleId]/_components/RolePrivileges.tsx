@@ -15,8 +15,8 @@ import {
   AlertDialogTitle,
 } from "@/shared/ui/alert-dialog";
 import { Key, Lock, FileText, AlertCircle, Trash2 } from "lucide-react";
-import { useGetRolePrivileges } from "../hooks/useGetRolePrivileges";
-import { useDeleteRolePrivilege } from "../hooks/useDeleteRolePrivilege";
+import { useGetRolePrivileges } from "../_hooks/useGetRolePrivileges";
+import { useDeleteRolePrivilege } from "../_hooks/useDeleteRolePrivilege";
 import { getActionTypeInfo } from "@/feature/privileges/_constants/actionType";
 import { AddPrivilegeDialog } from "./AddPrivilegeDialog";
 import Link from "next/link";
