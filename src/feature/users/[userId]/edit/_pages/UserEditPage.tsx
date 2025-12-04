@@ -232,7 +232,7 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="flex items-center gap-2">
                       <Phone className="h-4 w-4" />
-                      <span>전화번호 *</span>
+                      <span>전화번호</span>
                     </Label>
                     <Input
                       id="phone"
@@ -242,7 +242,6 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
                       placeholder="010-1234-5678"
                       className="pl-6"
                       maxLength={13}
-                      required
                     />
                   </div>
                 </div>
@@ -296,4 +295,3 @@ export function UserEditPage({ user }: { user: GetUserResponse }) {
     </form>
   );
 }
-
