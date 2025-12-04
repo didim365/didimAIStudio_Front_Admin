@@ -7,16 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/shared/ui/alert-dialog";
-import {
   Wrench,
   ArrowLeft,
   Pencil,
@@ -52,6 +42,7 @@ import { usePostToolStart } from "../_hooks/usePostToolStart";
 import { GetToolConfigResponse } from "../_api/getToolConfig";
 import { ServerConfigCard } from "../_components/ServerConfigCard";
 import { ActionButton } from "../_components/ActionButton";
+import { ToolActionDialog } from "../_components/ToolActionDialog";
 
 function ToolPage({
   tool,
@@ -66,7 +57,6 @@ function ToolPage({
   const [showDeployDialog, setShowDeployDialog] = useState(false);
   const [showStopDialog, setShowStopDialog] = useState(false);
   const [showStartDialog, setShowStartDialog] = useState(false);
-  console.log({ tool });
   // 도구 삭제 mutation
   const { mutate: deleteTool, isPending: isDeleting } = useDeleteTool({
     onSuccess: () => {
@@ -273,236 +263,50 @@ function ToolPage({
       </div>
 
       {/* Start Confirmation Dialog */}
-      <AlertDialog
+      <ToolActionDialog
         open={showStartDialog}
-        onOpenChange={(open) => {
-          // 시작 중일 때는 모달을 닫을 수 없도록 함
-          if (!isStarting) {
-            setShowStartDialog(open);
-          }
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <Play className="h-5 w-5 text-green-600" />
-              도구 시작 {isStarting ? "중" : "확인"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              <>
-                <span className="font-semibold">{tool.name}</span>을(를)
-                시작하시겠습니까?
-                <br />
-                <div className="mt-4 space-y-2 text-sm">
-                  <div className="flex items-start gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-green-600 mt-1.5 shrink-0" />
-                    <span className="text-muted-foreground">
-                      배포 타입:
-                      <span className="font-medium text-foreground">
-                        {deploymentTypeConfig[tool.deployment_type]?.label ||
-                          tool.deployment_type}
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-green-600 mt-1.5 shrink-0" />
-                    <span className="text-muted-foreground">
-                      현재 상태:
-                      <span className="font-medium text-foreground">
-                        {statusConfig[tool.status].label}
-                      </span>
-                    </span>
-                  </div>
-                </div>
-                <span className="text-muted-foreground mt-4 block text-xs">
-                  참고: 시작 작업은 비동기로 처리되며, 완료까지 시간이 걸릴 수
-                  있습니다.
-                </span>
-              </>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isStarting}>취소</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleStart}
-              disabled={isStarting}
-              className="flex items-center gap-2 bg-linear-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
-            >
-              {isStarting && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isStarting ? "시작 중..." : "시작"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onOpenChange={setShowStartDialog}
+        isLoading={isStarting}
+        actionType="start"
+        toolName={tool.name}
+        deploymentType={tool.deployment_type}
+        status={tool.status}
+        onConfirm={handleStart}
+      />
 
       {/* Deploy Confirmation Dialog */}
-      <AlertDialog
+      <ToolActionDialog
         open={showDeployDialog}
-        onOpenChange={(open) => {
-          // 배포 중일 때는 모달을 닫을 수 없도록 함
-          if (!isDeploying) {
-            setShowDeployDialog(open);
-          }
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <Rocket className="h-5 w-5 text-blue-600" />
-              도구 배포 {isDeploying ? "중" : "확인"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              <>
-                <span className="font-semibold">{tool.name}</span>을(를)
-                배포하시겠습니까?
-                <br />
-                <div className="mt-4 space-y-2 text-sm">
-                  <div className="flex items-start gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-blue-600 mt-1.5 shrink-0" />
-                    <span className="text-muted-foreground">
-                      배포 타입:
-                      <span className="font-medium text-foreground">
-                        {deploymentTypeConfig[tool.deployment_type]?.label ||
-                          tool.deployment_type}
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-blue-600 mt-1.5 shrink-0" />
-                    <span className="text-muted-foreground">
-                      현재 상태:
-                      <span className="font-medium text-foreground">
-                        {statusConfig[tool.status].label}
-                      </span>
-                    </span>
-                  </div>
-                </div>
-                <span className="text-muted-foreground mt-4 block text-xs">
-                  참고: 배포 작업은 비동기로 처리되며, 완료까지 시간이 걸릴 수
-                  있습니다.
-                </span>
-              </>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeploying}>취소</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeploy}
-              disabled={isDeploying}
-              className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
-            >
-              {isDeploying && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isDeploying ? "배포 중..." : "배포 시작"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onOpenChange={setShowDeployDialog}
+        isLoading={isDeploying}
+        actionType="deploy"
+        toolName={tool.name}
+        deploymentType={tool.deployment_type}
+        status={tool.status}
+        onConfirm={handleDeploy}
+      />
 
       {/* Stop Confirmation Dialog */}
-      <AlertDialog
+      <ToolActionDialog
         open={showStopDialog}
-        onOpenChange={(open) => {
-          // 중지 중일 때는 모달을 닫을 수 없도록 함
-          if (!isStopping) {
-            setShowStopDialog(open);
-          }
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <StopCircle className="h-5 w-5 text-orange-600" />
-              도구 중지 {isStopping ? "중" : "확인"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              <>
-                <span className="font-semibold">{tool.name}</span>을(를)
-                중지하시겠습니까?
-                <br />
-                <div className="mt-4 space-y-2 text-sm">
-                  <div className="flex items-start gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-orange-600 mt-1.5 shrink-0" />
-                    <span className="text-muted-foreground">
-                      배포 타입:
-                      <span className="font-medium text-foreground">
-                        {deploymentTypeConfig[tool.deployment_type]?.label ||
-                          tool.deployment_type}
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-orange-600 mt-1.5 shrink-0" />
-                    <span className="text-muted-foreground">
-                      현재 상태:
-                      <span className="font-medium text-foreground">
-                        {statusConfig[tool.status].label}
-                      </span>
-                    </span>
-                  </div>
-                </div>
-                <span className="text-muted-foreground mt-4 block text-xs">
-                  참고: 중지 작업은 비동기로 처리되며, 완료까지 시간이 걸릴 수
-                  있습니다.
-                </span>
-              </>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isStopping}>취소</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleStop}
-              disabled={isStopping}
-              className="flex items-center gap-2 bg-linear-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800"
-            >
-              {isStopping && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isStopping ? "중지 중..." : "중지 시작"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onOpenChange={setShowStopDialog}
+        isLoading={isStopping}
+        actionType="stop"
+        toolName={tool.name}
+        deploymentType={tool.deployment_type}
+        status={tool.status}
+        onConfirm={handleStop}
+      />
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog
+      <ToolActionDialog
         open={showDeleteDialog}
-        onOpenChange={(open) => {
-          // 삭제 중일 때는 모달을 닫을 수 없도록 함
-          if (!isDeleting) {
-            setShowDeleteDialog(open);
-          }
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              도구 삭제 {isDeleting ? "중" : "확인"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              <>
-                정말 <span className="font-semibold">{tool.name}</span>을(를)
-                삭제하시겠습니까?
-                <br />
-                <span className="text-destructive mt-2 block">
-                  이 작업은 되돌릴 수 없습니다.
-                </span>
-                <span className="text-muted-foreground mt-2 block text-xs">
-                  참고: 삭제 작업은 약 1분 정도 소요될 수 있습니다.
-                </span>
-              </>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="flex items-center gap-2"
-            >
-              {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isDeleting ? "삭제 중..." : "삭제"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onOpenChange={setShowDeleteDialog}
+        isLoading={isDeleting}
+        actionType="delete"
+        toolName={tool.name}
+        onConfirm={handleDelete}
+      />
 
       {/* Main Content Grid */}
       <div className="grid gap-6 md:grid-cols-2">
