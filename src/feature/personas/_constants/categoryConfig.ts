@@ -1,3 +1,9 @@
+import { components } from "@/shared/types/api/agents";
+
+// API 타입에서 가져오기
+export type PersonaCategoryEnum =
+  components["schemas"]["PersonaCategoryEnum"];
+
 export const categoryConfig: Record<string, { label: string; color: string }> =
   {
     IT: { label: "IT", color: "bg-blue-100 text-blue-800 border-blue-200" },

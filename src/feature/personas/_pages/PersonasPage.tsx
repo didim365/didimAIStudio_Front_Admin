@@ -25,8 +25,12 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { PersonaCategoryEnum } from "../api/getPersona";
-import useGetPersonas from "../hooks/useGetPersonas";
+import {
+  categoryConfig,
+  CATEGORY_OPTIONS,
+  PersonaCategoryEnum,
+} from "../_constants/categoryConfig";
+import useGetPersonas from "../_hooks/useGetPersonas";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
 import Link from "next/link";
@@ -40,7 +44,6 @@ import {
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
 import { cn } from "@/shared/lib/utils";
-import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { parseBooleanFilter } from "@/feature/studio/agents/utils/parseBooleanFilter";
 
 export default function PersonasPage() {

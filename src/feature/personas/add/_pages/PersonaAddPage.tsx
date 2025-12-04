@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { usePostPersona } from "../hooks/usePostPersona";
+import { usePostPersona } from "../_hooks/usePostPersona";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -30,8 +30,11 @@ import {
   Info,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
-import { PersonaCategoryEnum } from "../api/getPersona";
+import {
+  categoryConfig,
+  CATEGORY_OPTIONS,
+  PersonaCategoryEnum,
+} from "../../_constants/categoryConfig";
 import { GetMyInfoResponse } from "@/shared/api/getMyInfo";
 
 interface PersonaAddPageProps {

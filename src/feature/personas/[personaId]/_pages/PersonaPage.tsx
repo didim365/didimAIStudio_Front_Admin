@@ -32,10 +32,10 @@ import {
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
-import { categoryConfig } from "../constants/categoryConfig";
+import { categoryConfig } from "../../_constants/categoryConfig";
 
-import type { GetPersonaResponse } from "../api/getPersona";
-import useDeletePersona from "../hooks/useDeletePersona";
+import type { GetPersonaResponse } from "../_api/getPersona";
+import useDeletePersona from "../_hooks/useDeletePersona";
 import { useRouter } from "next/navigation";
 
 interface PersonaPageProps {

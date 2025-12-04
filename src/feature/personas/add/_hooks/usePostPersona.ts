@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/agents";
-import postPersona from "../api/postPersona";
+import postPersona from "../_api/postPersona";
 
 type PostPersonaRequest =
   paths["/v1/personas/data"]["post"]["requestBody"]["content"]["application/json"];

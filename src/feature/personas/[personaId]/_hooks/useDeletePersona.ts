@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/agents";
-import deletePersona from "../api/deletePersona";
+import deletePersona from "../_api/deletePersona";
 
 type DeletePersonaParams =
   paths["/v1/personas/data/{persona_id}"]["delete"]["parameters"]["path"];

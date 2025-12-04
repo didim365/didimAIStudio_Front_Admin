@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePutPersona } from "../hooks/usePutPersona";
+import { usePutPersona } from "../_hooks/usePutPersona";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import {
   Lock,
@@ -27,8 +27,12 @@ import {
 } from "@/shared/ui/select";
 import { Switch } from "@/shared/ui/switch";
 import { useRouter } from "next/navigation";
-import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
-import { GetPersonaResponse, PersonaCategoryEnum } from "../api/getPersona";
+import {
+  categoryConfig,
+  CATEGORY_OPTIONS,
+  PersonaCategoryEnum,
+} from "../../../_constants/categoryConfig";
+import { GetPersonaResponse } from "../../_api/getPersona";
 
 interface PersonaEditPageProps {
   persona: GetPersonaResponse;
