@@ -1,4 +1,4 @@
-import GroupAddPage from "@/feature/groups/pages/GroupAddPage";
+import GroupAddPage from "@/feature/groups/add/_pages/GroupAddPage";
 import getMyInfo from "@/shared/api/getMyInfo";
 import getRoles from "@/feature/roles/api/getRoles";
 

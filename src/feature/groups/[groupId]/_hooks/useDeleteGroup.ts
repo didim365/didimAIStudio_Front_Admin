@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import deleteGroup from "../api/deleteGroup";
+import deleteGroup from "../_api/deleteGroup";
 
 type DeleteGroupParams =
   paths["/api/v1/groups/{group_id}"]["delete"]["parameters"]["path"];

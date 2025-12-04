@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useDeleteGroup } from "../hooks/useDeleteGroup";
+import { useDeleteGroup } from "../_hooks/useDeleteGroup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
@@ -37,12 +37,12 @@ import {
   getGroupTypeLabel,
   GROUP_TYPE_ICONS,
   GROUP_TYPE_COLORS,
-} from "../constants/groupType";
+} from "../../_constants/groupType";
 import { getInitials } from "@/feature/users/utils/getInitials";
-import AddMemberDialog from "../components/AddMemberDialog";
-import GroupRolesCard from "../components/GroupRolesCard";
+import AddMemberDialog from "../_components/AddMemberDialog";
+import GroupRolesCard from "../_components/GroupRolesCard";
 
-import type { GetGroupResponse } from "../api/getGroup";
+import type { GetGroupResponse } from "../_api/getGroup";
 
 interface GroupPageProps {
   group: GetGroupResponse;

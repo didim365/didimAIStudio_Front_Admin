@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import postGroups from "../api/postGroups";
+import postGroups from "../_api/postGroups";
 
 type PostGroupsRequest =
   paths["/api/v1/groups"]["post"]["requestBody"]["content"]["application/json"];

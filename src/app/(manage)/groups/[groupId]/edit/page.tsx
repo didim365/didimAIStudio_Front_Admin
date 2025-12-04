@@ -1,5 +1,5 @@
-import { GroupEditPage } from "@/feature/groups/pages/GroupEditPage";
-import getGroup from "@/feature/groups/api/getGroup";
+import { GroupEditPage } from "@/feature/groups/[groupId]/edit/_pages/GroupEditPage";
+import getGroup from "@/feature/groups/[groupId]/_api/getGroup";
 import getRoles from "@/feature/roles/api/getRoles";
 
 interface PageProps {

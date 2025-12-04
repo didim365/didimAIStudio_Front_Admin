@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import patchGroup from "../api/patchGroup";
+import patchGroup from "../_api/patchGroup";
 
 type PatchGroupParams =
   paths["/api/v1/groups/{group_id}"]["patch"]["parameters"]["path"];

@@ -16,8 +16,8 @@ import {
   AlertDialogTitle,
 } from "@/shared/ui/alert-dialog";
 import { Shield, Trash2 } from "lucide-react";
-import { useGetGroupRoles } from "../hooks/useGetGroupRoles";
-import { useDeleteGroupRole } from "../hooks/useDeleteGroupRole";
+import { useGetGroupRoles } from "../_hooks/useGetGroupRoles";
+import { useDeleteGroupRole } from "../_hooks/useDeleteGroupRole";
 import { useQueryClient } from "@tanstack/react-query";
 import AddGroupRoleDialog from "./AddGroupRoleDialog";
 import Link from "next/link";

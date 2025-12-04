@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetGroups } from "../hooks/useGetGroups";
+import { useGetGroups } from "../_hooks/useGetGroups";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Button } from "@/shared/ui/button";
 import {
@@ -20,7 +20,7 @@ import Link from "next/link";
 import {
   getGroupTypeLabel,
   GROUP_TYPE_BADGE_VARIANTS,
-} from "../constants/groupType";
+} from "../_constants/groupType";
 import { useRouter } from "next/navigation";
 
 export function GroupsPage() {

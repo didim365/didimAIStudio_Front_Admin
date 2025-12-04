@@ -2,9 +2,9 @@
 
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePatchGroup } from "../hooks/usePatchGroup";
-import ParentGroupSelect from "../components/ParentGroupSelect";
-import ManagerSelect from "../components/ManagerSelect";
+import { usePatchGroup } from "../_hooks/usePatchGroup";
+import ParentGroupSelect from "../../../_components/ParentGroupSelect";
+import ManagerSelect from "../../../_components/ManagerSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import {
@@ -31,8 +31,8 @@ import {
   GROUP_TYPE_ICONS,
   GROUP_TYPE_COLORS,
   GROUP_TYPE_OPTIONS,
-} from "../constants/groupType";
-import { GetGroupResponse } from "../api/getGroup";
+} from "../../../_constants/groupType";
+import { GetGroupResponse } from "../../_api/getGroup";
 import { GetRolesResponse } from "@/feature/roles/api/getRoles";
 import Link from "next/link";
 

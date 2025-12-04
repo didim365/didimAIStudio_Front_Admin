@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import postGroupRole from "../api/postGroupRole";
+import postGroupRole from "../_api/postGroupRole";
 
 type PostGroupRoleParams =
   paths["/api/v1/roles/assign_role_to_group"]["post"]["parameters"]["query"];

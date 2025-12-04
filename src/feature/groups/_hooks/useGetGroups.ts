@@ -2,7 +2,7 @@
 
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/auth";
-import getGroups from "../api/getGroups";
+import getGroups from "../_api/getGroups";
 
 type GetGroupsResponse =
   paths["/api/v1/groups"]["get"]["responses"]["200"]["content"]["application/json"];

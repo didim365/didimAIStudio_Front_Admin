@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { usePostGroups } from "../hooks/usePostGroups";
+import { usePostGroups } from "../_hooks/usePostGroups";
 import { paths } from "@/shared/types/api/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
@@ -28,10 +28,10 @@ import {
   FolderTree,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-import ParentGroupSelect from "../components/ParentGroupSelect";
-import ManagerSelect from "../components/ManagerSelect";
+import ParentGroupSelect from "../../_components/ParentGroupSelect";
+import ManagerSelect from "../../_components/ManagerSelect";
 
-import { GROUP_TYPE_OPTIONS } from "../constants/groupType";
+import { GROUP_TYPE_OPTIONS } from "../../_constants/groupType";
 import Link from "next/link";
 
 type GroupType = "COMPANY" | "DEPARTMENT" | "TEAM" | "PERSONAL";

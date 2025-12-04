@@ -5,7 +5,7 @@ import { Button } from "@/shared/ui/button";
 import { Check } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Pagination } from "@/shared/ui/pagination";
-import { useGetGroups } from "../hooks/useGetGroups";
+import { useGetGroups } from "../_hooks/useGetGroups";
 import { cn } from "@/shared/lib/utils";
 
 interface ParentGroupSelectProps {

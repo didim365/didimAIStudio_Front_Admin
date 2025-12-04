@@ -17,7 +17,7 @@ import { Pagination } from "@/shared/ui/pagination";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { UserPlus, Search, Check, Loader2, Shield } from "lucide-react";
 import { useGetUsers } from "@/feature/users/hooks/useGetUsers";
-import { usePostGroupUser } from "../hooks/usePostGroupUser";
+import { usePostGroupUser } from "../_hooks/usePostGroupUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/shared/lib/utils";
 import { getInitials } from "@/feature/users/utils/getInitials";
@@ -28,8 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { GetGroupResponse } from "../api/getGroup";
-import useGetGroupRoles from "../hooks/useGetGroupRoles";
+import { GetGroupResponse } from "../_api/getGroup";
+import useGetGroupRoles from "../_hooks/useGetGroupRoles";
 
 interface AddMemberDialogProps {
   group: GetGroupResponse;
