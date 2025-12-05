@@ -19,7 +19,10 @@ export default function LoginPage() {
       successMessage: "로그인에 성공하였습니다.",
     },
     onSuccess: () => {
-      router.push(MENU[0].href);
+      const firstMenuItem = MENU.find((item) => item.href !== undefined);
+      if (firstMenuItem?.href) {
+        router.push(firstMenuItem.href);
+      }
     },
   });
 
