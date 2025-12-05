@@ -10,7 +10,7 @@ type MenuItem =
     }
   | {
       name: string;
-      href?: Route;
+      href: Route;
       icon: React.ComponentType<{ className?: string }>;
       children: Array<{
         name: string;
@@ -46,6 +46,7 @@ const MENU: MenuItem[] = [
   },
   {
     name: "스튜디오 템플릿 관리",
+    href: "/studio",
     icon: Brain,
     children: [
       {

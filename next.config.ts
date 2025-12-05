@@ -5,9 +5,6 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   reactStrictMode: false,
   output: "standalone",
-  experimental: {
-    typedRoutes: true,
-  },
   sassOptions: {
     includePaths: [path.join(__dirname, "src/assets/styles")],
     prependData: "@import '@/assets/styles/main.scss';",
