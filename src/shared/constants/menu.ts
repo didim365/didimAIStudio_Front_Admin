@@ -1,6 +1,24 @@
 import { Brain, Group, Key, UserCog, Users } from "lucide-react";
+import type { Route } from "next";
 
-const MENU = [
+type MenuItem =
+  | {
+      name: string;
+      href: Route;
+      icon: React.ComponentType<{ className?: string }>;
+      children?: never;
+    }
+  | {
+      name: string;
+      href?: Route;
+      icon: React.ComponentType<{ className?: string }>;
+      children: Array<{
+        name: string;
+        href: Route;
+      }>;
+    };
+
+const MENU: MenuItem[] = [
   // {
   //   name: "대시보드",
   //   href: "/dashboard",
@@ -28,7 +46,6 @@ const MENU = [
   },
   {
     name: "스튜디오 템플릿 관리",
-    href: "/studio",
     icon: Brain,
     children: [
       {

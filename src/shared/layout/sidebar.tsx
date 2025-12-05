@@ -56,8 +56,6 @@ export function Sidebar() {
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
         {MENU.map((item) => {
-          const isActive =
-            pathname === item.href || pathname.startsWith(item.href + "/");
           const hasChildren = item.children && item.children.length > 0;
           const isExpanded = expandedMenus.includes(item.name);
           const isChildActive =
@@ -66,6 +64,10 @@ export function Sidebar() {
               (child) =>
                 pathname === child.href || pathname.startsWith(child.href + "/")
             );
+          const isActive =
+            !hasChildren &&
+            item.href !== undefined &&
+            (pathname === item.href || pathname.startsWith(item.href + "/"));
 
           return (
             <div key={item.name}>
