@@ -1,4 +1,4 @@
-import PersonasPage from "@/feature/studio/templates/personas/_pages/PersonasPage";
+import PersonasPage from "@/feature/studio/data/personas/_pages/PersonasPage";
 
 function Page() {
   return <PersonasPage />;
