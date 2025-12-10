@@ -10,6 +10,128 @@ import { tokenStorage } from "@/shared/utils/tokenStorage";
 import MENU from "@/shared/constants/menu";
 import useGetMyInfo from "../hooks/useGetMyInfo";
 
+type MenuChildItem = {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  children?: MenuChildItem[];
+};
+
+type MenuItemProps = {
+  item: MenuChildItem;
+  pathname: string;
+  expandedMenus: string[];
+  onToggleMenu: (menuKey: string) => void;
+  menuKey: string;
+  depth: number;
+};
+
+function checkIfActive(
+  menuItem: MenuChildItem,
+  currentPathname: string,
+  currentMenuKey: string,
+  currentExpandedMenus: string[]
+): boolean {
+  if (menuItem.children && menuItem.children.length > 0) {
+    return menuItem.children.some((child) => {
+      const childKey = `${currentMenuKey}|${child.name}`;
+      return checkIfActive(
+        child,
+        currentPathname,
+        childKey,
+        currentExpandedMenus
+      );
+    });
+  }
+  return (
+    currentPathname === menuItem.href ||
+    currentPathname.startsWith(menuItem.href + "/")
+  );
+}
+
+function MenuItemComponent({
+  item,
+  pathname,
+  expandedMenus,
+  onToggleMenu,
+  menuKey,
+  depth,
+}: MenuItemProps) {
+  const hasChildren = item.children && item.children.length > 0;
+  const isExpanded = expandedMenus.includes(menuKey);
+
+  const isChildActive = hasChildren
+    ? item.children?.some((child) => {
+        const childMenuKey = `${menuKey}|${child.name}`;
+        return checkIfActive(child, pathname, childMenuKey, expandedMenus);
+      })
+    : false;
+
+  const isActive =
+    !hasChildren &&
+    (pathname === item.href || pathname.startsWith(item.href + "/"));
+
+  return (
+    <div>
+      {hasChildren ? (
+        <>
+          <button
+            onClick={() => onToggleMenu(menuKey)}
+            className={cn(
+              "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors text-muted-foreground hover:bg-muted hover:text-foreground",
+              (isActive || isChildActive) &&
+                (depth === 0
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-primary/10 text-primary font-medium")
+            )}
+          >
+            <item.icon className="h-5 w-5" />
+            <span className="flex-1 text-left">{item.name}</span>
+            <ChevronRight
+              className={cn(
+                "h-4 w-4 transition-transform duration-300",
+                isExpanded && "rotate-90"
+              )}
+            />
+          </button>
+          {isExpanded && (
+            <div className="ml-4 mt-1 space-y-1">
+              {item.children?.map((child) => {
+                const childMenuKey = `${menuKey}|${child.name}`;
+                return (
+                  <MenuItemComponent
+                    key={child.name}
+                    item={child}
+                    pathname={pathname}
+                    expandedMenus={expandedMenus}
+                    onToggleMenu={onToggleMenu}
+                    menuKey={childMenuKey}
+                    depth={depth + 1}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </>
+      ) : (
+        <Link
+          href={item.href}
+          className={cn(
+            "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors text-muted-foreground hover:bg-muted hover:text-foreground",
+            isActive &&
+              (depth === 0
+                ? "bg-primary text-primary-foreground"
+                : "bg-primary/10 text-primary font-medium")
+          )}
+        >
+          <item.icon className="h-5 w-5" />
+          {item.name}
+        </Link>
+      )}
+    </div>
+  );
+}
+
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -28,6 +150,39 @@ export function Sidebar() {
   const handleLogout = async () => {
     await tokenStorage.clearTokens();
     router.push("/");
+  };
+
+  const checkIfAnyChildActive = (item: (typeof MENU)[0]): boolean => {
+    if (!item.children || item.children.length === 0) {
+      return false;
+    }
+    return item.children.some((child) => {
+      const childMenuKey = `${item.name}|${child.name}`;
+      return checkIfChildActive(child, pathname, childMenuKey, expandedMenus);
+    });
+  };
+
+  const checkIfChildActive = (
+    menuItem: MenuChildItem,
+    currentPathname: string,
+    currentMenuKey: string,
+    currentExpandedMenus: string[]
+  ): boolean => {
+    if (menuItem.children && menuItem.children.length > 0) {
+      return menuItem.children.some((child) => {
+        const childKey = `${currentMenuKey}|${child.name}`;
+        return checkIfChildActive(
+          child,
+          currentPathname,
+          childKey,
+          currentExpandedMenus
+        );
+      });
+    }
+    return (
+      currentPathname === menuItem.href ||
+      currentPathname.startsWith(menuItem.href + "/")
+    );
   };
 
   return (
@@ -57,13 +212,9 @@ export function Sidebar() {
       <nav className="flex-1 space-y-1 px-3 py-4">
         {MENU.map((item) => {
           const hasChildren = item.children && item.children.length > 0;
-          const isExpanded = expandedMenus.includes(item.name);
-          const isChildActive =
-            hasChildren &&
-            item.children?.some(
-              (child) =>
-                pathname === child.href || pathname.startsWith(child.href + "/")
-            );
+          const menuKey = item.name;
+          const isExpanded = expandedMenus.includes(menuKey);
+          const isChildActive = checkIfAnyChildActive(item);
           const isActive =
             !hasChildren &&
             item.href !== undefined &&
@@ -73,14 +224,16 @@ export function Sidebar() {
             <div key={item.name}>
               {hasChildren && (
                 <button
-                  onClick={() => toggleMenu(item.name)}
+                  onClick={() => toggleMenu(menuKey)}
                   className={cn(
                     "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all text-muted-foreground hover:bg-muted hover:text-foreground duration-300",
                     (isActive || isChildActive) &&
                       "bg-primary text-primary-foreground"
                   )}
                 >
-                  <item.icon className="h-5 w-5" />
+                  {"icon" in item && item.icon && (
+                    <item.icon className="h-5 w-5" />
+                  )}
                   <span className="flex-1 text-left">{item.name}</span>
                   <ChevronRight
                     className={cn(
@@ -90,7 +243,7 @@ export function Sidebar() {
                   />
                 </button>
               )}
-              {!hasChildren && (
+              {!hasChildren && "icon" in item && (
                 <Link
                   href={item.href}
                   className={cn(
@@ -98,31 +251,24 @@ export function Sidebar() {
                     isActive && "bg-primary text-primary-foreground"
                   )}
                 >
-                  <item.icon className="h-5 w-5" />
+                  {item.icon && <item.icon className="h-5 w-5" />}
                   {item.name}
                 </Link>
               )}
               {hasChildren && isExpanded && (
                 <div className="ml-4 mt-1 space-y-1">
                   {item.children?.map((child) => {
-                    const isChildItemActive =
-                      pathname === child.href ||
-                      pathname.startsWith(child.href + "/");
+                    const childMenuKey = `${menuKey}|${child.name}`;
                     return (
-                      <Link
+                      <MenuItemComponent
                         key={child.name}
-                        href={child.href}
-                        className={cn(
-                          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors text-muted-foreground hover:bg-muted hover:text-foreground",
-                          isChildItemActive &&
-                            "bg-primary/10 text-primary font-medium"
-                        )}
-                      >
-                        <div className="w-5 flex items-center justify-center">
-                          <div className="h-1.5 w-1.5 rounded-full bg-current" />
-                        </div>
-                        {child.name}
-                      </Link>
+                        item={child}
+                        pathname={pathname}
+                        expandedMenus={expandedMenus}
+                        onToggleMenu={toggleMenu}
+                        menuKey={childMenuKey}
+                        depth={1}
+                      />
                     );
                   })}
                 </div>

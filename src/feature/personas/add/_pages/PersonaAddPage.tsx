@@ -61,7 +61,7 @@ export function PersonaAddPage({ myInfo }: PersonaAddPageProps) {
         queryKey: ["personas"],
       });
       // 생성된 페르소나 상세 페이지로 이동
-      router.push(`/studio/personas/${data.id}`);
+      router.push(`/studio/templates/personas/${data.id}`);
     },
     meta: {
       successMessage: "페르소나가 성공적으로 생성되었습니다.",
@@ -102,7 +102,7 @@ export function PersonaAddPage({ myInfo }: PersonaAddPageProps) {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => router.push("/studio/personas")}
+              onClick={() => router.push("/studio/templates/personas")}
               className="shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />

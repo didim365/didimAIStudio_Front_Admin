@@ -1,9 +1,17 @@
 "use client";
 
 import { Activity, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/ui/table";
+import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import {
   Select,
@@ -14,38 +22,29 @@ import {
 } from "@/shared/ui/select";
 import {
   Search,
-  RefreshCw,
-  UserPlus,
+  Shield,
   Lock,
   Unlock,
+  Bot,
   Filter,
   X,
+  Plus,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import {
-  categoryConfig,
-  CATEGORY_OPTIONS,
-  PersonaCategoryEnum,
-} from "../_constants/categoryConfig";
-import useGetPersonas from "../_hooks/useGetPersonas";
+import { useGetAgents } from "../hooks/useGetAgents";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
-import Link from "next/link";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shared/ui/table";
-import { Badge } from "@/shared/ui/badge";
-import { parseBooleanFilter } from "@/feature/studio/templates/agents/utils/parseBooleanFilter";
+import { useRouter, usePathname } from "next/navigation";
+import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { formatDate } from "@/shared/utils/formatDate";
+import { parseBooleanFilter } from "@/feature/studio/templates/agents/utils/parseBooleanFilter";
+import Link from "next/link";
 
-export default function PersonasPage() {
+export default function AgentsPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // 검색 필드들
@@ -59,22 +58,16 @@ export default function PersonasPage() {
       debounce: 300,
     }
   );
-  const [systemPrompt, setSystemPrompt] = useQueryParam<string>(
-    "system_prompt",
-    "",
-    {
-      debounce: 300,
-    }
-  );
 
-  // 필터 옵션들
+  // 카테고리 (단일 선택)
   const [categoryFilter, setCategoryFilter] = useQueryParam<string>(
     "category",
     "all",
     { debounce: 0 }
   );
-  const [publicFilter, setPublicFilter] = useQueryParam<string>(
-    "public",
+
+  const [isPublicFilter, setIsPublicFilter] = useQueryParam<string>(
+    "is_public",
     "all"
   );
 
@@ -92,16 +85,16 @@ export default function PersonasPage() {
   const [page, setPage] = useQueryParam<number>("page", 1);
   const [size, setSize] = useQueryParam<number>("size", 20);
 
-  const queryParams = {
+  // 파라미터 변환
+  const params = {
     name: name || undefined,
     description: description || undefined,
-    system_prompt: systemPrompt || undefined,
     category:
-      categoryFilter === "all"
-        ? undefined
-        : [categoryFilter as PersonaCategoryEnum],
-    is_system: true, // 템플릿 데이터만 표시
-    is_public: parseBooleanFilter(publicFilter),
+      categoryFilter && categoryFilter !== "all"
+        ? [categoryFilter as any]
+        : undefined,
+    is_system: true, // 항상 시스템 제공 에이전트만 조회
+    is_public: parseBooleanFilter(isPublicFilter),
     operation_type:
       operationType === "all" ? undefined : (operationType as "AND" | "OR"),
     sort_by: sortBy === "none" ? undefined : sortBy || undefined,
@@ -110,23 +103,18 @@ export default function PersonasPage() {
     size,
   };
 
-  const { data, isLoading, refetch } = useGetPersonas(queryParams);
+  const { data: agentsData, isLoading } = useGetAgents(params);
 
-  const handleViewDetails = (personaId: number) => {
-    router.push(`/studio/templates/personas/${personaId}`);
-  };
-
-  const handleRefresh = () => {
-    refetch();
+  const handleViewDetails = (agentId: number) => {
+    router.push(`${basePath}/agents/${agentId}`);
   };
 
   // 필터 초기화
   const handleResetFilters = () => {
     setName("");
     setDescription("");
-    setSystemPrompt("");
     setCategoryFilter("all");
-    setPublicFilter("all");
+    setIsPublicFilter("all");
     setOperationType("all");
     setSortBy("none");
     setOrder("ASC");
@@ -138,10 +126,8 @@ export default function PersonasPage() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">페르소나 템플릿 관리</h1>
-        <p className="mt-2 text-slate-600">
-          시스템 관리자가 생성한 페르소나 템플릿을 관리합니다
-        </p>
+        <h1 className="text-3xl font-bold">에이전트 관리</h1>
+        <p className="mt-2">에이전트 정보 조회 및 관리</p>
       </div>
 
       {/* 검색 및 필터 */}
@@ -183,16 +169,13 @@ export default function PersonasPage() {
           <div className="space-y-6">
             {/* 검색 필드 */}
             <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
-                    placeholder="이름 검색"
+                    placeholder="에이전트 이름 검색"
                     value={name}
-                    onChange={(e) => {
-                      setName(e.target.value);
-                      setPage(1);
-                    }}
+                    onChange={(e) => setName(e.target.value)}
                     className="pl-10"
                   />
                 </div>
@@ -201,44 +184,18 @@ export default function PersonasPage() {
                   <Input
                     placeholder="설명 검색"
                     value={description}
-                    onChange={(e) => {
-                      setDescription(e.target.value);
-                      setPage(1);
-                    }}
-                    className="pl-10"
-                  />
-                </div>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    placeholder="시스템 프롬프트 검색"
-                    value={systemPrompt}
-                    onChange={(e) => {
-                      setSystemPrompt(e.target.value);
-                      setPage(1);
-                    }}
+                    onChange={(e) => setDescription(e.target.value)}
                     className="pl-10"
                   />
                 </div>
               </div>
               <div className="flex gap-2">
-                <Link href="/studio/templates/personas/add">
+                <Link href={`${basePath}/agents/add`}>
                   <Button className="gap-2 cursor-pointer">
-                    <UserPlus className="h-4 w-4" />
-                    페르소나 생성
+                    <Plus className="h-4 w-4" />
+                    에이전트 생성
                   </Button>
                 </Link>
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  onClick={handleRefresh}
-                  disabled={isLoading}
-                >
-                  <RefreshCw
-                    className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-                  />
-                  새로고침
-                </Button>
               </div>
             </div>
 
@@ -273,8 +230,8 @@ export default function PersonasPage() {
                       공개 여부
                     </label>
                     <Select
-                      value={publicFilter}
-                      onValueChange={setPublicFilter}
+                      value={isPublicFilter}
+                      onValueChange={setIsPublicFilter}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="전체" />
@@ -368,115 +325,126 @@ export default function PersonasPage() {
         </CardContent>
       </Card>
 
-      {/* 페르소나 테이블 */}
+      {/* 에이전트 테이블 */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            페르소나 템플릿 목록 ({data?.total})
+            전체 에이전트 {!isLoading && agentsData?.total}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {!isLoading && (
-            <div className="border rounded-lg overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-slate-50">
-                    <TableHead className="w-[80px]">ID</TableHead>
-                    <TableHead className="min-w-[200px]">
-                      페르소나 제목
-                    </TableHead>
-                    <TableHead className="min-w-[250px]">설명</TableHead>
-                    <TableHead className="w-[120px]">카테고리</TableHead>
-                    <TableHead className="w-[100px] text-center">
-                      공개
-                    </TableHead>
-                    <TableHead className="w-[120px]">생성일</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data?.items.length === 0 && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="text-center py-12 text-slate-500"
-                      >
-                        등록된 페르소나 템플릿이 없습니다.
+          <div className="border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[80px]">ID</TableHead>
+                  <TableHead className="min-w-[200px]">에이전트 이름</TableHead>
+                  <TableHead className="min-w-[250px]">설명</TableHead>
+                  <TableHead className="w-[140px]">카테고리</TableHead>
+                  <TableHead className="w-[100px] text-center">타입</TableHead>
+                  <TableHead className="w-[100px] text-center">공개</TableHead>
+                  <TableHead className="w-[120px]">생성일</TableHead>
+                  <TableHead className="w-[120px]">수정일</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {agentsData?.items.map((agent) => {
+                  return (
+                    <TableRow
+                      key={agent.id}
+                      className="hover:bg-slate-50 transition-colors cursor-pointer"
+                      onClick={() => handleViewDetails(agent.id)}
+                    >
+                      <TableCell className="font-mono text-sm text-slate-600">
+                        {agent.id}
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-semibold line-clamp-2 text-slate-900">
+                          {agent.name}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm line-clamp-2 text-slate-700">
+                          {agent.description}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={
+                            categoryConfig[agent.category]?.color ||
+                            "bg-gray-100 text-gray-800"
+                          }
+                        >
+                          {categoryConfig[agent.category]?.label ||
+                            agent.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-center">
+                          {agent.is_system && (
+                            <Badge
+                              variant="outline"
+                              className="bg-purple-100 text-purple-800"
+                            >
+                              <Shield className="h-3 w-3 mr-1" />
+                              시스템
+                            </Badge>
+                          )}
+                          {!agent.is_system && (
+                            <Badge
+                              variant="outline"
+                              className="bg-green-100 text-green-800"
+                            >
+                              <Bot className="h-3 w-3 mr-1" />
+                              사용자
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-center">
+                          {agent.is_public && (
+                            <Badge
+                              variant="outline"
+                              className="bg-teal-100 text-teal-800"
+                            >
+                              <Unlock className="h-3 w-3 mr-1" />
+                              공개
+                            </Badge>
+                          )}
+                          {!agent.is_public && (
+                            <Badge
+                              variant="outline"
+                              className="bg-orange-100 text-orange-800"
+                            >
+                              <Lock className="h-3 w-3 mr-1" />
+                              비공개
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-slate-600">
+                        {formatDate(agent.created_at)}
+                      </TableCell>
+                      <TableCell className="text-sm text-slate-600">
+                        {formatDate(agent.updated_at)}
                       </TableCell>
                     </TableRow>
-                  )}
-                  {data?.items.map((persona) => {
-                    return (
-                      <TableRow
-                        key={persona.id}
-                        className="hover:bg-slate-50 transition-colors cursor-pointer"
-                        onClick={() => handleViewDetails(persona.id)}
-                      >
-                        <TableCell className="font-mono text-sm text-slate-600">
-                          {persona.id}
-                        </TableCell>
-                        <TableCell>
-                          <div className="font-semibold line-clamp-2 text-slate-900">
-                            {persona.name}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm line-clamp-2 text-slate-700">
-                            {persona.description}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={
-                              categoryConfig[persona.category]?.color ||
-                              "bg-gray-100 text-gray-800"
-                            }
-                          >
-                            {categoryConfig[persona.category]?.label ||
-                              persona.category}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-center">
-                            {persona.is_public && (
-                              <Badge
-                                variant="outline"
-                                className="bg-teal-100 text-teal-800"
-                              >
-                                <Unlock className="h-3 w-3 mr-1" />
-                                공개
-                              </Badge>
-                            )}
-                            {!persona.is_public && (
-                              <Badge
-                                variant="outline"
-                                className="bg-orange-100 text-orange-800"
-                              >
-                                <Lock className="h-3 w-3 mr-1" />
-                                비공개
-                              </Badge>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm text-slate-600">
-                          {formatDate(persona.created_at)}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
       {/* 페이지네이션 */}
-      {data && data.total_pages > 1 && (
+      {agentsData && agentsData.total_pages > 1 && (
         <div className="mt-6">
           <Pagination
-            currentPage={data.page}
-            totalPages={data.total_pages}
+            currentPage={agentsData.page}
+            totalPages={agentsData.total_pages}
             onPageChange={(newPage) => setPage(newPage)}
             isLoading={isLoading}
           />
