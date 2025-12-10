@@ -80,7 +80,29 @@ const MENU: MenuItem[] = [
       },
       {
         name: "데이터 관리",
-        href: "/studio/user-data",
+        href: "/studio/data",
+        children: [
+          {
+            name: "모델 관리",
+            href: "/studio/data/models",
+          },
+          {
+            name: "도구 관리",
+            href: "/studio/data/tools",
+          },
+          {
+            name: "페르소나 관리",
+            href: "/studio/data/personas",
+          },
+          {
+            name: "에이전트 관리",
+            href: "/studio/data/agents",
+          },
+          {
+            name: "시나리오 관리",
+            href: "/studio/data/scenarios",
+          },
+        ],
       },
     ],
   },
