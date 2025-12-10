@@ -1,6 +1,12 @@
 import { Brain, Group, Key, UserCog, Users } from "lucide-react";
 import type { Route } from "next";
 
+type MenuChildItem = {
+  name: string;
+  href: Route;
+  children?: MenuChildItem[];
+};
+
 type MenuItem =
   | {
       name: string;
@@ -12,21 +18,7 @@ type MenuItem =
       name: string;
       href: Route;
       icon: React.ComponentType<{ className?: string }>;
-      children: Array<
-        | {
-            name: string;
-            href: Route;
-            children?: never;
-          }
-        | {
-            name: string;
-            href: Route;
-            children: Array<{
-              name: string;
-              href: Route;
-            }>;
-          }
-      >;
+      children: MenuChildItem[];
     };
 
 const MENU: MenuItem[] = [
