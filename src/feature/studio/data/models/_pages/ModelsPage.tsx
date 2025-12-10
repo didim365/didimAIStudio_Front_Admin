@@ -37,7 +37,6 @@ import {
   Settings2,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { Separator } from "@/shared/ui/separator";
 
 type DeploymentType = components["schemas"]["DeploymentType"];
 

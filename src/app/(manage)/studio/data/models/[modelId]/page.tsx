@@ -1,4 +1,4 @@
-import ModelPage from "@/feature/studio/templates/models/[modelId]/_pages/ModelPage";
+import ModelPage from "@/feature/studio/data/models/[modelId]/_pages/ModelPage";
 
 async function Page() {
   return <ModelPage />;
