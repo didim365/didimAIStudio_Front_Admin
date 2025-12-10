@@ -12,10 +12,21 @@ type MenuItem =
       name: string;
       href: Route;
       icon: React.ComponentType<{ className?: string }>;
-      children: Array<{
-        name: string;
-        href: Route;
-      }>;
+      children: Array<
+        | {
+            name: string;
+            href: Route;
+            children?: never;
+          }
+        | {
+            name: string;
+            href: Route;
+            children: Array<{
+              name: string;
+              href: Route;
+            }>;
+          }
+      >;
     };
 
 const MENU: MenuItem[] = [
@@ -45,29 +56,39 @@ const MENU: MenuItem[] = [
     icon: Key,
   },
   {
-    name: "스튜디오 템플릿 관리",
+    name: "스튜디오 관리",
     href: "/studio",
     icon: Brain,
     children: [
       {
-        name: "모델 관리",
-        href: "/studio/models",
+        name: "템플릿 관리",
+        href: "/studio/templates",
+        children: [
+          {
+            name: "모델 관리",
+            href: "/studio/templates/models",
+          },
+          {
+            name: "도구 관리",
+            href: "/studio/templates/tools",
+          },
+          {
+            name: "페르소나 관리",
+            href: "/studio/templates/personas",
+          },
+          {
+            name: "에이전트 관리",
+            href: "/studio/templates/agents",
+          },
+          {
+            name: "시나리오 관리",
+            href: "/studio/templates/scenarios",
+          },
+        ],
       },
       {
-        name: "도구 관리",
-        href: "/studio/tools",
-      },
-      {
-        name: "페르소나 관리",
-        href: "/studio/personas",
-      },
-      // {
-      //   name: "에이전트 관리",
-      //   href: "/studio/agents",
-      // },
-      {
-        name: "시나리오 관리",
-        href: "/studio/scenarios",
+        name: "사용자 데이터 관리",
+        href: "/studio/user-data",
       },
     ],
   },
