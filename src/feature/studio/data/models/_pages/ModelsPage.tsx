@@ -1,10 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { components } from "@/shared/types/api/models";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
-import useGetCatalog from "../_hooks/useGetCatalog";
-import { StatusBadge } from "../_components/StatusBadge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import useGetSettings from "../_hooks/useGetSettings";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import {
@@ -23,274 +29,222 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
-import { Pagination } from "@/shared/ui/pagination";
-import { formatDate } from "@/shared/utils/formatDate";
-import { useRouter, usePathname } from "next/navigation";
-import { CATEGORIES, DEPLOYMENT_TYPES } from "../_constants/modelConstants";
 import {
-  getCategoryLabel,
-  formatNumber,
-  formatCost,
-} from "../_utils/modelUtils";
+  RefreshCw,
+  AlertCircle,
+  Terminal,
+  Database,
+  Settings2,
+} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { Separator } from "@/shared/ui/separator";
 
-type AICategoryEnum = components["schemas"]["AICategoryEnum"];
+type DeploymentType = components["schemas"]["DeploymentType"];
 
 function ModelsPage() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data")
-    ? "/studio/data"
-    : "/studio/templates";
-
-  // URL 쿼리 파라미터 관리 - useState와 동일한 API
-  const [page, setPage] = useQueryParam<number>("page", 1);
-  const [category, setCategory] = useQueryParam<string>("category", "all");
-  const [provider, setProvider] = useQueryParam<string>("provider", "", {
-    debounce: 300,
-  });
+  // Query Params
   const [deploymentType, setDeploymentType] = useQueryParam<string>(
     "deploymentType",
     "all"
   );
+  const [userId, setUserId] = useQueryParam<string>("userId", "");
 
-  const { data, isLoading, refetch } = useGetCatalog({
-    category: category === "all" ? undefined : (category as AICategoryEnum),
-    provider: provider || undefined,
-    deployment_type: deploymentType === "all" ? undefined : deploymentType,
-    page,
+  // API Call
+  const { data, isLoading, refetch, error } = useGetSettings({
+    deployment_type:
+      deploymentType === "all" ? undefined : (deploymentType as DeploymentType),
+    user_id: userId ? parseInt(userId) : undefined,
   });
 
-  const models = data?.items || [];
+  const settingsList = Array.isArray(data) ? data : [];
 
-  function handleRowClick(modelId: number) {
-    router.push(`${basePath}/models/${modelId}`);
-  }
+  // Helper to safely render cell values
+  const renderValue = (value: any) => {
+    if (value === null || value === undefined)
+      return <span className="text-muted-foreground">-</span>;
+    if (typeof value === "boolean")
+      return (
+        <Badge variant={value ? "default" : "secondary"}>
+          {value.toString()}
+        </Badge>
+      );
+    if (typeof value === "object")
+      return (
+        <code className="text-xs bg-muted px-1 rounded">
+          {JSON.stringify(value).substring(0, 20)}...
+        </code>
+      );
+    return value.toString();
+  };
 
   return (
-    <div>
-      {/* 헤더 */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">모델 관리</h1>
-        <p className="mt-2 text-slate-600">
-          시스템의 모든 AI 모델을 관리하세요
+    <div className="space-y-6 p-6">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight">모델 설정 관리</h1>
+        <p className="text-muted-foreground">
+          시스템의 LLM 모델 설정을 조회하고 관리합니다.
         </p>
       </div>
 
-      {/* 필터 */}
-      <Card className="mb-6">
-        <CardContent>
-          <div className="flex flex-col gap-4">
-            {/* 필터 옵션 */}
-            <div className="flex flex-wrap gap-2">
-              <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="카테고리" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체 카테고리</SelectItem>
-                  {CATEGORIES.map((cat) => (
-                    <SelectItem key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Input
-                placeholder="제공자 필터..."
-                value={provider}
-                onChange={(e) => setProvider(e.target.value)}
-                className="w-[180px]"
-              />
-
+      <div className="grid gap-6 md:grid-cols-4">
+        {/* Filters Panel */}
+        <Card className="md:col-span-1 h-fit">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Settings2 className="w-5 h-5" />
+              필터 설정
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">배포 타입</label>
               <Select value={deploymentType} onValueChange={setDeploymentType}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="배포 타입" />
+                <SelectTrigger>
+                  <SelectValue placeholder="전체" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">전체 배포 타입</SelectItem>
-                  {DEPLOYMENT_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="all">전체</SelectItem>
+                  <SelectItem value="public_api">Public API</SelectItem>
+                  <SelectItem value="private_vllm">Private vLLM</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
 
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={() => refetch()}
-                disabled={isLoading}
-              >
-                <RefreshCw
-                  className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-                />
-                새로고침
-              </Button>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">사용자 ID</label>
+              <Input
+                type="number"
+                placeholder="User ID..."
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+              />
             </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* 모델 테이블 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            모델 목록 ({data?.total})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading && (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />
-              <p className="text-slate-500">로딩 중...</p>
-            </div>
-          )}
-          {!isLoading && models.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <AlertCircle className="h-12 w-12 mb-4" />
-              <p className="text-lg font-medium">모델을 찾을 수 없습니다</p>
-              <p className="text-sm">필터 조건을 변경해보세요</p>
-            </div>
-          )}
-          {!isLoading && models.length > 0 && (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center w-[5%]">ID</TableHead>
-                    <TableHead className="text-left w-[15%]">모델</TableHead>
-                    <TableHead className="text-center w-[8%]">
-                      카테고리
-                    </TableHead>
-                    <TableHead className="text-left w-[6%]">버전</TableHead>
-                    <TableHead className="text-center w-[7%]">상태</TableHead>
-                    <TableHead className="text-center w-[8%]">
-                      최대 토큰
-                    </TableHead>
-                    <TableHead className="text-center w-[8%]">
-                      입력 토큰
-                    </TableHead>
-                    <TableHead className="text-center w-[8%]">
-                      출력 토큰
-                    </TableHead>
-                    <TableHead className="text-center w-[9%]">
-                      입력 비용
-                    </TableHead>
-                    <TableHead className="text-center w-[9%]">
-                      출력 비용
-                    </TableHead>
-                    <TableHead className="text-center w-[10%]">
-                      생성일
-                    </TableHead>
-                    <TableHead className="text-center w-[7%]">작업</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {models.map((model) => (
-                    <TableRow
-                      key={model.id}
-                      className="group cursor-pointer hover:bg-slate-50"
-                      onClick={() => handleRowClick(model.id)}
-                    >
-                      <TableCell className="text-center font-mono text-sm text-muted-foreground">
-                        {model.id}
-                      </TableCell>
-                      <TableCell className="text-left">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage
-                              src={model.logo || undefined}
-                              alt={model.model_name}
-                            />
-                            <AvatarFallback>
-                              {model.model_name.substring(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex flex-col">
-                            <span className="font-medium">
-                              {model.model_name}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {model.provider}
-                            </span>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <div className="flex justify-center">
-                          <Badge variant="outline">
-                            {getCategoryLabel(model.category)}
-                          </Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-left">
-                        <code className="text-xs bg-muted px-2 py-1 rounded">
-                          v{model.version}
-                        </code>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <div className="flex justify-center">
-                          <StatusBadge status={model.status} />
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-center font-mono text-sm">
-                        {formatNumber(model.max_tokens)}
-                      </TableCell>
-                      <TableCell className="text-center font-mono text-sm">
-                        {formatNumber(model.max_input_tokens)}
-                      </TableCell>
-                      <TableCell className="text-center font-mono text-sm">
-                        {formatNumber(model.max_output_tokens)}
-                      </TableCell>
-                      <TableCell className="text-center font-mono text-sm">
-                        {formatCost(model.input_cost_per_token)}
-                      </TableCell>
-                      <TableCell className="text-center font-mono text-sm">
-                        {formatCost(model.output_cost_per_token)}
-                      </TableCell>
-                      <TableCell className="text-center text-sm text-muted-foreground">
-                        {formatDate(model.created_at)}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {model.endpoints_url && (
-                          <div className="flex justify-center">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                window.open(model.endpoints_url!, "_blank");
-                              }}
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            <Button
+              className="w-full gap-2"
+              onClick={() => refetch()}
+              disabled={isLoading}
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+              />
+              조회하기
+            </Button>
+          </CardContent>
+        </Card>
 
-      {/* 페이지네이션 */}
-      {data && (
-        <div className="mt-6">
-          <Pagination
-            currentPage={data.page}
-            totalPages={data.total_pages}
-            onPageChange={(newPage) => setPage(newPage)}
-            isLoading={isLoading}
-          />
+        {/* Results Panel */}
+        <div className="md:col-span-3 space-y-6">
+          {/* Request Info */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Terminal className="w-4 h-4" />
+                Request Parameters
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="font-mono">
+                  deployment_type:{" "}
+                  {deploymentType === "all" ? "undefined" : deploymentType}
+                </Badge>
+                <Badge variant="outline" className="font-mono">
+                  user_id: {userId || "undefined"}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Response Data */}
+          <Card className="min-h-[400px]">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Database className="w-5 h-5" />
+                  Response Data
+                  <Badge variant="secondary" className="ml-2">
+                    {settingsList.length} items
+                  </Badge>
+                </CardTitle>
+              </div>
+              <CardDescription>조회된 설정 데이터 목록입니다.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading && (
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <RefreshCw className="h-8 w-8 animate-spin mb-4" />
+                  <p>데이터를 불러오는 중입니다...</p>
+                </div>
+              )}
+
+              {error && (
+                <div className="flex flex-col items-center justify-center py-12 text-destructive">
+                  <AlertCircle className="h-8 w-8 mb-4" />
+                  <p>데이터를 불러오는데 실패했습니다.</p>
+                  <p className="text-sm mt-1">{(error as Error).message}</p>
+                </div>
+              )}
+
+              {!isLoading && !error && settingsList.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <Database className="h-8 w-8 mb-4 opacity-20" />
+                  <p>표시할 데이터가 없습니다.</p>
+                </div>
+              )}
+
+              {!isLoading && !error && settingsList.length > 0 && (
+                <Tabs defaultValue="table" className="w-full">
+                  <TabsList className="mb-4">
+                    <TabsTrigger value="table">Table View</TabsTrigger>
+                    <TabsTrigger value="json">JSON View</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="table" className="border rounded-md">
+                    <div className="h-[500px] overflow-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[50px]">#</TableHead>
+                            {Object.keys(settingsList[0] || {}).map((key) => (
+                              <TableHead
+                                key={key}
+                                className="whitespace-nowrap"
+                              >
+                                {key}
+                              </TableHead>
+                            ))}
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {settingsList.map((item: any, index: number) => (
+                            <TableRow key={index}>
+                              <TableCell className="font-mono text-muted-foreground">
+                                {index + 1}
+                              </TableCell>
+                              {Object.keys(settingsList[0] || {}).map((key) => (
+                                <TableCell key={key}>
+                                  {renderValue(item[key])}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="json">
+                    <div className="h-[500px] w-full bg-slate-950 text-slate-50 p-4 rounded-md font-mono text-xs overflow-auto">
+                      <pre>{JSON.stringify(settingsList, null, 2)}</pre>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              )}
+            </CardContent>
+          </Card>
         </div>
-      )}
+      </div>
     </div>
   );
 }
