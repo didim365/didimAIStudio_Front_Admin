@@ -93,7 +93,7 @@ export default function ScenariosPage() {
                 />
               </div>
               <div className="flex gap-2">
-                <Link href="/studio/scenarios/add">
+                <Link href="/studio/templates/scenarios/add">
                   <Button className="gap-2 cursor-pointer">
                     <Plus className="h-4 w-4" />
                     시나리오 생성

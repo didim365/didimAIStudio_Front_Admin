@@ -65,14 +65,14 @@ function ScenarioEditPage({ scenario }: ScenarioEditPageProps) {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["scenarios"] });
-          router.push(`/studio/scenarios/${scenario.id}`);
+          router.push(`/studio/templates/scenarios/${scenario.id}`);
         },
       }
     );
   };
 
   const handleCancel = () => {
-    router.push(`/studio/scenarios/${scenario.id}`);
+    router.push(`/studio/templates/scenarios/${scenario.id}`);
   };
 
   return (
@@ -80,7 +80,7 @@ function ScenarioEditPage({ scenario }: ScenarioEditPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href={`/studio/scenarios/${scenario.id}`}>
+          <Link href={`/studio/templates/scenarios/${scenario.id}`}>
             <Button
               variant="ghost"
               size="icon"

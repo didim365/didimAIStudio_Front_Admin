@@ -79,7 +79,7 @@ const MENU: MenuItem[] = [
         ],
       },
       {
-        name: "사용자 데이터 관리",
+        name: "데이터 관리",
         href: "/studio/user-data",
       },
     ],

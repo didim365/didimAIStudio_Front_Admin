@@ -65,7 +65,7 @@ function ToolAddPage() {
         queryKey: ["mcp-tools"],
       });
       // 생성된 도구 상세 페이지로 이동
-      router.push(`/studio/tools/${data.id}`);
+      router.push(`/studio/templates/tools/${data.id}`);
     },
   });
 
@@ -103,7 +103,7 @@ function ToolAddPage() {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => router.push("/studio/tools")}
+              onClick={() => router.push("/studio/templates/tools")}
               className="shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />

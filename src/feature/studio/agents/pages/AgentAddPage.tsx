@@ -61,7 +61,7 @@ export function AgentAddPage() {
         queryKey: ["agents"],
       });
       // 생성된 에이전트 상세 페이지로 이동
-      router.push(`/studio/agents/${data.id}`);
+      router.push(`/studio/templates/agents/${data.id}`);
     },
     onError: (error: Error) => {
       toast.error(`에이전트 생성 실패: ${error.message}`);
@@ -168,7 +168,7 @@ export function AgentAddPage() {
           {/* Header */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <Link href="/studio/agents">
+              <Link href="/studio/templates/agents">
                 <Button
                   type="button"
                   variant="ghost"

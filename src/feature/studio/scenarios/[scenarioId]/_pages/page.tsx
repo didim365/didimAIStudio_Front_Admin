@@ -47,7 +47,7 @@ function ScenarioPage({ scenario }: ScenarioPageProps) {
   const handleDelete = () => {
     setShowDeleteDialog(false);
     deleteScenario({ scenario_id: scenario.id });
-    router.push("/studio/scenarios");
+    router.push("/studio/templates/scenarios");
   };
 
   const categoryInfo = categoryConfig[scenario.category] || {
@@ -60,7 +60,7 @@ function ScenarioPage({ scenario }: ScenarioPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/studio/scenarios">
+          <Link href="/studio/templates/scenarios">
             <Button
               variant="ghost"
               size="icon"
@@ -77,7 +77,7 @@ function ScenarioPage({ scenario }: ScenarioPageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/studio/scenarios/${scenario.id}/edit`}>
+          <Link href={`/studio/templates/scenarios/${scenario.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정

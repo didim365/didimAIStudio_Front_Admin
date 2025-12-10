@@ -91,7 +91,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         queryKey: ["mcp-tools"],
       });
 
-      router.push(`/studio/tools/${tool.id}`);
+      router.push(`/studio/templates/tools/${tool.id}`);
     },
   });
 
@@ -195,7 +195,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link href={`/studio/tools/${tool.id}`}>
+            <Link href={`/studio/templates/tools/${tool.id}`}>
               <Button
                 type="button"
                 variant="ghost"

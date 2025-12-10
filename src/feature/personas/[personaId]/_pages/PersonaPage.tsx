@@ -50,7 +50,7 @@ function PersonaPage({ persona }: PersonaPageProps) {
   const handleDelete = () => {
     setShowDeleteDialog(false);
     deletePersona({ persona_id: persona.id });
-    router.push("/studio/personas");
+    router.push("/studio/templates/personas");
   };
 
   const categoryInfo = categoryConfig[persona.category] || {
@@ -63,7 +63,7 @@ function PersonaPage({ persona }: PersonaPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/studio/personas">
+          <Link href="/studio/templates/personas">
             <Button
               variant="ghost"
               size="icon"
@@ -80,7 +80,7 @@ function PersonaPage({ persona }: PersonaPageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/studio/personas/${persona.id}/edit`}>
+          <Link href={`/studio/templates/personas/${persona.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정

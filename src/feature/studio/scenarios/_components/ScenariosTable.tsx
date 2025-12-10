@@ -66,7 +66,7 @@ export function ScenariosTable({ scenarios }: ScenariosTableProps) {
   }
 
   function handleRowClick(scenarioId: number) {
-    router.push(`/studio/scenarios/${scenarioId}`);
+    router.push(`/studio/templates/scenarios/${scenarioId}`);
   }
 
   return (

@@ -79,7 +79,7 @@ export default function ToolsPage() {
               </Button>
             </div>
             <div className="flex gap-2">
-              <Link href="/studio/tools/add">
+              <Link href="/studio/templates/tools/add">
                 <Button className="gap-2 cursor-pointer">
                   <Plus className="h-4 w-4" />
                   도구 추가

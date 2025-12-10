@@ -24,7 +24,7 @@ interface ToolsTableProps {
 export function ToolsTable({ tools }: ToolsTableProps) {
   const router = useRouter();
   const handleViewDetails = (toolId: number) => {
-    router.push(`/studio/tools/${toolId}`);
+    router.push(`/studio/templates/tools/${toolId}`);
   };
   return (
     <div className="border rounded-lg">

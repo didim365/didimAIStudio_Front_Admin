@@ -61,7 +61,7 @@ function ModelsPage() {
   const models = data?.items || [];
 
   function handleRowClick(modelId: number) {
-    router.push(`/studio/models/${modelId}`);
+    router.push(`/studio/templates/models/${modelId}`);
   }
 
   return (
