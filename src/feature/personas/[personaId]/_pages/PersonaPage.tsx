@@ -53,11 +53,6 @@ function PersonaPage({ persona }: PersonaPageProps) {
     router.push("/studio/personas");
   };
 
-  const personaTitle = persona.user_persona_title ?? persona.name;
-  const personaDescription =
-    persona.user_persona_description ?? persona.description;
-  const isCustomized =
-    !!persona.user_persona_title || !!persona.user_persona_description;
   const categoryInfo = categoryConfig[persona.category] || {
     label: persona.category,
     color: "bg-gray-100 text-gray-800 border-gray-200",
@@ -108,7 +103,7 @@ function PersonaPage({ persona }: PersonaPageProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>페르소나 삭제 확인</AlertDialogTitle>
             <AlertDialogDescription>
-              정말 <span className="font-semibold">{personaTitle}</span>
+              정말 <span className="font-semibold">{persona.name}</span>
               을(를) 삭제하시겠습니까?
               <br />
               <span className="text-destructive mt-2 block">
@@ -141,38 +136,20 @@ function PersonaPage({ persona }: PersonaPageProps) {
                 <div className="space-y-2 md:col-span-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <FileText className="h-4 w-4" />
-                    <span className="font-medium">
-                      {persona.user_persona_title ? "커스텀 제목" : "제목"}
-                    </span>
+                    <span className="font-medium">제목</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">{personaTitle}</p>
-                  {persona.user_persona_title && persona.name && (
-                    <>
-                      <p className="text-sm text-muted-foreground pl-6">
-                        원본: {persona.name}
-                      </p>
-                    </>
-                  )}
+                  <p className="text-lg font-semibold pl-6">{persona.name}</p>
                 </div>
 
                 {/* Description */}
                 <div className="space-y-2 md:col-span-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <FileText className="h-4 w-4" />
-                    <span className="font-medium">
-                      {persona.user_persona_description
-                        ? "커스텀 설명"
-                        : "설명"}
-                    </span>
+                    <span className="font-medium">설명</span>
                   </div>
                   <p className="text-sm pl-6 leading-relaxed">
-                    {personaDescription}
+                    {persona.description}
                   </p>
-                  {persona.user_persona_description && persona.description && (
-                    <p className="text-sm text-muted-foreground pl-6 leading-relaxed">
-                      원본: {persona.description}
-                    </p>
-                  )}
                 </div>
 
                 {/* Persona ID */}
@@ -283,28 +260,15 @@ function PersonaPage({ persona }: PersonaPageProps) {
                 <span>타입</span>
               </div>
               <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                {persona.is_system && (
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className="bg-purple-100 text-purple-800 border-purple-200"
-                    >
-                      <Shield className="h-3 w-3 mr-1" />
-                      시스템 페르소나
-                    </Badge>
-                  </div>
-                )}
-                {!persona.is_system && (
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className="bg-green-100 text-green-800 border-green-200"
-                    >
-                      <User className="h-3 w-3 mr-1" />
-                      사용자 페르소나
-                    </Badge>
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className="bg-purple-100 text-purple-800 border-purple-200"
+                  >
+                    <Shield className="h-3 w-3 mr-1" />
+                    시스템 페르소나
+                  </Badge>
+                </div>
               </div>
             </div>
 
@@ -346,37 +310,6 @@ function PersonaPage({ persona }: PersonaPageProps) {
                 )}
               </div>
             </div>
-
-            {isCustomized && (
-              <>
-                <Separator />
-                {/* Customization Info */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <span>커스터마이징</span>
-                  </div>
-                  <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                    <div className="space-y-1">
-                      {persona.user_persona_title && (
-                        <p className="text-sm">
-                          <span className="font-medium">• 제목이 수정됨</span>
-                        </p>
-                      )}
-                      {persona.user_persona_description && (
-                        <p className="text-sm">
-                          <span className="font-medium">• 설명이 수정됨</span>
-                        </p>
-                      )}
-                      <p className="text-xs text-muted-foreground mt-2">
-                        사용자가 이 페르소나를 자신만의 방식으로
-                        커스터마이징했습니다
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
           </CardContent>
         </Card>
       </div>

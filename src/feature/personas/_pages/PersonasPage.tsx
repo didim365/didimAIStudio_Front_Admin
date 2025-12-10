@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Activity, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
@@ -42,6 +42,7 @@ import {
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
 import { parseBooleanFilter } from "@/feature/studio/agents/utils/parseBooleanFilter";
+import { formatDate } from "@/shared/utils/formatDate";
 
 export default function PersonasPage() {
   const router = useRouter();
@@ -131,14 +132,6 @@ export default function PersonasPage() {
     setOrder("ASC");
     setPage(1);
     setSize(20);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
   };
 
   return (
@@ -250,7 +243,7 @@ export default function PersonasPage() {
             </div>
 
             {/* 필터 */}
-            {isFilterOpen && (
+            <Activity mode={isFilterOpen ? "visible" : "hidden"}>
               <div className="space-y-6 pt-4 border-t">
                 {/* 카테고리 및 불린 필터 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -370,7 +363,7 @@ export default function PersonasPage() {
                   </div>
                 </div>
               </div>
-            )}
+            </Activity>
           </div>
         </CardContent>
       </Card>
