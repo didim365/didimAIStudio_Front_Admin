@@ -18,43 +18,42 @@ import {
   User,
   Calendar,
   Shield,
-  Lock,
-  Unlock,
   ArrowLeft,
   Pencil,
   Trash2,
-  UserCircle,
   FileText,
   Tag,
   Settings,
-  Sparkles,
+  Workflow,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
 import { categoryConfig } from "../../_constants/categoryConfig";
 
-import type { GetPersonaResponse } from "../_api/getPersona";
-import useDeletePersona from "../_hooks/useDeletePersona";
-import { useRouter } from "next/navigation";
+import type { GetScenarioResponse } from "../_api/getScenario";
+import useDeleteScenario from "../_hooks/useDeleteScenario";
+import { useRouter, usePathname } from "next/navigation";
 
-interface PersonaPageProps {
-  persona: GetPersonaResponse;
+interface ScenarioPageProps {
+  scenario: GetScenarioResponse;
 }
 
-function PersonaPage({ persona }: PersonaPageProps) {
+function ScenarioPage({ scenario }: ScenarioPageProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const { mutate: deletePersona } = useDeletePersona();
+  const { mutate: deleteScenario } = useDeleteScenario();
 
   const handleDelete = () => {
     setShowDeleteDialog(false);
-    deletePersona({ persona_id: persona.id });
-    router.push("/studio/templates/personas");
+    deleteScenario({ scenario_id: scenario.id });
+    router.push(`${basePath}/scenarios`);
   };
 
-  const categoryInfo = categoryConfig[persona.category] || {
-    label: persona.category,
+  const categoryInfo = categoryConfig[scenario.category] || {
+    label: scenario.category,
     color: "bg-gray-100 text-gray-800 border-gray-200",
   };
 
@@ -63,7 +62,7 @@ function PersonaPage({ persona }: PersonaPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/studio/templates/personas">
+          <Link href={`${basePath}/scenarios`}>
             <Button
               variant="ghost"
               size="icon"
@@ -74,13 +73,13 @@ function PersonaPage({ persona }: PersonaPageProps) {
           </Link>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              페르소나 상세 정보
+              시나리오 상세 정보
             </h1>
-            <p className="text-muted-foreground">페르소나 ID: {persona.id}</p>
+            <p className="text-muted-foreground">시나리오 ID: {scenario.id}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/studio/templates/personas/${persona.id}/edit`}>
+          <Link href={`${basePath}/scenarios/${scenario.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정
@@ -101,9 +100,9 @@ function PersonaPage({ persona }: PersonaPageProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>페르소나 삭제 확인</AlertDialogTitle>
+            <AlertDialogTitle>시나리오 삭제 확인</AlertDialogTitle>
             <AlertDialogDescription>
-              정말 <span className="font-semibold">{persona.name}</span>
+              정말 <span className="font-semibold">{scenario.name}</span>
               을(를) 삭제하시겠습니까?
               <br />
               <span className="text-destructive mt-2 block">
@@ -124,21 +123,33 @@ function PersonaPage({ persona }: PersonaPageProps) {
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <UserCircle className="h-5 w-5" />
-              페르소나 정보
+              <Workflow className="h-5 w-5" />
+              시나리오 정보
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col md:flex-row gap-6">
-              {/* Persona Info Grid */}
+              {/* Icon */}
+              <div className="flex flex-col items-center gap-4">
+                <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl from-primary/20 to-primary/5 flex items-center justify-center">
+                  <Workflow className="h-16 w-16 text-primary" />
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Badge className={`${categoryInfo.color} border`}>
+                    {categoryInfo.label}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Scenario Info Grid */}
               <div className="flex-1 grid gap-4 md:grid-cols-2">
-                {/* Title */}
+                {/* Name */}
                 <div className="space-y-2 md:col-span-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <FileText className="h-4 w-4" />
-                    <span className="font-medium">제목</span>
+                    <span className="font-medium">이름</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">{persona.name}</p>
+                  <p className="text-lg font-semibold pl-6">{scenario.name}</p>
                 </div>
 
                 {/* Description */}
@@ -148,17 +159,28 @@ function PersonaPage({ persona }: PersonaPageProps) {
                     <span className="font-medium">설명</span>
                   </div>
                   <p className="text-sm pl-6 leading-relaxed">
-                    {persona.description}
+                    {scenario.description}
                   </p>
                 </div>
 
-                {/* Persona ID */}
+                {/* Definition Name */}
+                <div className="space-y-2 md:col-span-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Tag className="h-4 w-4" />
+                    <span className="font-medium">정의 이름</span>
+                  </div>
+                  <p className="text-sm pl-6 leading-relaxed">
+                    {scenario.definition_name}
+                  </p>
+                </div>
+
+                {/* Scenario ID */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Tag className="h-4 w-4" />
-                    <span className="font-medium">페르소나 ID</span>
+                    <span className="font-medium">시나리오 ID</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">#{persona.id}</p>
+                  <p className="text-lg font-semibold pl-6">#{scenario.id}</p>
                 </div>
 
                 {/* Category */}
@@ -171,33 +193,16 @@ function PersonaPage({ persona }: PersonaPageProps) {
                     {categoryInfo.label}
                   </p>
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* System Prompt Card */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5" />
-              시스템 프롬프트
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Sparkles className="h-4 w-4" />
-                <span className="font-medium">AI 모델에 전달되는 프롬프트</span>
+                {/* User ID */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <User className="h-4 w-4" />
+                    <span className="font-medium">사용자 ID</span>
+                  </div>
+                  <p className="text-sm pl-6">{scenario.user_id}</p>
+                </div>
               </div>
-              <div className="ml-6 p-4 bg-muted rounded-lg border border-border">
-                <pre className="text-sm font-mono whitespace-pre-wrap wrap-break-word">
-                  {persona.system_prompt}
-                </pre>
-              </div>
-              <p className="text-xs text-muted-foreground pl-6">
-                이 프롬프트는 AI 모델의 동작을 정의하는 핵심 설정입니다.
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -219,12 +224,12 @@ function PersonaPage({ persona }: PersonaPageProps) {
               </div>
               <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
                 <p className="text-sm font-mono">
-                  {formatDate(persona.created_at)}
+                  {formatDate(scenario.created_at)}
                 </p>
               </div>
             </div>
 
-            {persona.updated_at && (
+            {scenario.updated_at && (
               <>
                 <Separator />
                 {/* Updated At */}
@@ -235,7 +240,7 @@ function PersonaPage({ persona }: PersonaPageProps) {
                   </div>
                   <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
                     <p className="text-sm font-mono">
-                      {formatDate(persona.updated_at)}
+                      {formatDate(scenario.updated_at)}
                     </p>
                   </div>
                 </div>
@@ -260,51 +265,25 @@ function PersonaPage({ persona }: PersonaPageProps) {
                 <span>타입</span>
               </div>
               <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                <div className="flex items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className="bg-purple-100 text-purple-800 border-purple-200"
-                  >
-                    <Shield className="h-3 w-3 mr-1" />
-                    시스템 페르소나
-                  </Badge>
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Public Status */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                {persona.is_public && (
-                  <Unlock className="h-4 w-4 text-muted-foreground" />
-                )}
-                {!persona.is_public && (
-                  <Lock className="h-4 w-4 text-muted-foreground" />
-                )}
-                <span>공개 설정</span>
-              </div>
-              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                {persona.is_public && (
+                {scenario.is_system && (
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
-                      className="bg-teal-100 text-teal-800 border-teal-200"
+                      className="bg-purple-100 text-purple-800 border-purple-200"
                     >
-                      <Unlock className="h-3 w-3 mr-1" />
-                      공개
+                      <Shield className="h-3 w-3 mr-1" />
+                      템플릿
                     </Badge>
                   </div>
                 )}
-                {!persona.is_public && (
+                {!scenario.is_system && (
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
-                      className="bg-orange-100 text-orange-800 border-orange-200"
+                      className="bg-green-100 text-green-800 border-green-200"
                     >
-                      <Lock className="h-3 w-3 mr-1" />
-                      비공개
+                      <User className="h-3 w-3 mr-1" />
+                      사용자
                     </Badge>
                   </div>
                 )}
@@ -317,4 +296,4 @@ function PersonaPage({ persona }: PersonaPageProps) {
   );
 }
 
-export default PersonaPage;
+export default ScenarioPage;
