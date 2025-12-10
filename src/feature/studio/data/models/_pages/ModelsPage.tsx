@@ -3,7 +3,6 @@
 import { components } from "@/shared/types/api/models";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import useGetSettings from "../_hooks/useGetSettings";
-import { getColumnLabel } from "../_utils/getColumnLabel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -151,58 +150,42 @@ function ModelsPage() {
                   <TableRow>
                     <TableHead className="w-[50px]">#</TableHead>
                     <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("user_model_id")}
+                      회원 모델 ID
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">모델명</TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      사용자 ID
                     </TableHead>
                     <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("model_name")}
+                      배포 타입
                     </TableHead>
                     <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("user_id")}
+                      활성화 여부
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">생성일</TableHead>
+                    <TableHead className="whitespace-nowrap">수정일</TableHead>
+                    <TableHead className="whitespace-nowrap">ID</TableHead>
+                    <TableHead className="whitespace-nowrap">모델 ID</TableHead>
+                    <TableHead className="whitespace-nowrap">제공자</TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      카테고리
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">버전</TableHead>
+                    <TableHead className="whitespace-nowrap">상태</TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      최대 토큰
                     </TableHead>
                     <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("deployment_type")}
+                      최대 입력 토큰
                     </TableHead>
                     <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("is_active")}
+                      최대 출력 토큰
                     </TableHead>
                     <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("created_at")}
+                      입력 토큰당 비용
                     </TableHead>
                     <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("updated_at")}
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("id")}
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("model_id")}
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("provider")}
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("category")}
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("version")}
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("status")}
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("max_tokens")}
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("max_input_tokens")}
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("max_output_tokens")}
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("input_cost_per_token")}
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      {getColumnLabel("output_cost_per_token")}
+                      출력 토큰당 비용
                     </TableHead>
                   </TableRow>
                 </TableHeader>
