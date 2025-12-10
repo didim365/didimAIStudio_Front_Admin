@@ -40,7 +40,9 @@ type AICategoryEnum = components["schemas"]["AICategoryEnum"];
 function ModelsPage() {
   const router = useRouter();
   const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
+  const basePath = pathname?.startsWith("/studio/data")
+    ? "/studio/data"
+    : "/studio/templates";
 
   // URL 쿼리 파라미터 관리 - useState와 동일한 API
   const [page, setPage] = useQueryParam<number>("page", 1);
