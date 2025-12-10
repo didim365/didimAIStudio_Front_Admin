@@ -48,17 +48,18 @@ export default function PersonasPage() {
   const router = useRouter();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // 검색 필드들
-  const [name, setName] = useQueryParam<string>("name", "", {
-    debounce: 300,
-  });
-  const [description, setDescription] = useQueryParam<string>(
-    "description",
+  // 검색 필드들 (사용자 입력 데이터 검색)
+  const [userPersonaTitle, setUserPersonaTitle] = useQueryParam<string>(
+    "user_persona_title",
     "",
     {
       debounce: 300,
     }
   );
+  const [userPersonaDescription, setUserPersonaDescription] =
+    useQueryParam<string>("user_persona_description", "", {
+      debounce: 300,
+    });
   const [systemPrompt, setSystemPrompt] = useQueryParam<string>(
     "system_prompt",
     "",
@@ -93,14 +94,14 @@ export default function PersonasPage() {
   const [size, setSize] = useQueryParam<number>("size", 20);
 
   const queryParams = {
-    name: name || undefined,
-    description: description || undefined,
+    user_persona_title: userPersonaTitle || undefined,
+    user_persona_description: userPersonaDescription || undefined,
     system_prompt: systemPrompt || undefined,
     category:
       categoryFilter === "all"
         ? undefined
         : [categoryFilter as PersonaCategoryEnum],
-    is_system: true, // 템플릿 데이터만 표시
+    is_system: false, // 사용자 데이터만 표시
     is_public: parseBooleanFilter(publicFilter),
     operation_type:
       operationType === "all" ? undefined : (operationType as "AND" | "OR"),
@@ -122,8 +123,8 @@ export default function PersonasPage() {
 
   // 필터 초기화
   const handleResetFilters = () => {
-    setName("");
-    setDescription("");
+    setUserPersonaTitle("");
+    setUserPersonaDescription("");
     setSystemPrompt("");
     setCategoryFilter("all");
     setPublicFilter("all");
@@ -138,9 +139,9 @@ export default function PersonasPage() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">페르소나 템플릿 관리</h1>
+        <h1 className="text-3xl font-bold">페르소나 데이터 관리</h1>
         <p className="mt-2 text-slate-600">
-          시스템 관리자가 생성한 페르소나 템플릿을 관리합니다
+          회원이 입력한 페르소나 데이터를 관리합니다
         </p>
       </div>
 
@@ -187,10 +188,10 @@ export default function PersonasPage() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
-                    placeholder="이름 검색"
-                    value={name}
+                    placeholder="페르소나 제목 검색"
+                    value={userPersonaTitle}
                     onChange={(e) => {
-                      setName(e.target.value);
+                      setUserPersonaTitle(e.target.value);
                       setPage(1);
                     }}
                     className="pl-10"
@@ -199,10 +200,10 @@ export default function PersonasPage() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
-                    placeholder="설명 검색"
-                    value={description}
+                    placeholder="페르소나 설명 검색"
+                    value={userPersonaDescription}
                     onChange={(e) => {
-                      setDescription(e.target.value);
+                      setUserPersonaDescription(e.target.value);
                       setPage(1);
                     }}
                     className="pl-10"
@@ -372,7 +373,7 @@ export default function PersonasPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            페르소나 템플릿 목록 ({data?.total})
+            페르소나 사용자 데이터 목록 ({data?.total})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -400,11 +401,16 @@ export default function PersonasPage() {
                         colSpan={6}
                         className="text-center py-12 text-slate-500"
                       >
-                        등록된 페르소나 템플릿이 없습니다.
+                        등록된 페르소나 사용자 데이터가 없습니다.
                       </TableCell>
                     </TableRow>
                   )}
                   {data?.items.map((persona) => {
+                    // 사용자 입력 데이터 우선, 없으면 템플릿 데이터 사용
+                    const displayTitle =
+                      persona.user_persona_title || persona.name;
+                    const displayDescription =
+                      persona.user_persona_description || persona.description;
                     return (
                       <TableRow
                         key={persona.id}
@@ -416,12 +422,12 @@ export default function PersonasPage() {
                         </TableCell>
                         <TableCell>
                           <div className="font-semibold line-clamp-2 text-slate-900">
-                            {persona.name}
+                            {displayTitle}
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="text-sm line-clamp-2 text-slate-700">
-                            {persona.description}
+                            {displayDescription}
                           </div>
                         </TableCell>
                         <TableCell>
