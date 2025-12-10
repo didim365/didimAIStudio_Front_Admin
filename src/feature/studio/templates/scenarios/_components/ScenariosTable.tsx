@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/shared/ui/badge";
 import { AlertCircle, Shield, User } from "lucide-react";
 import { formatDate } from "@/shared/utils/formatDate";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 interface Scenario {
   id: number;
@@ -54,6 +54,8 @@ const getTypeBadge = (scenario: Scenario) => {
 
 export function ScenariosTable({ scenarios }: ScenariosTableProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
 
   if (scenarios.length === 0) {
     return (
@@ -66,7 +68,7 @@ export function ScenariosTable({ scenarios }: ScenariosTableProps) {
   }
 
   function handleRowClick(scenarioId: number) {
-    router.push(`/studio/templates/scenarios/${scenarioId}`);
+    router.push(`${basePath}/scenarios/${scenarioId}`);
   }
 
   return (

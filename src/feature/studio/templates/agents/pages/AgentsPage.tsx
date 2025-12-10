@@ -35,7 +35,7 @@ import {
 import { useGetAgents } from "../hooks/useGetAgents";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { formatDate } from "@/shared/utils/formatDate";
 import { parseBooleanFilter } from "@/feature/studio/templates/agents/utils/parseBooleanFilter";
@@ -43,6 +43,8 @@ import Link from "next/link";
 
 export default function AgentsPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // 검색 필드들
@@ -104,7 +106,7 @@ export default function AgentsPage() {
   const { data: agentsData, isLoading } = useGetAgents(params);
 
   const handleViewDetails = (agentId: number) => {
-    router.push(`/studio/templates/agents/${agentId}`);
+    router.push(`${basePath}/agents/${agentId}`);
   };
 
   // 필터 초기화
@@ -188,7 +190,7 @@ export default function AgentsPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Link href="/studio/templates/agents/add">
+                <Link href={`${basePath}/agents/add`}>
                   <Button className="gap-2 cursor-pointer">
                     <Plus className="h-4 w-4" />
                     에이전트 생성

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -37,6 +37,8 @@ import { cn } from "@/shared/lib/utils";
 
 export function AgentAddPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const queryClient = useQueryClient();
   const { data: myInfo } = useGetMyInfo();
 
@@ -61,7 +63,7 @@ export function AgentAddPage() {
         queryKey: ["agents"],
       });
       // 생성된 에이전트 상세 페이지로 이동
-      router.push(`/studio/templates/agents/${data.id}`);
+      router.push(`${basePath}/agents/${data.id}`);
     },
     onError: (error: Error) => {
       toast.error(`에이전트 생성 실패: ${error.message}`);
@@ -167,17 +169,17 @@ export function AgentAddPage() {
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Link href="/studio/templates/agents">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="shrink-0 cursor-pointer"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-              </Link>
+          <div className="flex items-center gap-4">
+            <Link href={`${basePath}/agents`}>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="shrink-0 cursor-pointer"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
               <div>
                 <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
                   <Bot className="h-8 w-8" />새 에이전트 추가

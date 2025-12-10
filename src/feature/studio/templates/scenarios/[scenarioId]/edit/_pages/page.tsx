@@ -19,7 +19,7 @@ import Link from "next/link";
 import { categoryConfig } from "../../../_constants/categoryConfig";
 import type { GetScenarioResponse } from "../../_api/getScenario";
 import usePutScenario from "../_hooks/usePutScenario";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ScenarioEditPageProps {
@@ -28,6 +28,8 @@ interface ScenarioEditPageProps {
 
 function ScenarioEditPage({ scenario }: ScenarioEditPageProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const queryClient = useQueryClient();
   const { mutate: putScenario, isPending } = usePutScenario({
     meta: {
@@ -65,14 +67,14 @@ function ScenarioEditPage({ scenario }: ScenarioEditPageProps) {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["scenarios"] });
-          router.push(`/studio/templates/scenarios/${scenario.id}`);
+          router.push(`${basePath}/scenarios/${scenario.id}`);
         },
       }
     );
   };
 
   const handleCancel = () => {
-    router.push(`/studio/templates/scenarios/${scenario.id}`);
+    router.push(`${basePath}/scenarios/${scenario.id}`);
   };
 
   return (
@@ -80,7 +82,7 @@ function ScenarioEditPage({ scenario }: ScenarioEditPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href={`/studio/templates/scenarios/${scenario.id}`}>
+          <Link href={`${basePath}/scenarios/${scenario.id}`}>
             <Button
               variant="ghost"
               size="icon"

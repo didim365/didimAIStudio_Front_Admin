@@ -15,8 +15,11 @@ import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { ScenariosTable } from "../_components/ScenariosTable";
 import Link from "next/link";
 import { useGetScenarios } from "../_hooks/useGetScenarios";
+import { usePathname } from "next/navigation";
 
 export default function ScenariosPage() {
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   // URL 쿼리 파라미터 관리
   const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
     debounce: 300,
@@ -93,7 +96,7 @@ export default function ScenariosPage() {
                 />
               </div>
               <div className="flex gap-2">
-                <Link href="/studio/templates/scenarios/add">
+                <Link href={`${basePath}/scenarios/add`}>
                   <Button className="gap-2 cursor-pointer">
                     <Plus className="h-4 w-4" />
                     시나리오 생성

@@ -17,8 +17,11 @@ import { statusConfig } from "../_constants/toolConfigs";
 import { Pagination } from "@/shared/ui/pagination";
 import Link from "next/link";
 import { cn } from "@/shared/lib/utils";
+import { usePathname } from "next/navigation";
 
 export default function ToolsPage() {
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const [statusFilter, setStatusFilter] = useQueryParam<string>(
     "status",
     "all"
@@ -79,7 +82,7 @@ export default function ToolsPage() {
               </Button>
             </div>
             <div className="flex gap-2">
-              <Link href="/studio/templates/tools/add">
+              <Link href={`${basePath}/tools/add`}>
                 <Button className="gap-2 cursor-pointer">
                   <Plus className="h-4 w-4" />
                   도구 추가

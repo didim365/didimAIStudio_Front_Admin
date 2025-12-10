@@ -35,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { GetToolResponse } from "../../_api/getTool";
 import {
   statusConfig,
@@ -46,6 +46,8 @@ import Link from "next/link";
 
 export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
@@ -91,7 +93,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         queryKey: ["mcp-tools"],
       });
 
-      router.push(`/studio/templates/tools/${tool.id}`);
+      router.push(`${basePath}/tools/${tool.id}`);
     },
   });
 
@@ -195,7 +197,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link href={`/studio/templates/tools/${tool.id}`}>
+            <Link href={`${basePath}/tools/${tool.id}`}>
               <Button
                 type="button"
                 variant="ghost"

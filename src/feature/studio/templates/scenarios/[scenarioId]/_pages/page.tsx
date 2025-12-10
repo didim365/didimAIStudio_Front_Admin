@@ -33,7 +33,7 @@ import { categoryConfig } from "../../_constants/categoryConfig";
 
 import type { GetScenarioResponse } from "../_api/getScenario";
 import useDeleteScenario from "../_hooks/useDeleteScenario";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 interface ScenarioPageProps {
   scenario: GetScenarioResponse;
@@ -41,13 +41,15 @@ interface ScenarioPageProps {
 
 function ScenarioPage({ scenario }: ScenarioPageProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { mutate: deleteScenario } = useDeleteScenario();
 
   const handleDelete = () => {
     setShowDeleteDialog(false);
     deleteScenario({ scenario_id: scenario.id });
-    router.push("/studio/templates/scenarios");
+    router.push(`${basePath}/scenarios`);
   };
 
   const categoryInfo = categoryConfig[scenario.category] || {
@@ -60,7 +62,7 @@ function ScenarioPage({ scenario }: ScenarioPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/studio/templates/scenarios">
+          <Link href={`${basePath}/scenarios`}>
             <Button
               variant="ghost"
               size="icon"
@@ -77,7 +79,7 @@ function ScenarioPage({ scenario }: ScenarioPageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/studio/templates/scenarios/${scenario.id}/edit`}>
+          <Link href={`${basePath}/scenarios/${scenario.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정

@@ -27,7 +27,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
 import { Pagination } from "@/shared/ui/pagination";
 import { formatDate } from "@/shared/utils/formatDate";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { CATEGORIES, DEPLOYMENT_TYPES } from "../_constants/modelConstants";
 import {
   getCategoryLabel,
@@ -39,6 +39,8 @@ type AICategoryEnum = components["schemas"]["AICategoryEnum"];
 
 function ModelsPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
 
   // URL 쿼리 파라미터 관리 - useState와 동일한 API
   const [page, setPage] = useQueryParam<number>("page", 1);
@@ -61,7 +63,7 @@ function ModelsPage() {
   const models = data?.items || [];
 
   function handleRowClick(modelId: number) {
-    router.push(`/studio/templates/models/${modelId}`);
+    router.push(`${basePath}/models/${modelId}`);
   }
 
   return (

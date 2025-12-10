@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/shared/ui/badge";
 import { paths } from "@/shared/types/api/tools";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { providerConfig, statusConfig } from "../_constants/toolConfigs";
 
 type MCPToolResponseDTO =
@@ -23,8 +23,10 @@ interface ToolsTableProps {
 
 export function ToolsTable({ tools }: ToolsTableProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const handleViewDetails = (toolId: number) => {
-    router.push(`/studio/templates/tools/${toolId}`);
+    router.push(`${basePath}/tools/${toolId}`);
   };
   return (
     <div className="border rounded-lg">

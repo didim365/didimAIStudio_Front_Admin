@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostTool } from "../_hooks/usePostTool";
@@ -43,6 +43,8 @@ import {
 
 function ToolAddPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
@@ -65,7 +67,7 @@ function ToolAddPage() {
         queryKey: ["mcp-tools"],
       });
       // 생성된 도구 상세 페이지로 이동
-      router.push(`/studio/templates/tools/${data.id}`);
+      router.push(`${basePath}/tools/${data.id}`);
     },
   });
 
@@ -103,7 +105,7 @@ function ToolAddPage() {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => router.push("/studio/templates/tools")}
+              onClick={() => router.push(`${basePath}/tools`)}
               className="shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />
