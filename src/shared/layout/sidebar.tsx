@@ -13,6 +13,7 @@ import useGetMyInfo from "../hooks/useGetMyInfo";
 type MenuChildItem = {
   name: string;
   href: string;
+  icon: React.ComponentType<{ className?: string }>;
   children?: MenuChildItem[];
 };
 
@@ -84,11 +85,7 @@ function MenuItemComponent({
                   : "bg-primary/10 text-primary font-medium")
             )}
           >
-            {depth > 0 && (
-              <div className="w-5 flex items-center justify-center">
-                <div className="rounded-full bg-current h-1 w-1" />
-              </div>
-            )}
+            <item.icon className="h-5 w-5" />
             <span className="flex-1 text-left">{item.name}</span>
             <ChevronRight
               className={cn(
@@ -127,11 +124,7 @@ function MenuItemComponent({
                 : "bg-primary/10 text-primary font-medium")
           )}
         >
-          {depth > 0 && (
-            <div className="w-5 flex items-center justify-center">
-              <div className={"rounded-full bg-current h-1 w-1"} />
-            </div>
-          )}
+          <item.icon className="h-5 w-5" />
           {item.name}
         </Link>
       )}
@@ -238,7 +231,9 @@ export function Sidebar() {
                       "bg-primary text-primary-foreground"
                   )}
                 >
-                  <item.icon className="h-5 w-5" />
+                  {"icon" in item && item.icon && (
+                    <item.icon className="h-5 w-5" />
+                  )}
                   <span className="flex-1 text-left">{item.name}</span>
                   <ChevronRight
                     className={cn(
@@ -248,7 +243,7 @@ export function Sidebar() {
                   />
                 </button>
               )}
-              {!hasChildren && (
+              {!hasChildren && "icon" in item && (
                 <Link
                   href={item.href}
                   className={cn(
@@ -256,7 +251,7 @@ export function Sidebar() {
                     isActive && "bg-primary text-primary-foreground"
                   )}
                 >
-                  <item.icon className="h-5 w-5" />
+                  {item.icon && <item.icon className="h-5 w-5" />}
                   {item.name}
                 </Link>
               )}
