@@ -1,6 +1,6 @@
-import getTool from "@/feature/studio/tools/[toolId]/_api/getTool";
-import getToolConfig from "@/feature/studio/tools/[toolId]/_api/getToolConfig";
-import ToolPage from "@/feature/studio/tools/[toolId]/_pages/ToolPage";
+import getTool from "@/feature/studio/templates/tools/[toolId]/_api/getTool";
+import getToolConfig from "@/feature/studio/templates/tools/[toolId]/_api/getToolConfig";
+import ToolPage from "@/feature/studio/templates/tools/[toolId]/_pages/ToolPage";
 
 interface PageProps {
   params: Promise<{ toolId: string }>;
@@ -19,4 +19,3 @@ async function Page({ params }: PageProps) {
 }
 
 export default Page;
-

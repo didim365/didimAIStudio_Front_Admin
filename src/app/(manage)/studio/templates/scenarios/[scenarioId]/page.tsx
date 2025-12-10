@@ -1,5 +1,5 @@
-import getScenario from "@/feature/studio/scenarios/[scenarioId]/_api/getScenario";
-import ScenarioPage from "@/feature/studio/scenarios/[scenarioId]/_pages/page";
+import getScenario from "@/feature/studio/templates/scenarios/[scenarioId]/_api/getScenario";
+import ScenarioPage from "@/feature/studio/templates/scenarios/[scenarioId]/_pages/page";
 
 export const dynamic = "force-dynamic";
 
@@ -13,4 +13,3 @@ async function Page({ params }: { params: Promise<{ scenarioId: string }> }) {
 }
 
 export default Page;
-

@@ -1,4 +1,4 @@
-import ToolAddPage from "@/feature/studio/tools/add/_pages/ToolAddPage";
+import ToolAddPage from "@/feature/studio/templates/tools/add/_pages/ToolAddPage";
 
 function page() {
   return <ToolAddPage />;
