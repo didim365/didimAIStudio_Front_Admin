@@ -23,10 +23,13 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { RefreshCw, AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type DeploymentType = components["schemas"]["DeploymentType"];
 
 function ModelsPage() {
+  const router = useRouter();
+
   // Query Params
   const [deploymentType, setDeploymentType] = useQueryParam<string>(
     "deploymentType",
@@ -43,13 +46,19 @@ function ModelsPage() {
 
   const settingsList = Array.isArray(data) ? data : [];
 
+  const handleRowClick = (userModelId: number | string | null | undefined) => {
+    if (userModelId) {
+      router.push(`/studio/data/models/${userModelId}`);
+    }
+  };
+
   return (
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">모델 설정 관리</h1>
+        <h1 className="text-3xl font-bold">모델 데이터 관리</h1>
         <p className="mt-2 text-slate-600">
-          시스템의 LLM 모델 설정을 조회하고 관리합니다.
+          사용자의 LLM 모델 데이터를 조회하고 관리합니다.
         </p>
       </div>
 
@@ -129,43 +138,79 @@ function ModelsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[50px]">#</TableHead>
-                    <TableHead className="whitespace-nowrap">
+                    <TableHead className="w-[50px] text-center">#</TableHead>
+                    <TableHead className="whitespace-nowrap text-center">
                       회원 모델 ID
                     </TableHead>
-                    <TableHead className="whitespace-nowrap">모델명</TableHead>
-                    <TableHead className="whitespace-nowrap">
+                    <TableHead className="whitespace-nowrap text-center">
+                      모델명
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap text-center">
                       사용자 ID
                     </TableHead>
-                    <TableHead className="whitespace-nowrap">
+                    <TableHead className="whitespace-nowrap text-center">
                       배포 타입
                     </TableHead>
-                    <TableHead className="whitespace-nowrap">
+                    <TableHead className="whitespace-nowrap text-center">
                       활성화 여부
                     </TableHead>
-                    <TableHead className="whitespace-nowrap">생성일</TableHead>
-                    <TableHead className="whitespace-nowrap">수정일</TableHead>
-                    <TableHead className="whitespace-nowrap">ID</TableHead>
-                    <TableHead className="whitespace-nowrap">모델 ID</TableHead>
-                    <TableHead className="whitespace-nowrap">제공자</TableHead>
+                    <TableHead className="whitespace-nowrap text-center">
+                      생성일
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap text-center">
+                      수정일
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap text-center">
+                      ID
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap text-center">
+                      모델 ID
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap text-center">
+                      제공자
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {settingsList.map((item, index: number) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-mono text-sm text-muted-foreground">
+                    <TableRow
+                      key={index}
+                      onClick={() => handleRowClick(item.user_model_id)}
+                      className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    >
+                      <TableCell className="font-mono text-sm text-muted-foreground text-center">
                         {index + 1}
                       </TableCell>
-                      <TableCell>{item.user_model_id ?? "-"}</TableCell>
-                      <TableCell>{item.model_name ?? "-"}</TableCell>
-                      <TableCell>{item.user_id ?? "-"}</TableCell>
-                      <TableCell>{item.deployment_type ?? "-"}</TableCell>
-                      <TableCell>{item.is_active ?? "-"}</TableCell>
-                      <TableCell>{formatDate(item.created_at)}</TableCell>
-                      <TableCell>{formatDate(item.updated_at)}</TableCell>
-                      <TableCell>{item.id ?? "-"}</TableCell>
-                      <TableCell>{item.model_id ?? "-"}</TableCell>
-                      <TableCell>{item.provider ?? "-"}</TableCell>
+                      <TableCell className="text-center">
+                        {item.user_model_id ?? "-"}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.model_name ?? "-"}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.user_id ?? "-"}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.deployment_type ?? "-"}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.is_active ? "활성화" : "비활성화"}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {formatDate(item.created_at)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {formatDate(item.updated_at)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.id ?? "-"}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.model_id ?? "-"}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.provider ?? "-"}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
