@@ -2,6 +2,7 @@
 
 import { components } from "@/shared/types/api/models";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
+import { formatDate } from "@/shared/utils/formatDate";
 import useGetSettings from "../_hooks/useGetSettings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
@@ -21,7 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
-import { Badge } from "@/shared/ui/badge";
 import { RefreshCw, AlertCircle } from "lucide-react";
 
 type DeploymentType = components["schemas"]["DeploymentType"];
@@ -42,25 +42,6 @@ function ModelsPage() {
   });
 
   const settingsList = Array.isArray(data) ? data : [];
-
-  // Helper to safely render cell values
-  const renderValue = (value: any) => {
-    if (value === null || value === undefined)
-      return <span className="text-muted-foreground">-</span>;
-    if (typeof value === "boolean")
-      return (
-        <Badge variant={value ? "default" : "secondary"}>
-          {value.toString()}
-        </Badge>
-      );
-    if (typeof value === "object")
-      return (
-        <code className="text-xs bg-muted px-2 py-1 rounded">
-          {JSON.stringify(value).substring(0, 20)}...
-        </code>
-      );
-    return value.toString();
-  };
 
   return (
     <div>
@@ -167,60 +148,24 @@ function ModelsPage() {
                     <TableHead className="whitespace-nowrap">ID</TableHead>
                     <TableHead className="whitespace-nowrap">모델 ID</TableHead>
                     <TableHead className="whitespace-nowrap">제공자</TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      카테고리
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">버전</TableHead>
-                    <TableHead className="whitespace-nowrap">상태</TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      최대 토큰
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      최대 입력 토큰
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      최대 출력 토큰
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      입력 토큰당 비용
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap">
-                      출력 토큰당 비용
-                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {settingsList.map((item: any, index: number) => (
+                  {settingsList.map((item, index: number) => (
                     <TableRow key={index}>
                       <TableCell className="font-mono text-sm text-muted-foreground">
                         {index + 1}
                       </TableCell>
-                      <TableCell>{renderValue(item.user_model_id)}</TableCell>
-                      <TableCell>{renderValue(item.model_name)}</TableCell>
-                      <TableCell>{renderValue(item.user_id)}</TableCell>
-                      <TableCell>{renderValue(item.deployment_type)}</TableCell>
-                      <TableCell>{renderValue(item.is_active)}</TableCell>
-                      <TableCell>{renderValue(item.created_at)}</TableCell>
-                      <TableCell>{renderValue(item.updated_at)}</TableCell>
-                      <TableCell>{renderValue(item.id)}</TableCell>
-                      <TableCell>{renderValue(item.model_id)}</TableCell>
-                      <TableCell>{renderValue(item.provider)}</TableCell>
-                      <TableCell>{renderValue(item.category)}</TableCell>
-                      <TableCell>{renderValue(item.version)}</TableCell>
-                      <TableCell>{renderValue(item.status)}</TableCell>
-                      <TableCell>{renderValue(item.max_tokens)}</TableCell>
-                      <TableCell>
-                        {renderValue(item.max_input_tokens)}
-                      </TableCell>
-                      <TableCell>
-                        {renderValue(item.max_output_tokens)}
-                      </TableCell>
-                      <TableCell>
-                        {renderValue(item.input_cost_per_token)}
-                      </TableCell>
-                      <TableCell>
-                        {renderValue(item.output_cost_per_token)}
-                      </TableCell>
+                      <TableCell>{item.user_model_id ?? "-"}</TableCell>
+                      <TableCell>{item.model_name ?? "-"}</TableCell>
+                      <TableCell>{item.user_id ?? "-"}</TableCell>
+                      <TableCell>{item.deployment_type ?? "-"}</TableCell>
+                      <TableCell>{item.is_active ?? "-"}</TableCell>
+                      <TableCell>{formatDate(item.created_at)}</TableCell>
+                      <TableCell>{formatDate(item.updated_at)}</TableCell>
+                      <TableCell>{item.id ?? "-"}</TableCell>
+                      <TableCell>{item.model_id ?? "-"}</TableCell>
+                      <TableCell>{item.provider ?? "-"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
