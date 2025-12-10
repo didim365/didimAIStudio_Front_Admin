@@ -1,5 +1,5 @@
-import getScenario from "@/feature/studio/templates/scenarios/[scenarioId]/_api/getScenario";
-import ScenarioPage from "@/feature/studio/templates/scenarios/[scenarioId]/_pages/page";
+import getScenario from "@/feature/studio/data/scenarios/[scenarioId]/_api/getScenario";
+import ScenarioPage from "@/feature/studio/data/scenarios/[scenarioId]/_pages/page";
 
 export const dynamic = "force-dynamic";
 
