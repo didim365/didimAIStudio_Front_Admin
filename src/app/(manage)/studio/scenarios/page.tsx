@@ -1,4 +1,4 @@
-import ScenariosPage from "@/feature/studio/scenarios/pages/ScenariosPage";
+import ScenariosPage from "@/feature/studio/scenarios/_pages/page";
 
 export const dynamic = "force-dynamic";
 

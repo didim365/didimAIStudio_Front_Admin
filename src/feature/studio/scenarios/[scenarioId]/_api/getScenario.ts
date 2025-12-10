@@ -21,7 +21,7 @@ const getScenario = async (
   const accessToken = cookieStore.get("access_token")?.value;
 
   const response = await axiosInstance.agent.get<GetScenarioResponse>(
-    `api/agents/v1/scenarios/data/${params.scenario_id}`,
+    `/scenarios/data/${params.scenario_id}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

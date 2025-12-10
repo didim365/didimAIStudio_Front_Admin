@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/agents";
-import putScenario from "../api/putScenario";
+import putScenario from "../_api/putScenario";
 
 type PutScenarioParams =
   paths["/v1/scenarios/data/{scenario_id}"]["put"]["parameters"]["path"];
