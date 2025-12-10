@@ -114,7 +114,7 @@ export default function PersonasPage() {
   const { data, isLoading, refetch } = useGetPersonas(queryParams);
 
   const handleViewDetails = (personaId: number) => {
-    router.push(`/studio/templates/personas/${personaId}`);
+    router.push(`/studio/data/personas/${personaId}`);
   };
 
   const handleRefresh = () => {
@@ -223,7 +223,7 @@ export default function PersonasPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Link href="/studio/templates/personas/add">
+                <Link href="/studio/data/personas/add">
                   <Button className="gap-2 cursor-pointer">
                     <UserPlus className="h-4 w-4" />
                     페르소나 생성
