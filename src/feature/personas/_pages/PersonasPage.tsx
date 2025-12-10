@@ -41,7 +41,6 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { cn } from "@/shared/lib/utils";
 import { parseBooleanFilter } from "@/feature/studio/agents/utils/parseBooleanFilter";
 import { formatDate } from "@/shared/utils/formatDate";
 
@@ -101,7 +100,7 @@ export default function PersonasPage() {
       categoryFilter === "all"
         ? undefined
         : [categoryFilter as PersonaCategoryEnum],
-    is_system: true,
+    is_system: true, // 템플릿 데이터만 표시
     is_public: parseBooleanFilter(publicFilter),
     operation_type:
       operationType === "all" ? undefined : (operationType as "AND" | "OR"),
@@ -139,9 +138,9 @@ export default function PersonasPage() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">페르소나 관리</h1>
+        <h1 className="text-3xl font-bold">페르소나 템플릿 관리</h1>
         <p className="mt-2 text-slate-600">
-          등록된 모든 페르소나 데이터를 관리합니다
+          시스템 관리자가 생성한 페르소나 템플릿을 관리합니다
         </p>
       </div>
 
@@ -373,7 +372,7 @@ export default function PersonasPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            페르소나 목록 ({data?.total})
+            페르소나 템플릿 목록 ({data?.total})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -401,7 +400,7 @@ export default function PersonasPage() {
                         colSpan={6}
                         className="text-center py-12 text-slate-500"
                       >
-                        등록된 페르소나가 없습니다.
+                        등록된 페르소나 템플릿이 없습니다.
                       </TableCell>
                     </TableRow>
                   )}

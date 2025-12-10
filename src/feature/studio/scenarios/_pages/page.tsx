@@ -12,9 +12,9 @@ import {
 } from "@/shared/ui/select";
 import { Search, RefreshCw, Plus } from "lucide-react";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
-import { ScenariosTable } from "../components/ScenariosTable";
+import { ScenariosTable } from "../_components/ScenariosTable";
 import Link from "next/link";
-import { useGetScenarios } from "../hooks/useGetScenarios";
+import { useGetScenarios } from "../_hooks/useGetScenarios";
 
 export default function ScenariosPage() {
   // URL 쿼리 파라미터 관리
@@ -25,7 +25,6 @@ export default function ScenariosPage() {
     "searchType",
     "name"
   );
-  const [typeFilter, setTypeFilter] = useQueryParam<string>("type", "all");
   const [page, setPage] = useQueryParam<number>("page", 1);
   const pageSize = 20;
 
@@ -33,7 +32,7 @@ export default function ScenariosPage() {
   const queryParams = {
     page,
     size: pageSize,
-    is_system: typeFilter === "all" ? undefined : typeFilter === "template",
+    is_system: true,
     name: searchType === "name" ? searchQuery || undefined : undefined,
   };
 
@@ -113,17 +112,6 @@ export default function ScenariosPage() {
                   <SelectItem value="name">시나리오 이름</SelectItem>
                   <SelectItem value="id">시나리오 ID</SelectItem>
                   <SelectItem value="description">시나리오 설명</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="타입 필터" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체</SelectItem>
-                  <SelectItem value="template">템플릿만 보기</SelectItem>
-                  <SelectItem value="user">사용자 시나리오만 보기</SelectItem>
                 </SelectContent>
               </Select>
 

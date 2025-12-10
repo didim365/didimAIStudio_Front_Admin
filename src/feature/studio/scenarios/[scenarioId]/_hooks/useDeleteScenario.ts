@@ -2,7 +2,7 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/agents";
-import deleteScenario from "../api/deleteScenario";
+import deleteScenario from "../_api/deleteScenario";
 
 type DeleteScenarioParams =
   paths["/v1/scenarios/data/{scenario_id}"]["delete"]["parameters"]["path"];
