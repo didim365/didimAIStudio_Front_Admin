@@ -17,7 +17,7 @@ import {
 } from "@/shared/ui/select";
 import Link from "next/link";
 import { categoryConfig } from "../../../_constants/categoryConfig";
-import type { GetScenarioResponse } from "../../../_api/getScenario";
+import type { GetScenarioResponse } from "../../_api/getScenario";
 import usePutScenario from "../_hooks/usePutScenario";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";

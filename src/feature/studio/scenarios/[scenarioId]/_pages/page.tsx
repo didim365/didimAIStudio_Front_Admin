@@ -31,7 +31,7 @@ import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
 import { categoryConfig } from "../../_constants/categoryConfig";
 
-import type { GetScenarioResponse } from "../../_api/getScenario";
+import type { GetScenarioResponse } from "../_api/getScenario";
 import useDeleteScenario from "../_hooks/useDeleteScenario";
 import { useRouter } from "next/navigation";
 
