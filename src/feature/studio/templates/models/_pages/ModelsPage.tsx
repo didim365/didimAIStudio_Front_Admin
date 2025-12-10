@@ -29,11 +29,9 @@ import { Pagination } from "@/shared/ui/pagination";
 import { formatDate } from "@/shared/utils/formatDate";
 import { useRouter, usePathname } from "next/navigation";
 import { CATEGORIES, DEPLOYMENT_TYPES } from "../_constants/modelConstants";
-import {
-  getCategoryLabel,
-  formatNumber,
-  formatCost,
-} from "../_utils/modelUtils";
+import { getCategoryLabel } from "../_utils/getCategoryLabel";
+import { formatNumber } from "../_utils/formatNumber";
+import { formatCost } from "../_utils/formatCost";
 
 type AICategoryEnum = components["schemas"]["AICategoryEnum"];
 

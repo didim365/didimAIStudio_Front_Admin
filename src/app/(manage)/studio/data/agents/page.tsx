@@ -1,4 +1,4 @@
-import AgentsPage from "@/feature/studio/templates/agents/pages/AgentsPage";
+import AgentsPage from "@/feature/studio/data/agents/pages/AgentsPage";
 
 function Page() {
   return <AgentsPage />;
