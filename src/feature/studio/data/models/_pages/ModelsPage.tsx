@@ -150,11 +150,60 @@ function ModelsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[50px]">#</TableHead>
-                    {Object.keys(settingsList[0] || {}).map((key) => (
-                      <TableHead key={key} className="whitespace-nowrap">
-                        {getColumnLabel(key)}
-                      </TableHead>
-                    ))}
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("user_model_id")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("model_name")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("user_id")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("deployment_type")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("is_active")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("created_at")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("updated_at")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("id")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("model_id")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("provider")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("category")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("version")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("status")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("max_tokens")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("max_input_tokens")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("max_output_tokens")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("input_cost_per_token")}
+                    </TableHead>
+                    <TableHead className="whitespace-nowrap">
+                      {getColumnLabel("output_cost_per_token")}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -163,11 +212,32 @@ function ModelsPage() {
                       <TableCell className="font-mono text-sm text-muted-foreground">
                         {index + 1}
                       </TableCell>
-                      {Object.keys(settingsList[0] || {}).map((key) => (
-                        <TableCell key={key}>
-                          {renderValue(item[key])}
-                        </TableCell>
-                      ))}
+                      <TableCell>{renderValue(item.user_model_id)}</TableCell>
+                      <TableCell>{renderValue(item.model_name)}</TableCell>
+                      <TableCell>{renderValue(item.user_id)}</TableCell>
+                      <TableCell>{renderValue(item.deployment_type)}</TableCell>
+                      <TableCell>{renderValue(item.is_active)}</TableCell>
+                      <TableCell>{renderValue(item.created_at)}</TableCell>
+                      <TableCell>{renderValue(item.updated_at)}</TableCell>
+                      <TableCell>{renderValue(item.id)}</TableCell>
+                      <TableCell>{renderValue(item.model_id)}</TableCell>
+                      <TableCell>{renderValue(item.provider)}</TableCell>
+                      <TableCell>{renderValue(item.category)}</TableCell>
+                      <TableCell>{renderValue(item.version)}</TableCell>
+                      <TableCell>{renderValue(item.status)}</TableCell>
+                      <TableCell>{renderValue(item.max_tokens)}</TableCell>
+                      <TableCell>
+                        {renderValue(item.max_input_tokens)}
+                      </TableCell>
+                      <TableCell>
+                        {renderValue(item.max_output_tokens)}
+                      </TableCell>
+                      <TableCell>
+                        {renderValue(item.input_cost_per_token)}
+                      </TableCell>
+                      <TableCell>
+                        {renderValue(item.output_cost_per_token)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
