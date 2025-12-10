@@ -2,7 +2,7 @@
 
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/agents";
-import getScenarios from "../api/getScenarios";
+import getScenarios from "../_api/getScenarios";
 
 type GetScenariosResponse =
   paths["/v1/scenarios/data"]["get"]["responses"]["200"]["content"]["application/json"];

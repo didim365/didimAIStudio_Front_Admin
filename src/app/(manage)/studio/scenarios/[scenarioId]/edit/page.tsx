@@ -1,5 +1,5 @@
-import ScenarioEditPage from "@/feature/studio/scenarios/pages/ScenarioEditPage";
-import getScenario from "@/feature/studio/scenarios/api/getScenario";
+import ScenarioEditPage from "@/feature/studio/scenarios/[scenarioId]/edit/_pages/page";
+import getScenario from "@/feature/studio/scenarios/_api/getScenario";
 
 async function Page({ params }: { params: Promise<{ scenarioId: string }> }) {
   const { scenarioId } = await params;

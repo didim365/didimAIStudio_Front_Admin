@@ -12,9 +12,9 @@ import {
 } from "@/shared/ui/select";
 import { Search, RefreshCw, Plus } from "lucide-react";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
-import { ScenariosTable } from "../components/ScenariosTable";
+import { ScenariosTable } from "../_components/ScenariosTable";
 import Link from "next/link";
-import { useGetScenarios } from "../hooks/useGetScenarios";
+import { useGetScenarios } from "../_hooks/useGetScenarios";
 
 export default function ScenariosPage() {
   // URL 쿼리 파라미터 관리

@@ -16,9 +16,9 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import Link from "next/link";
-import { categoryConfig } from "../constants/categoryConfig";
-import type { GetScenarioResponse } from "../api/getScenario";
-import usePutScenario from "../hooks/usePutScenario";
+import { categoryConfig } from "../../../_constants/categoryConfig";
+import type { GetScenarioResponse } from "../../../_api/getScenario";
+import usePutScenario from "../_hooks/usePutScenario";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
