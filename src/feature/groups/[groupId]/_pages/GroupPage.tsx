@@ -30,6 +30,7 @@ import {
   FolderTree,
   Shield,
   FileText,
+  Network,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
@@ -42,6 +43,7 @@ import {
 import { getInitials } from "@/feature/users/_utils/getInitials";
 import AddMemberDialog from "../_components/AddMemberDialog";
 import GroupRolesCard from "../_components/GroupRolesCard";
+import { useGetGroups } from "../../_hooks/useGetGroups";
 
 import type { GetGroupResponse } from "../_api/getGroup";
 
@@ -57,6 +59,16 @@ function GroupPage({ group }: GroupPageProps) {
     id: number;
     name: string;
   } | null>(null);
+
+  // 하위 그룹 조회
+  const { data: groupsData } = useGetGroups({
+    page: 1,
+    size: 100,
+  });
+
+  // 현재 그룹의 하위 그룹 필터링
+  const childGroups =
+    groupsData?.items?.filter((g) => g.parent_group_id === group.id) || [];
 
   // 그룹 삭제 mutation
   const { mutate: deleteGroup, isPending: isDeleting } = useDeleteGroup({
@@ -221,6 +233,36 @@ function GroupPage({ group }: GroupPageProps) {
                       <span className="text-muted-foreground">-</span>
                     )}
                   </p>
+                </div>
+
+                {/* Child Groups */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Network className="h-4 w-4" />
+                    <span className="font-medium">하위 그룹</span>
+                  </div>
+                  <div className="pl-6">
+                    {childGroups.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {childGroups.map((childGroup) => (
+                          <Link
+                            key={childGroup.id}
+                            href={`/groups/${childGroup.id}`}
+                            className="text-primary hover:underline cursor-pointer"
+                          >
+                            <Badge
+                              variant="secondary"
+                              className="px-2 py-1 text-sm hover:bg-primary/10 transition-colors"
+                            >
+                              {childGroup.group_name} (#{childGroup.id})
+                            </Badge>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Member Count */}
