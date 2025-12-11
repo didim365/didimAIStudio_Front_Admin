@@ -294,6 +294,7 @@ export function GroupEditPage({
                     parent_group_id: value ?? null,
                   })
                 }
+                excludeId={group.id}
               />
             </CardContent>
           </Card>
