@@ -332,8 +332,11 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                   <div className="border rounded-lg p-4 bg-muted/30">
                     <ChildGroupsSelect
                       value={formData.child_group_ids}
-                      onChange={(value) =>
-                        setFormData({ ...formData, child_group_ids: value })
+                      onClick={(value) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          child_group_ids: value,
+                        }))
                       }
                     />
                   </div>
