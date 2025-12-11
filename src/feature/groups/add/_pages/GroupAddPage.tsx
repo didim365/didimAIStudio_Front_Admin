@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import ParentGroupSelect from "../../_components/ParentGroupSelect";
+import ChildGroupsSelect from "../../_components/ChildGroupsSelect";
 import ManagerSelect from "../../_components/ManagerSelect";
 
 import { GROUP_TYPE_OPTIONS } from "../../_constants/groupType";
@@ -58,6 +59,7 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
     group_type: "COMPANY" as GroupType,
     description: "",
     parent_group_id: undefined as number | undefined,
+    child_group_ids: [] as number[],
     manager: undefined as number | undefined,
     role_id: undefined as number | undefined,
   });
@@ -90,6 +92,8 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
       group_type: formData.group_type,
       description: formData.description || null,
       parent_group_id: formData.parent_group_id || null,
+      child_group_ids:
+        formData.child_group_ids.length > 0 ? formData.child_group_ids : null,
       manager: formData.manager || null,
       role_id: formData.role_id,
     });
@@ -280,21 +284,61 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
           </Card>
 
           {/* 계층 Card */}
-          <Card>
+          <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FolderTree className="h-5 w-5" />
-                상위 그룹
+                그룹 계층 구조
               </CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                그룹 간의 상하위 관계를 설정합니다
+              </p>
             </CardHeader>
             <CardContent>
-              {/* 상위 그룹 */}
-              <ParentGroupSelect
-                value={formData.parent_group_id}
-                onChange={(value) =>
-                  setFormData({ ...formData, parent_group_id: value })
-                }
-              />
+              <div className="grid gap-8 md:grid-cols-2">
+                {/* 상위 그룹 */}
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="flex items-center gap-2 text-base font-semibold">
+                      <FolderTree className="h-4 w-4 text-primary" />
+                      상위 그룹
+                    </Label>
+                    <p className="text-xs text-muted-foreground pl-6">
+                      이 그룹이 속할 상위 그룹을 선택하세요. 선택하지 않으면
+                      최상위 그룹으로 생성됩니다.
+                    </p>
+                  </div>
+                  <div className="border rounded-lg p-4 bg-muted/30">
+                    <ParentGroupSelect
+                      value={formData.parent_group_id}
+                      onChange={(value) =>
+                        setFormData({ ...formData, parent_group_id: value })
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* 하위 그룹 */}
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="flex items-center gap-2 text-base font-semibold">
+                      <Network className="h-4 w-4 text-primary" />
+                      하위 그룹
+                    </Label>
+                    <p className="text-xs text-muted-foreground pl-6">
+                      이 그룹의 하위 그룹으로 포함할 그룹을 다중 선택하세요.
+                    </p>
+                  </div>
+                  <div className="border rounded-lg p-4 bg-muted/30">
+                    <ChildGroupsSelect
+                      value={formData.child_group_ids}
+                      onChange={(value) =>
+                        setFormData({ ...formData, child_group_ids: value })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 

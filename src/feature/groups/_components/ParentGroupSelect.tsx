@@ -100,10 +100,6 @@ export default function ParentGroupSelect({
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground">
-        이 그룹의 상위 그룹을 선택하세요
-        {groups?.total && ` (전체 ${groups.total}개)`}
-      </p>
     </div>
   );
 }
