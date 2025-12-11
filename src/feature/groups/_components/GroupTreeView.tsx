@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState } from "react";
 import {
   ChevronRight,
   ChevronDown,
@@ -46,9 +46,8 @@ export default function GroupTreeView({
   const [expandedIds, setExpandedIds] = useState<number[]>([]);
 
   // Build tree
-  const tree = useMemo(() => {
-    if (!groupsData?.items) return [];
-
+  let tree: GroupTreeNode[] = [];
+  if (groupsData?.items) {
     const nodes: Record<number, GroupTreeNode> = {};
     const roots: GroupTreeNode[] = [];
 
@@ -95,42 +94,8 @@ export default function GroupTreeView({
     };
     setLevels(filteredRoots, 0);
 
-    return filteredRoots;
-  }, [groupsData, excludeIds]);
-
-  // Auto-expand to show selected items
-  useEffect(() => {
-    if (tree.length > 0 && selectedIds.length > 0) {
-      const idsToExpand = new Set<number>();
-
-      const findPath = (
-        nodes: GroupTreeNode[],
-        targetId: number,
-        path: number[]
-      ): boolean => {
-        for (const node of nodes) {
-          if (node.id === targetId) {
-            path.forEach((id) => idsToExpand.add(id));
-            return true;
-          }
-          if (node.children.length > 0) {
-            path.push(node.id);
-            if (findPath(node.children, targetId, path)) return true;
-            path.pop();
-          }
-        }
-        return false;
-      };
-
-      selectedIds.forEach((id) => {
-        findPath(tree, id, []);
-      });
-
-      setExpandedIds((prev) =>
-        Array.from(new Set([...prev, ...Array.from(idsToExpand)]))
-      );
-    }
-  }, [tree, selectedIds]);
+    tree = filteredRoots;
+  }
 
   const toggleExpand = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
