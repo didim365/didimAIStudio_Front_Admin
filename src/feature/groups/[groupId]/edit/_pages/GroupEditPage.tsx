@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePatchGroup } from "../_hooks/usePatchGroup";
 import ParentGroupSelect from "../../../_components/ParentGroupSelect";
+import ChildGroupsSelect from "../../../_components/ChildGroupsSelect";
 import ManagerSelect from "../../../_components/ManagerSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -14,6 +15,7 @@ import {
   FolderTree,
   Shield,
   Hash,
+  Network,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -35,6 +37,7 @@ import {
 } from "../../../_constants/groupType";
 import { GetGroupResponse } from "../../_api/getGroup";
 import { GetRolesResponse } from "@/feature/roles/_api/getRoles";
+import { useGetGroups } from "../../../_hooks/useGetGroups";
 import Link from "next/link";
 
 export function GroupEditPage({
@@ -47,6 +50,12 @@ export function GroupEditPage({
   const router = useRouter();
   const queryClient = useQueryClient();
 
+  // 현재 그룹의 하위 그룹을 가져오기 위한 쿼리
+  const { data: groupsData } = useGetGroups({
+    page: 1,
+    size: 100,
+  });
+
   const [formData, setFormData] = useState({
     group_name: group.group_name,
     group_type: group.group_type as
@@ -58,7 +67,22 @@ export function GroupEditPage({
     parent_group_id: group.parent_group_id || null,
     manager: group.manager || null,
     role_id: group.role_id || null,
+    child_group_ids: [] as number[],
   });
+
+  // 하위 그룹 초기값 설정
+  useEffect(() => {
+    if (groupsData?.items) {
+      // 현재 그룹의 하위 그룹 ID 목록을 초기값으로 설정
+      const childGroupIds = groupsData.items
+        .filter((g) => g.parent_group_id === group.id)
+        .map((g) => g.id);
+      setFormData((prev) => ({
+        ...prev,
+        child_group_ids: childGroupIds,
+      }));
+    }
+  }, [groupsData, group.id]);
 
   const { mutate: updateGroup, isPending: isUpdating } = usePatchGroup({
     onSuccess: () => {
@@ -81,6 +105,8 @@ export function GroupEditPage({
         parent_group_id: formData.parent_group_id || null,
         manager: formData.manager || null,
         role_id: formData.role_id || null,
+        child_group_ids:
+          formData.child_group_ids.length > 0 ? formData.child_group_ids : null,
       },
     });
   };
@@ -277,24 +303,70 @@ export function GroupEditPage({
             </CardContent>
           </Card>
 
-          {/* 상위 그룹 Card */}
-          <Card>
+          {/* 계층 Card */}
+          <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FolderTree className="h-5 w-5" />
-                상위 그룹
+                그룹 계층 구조
               </CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                그룹 간의 상하위 관계를 설정합니다
+              </p>
             </CardHeader>
             <CardContent>
-              <ParentGroupSelect
-                value={formData.parent_group_id ?? undefined}
-                onChange={(value) =>
-                  setFormData({
-                    ...formData,
-                    parent_group_id: value ?? null,
-                  })
-                }
-              />
+              <div className="grid gap-8 md:grid-cols-2">
+                {/* 상위 그룹 */}
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="flex items-center gap-2 text-base font-semibold">
+                      <FolderTree className="h-4 w-4 text-primary" />
+                      상위 그룹
+                    </Label>
+                    <p className="text-xs text-muted-foreground pl-6">
+                      이 그룹이 속할 상위 그룹을 선택하세요. 선택하지 않으면
+                      최상위 그룹으로 설정됩니다.
+                    </p>
+                  </div>
+                  <div className="border rounded-lg p-4 bg-muted/30">
+                    <ParentGroupSelect
+                      value={formData.parent_group_id ?? undefined}
+                      onChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          parent_group_id: value ?? null,
+                        })
+                      }
+                      excludeId={group.id}
+                    />
+                  </div>
+                </div>
+
+                {/* 하위 그룹 */}
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="flex items-center gap-2 text-base font-semibold">
+                      <Network className="h-4 w-4 text-primary" />
+                      하위 그룹
+                    </Label>
+                    <p className="text-xs text-muted-foreground pl-6">
+                      이 그룹의 하위 그룹으로 포함할 그룹을 다중 선택하세요.
+                    </p>
+                  </div>
+                  <div className="border rounded-lg p-4 bg-muted/30">
+                    <ChildGroupsSelect
+                      value={formData.child_group_ids}
+                      onClick={(value) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          child_group_ids: value,
+                        }))
+                      }
+                      excludeGroupId={group.id}
+                    />
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
