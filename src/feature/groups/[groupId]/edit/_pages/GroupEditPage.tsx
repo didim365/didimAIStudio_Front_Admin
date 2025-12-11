@@ -333,14 +333,13 @@ export function GroupEditPage({
                       onChange={(value) =>
                         setFormData({
                           ...formData,
-                          parent_group_id: (value as number | undefined) ?? null,
+                          parent_group_id:
+                            (value as number | undefined) ?? null,
                         })
                       }
                       multiSelect={false}
-                      showNoneOption={true}
                       showSelectedBadges={false}
                       excludeId={group.id}
-                      helpText="* 폴더를 클릭하여 상위 그룹을 선택하세요."
                     />
                   </div>
                 </div>
@@ -366,10 +365,8 @@ export function GroupEditPage({
                         }))
                       }
                       multiSelect={true}
-                      showNoneOption={false}
                       showSelectedBadges={true}
                       excludeId={group.id}
-                      helpText="* 폴더를 클릭하여 하위 그룹을 선택하세요. (다중 선택 가능)"
                       selectedLabel={`선택된 하위 그룹 (${formData.child_group_ids.length}개)`}
                     />
                   </div>

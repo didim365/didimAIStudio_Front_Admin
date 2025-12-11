@@ -10,10 +10,8 @@ interface GroupSelectProps {
   value?: number | number[];
   onChange: (value: number | number[] | undefined) => void;
   multiSelect?: boolean;
-  showNoneOption?: boolean;
   showSelectedBadges?: boolean;
   excludeId?: number;
-  helpText?: string;
   selectedLabel?: string;
 }
 
@@ -21,10 +19,8 @@ export default function GroupSelect({
   value,
   onChange,
   multiSelect = false,
-  showNoneOption = false,
   showSelectedBadges = false,
   excludeId,
-  helpText,
   selectedLabel,
 }: GroupSelectProps) {
   // 그룹 이름을 가져오기 위해 동일한 쿼리 사용 (캐시 공유)
@@ -100,10 +96,8 @@ export default function GroupSelect({
           className="min-h-[200px]"
         />
         <p className="text-xs text-muted-foreground">
-          {helpText ||
-            (multiSelect
-              ? "* 폴더를 클릭하여 그룹을 선택하세요. (다중 선택 가능)"
-              : "* 폴더를 클릭하여 그룹을 선택하세요.")}
+          * 폴더를 클릭하여 그룹을 선택하세요.
+          {multiSelect && " (다중 선택 가능)"}
         </p>
       </div>
     </div>
