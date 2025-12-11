@@ -3,8 +3,7 @@
 import { useState, FormEvent, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePatchGroup } from "../_hooks/usePatchGroup";
-import ParentGroupSelect from "../../../_components/ParentGroupSelect";
-import ChildGroupsSelect from "../../../_components/ChildGroupsSelect";
+import GroupSelect from "../../../_components/GroupSelect";
 import ManagerSelect from "../../../_components/ManagerSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -329,15 +328,19 @@ export function GroupEditPage({
                     </p>
                   </div>
                   <div className="border rounded-lg p-4 bg-muted/30">
-                    <ParentGroupSelect
+                    <GroupSelect
                       value={formData.parent_group_id ?? undefined}
                       onChange={(value) =>
                         setFormData({
                           ...formData,
-                          parent_group_id: value ?? null,
+                          parent_group_id: (value as number | undefined) ?? null,
                         })
                       }
+                      multiSelect={false}
+                      showNoneOption={true}
+                      showSelectedBadges={false}
                       excludeId={group.id}
+                      helpText="* 폴더를 클릭하여 상위 그룹을 선택하세요."
                     />
                   </div>
                 </div>
@@ -354,15 +357,20 @@ export function GroupEditPage({
                     </p>
                   </div>
                   <div className="border rounded-lg p-4 bg-muted/30">
-                    <ChildGroupsSelect
+                    <GroupSelect
                       value={formData.child_group_ids}
-                      onClick={(value) =>
+                      onChange={(value) =>
                         setFormData((prev) => ({
                           ...prev,
-                          child_group_ids: value,
+                          child_group_ids: (value as number[]) || [],
                         }))
                       }
-                      excludeGroupId={group.id}
+                      multiSelect={true}
+                      showNoneOption={false}
+                      showSelectedBadges={true}
+                      excludeId={group.id}
+                      helpText="* 폴더를 클릭하여 하위 그룹을 선택하세요. (다중 선택 가능)"
+                      selectedLabel={`선택된 하위 그룹 (${formData.child_group_ids.length}개)`}
                     />
                   </div>
                 </div>

@@ -30,8 +30,7 @@ import {
   FileText,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-import ParentGroupSelect from "../../_components/ParentGroupSelect";
-import ChildGroupsSelect from "../../_components/ChildGroupsSelect";
+import GroupSelect from "../../_components/GroupSelect";
 import ManagerSelect from "../../_components/ManagerSelect";
 
 import { GROUP_TYPE_OPTIONS } from "../../_constants/groupType";
@@ -309,11 +308,15 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                     </p>
                   </div>
                   <div className="border rounded-lg p-4 bg-muted/30">
-                    <ParentGroupSelect
+                    <GroupSelect
                       value={formData.parent_group_id}
                       onChange={(value) =>
-                        setFormData({ ...formData, parent_group_id: value })
+                        setFormData({ ...formData, parent_group_id: value as number | undefined })
                       }
+                      multiSelect={false}
+                      showNoneOption={true}
+                      showSelectedBadges={false}
+                      helpText="* 폴더를 클릭하여 상위 그룹을 선택하세요."
                     />
                   </div>
                 </div>
@@ -330,14 +333,19 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                     </p>
                   </div>
                   <div className="border rounded-lg p-4 bg-muted/30">
-                    <ChildGroupsSelect
+                    <GroupSelect
                       value={formData.child_group_ids}
-                      onClick={(value) =>
+                      onChange={(value) =>
                         setFormData((prev) => ({
                           ...prev,
-                          child_group_ids: value,
+                          child_group_ids: (value as number[]) || [],
                         }))
                       }
+                      multiSelect={true}
+                      showNoneOption={false}
+                      showSelectedBadges={true}
+                      helpText="* 폴더를 클릭하여 하위 그룹을 선택하세요. (다중 선택 가능)"
+                      selectedLabel={`선택된 하위 그룹 (${formData.child_group_ids.length}개)`}
                     />
                   </div>
                 </div>
