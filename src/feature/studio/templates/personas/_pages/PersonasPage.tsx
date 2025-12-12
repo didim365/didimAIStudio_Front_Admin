@@ -380,7 +380,7 @@ export default function PersonasPage() {
             <div className="border rounded-lg overflow-hidden">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-slate-50">
+                  <TableRow>
                     <TableHead className="w-[80px]">ID</TableHead>
                     <TableHead className="min-w-[200px]">
                       페르소나 제목
