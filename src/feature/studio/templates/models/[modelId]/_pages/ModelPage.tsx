@@ -1,590 +1,557 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
 import JsonView from "@uiw/react-json-view";
+import type { ReactNode } from "react";
+import {
+  ArrowLeft,
+  Bot,
+  Calendar,
+  Clock,
+  Coins,
+  Database,
+  Hash,
+  Link2,
+  Layers,
+  Tag,
+} from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Separator } from "@/shared/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { formatDate } from "@/shared/utils/formatDate";
-
 import {
-  ArrowLeft,
-  Copy,
-  ExternalLink,
-  Info,
-  Layers,
-  Link2,
-  Tag,
-  Hash,
-  Calendar,
-  Coins,
-  Cpu,
-  AlertCircle,
-} from "lucide-react";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/ui/table";
+import { formatDate } from "@/shared/utils/formatDate";
+import type { GetCatalogResponse } from "../_api/getCatalog";
 
-import { StatusBadge } from "../../_components/StatusBadge";
-import { getCategoryLabel } from "../../_utils/getCategoryLabel";
-import { formatNumber } from "../../_utils/formatNumber";
-import { formatCost } from "../../_utils/formatCost";
-import { GetCatalogResponse } from "../_api/getCatalog";
+type Catalog = GetCatalogResponse;
 
 interface ModelPageProps {
-  catalog: GetCatalogResponse;
+  catalog: Catalog;
 }
 
-type AnyRecord = Record<string, unknown>;
-
-const isRecord = (v: unknown): v is AnyRecord =>
-  typeof v === "object" && v !== null && !Array.isArray(v);
-
-const stringifySafely = (v: unknown) => {
-  if (typeof v === "string") return v;
-  if (typeof v === "number") return String(v);
-  if (typeof v === "boolean") return v ? "true" : "false";
-  if (v === null) return "null";
-  if (v === undefined) return "-";
-  try {
-    return JSON.stringify(v);
-  } catch {
-    return String(v);
+function getStatusBadgeVariant(
+  status?: Catalog["status"]
+): "default" | "secondary" | "destructive" | "outline" {
+  switch (status) {
+    case "STABLE":
+      return "default";
+    case "BETA":
+      return "secondary";
+    case "ALPHA":
+      return "outline";
+    case "DEPRECATED":
+      return "destructive";
+    default:
+      return "outline";
   }
-};
+}
 
-function FieldRow({
+function formatNumber(value: unknown) {
+  if (typeof value !== "number" || Number.isNaN(value)) return "N/A";
+  return new Intl.NumberFormat("ko-KR").format(value);
+}
+
+function formatCurrency(value: unknown) {
+  if (typeof value !== "number" || Number.isNaN(value)) return "N/A";
+  // 비용 단위가 명확하지 않아서, 통화 기호 없이 숫자만 보기 좋게 표기
+  return new Intl.NumberFormat("ko-KR", {
+    maximumFractionDigits: 10,
+  }).format(value);
+}
+
+function isLikelyUrl(value: unknown) {
+  if (typeof value !== "string") return false;
+  return /^https?:\/\//i.test(value);
+}
+
+function renderFieldValue(value: unknown) {
+  if (value === null || value === undefined) {
+    return <span className="text-muted-foreground">N/A</span>;
+  }
+
+  if (typeof value === "boolean") {
+    return (
+      <Badge variant={value ? "default" : "secondary"}>
+        {value ? "Yes" : "No"}
+      </Badge>
+    );
+  }
+
+  if (typeof value === "number") {
+    return <span>{formatCurrency(value)}</span>;
+  }
+
+  if (typeof value === "string") {
+    if (isLikelyUrl(value)) {
+      return (
+        <a
+          href={value}
+          target="_blank"
+          rel="noreferrer"
+          className="text-primary underline underline-offset-4 break-all"
+        >
+          {value}
+        </a>
+      );
+    }
+    return <span className="break-all">{value}</span>;
+  }
+
+  // object / array -> compact json viewer
+  return (
+    <div className="rounded-md border bg-muted/30 p-2 overflow-x-auto">
+      <JsonView
+        value={value as any}
+        style={{ backgroundColor: "transparent", fontSize: "0.8125rem" }}
+        displayDataTypes={false}
+        displayObjectSize={true}
+        enableClipboard={true}
+        collapsed={1}
+      />
+    </div>
+  );
+}
+
+function InfoRow({
   icon,
   label,
   value,
+  valueClassName,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
-  value: React.ReactNode;
+  value: ReactNode;
+  valueClassName?: string;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-lg border bg-background p-3">
-      <div className="mt-0.5 text-muted-foreground">{icon}</div>
-      <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-muted-foreground">{label}</p>
-        <div className="mt-1 text-sm font-semibold wrap-break-word">
-          {value}
-        </div>
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <span className="shrink-0">{icon}</span>
+        <span className="font-medium">{label}</span>
+      </div>
+      <div className={["text-lg font-semibold pl-6", valueClassName].join(" ")}>
+        {value}
       </div>
     </div>
   );
 }
 
+function pickPrimaryModel(catalog: Catalog): Catalog | null {
+  return catalog ?? null;
+}
+
+function sortEntriesForDisplay(entries: Array<[string, unknown]>) {
+  return entries.sort(([a], [b]) => a.localeCompare(b, "en"));
+}
+
+function getInitials(value?: string | null) {
+  const text = (value ?? "").trim();
+  if (!text) return "M";
+  const parts = text.split(/\s+/).filter(Boolean);
+  const initials = parts
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join("")
+    .toUpperCase();
+  return initials || text[0]?.toUpperCase() || "M";
+}
+
 function ModelPage({ catalog }: ModelPageProps) {
-  const items = (catalog as AnyRecord)?.items as AnyRecord[] | undefined;
-  const current = items?.[0];
+  const model = pickPrimaryModel(catalog);
+  if (!model) return null;
 
-  const responseMeta = useMemo(() => {
-    if (!isRecord(catalog)) return null;
-    const { items: _items, ...rest } = catalog;
-    return rest;
-  }, [catalog]);
+  const knownKeys = new Set([
+    "id",
+    "model_name",
+    "provider",
+    "description",
+    "logo",
+    "endpoints_url",
+    "category",
+    "version",
+    "status",
+    "max_tokens",
+    "max_input_tokens",
+    "max_output_tokens",
+    "input_cost_per_token",
+    "output_cost_per_token",
+    "created_at",
+    "updated_at",
+  ]);
 
-  const currentKnown = useMemo(() => {
-    if (!isRecord(current)) return null;
-    const knownKeys = new Set([
-      "id",
-      "model_name",
-      "provider",
-      "description",
-      "logo",
-      "endpoints_url",
-      "category",
-      "version",
-      "status",
-      "max_tokens",
-      "max_input_tokens",
-      "max_output_tokens",
-      "input_cost_per_token",
-      "output_cost_per_token",
-      "created_at",
-      "updated_at",
-    ]);
-    const extra: AnyRecord = {};
-    for (const [k, v] of Object.entries(current)) {
-      if (!knownKeys.has(k)) extra[k] = v;
-    }
-    return { extra };
-  }, [current]);
-
-  const handleCopy = async (text: string, label: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast.success(`${label} 복사 완료`);
-    } catch {
-      toast.error("복사에 실패했습니다");
-    }
-  };
-
-  const modelId =
-    typeof current?.id === "number" ? (current.id as number) : null;
-  const title =
-    (typeof current?.model_name === "string"
-      ? (current.model_name as string)
-      : undefined) ?? "모델 상세";
-  const subtitleId = modelId !== null ? String(modelId) : "-";
+  const additionalEntries = sortEntriesForDisplay(
+    Object.entries(model as Record<string, unknown>).filter(
+      ([key]) => !knownKeys.has(key)
+    )
+  );
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-4">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
           <Link href="/studio/templates/models">
-            <Button variant="ghost" size="icon" className="shrink-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0 cursor-pointer"
+            >
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-            <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-1">
-                <Hash className="h-4 w-4" />
-                모델 ID: {subtitleId}
-              </span>
-              {typeof current?.status === "string" && (
-                <span className="ml-1">
-                  <StatusBadge status={current.status as string} />
-                </span>
-              )}
-              {typeof current?.category === "string" && (
-                <Badge variant="secondary" className="gap-1">
-                  <Tag className="h-3.5 w-3.5" />
-                  {getCategoryLabel(current.category as string)}
-                </Badge>
-              )}
-              {typeof current?.version === "string" && (
-                <Badge variant="outline" className="gap-1">
-                  <Layers className="h-3.5 w-3.5" />v{current.version as string}
-                </Badge>
-              )}
-            </div>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              템플릿 모델 상세 정보
+            </h1>
+            <p className="text-muted-foreground">모델 ID: {model.id}</p>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          {current?.endpoints_url ? (
-            <Button variant="outline" className="gap-2" asChild>
-              <a
-                href={String(current.endpoints_url)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <ExternalLink className="h-4 w-4" />
-                엔드포인트 열기
-              </a>
-            </Button>
-          ) : (
-            <Button variant="outline" className="gap-2" disabled>
-              <ExternalLink className="h-4 w-4" />
-              엔드포인트 없음
-            </Button>
-          )}
-
-          <Button
-            variant="secondary"
-            className="gap-2"
-            onClick={() => handleCopy(stringifySafely(current), "모델 데이터")}
-            disabled={!current}
-          >
-            <Copy className="h-4 w-4" />
-            복사
-          </Button>
         </div>
       </div>
 
-      {/* Summary */}
-      <Card className="overflow-hidden">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2">
-            <Info className="h-5 w-5" />
-            요약
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex flex-col items-center gap-3">
-              <Avatar className="h-24 w-24 border bg-muted">
-                <AvatarImage
-                  src={
-                    (current?.logo as string | null | undefined) || undefined
-                  }
-                  alt={title}
-                />
-                <AvatarFallback className="text-xl font-semibold">
-                  {(title || "AI").slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">Provider</p>
-                <p className="font-semibold">
-                  {(current?.provider as string | undefined) || "-"}
-                </p>
-              </div>
-            </div>
+      <Tabs defaultValue="overview">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsTrigger value="raw">Raw JSON</TabsTrigger>
+        </TabsList>
 
-            <div className="flex-1">
-              <div className="grid gap-3 md:grid-cols-2">
-                <FieldRow
-                  icon={<Hash className="h-4 w-4" />}
-                  label="ID"
-                  value={
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono">{String(subtitleId)}</span>
-                      {current?.id !== undefined && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() =>
-                            handleCopy(String(current.id), "모델 ID")
-                          }
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      )}
+        <TabsContent value="overview">
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Basic card */}
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Bot className="h-5 w-5" />
+                  기본 정보
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col md:flex-row gap-6">
+                  {/* Logo / Status */}
+                  <div className="flex flex-col items-center gap-4 min-w-[150px]">
+                    <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
+                      <AvatarImage
+                        src={model.logo || undefined}
+                        alt={model.model_name}
+                      />
+                      <AvatarFallback className="text-3xl">
+                        {getInitials(model.model_name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      <Badge variant={getStatusBadgeVariant(model.status)}>
+                        {model.status}
+                      </Badge>
+                      <Badge variant="outline">{model.category}</Badge>
                     </div>
-                  }
-                />
-                <FieldRow
-                  icon={<Tag className="h-4 w-4" />}
-                  label="카테고리"
-                  value={
-                    typeof current?.category === "string"
-                      ? getCategoryLabel(current.category as string)
-                      : "-"
-                  }
-                />
-                <FieldRow
-                  icon={<Layers className="h-4 w-4" />}
-                  label="버전"
-                  value={(current?.version as string | undefined) || "-"}
-                />
-                <FieldRow
-                  icon={<Cpu className="h-4 w-4" />}
-                  label="상태"
-                  value={
-                    typeof current?.status === "string" ? (
-                      <StatusBadge status={current.status as string} />
-                    ) : (
-                      "-"
-                    )
-                  }
-                />
-              </div>
+                  </div>
 
-              <div className="mt-4 rounded-lg border bg-muted/30 p-4">
-                <p className="text-xs font-medium text-muted-foreground">
-                  설명
-                </p>
-                <p className="mt-1 text-sm leading-relaxed">
-                  {(current?.description as string | null | undefined) ||
-                    "설명 정보 없음"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <Separator className="my-6" />
-
-          <Tabs defaultValue="details">
-            <TabsList>
-              <TabsTrigger value="details" className="gap-2">
-                <Info />
-                상세
-              </TabsTrigger>
-              <TabsTrigger value="raw" className="gap-2">
-                <Link2 />
-                원본 응답(JSON)
-              </TabsTrigger>
-              <TabsTrigger value="extra" className="gap-2">
-                <Layers />
-                추가 필드
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="details" className="mt-4">
-              {!current ? (
-                <div className="flex items-center gap-2 rounded-lg border bg-muted/40 p-4 text-muted-foreground">
-                  <AlertCircle className="h-5 w-5" />
-                  응답에 items가 없거나 비어있습니다.
-                </div>
-              ) : (
-                <div className="grid gap-6 lg:grid-cols-2">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <Cpu className="h-4 w-4" />
-                        토큰 제한
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid gap-3 md:grid-cols-2">
-                        <FieldRow
-                          icon={<Hash className="h-4 w-4" />}
-                          label="최대 토큰"
-                          value={formatNumber(
-                            current.max_tokens as number | null | undefined
-                          )}
-                        />
-                        <FieldRow
-                          icon={<Hash className="h-4 w-4" />}
-                          label="최대 입력 토큰"
-                          value={formatNumber(
-                            current.max_input_tokens as
-                              | number
-                              | null
-                              | undefined
-                          )}
-                        />
-                        <FieldRow
-                          icon={<Hash className="h-4 w-4" />}
-                          label="최대 출력 토큰"
-                          value={formatNumber(
-                            current.max_output_tokens as
-                              | number
-                              | null
-                              | undefined
-                          )}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <Coins className="h-4 w-4" />
-                        비용(토큰당)
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid gap-3 md:grid-cols-2">
-                        <FieldRow
-                          icon={<Coins className="h-4 w-4" />}
-                          label="입력 토큰 비용"
-                          value={formatCost(
-                            current.input_cost_per_token as
-                              | number
-                              | null
-                              | undefined
-                          )}
-                        />
-                        <FieldRow
-                          icon={<Coins className="h-4 w-4" />}
-                          label="출력 토큰 비용"
-                          value={formatCost(
-                            current.output_cost_per_token as
-                              | number
-                              | null
-                              | undefined
-                          )}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="lg:col-span-2">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <Link2 className="h-4 w-4" />
-                        연동 정보
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid gap-3 md:grid-cols-2">
-                        <FieldRow
-                          icon={<Link2 className="h-4 w-4" />}
-                          label="엔드포인트 URL"
-                          value={
-                            current.endpoints_url ? (
-                              <div className="flex items-center gap-2">
-                                <span className="break-all">
-                                  {String(current.endpoints_url)}
-                                </span>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7"
-                                  onClick={() =>
-                                    handleCopy(
-                                      String(current.endpoints_url),
-                                      "엔드포인트 URL"
-                                    )
-                                  }
-                                >
-                                  <Copy className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7"
-                                  asChild
-                                >
-                                  <a
-                                    href={String(current.endpoints_url)}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                  >
-                                    <ExternalLink className="h-4 w-4" />
-                                  </a>
-                                </Button>
-                              </div>
-                            ) : (
-                              "-"
-                            )
-                          }
-                        />
-                        <FieldRow
-                          icon={<Calendar className="h-4 w-4" />}
-                          label="생성일"
-                          value={formatDate(
-                            current.created_at as string | null | undefined
-                          )}
-                        />
-                        <FieldRow
-                          icon={<Calendar className="h-4 w-4" />}
-                          label="수정일"
-                          value={formatDate(
-                            current.updated_at as string | null | undefined
-                          )}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="lg:col-span-2">
-                    <CardHeader>
-                      <CardTitle className="text-base">응답 메타</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid gap-3 md:grid-cols-4">
-                        <FieldRow
-                          icon={<Hash className="h-4 w-4" />}
-                          label="total"
-                          value={stringifySafely((catalog as AnyRecord)?.total)}
-                        />
-                        <FieldRow
-                          icon={<Hash className="h-4 w-4" />}
-                          label="page"
-                          value={stringifySafely((catalog as AnyRecord)?.page)}
-                        />
-                        <FieldRow
-                          icon={<Hash className="h-4 w-4" />}
-                          label="size"
-                          value={stringifySafely((catalog as AnyRecord)?.size)}
-                        />
-                        <FieldRow
-                          icon={<Hash className="h-4 w-4" />}
-                          label="total_pages"
-                          value={stringifySafely(
-                            (catalog as AnyRecord)?.total_pages
-                          )}
-                        />
-                      </div>
-                      {responseMeta && Object.keys(responseMeta).length > 0 && (
-                        <div className="mt-4 rounded-lg border bg-muted/30 p-3 overflow-x-auto">
-                          <JsonView
-                            value={responseMeta}
-                            style={{
-                              backgroundColor: "transparent",
-                              fontSize: "0.875rem",
-                            }}
-                            displayDataTypes={false}
-                            displayObjectSize={false}
-                            enableClipboard={true}
-                            collapsed={1}
-                          />
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="raw" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">원본 응답</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="rounded-lg border bg-muted/30 p-3 overflow-x-auto">
-                    <JsonView
-                      value={catalog as unknown as AnyRecord}
-                      style={{
-                        backgroundColor: "transparent",
-                        fontSize: "0.875rem",
-                      }}
-                      displayDataTypes={false}
-                      displayObjectSize={false}
-                      enableClipboard={true}
-                      collapsed={1}
+                  {/* Info Grid */}
+                  <div className="flex-1 grid gap-4 md:grid-cols-2">
+                    <InfoRow
+                      icon={<Hash className="h-4 w-4" />}
+                      label="모델명"
+                      value={model.model_name}
+                    />
+                    <InfoRow
+                      icon={<Tag className="h-4 w-4" />}
+                      label="Provider"
+                      value={model.provider}
+                    />
+                    <InfoRow
+                      icon={<Tag className="h-4 w-4" />}
+                      label="Version"
+                      value={model.version || "N/A"}
+                    />
+                    <InfoRow
+                      icon={<Link2 className="h-4 w-4" />}
+                      label="Endpoint URL"
+                      value={
+                        model.endpoints_url ? (
+                          <a
+                            href={model.endpoints_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-primary underline underline-offset-4 break-all"
+                          >
+                            {model.endpoints_url}
+                          </a>
+                        ) : (
+                          "N/A"
+                        )
+                      }
+                      valueClassName="break-all"
+                    />
+                    <InfoRow
+                      icon={<Calendar className="h-4 w-4" />}
+                      label="생성일"
+                      value={formatDate(model.created_at)}
+                    />
+                    <InfoRow
+                      icon={<Clock className="h-4 w-4" />}
+                      label="최근 수정일"
+                      value={formatDate(model.updated_at)}
                     />
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </div>
 
-            <TabsContent value="extra" className="mt-4">
-              <div className="grid gap-6 lg:grid-cols-2">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">
-                      모델 추가 필드(known 제외)
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="rounded-lg border bg-muted/30 p-3 overflow-x-auto">
-                      <JsonView
-                        value={(currentKnown?.extra ?? {}) as AnyRecord}
-                        style={{
-                          backgroundColor: "transparent",
-                          fontSize: "0.875rem",
-                        }}
-                        displayDataTypes={false}
-                        displayObjectSize={false}
-                        enableClipboard={true}
-                        collapsed={1}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
+                <Separator className="my-6" />
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">
-                      items 전체(여러 건일 수 있음)
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="rounded-lg border bg-muted/30 p-3 overflow-x-auto">
-                      <JsonView
-                        value={(items ?? []) as unknown as AnyRecord}
-                        style={{
-                          backgroundColor: "transparent",
-                          fontSize: "0.875rem",
-                        }}
-                        displayDataTypes={false}
-                        displayObjectSize={false}
-                        enableClipboard={true}
-                        collapsed={1}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="space-y-2">
+                  <div className="text-sm font-medium text-muted-foreground">
+                    Description
+                  </div>
+                  <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm leading-relaxed">
+                    {model.description?.trim() || "설명이 없습니다."}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Pricing & Limits */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Coins className="h-5 w-5" />
+                  비용 (per token)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <InfoRow
+                    icon={<Coins className="h-4 w-4" />}
+                    label="Input"
+                    value={formatCurrency(model.input_cost_per_token)}
+                  />
+                  <InfoRow
+                    icon={<Coins className="h-4 w-4" />}
+                    label="Output"
+                    value={formatCurrency(model.output_cost_per_token)}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  * 단위 정보가 명확하지 않아 숫자 포맷만 적용했습니다.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="h-5 w-5" />
+                  토큰 제한
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4 sm:grid-cols-2">
+                <InfoRow
+                  icon={<Hash className="h-4 w-4" />}
+                  label="Max tokens"
+                  value={formatNumber(model.max_tokens)}
+                />
+                <InfoRow
+                  icon={<Hash className="h-4 w-4" />}
+                  label="Max input"
+                  value={formatNumber(model.max_input_tokens)}
+                />
+                <InfoRow
+                  icon={<Hash className="h-4 w-4" />}
+                  label="Max output"
+                  value={formatNumber(model.max_output_tokens)}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="details">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Layers className="h-5 w-5" />
+                  모든 필드 (key/value)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-lg border border-border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[260px]">Key</TableHead>
+                        <TableHead>Value</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium">id</TableCell>
+                        <TableCell>{renderFieldValue(model.id)}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          model_name
+                        </TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.model_name)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">provider</TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.provider)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">category</TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.category)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">status</TableCell>
+                        <TableCell>{renderFieldValue(model.status)}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">version</TableCell>
+                        <TableCell>{renderFieldValue(model.version)}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          endpoints_url
+                        </TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.endpoints_url)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">logo</TableCell>
+                        <TableCell>{renderFieldValue(model.logo)}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          description
+                        </TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.description)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          max_tokens
+                        </TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.max_tokens)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          max_input_tokens
+                        </TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.max_input_tokens)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          max_output_tokens
+                        </TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.max_output_tokens)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          input_cost_per_token
+                        </TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.input_cost_per_token)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          output_cost_per_token
+                        </TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.output_cost_per_token)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          created_at
+                        </TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.created_at)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          updated_at
+                        </TableCell>
+                        <TableCell>
+                          {renderFieldValue(model.updated_at)}
+                        </TableCell>
+                      </TableRow>
+
+                      {additionalEntries.length ? (
+                        additionalEntries.map(([key, value]) => (
+                          <TableRow key={key}>
+                            <TableCell className="font-medium">{key}</TableCell>
+                            <TableCell>{renderFieldValue(value)}</TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell
+                            className="text-muted-foreground"
+                            colSpan={2}
+                          >
+                            추가 필드 없음
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="raw">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                전체 응답 데이터
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="p-3 bg-muted/30 rounded-lg border border-border overflow-x-auto">
+                <JsonView
+                  value={catalog as any}
+                  style={{
+                    backgroundColor: "transparent",
+                    fontSize: "0.875rem",
+                  }}
+                  displayDataTypes={false}
+                  displayObjectSize={true}
+                  enableClipboard={true}
+                  collapsed={false}
+                />
               </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
