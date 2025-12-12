@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState } from "react";
 import {
   ChevronRight,
   ChevronDown,
@@ -46,91 +46,54 @@ export default function GroupTreeView({
   const [expandedIds, setExpandedIds] = useState<number[]>([]);
 
   // Build tree
-  const tree = useMemo(() => {
-    if (!groupsData?.items) return [];
+  let tree: GroupTreeNode[] = [];
+  const nodes: Record<number, GroupTreeNode> = {};
+  const roots: GroupTreeNode[] = [];
 
-    const nodes: Record<number, GroupTreeNode> = {};
-    const roots: GroupTreeNode[] = [];
+  // First pass: create ALL nodes
+  groupsData?.items.forEach((group) => {
+    nodes[group.id] = {
+      ...group,
+      children: [],
+      level: 0,
+    };
+  });
 
-    // First pass: create ALL nodes
-    groupsData.items.forEach((group) => {
-      nodes[group.id] = {
-        ...group,
-        children: [],
-        level: 0,
-      };
-    });
+  // Second pass: build hierarchy
+  groupsData?.items.forEach((group) => {
+    const node = nodes[group.id];
+    if (node.parent_group_id && nodes[node.parent_group_id]) {
+      nodes[node.parent_group_id].children.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
 
-    // Second pass: build hierarchy
-    groupsData.items.forEach((group) => {
-      const node = nodes[group.id];
-      if (node.parent_group_id && nodes[node.parent_group_id]) {
-        nodes[node.parent_group_id].children.push(node);
-      } else {
-        roots.push(node);
+  // Filter out excluded nodes and their descendants
+  // If a node is excluded, it and its children are removed from the tree structure being returned
+  const filterNodes = (nodes: GroupTreeNode[]): GroupTreeNode[] => {
+    return nodes
+      .filter((node) => !excludeIds.includes(node.id))
+      .map((node) => ({
+        ...node,
+        children: filterNodes(node.children),
+      }));
+  };
+
+  const filteredRoots = filterNodes(roots);
+
+  // Recursive function to set levels
+  const setLevels = (nodes: GroupTreeNode[], level: number) => {
+    nodes.forEach((node) => {
+      node.level = level;
+      if (node.children.length > 0) {
+        setLevels(node.children, level + 1);
       }
     });
+  };
+  setLevels(filteredRoots, 0);
 
-    // Filter out excluded nodes and their descendants
-    // If a node is excluded, it and its children are removed from the tree structure being returned
-    const filterNodes = (nodes: GroupTreeNode[]): GroupTreeNode[] => {
-      return nodes
-        .filter((node) => !excludeIds.includes(node.id))
-        .map((node) => ({
-          ...node,
-          children: filterNodes(node.children),
-        }));
-    };
-
-    const filteredRoots = filterNodes(roots);
-
-    // Recursive function to set levels
-    const setLevels = (nodes: GroupTreeNode[], level: number) => {
-      nodes.forEach((node) => {
-        node.level = level;
-        if (node.children.length > 0) {
-          setLevels(node.children, level + 1);
-        }
-      });
-    };
-    setLevels(filteredRoots, 0);
-
-    return filteredRoots;
-  }, [groupsData, excludeIds]);
-
-  // Auto-expand to show selected items
-  useEffect(() => {
-    if (tree.length > 0 && selectedIds.length > 0) {
-      const idsToExpand = new Set<number>();
-
-      const findPath = (
-        nodes: GroupTreeNode[],
-        targetId: number,
-        path: number[]
-      ): boolean => {
-        for (const node of nodes) {
-          if (node.id === targetId) {
-            path.forEach((id) => idsToExpand.add(id));
-            return true;
-          }
-          if (node.children.length > 0) {
-            path.push(node.id);
-            if (findPath(node.children, targetId, path)) return true;
-            path.pop();
-          }
-        }
-        return false;
-      };
-
-      selectedIds.forEach((id) => {
-        findPath(tree, id, []);
-      });
-
-      setExpandedIds((prev) =>
-        Array.from(new Set([...prev, ...Array.from(idsToExpand)]))
-      );
-    }
-  }, [tree, selectedIds]);
+  tree = filteredRoots;
 
   const toggleExpand = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -147,14 +110,7 @@ export default function GroupTreeView({
         onSelect([...selectedIds, id]);
       }
     } else {
-      // Single select
-      if (selectedIds.includes(id)) {
-        // Prevent toggle off for single select if it's required (handled by parent usually)
-        // But here we allow re-selecting same item
-        onSelect([id]);
-      } else {
-        onSelect([id]);
-      }
+      onSelect([id]);
     }
   };
 

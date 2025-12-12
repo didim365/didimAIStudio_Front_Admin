@@ -30,8 +30,7 @@ import {
   FileText,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-import ParentGroupSelect from "../../_components/ParentGroupSelect";
-import ChildGroupsSelect from "../../_components/ChildGroupsSelect";
+import GroupSelect from "../../_components/GroupSelect";
 import ManagerSelect from "../../_components/ManagerSelect";
 
 import { GROUP_TYPE_OPTIONS } from "../../_constants/groupType";
@@ -309,11 +308,16 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                     </p>
                   </div>
                   <div className="border rounded-lg p-4 bg-muted/30">
-                    <ParentGroupSelect
+                    <GroupSelect
                       value={formData.parent_group_id}
                       onChange={(value) =>
-                        setFormData({ ...formData, parent_group_id: value })
+                        setFormData({
+                          ...formData,
+                          parent_group_id: value as number | undefined,
+                        })
                       }
+                      multiSelect={false}
+                      showSelectedBadges={false}
                     />
                   </div>
                 </div>
@@ -330,14 +334,17 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                     </p>
                   </div>
                   <div className="border rounded-lg p-4 bg-muted/30">
-                    <ChildGroupsSelect
+                    <GroupSelect
                       value={formData.child_group_ids}
-                      onClick={(value) =>
+                      onChange={(value) =>
                         setFormData((prev) => ({
                           ...prev,
-                          child_group_ids: value,
+                          child_group_ids: (value as number[]) || [],
                         }))
                       }
+                      multiSelect={true}
+                      showSelectedBadges={true}
+                      selectedLabel={`선택된 하위 그룹 (${formData.child_group_ids.length}개)`}
                     />
                   </div>
                 </div>

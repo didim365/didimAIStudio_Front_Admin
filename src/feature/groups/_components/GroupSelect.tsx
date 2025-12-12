@@ -6,41 +6,66 @@ import { Label } from "@/shared/ui/label";
 import GroupTreeView from "./GroupTreeView";
 import { useGetGroups } from "../_hooks/useGetGroups";
 
-interface ChildGroupsSelectProps {
-  value?: number[];
-  onClick: (value: number[]) => void;
-  excludeGroupId?: number;
+interface GroupSelectProps {
+  value?: number | number[];
+  onChange: (value: number | number[] | undefined) => void;
+  multiSelect?: boolean;
+  showSelectedBadges?: boolean;
+  excludeId?: number;
+  selectedLabel?: string;
 }
 
-export default function ChildGroupsSelect({
-  value = [],
-  onClick,
-  excludeGroupId,
-}: ChildGroupsSelectProps) {
+export default function GroupSelect({
+  value,
+  onChange,
+  multiSelect = false,
+  showSelectedBadges = false,
+  excludeId,
+  selectedLabel,
+}: GroupSelectProps) {
   // 그룹 이름을 가져오기 위해 동일한 쿼리 사용 (캐시 공유)
   const { data: groups } = useGetGroups({
     page: 1,
     size: 100,
   });
 
+  const selectedIds = multiSelect
+    ? (value as number[] | undefined) || []
+    : value !== undefined
+    ? [value as number]
+    : [];
+
   const handleRemove = (idToRemove: number) => {
-    onClick(value.filter((id) => id !== idToRemove));
+    if (multiSelect) {
+      const currentIds = (value as number[] | undefined) || [];
+      onChange(currentIds.filter((id) => id !== idToRemove));
+    } else {
+      onChange(undefined);
+    }
   };
 
   const getGroupName = (id: number) => {
     return groups?.items.find((g) => g.id === id)?.group_name || `Group ${id}`;
   };
 
+  const handleTreeSelect = (ids: number[]) => {
+    if (multiSelect) {
+      onChange(ids);
+    } else {
+      onChange(ids.length > 0 ? ids[0] : undefined);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* 선택된 그룹 표시 */}
-      {value.length > 0 && (
+      {showSelectedBadges && selectedIds.length > 0 && (
         <div className="space-y-2">
           <Label className="text-sm font-medium text-muted-foreground">
-            선택된 하위 그룹 ({value.length}개)
+            {selectedLabel || `선택된 그룹 (${selectedIds.length}개)`}
           </Label>
           <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-md border border-dashed min-h-12">
-            {value.map((id) => (
+            {selectedIds.map((id) => (
               <Badge
                 key={id}
                 variant="secondary"
@@ -64,14 +89,15 @@ export default function ChildGroupsSelect({
       {/* 트리 뷰 */}
       <div className="space-y-2">
         <GroupTreeView
-          selectedIds={value}
-          onSelect={onClick}
-          multiSelect={true}
-          excludeIds={excludeGroupId ? [excludeGroupId] : []}
+          selectedIds={selectedIds}
+          onSelect={handleTreeSelect}
+          multiSelect={multiSelect}
+          excludeIds={excludeId ? [excludeId] : []}
           className="min-h-[200px]"
         />
         <p className="text-xs text-muted-foreground">
-          * 폴더를 클릭하여 하위 그룹을 선택하세요. (다중 선택 가능)
+          * 폴더를 클릭하여 그룹을 선택하세요.
+          {multiSelect && " (다중 선택 가능)"}
         </p>
       </div>
     </div>
