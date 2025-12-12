@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -42,10 +42,6 @@ interface AgentAddPageProps {
 
 export function AgentAddPage({ settings }: AgentAddPageProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data")
-    ? "/studio/data"
-    : "/studio/templates";
   const queryClient = useQueryClient();
   const { data: myInfo } = useGetMyInfo();
 
@@ -70,7 +66,7 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
         queryKey: ["agents"],
       });
       // 생성된 에이전트 상세 페이지로 이동
-      router.push(`${basePath}/agents/${data.id}`);
+      router.push(`/studio/templates/agents/${data.id}`);
     },
     onError: (error: Error) => {
       toast.error(`에이전트 생성 실패: ${error.message}`);
@@ -168,8 +164,6 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
     });
   };
 
-  const selectedCategory = categoryConfig[formData.category];
-
   return (
     <div className="py-8 px-4">
       <form onSubmit={handleSubmit}>
@@ -177,7 +171,7 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
           {/* Header */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <Link href={`${basePath}/agents`}>
+              <Link href={"/studio/templates/agents"}>
                 <Button
                   type="button"
                   variant="ghost"
