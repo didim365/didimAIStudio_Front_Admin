@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import JsonView from "@uiw/react-json-view";
 import type { ReactNode } from "react";
 import {
   ArrowLeft,
@@ -65,59 +64,6 @@ function formatCurrency(value: unknown) {
   return new Intl.NumberFormat("ko-KR", {
     maximumFractionDigits: 10,
   }).format(value);
-}
-
-function isLikelyUrl(value: unknown) {
-  if (typeof value !== "string") return false;
-  return /^https?:\/\//i.test(value);
-}
-
-function renderFieldValue(value: unknown) {
-  if (value === null || value === undefined) {
-    return <span className="text-muted-foreground">N/A</span>;
-  }
-
-  if (typeof value === "boolean") {
-    return (
-      <Badge variant={value ? "default" : "secondary"}>
-        {value ? "Yes" : "No"}
-      </Badge>
-    );
-  }
-
-  if (typeof value === "number") {
-    return <span>{formatCurrency(value)}</span>;
-  }
-
-  if (typeof value === "string") {
-    if (isLikelyUrl(value)) {
-      return (
-        <a
-          href={value}
-          target="_blank"
-          rel="noreferrer"
-          className="text-primary underline underline-offset-4 break-all"
-        >
-          {value}
-        </a>
-      );
-    }
-    return <span className="break-all">{value}</span>;
-  }
-
-  // object / array -> compact json viewer
-  return (
-    <div className="rounded-md border bg-muted/30 p-2 overflow-x-auto">
-      <JsonView
-        value={value as any}
-        style={{ backgroundColor: "transparent", fontSize: "0.8125rem" }}
-        displayDataTypes={false}
-        displayObjectSize={true}
-        enableClipboard={true}
-        collapsed={1}
-      />
-    </div>
-  );
 }
 
 function InfoRow({
@@ -184,7 +130,6 @@ function ModelPage({ catalog }: ModelPageProps) {
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="raw">Raw JSON</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -356,38 +301,52 @@ function ModelPage({ catalog }: ModelPageProps) {
                     <TableBody>
                       <TableRow>
                         <TableCell className="font-medium">id</TableCell>
-                        <TableCell>{renderFieldValue(catalog.id)}</TableCell>
+                        <TableCell>
+                          {catalog.id ?? (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
+                        </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">
                           model_name
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.model_name)}
+                          {catalog.model_name ?? (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">provider</TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.provider)}
+                          {catalog.provider ?? (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">category</TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.category)}
+                          {catalog.category ?? (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">status</TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.status)}
+                          {catalog.status ?? (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">version</TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.version)}
+                          {catalog.version ?? (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -395,19 +354,45 @@ function ModelPage({ catalog }: ModelPageProps) {
                           endpoints_url
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.endpoints_url)}
+                          {catalog.endpoints_url ? (
+                            <a
+                              href={catalog.endpoints_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-primary underline underline-offset-4 break-all"
+                            >
+                              {catalog.endpoints_url}
+                            </a>
+                          ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">logo</TableCell>
-                        <TableCell>{renderFieldValue(catalog.logo)}</TableCell>
+                        <TableCell>
+                          {catalog.logo ? (
+                            <a
+                              href={catalog.logo}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-primary underline underline-offset-4 break-all"
+                            >
+                              {catalog.logo}
+                            </a>
+                          ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
+                        </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">
                           description
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.description)}
+                          {catalog.description ?? (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -415,7 +400,11 @@ function ModelPage({ catalog }: ModelPageProps) {
                           max_tokens
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.max_tokens)}
+                          {catalog.max_tokens != null ? (
+                            formatNumber(catalog.max_tokens)
+                          ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -423,7 +412,11 @@ function ModelPage({ catalog }: ModelPageProps) {
                           max_input_tokens
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.max_input_tokens)}
+                          {catalog.max_input_tokens != null ? (
+                            formatNumber(catalog.max_input_tokens)
+                          ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -431,7 +424,11 @@ function ModelPage({ catalog }: ModelPageProps) {
                           max_output_tokens
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.max_output_tokens)}
+                          {catalog.max_output_tokens != null ? (
+                            formatNumber(catalog.max_output_tokens)
+                          ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -439,7 +436,11 @@ function ModelPage({ catalog }: ModelPageProps) {
                           input_cost_per_token
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.input_cost_per_token)}
+                          {catalog.input_cost_per_token != null ? (
+                            formatCurrency(catalog.input_cost_per_token)
+                          ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -447,7 +448,11 @@ function ModelPage({ catalog }: ModelPageProps) {
                           output_cost_per_token
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.output_cost_per_token)}
+                          {catalog.output_cost_per_token != null ? (
+                            formatCurrency(catalog.output_cost_per_token)
+                          ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -455,7 +460,11 @@ function ModelPage({ catalog }: ModelPageProps) {
                           created_at
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.created_at)}
+                          {catalog.created_at ? (
+                            formatDate(catalog.created_at)
+                          ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -463,7 +472,11 @@ function ModelPage({ catalog }: ModelPageProps) {
                           updated_at
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(catalog.updated_at)}
+                          {catalog.updated_at ? (
+                            formatDate(catalog.updated_at)
+                          ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -472,32 +485,6 @@ function ModelPage({ catalog }: ModelPageProps) {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-
-        <TabsContent value="raw">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Database className="h-5 w-5" />
-                전체 응답 데이터
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="p-3 bg-muted/30 rounded-lg border border-border overflow-x-auto">
-                <JsonView
-                  value={catalog as any}
-                  style={{
-                    backgroundColor: "transparent",
-                    fontSize: "0.875rem",
-                  }}
-                  displayDataTypes={false}
-                  displayObjectSize={true}
-                  enableClipboard={true}
-                  collapsed={false}
-                />
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
       </Tabs>
     </div>
