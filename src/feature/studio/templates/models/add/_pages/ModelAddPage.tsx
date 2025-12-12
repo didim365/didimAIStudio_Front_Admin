@@ -91,12 +91,8 @@ function ModelAddPage() {
       max_output_tokens: formData.max_output_tokens
         ? Number(formData.max_output_tokens)
         : null,
-      input_cost_per_token: formData.input_cost_per_token
-        ? Number(formData.input_cost_per_token)
-        : null,
-      output_cost_per_token: formData.output_cost_per_token
-        ? Number(formData.output_cost_per_token)
-        : null,
+      input_cost_per_token: Number(formData.input_cost_per_token),
+      output_cost_per_token: Number(formData.output_cost_per_token),
     });
   };
 
@@ -453,7 +449,7 @@ function ModelAddPage() {
                       className="flex items-center gap-2"
                     >
                       <Coins className="h-4 w-4" />
-                      <span>입력 토큰당 비용</span>
+                      <span>입력 토큰당 비용 *</span>
                     </Label>
                     <Input
                       id="input_cost_per_token"
@@ -469,6 +465,7 @@ function ModelAddPage() {
                       placeholder="예: 0.00001"
                       className="pl-6"
                       min="0"
+                      required
                     />
                     <p className="text-xs text-muted-foreground">
                       입력 토큰 1개당 비용을 입력하세요
@@ -482,7 +479,7 @@ function ModelAddPage() {
                       className="flex items-center gap-2"
                     >
                       <Coins className="h-4 w-4" />
-                      <span>출력 토큰당 비용</span>
+                      <span>출력 토큰당 비용 *</span>
                     </Label>
                     <Input
                       id="output_cost_per_token"
@@ -498,6 +495,7 @@ function ModelAddPage() {
                       placeholder="예: 0.00003"
                       className="pl-6"
                       min="0"
+                      required
                     />
                     <p className="text-xs text-muted-foreground">
                       출력 토큰 1개당 비용을 입력하세요
