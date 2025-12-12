@@ -1,3 +1,3 @@
 export default function ToolsPage() {
-  return "API 요청 중";
+  return <div className="">API 요청 중</div>;
 }
