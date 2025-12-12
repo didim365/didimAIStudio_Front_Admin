@@ -4,7 +4,6 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { usePostCatalog } from "../_hooks/usePostCatalog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
@@ -33,42 +32,11 @@ import {
   Sparkles,
   Image as ImageIcon,
 } from "lucide-react";
-
-type AICategoryEnum =
-  | "TEXT"
-  | "IMAGE"
-  | "MULTIMODAL"
-  | "EMBEDDING"
-  | "AUDIO"
-  | "VIDEO"
-  | "CHAT"
-  | "COMPLETION"
-  | "IMAGE_GENERATION"
-  | "AUDIO_TRANSCRIPTION"
-  | "AUDIO_SPEECH";
-
-type ModelStatusEnum = "ALPHA" | "BETA" | "STABLE" | "DEPRECATED";
-
-const CATEGORY_OPTIONS: { value: AICategoryEnum; label: string }[] = [
-  { value: "TEXT", label: "텍스트" },
-  { value: "IMAGE", label: "이미지" },
-  { value: "MULTIMODAL", label: "멀티모달" },
-  { value: "EMBEDDING", label: "임베딩" },
-  { value: "AUDIO", label: "오디오" },
-  { value: "VIDEO", label: "비디오" },
-  { value: "CHAT", label: "채팅" },
-  { value: "COMPLETION", label: "완성" },
-  { value: "IMAGE_GENERATION", label: "이미지 생성" },
-  { value: "AUDIO_TRANSCRIPTION", label: "오디오 전사" },
-  { value: "AUDIO_SPEECH", label: "오디오 음성" },
-];
-
-const STATUS_OPTIONS: { value: ModelStatusEnum; label: string }[] = [
-  { value: "STABLE", label: "안정" },
-  { value: "BETA", label: "베타" },
-  { value: "ALPHA", label: "알파" },
-  { value: "DEPRECATED", label: "사용 중단" },
-];
+import type { AICategoryEnum, ModelStatusEnum } from "../../_types/modelTypes";
+import {
+  CATEGORY_OPTIONS,
+  STATUS_OPTIONS,
+} from "../../_constants/modelConstants";
 
 function ModelAddPage() {
   const router = useRouter();
@@ -106,20 +74,6 @@ function ModelAddPage() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // 필수 필드 검증
-    if (!formData.model_name.trim()) {
-      toast.error("모델명을 입력해주세요.");
-      return;
-    }
-    if (!formData.provider.trim()) {
-      toast.error("제공자를 입력해주세요.");
-      return;
-    }
-    if (!formData.version.trim()) {
-      toast.error("버전을 입력해주세요.");
-      return;
-    }
 
     createModel({
       model_name: formData.model_name.trim(),

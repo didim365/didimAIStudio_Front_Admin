@@ -1,6 +1,5 @@
 "use client";
 
-import { components } from "@/shared/types/api/models";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import useGetCatalog from "../_hooks/useGetCatalog";
 import { StatusBadge } from "../_components/StatusBadge";
@@ -33,8 +32,7 @@ import { CATEGORIES, DEPLOYMENT_TYPES } from "../_constants/modelConstants";
 import { getCategoryLabel } from "../_utils/getCategoryLabel";
 import { formatNumber } from "../_utils/formatNumber";
 import { formatCost } from "../_utils/formatCost";
-
-type AICategoryEnum = components["schemas"]["AICategoryEnum"];
+import type { AICategoryEnum } from "../_types/modelTypes";
 
 function ModelsPage() {
   const router = useRouter();
