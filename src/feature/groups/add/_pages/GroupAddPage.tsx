@@ -311,12 +311,13 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                     <GroupSelect
                       value={formData.parent_group_id}
                       onChange={(value) =>
-                        setFormData({ ...formData, parent_group_id: value as number | undefined })
+                        setFormData({
+                          ...formData,
+                          parent_group_id: value as number | undefined,
+                        })
                       }
                       multiSelect={false}
-                      showNoneOption={true}
                       showSelectedBadges={false}
-                      helpText="* 폴더를 클릭하여 상위 그룹을 선택하세요."
                     />
                   </div>
                 </div>
@@ -342,9 +343,7 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                         }))
                       }
                       multiSelect={true}
-                      showNoneOption={false}
                       showSelectedBadges={true}
-                      helpText="* 폴더를 클릭하여 하위 그룹을 선택하세요. (다중 선택 가능)"
                       selectedLabel={`선택된 하위 그룹 (${formData.child_group_ids.length}개)`}
                     />
                   </div>
