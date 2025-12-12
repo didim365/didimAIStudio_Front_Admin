@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
 import {
   ArrowLeft,
   Bot,
@@ -21,75 +20,13 @@ import { Separator } from "@/shared/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { formatDate } from "@/shared/utils/formatDate";
 import type { GetCatalogResponse } from "../_api/getCatalog";
+import { getStatusBadgeVariant } from "../_utils/getStatusBadgeVariant";
+import { formatNumber, formatCurrency } from "../_utils/formatters";
+import { getInitials } from "../_utils/getInitials";
+import { InfoRow } from "../_components/InfoRow";
 
 interface ModelPageProps {
   catalog: GetCatalogResponse;
-}
-
-function getStatusBadgeVariant(
-  status?: GetCatalogResponse["status"]
-): "default" | "secondary" | "destructive" | "outline" {
-  switch (status) {
-    case "STABLE":
-      return "default";
-    case "BETA":
-      return "secondary";
-    case "ALPHA":
-      return "outline";
-    case "DEPRECATED":
-      return "destructive";
-    default:
-      return "outline";
-  }
-}
-
-function formatNumber(value: unknown) {
-  if (typeof value !== "number" || Number.isNaN(value)) return "N/A";
-  return new Intl.NumberFormat("ko-KR").format(value);
-}
-
-function formatCurrency(value: unknown) {
-  if (typeof value !== "number" || Number.isNaN(value)) return "N/A";
-  // 비용 단위가 명확하지 않아서, 통화 기호 없이 숫자만 보기 좋게 표기
-  return new Intl.NumberFormat("ko-KR", {
-    maximumFractionDigits: 10,
-  }).format(value);
-}
-
-function InfoRow({
-  icon,
-  label,
-  value,
-  valueClassName,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: ReactNode;
-  valueClassName?: string;
-}) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span className="shrink-0">{icon}</span>
-        <span className="font-medium">{label}</span>
-      </div>
-      <div className={["text-lg font-semibold pl-6", valueClassName].join(" ")}>
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function getInitials(value?: string | null) {
-  const text = (value ?? "").trim();
-  if (!text) return "M";
-  const parts = text.split(/\s+/).filter(Boolean);
-  const initials = parts
-    .slice(0, 2)
-    .map((p) => p[0])
-    .join("")
-    .toUpperCase();
-  return initials || text[0]?.toUpperCase() || "M";
 }
 
 function ModelPage({ catalog }: ModelPageProps) {
@@ -221,18 +158,15 @@ function ModelPage({ catalog }: ModelPageProps) {
               <div className="grid gap-4 sm:grid-cols-2">
                 <InfoRow
                   icon={<Coins className="h-4 w-4" />}
-                  label="Input"
+                  label="Input($)"
                   value={formatCurrency(catalog.input_cost_per_token)}
                 />
                 <InfoRow
                   icon={<Coins className="h-4 w-4" />}
-                  label="Output"
+                  label="Output($)"
                   value={formatCurrency(catalog.output_cost_per_token)}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
-                * 단위 정보가 명확하지 않아 숫자 포맷만 적용했습니다.
-              </p>
             </CardContent>
           </Card>
 
