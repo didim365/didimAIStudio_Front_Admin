@@ -144,10 +144,6 @@ function InfoRow({
   );
 }
 
-function sortEntriesForDisplay(entries: Array<[string, unknown]>) {
-  return entries.sort(([a], [b]) => a.localeCompare(b, "en"));
-}
-
 function getInitials(value?: string | null) {
   const text = (value ?? "").trim();
   if (!text) return "M";
@@ -161,31 +157,6 @@ function getInitials(value?: string | null) {
 }
 
 function ModelPage({ catalog }: ModelPageProps) {
-  const knownKeys = new Set([
-    "id",
-    "model_name",
-    "provider",
-    "description",
-    "logo",
-    "endpoints_url",
-    "category",
-    "version",
-    "status",
-    "max_tokens",
-    "max_input_tokens",
-    "max_output_tokens",
-    "input_cost_per_token",
-    "output_cost_per_token",
-    "created_at",
-    "updated_at",
-  ]);
-
-  const additionalEntries = sortEntriesForDisplay(
-    Object.entries(catalog as Record<string, unknown>).filter(
-      ([key]) => !knownKeys.has(key)
-    )
-  );
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -495,24 +466,6 @@ function ModelPage({ catalog }: ModelPageProps) {
                           {renderFieldValue(catalog.updated_at)}
                         </TableCell>
                       </TableRow>
-
-                      {additionalEntries.length ? (
-                        additionalEntries.map(([key, value]) => (
-                          <TableRow key={key}>
-                            <TableCell className="font-medium">{key}</TableCell>
-                            <TableCell>{renderFieldValue(value)}</TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell
-                            className="text-muted-foreground"
-                            colSpan={2}
-                          >
-                            추가 필드 없음
-                          </TableCell>
-                        </TableRow>
-                      )}
                     </TableBody>
                   </Table>
                 </div>
