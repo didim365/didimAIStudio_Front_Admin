@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import JsonView from "@uiw/react-json-view";
 
@@ -80,11 +79,6 @@ function FieldRow({
 }
 
 function ModelPage({ catalog }: ModelPageProps) {
-  const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data")
-    ? "/studio/data"
-    : "/studio/templates";
-
   const items = (catalog as AnyRecord)?.items as AnyRecord[] | undefined;
   const current = items?.[0];
 
@@ -143,7 +137,7 @@ function ModelPage({ catalog }: ModelPageProps) {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-4">
-          <Link href={`${basePath}/models`}>
+          <Link href="/studio/templates/models">
             <Button variant="ghost" size="icon" className="shrink-0">
               <ArrowLeft className="h-5 w-5" />
             </Button>
