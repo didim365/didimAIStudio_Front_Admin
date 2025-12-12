@@ -406,7 +406,8 @@ export function AgentAddPage({ settings, personas }: AgentAddPageProps) {
                               </span>
                               <span className="text-xs text-muted-foreground">
                                 ID: {persona.id}
-                                {persona.description}
+                                <br />
+                                설명: {persona.description}
                               </span>
                             </div>
                           </SelectItem>
