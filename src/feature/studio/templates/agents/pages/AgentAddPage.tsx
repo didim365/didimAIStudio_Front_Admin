@@ -54,7 +54,6 @@ export function AgentAddPage({ settings, personas }: AgentAddPageProps) {
     fallback_model_my_page_id: "",
     persona_my_page_id: "",
     tool_my_page_id: "",
-    user_agent_description: "",
   });
 
   // 에이전트 생성 mutation
@@ -108,7 +107,6 @@ export function AgentAddPage({ settings, personas }: AgentAddPageProps) {
           ? Number(formData.persona_my_page_id)
           : null,
       tool_my_page_id: toolIds && toolIds.length > 0 ? toolIds : null,
-      user_agent_description: formData.user_agent_description.trim() || null,
       is_system: true,
       is_public: true,
     });
@@ -443,32 +441,6 @@ export function AgentAddPage({ settings, personas }: AgentAddPageProps) {
                     />
                     <p className="text-xs text-muted-foreground">
                       쉼표로 구분된 도구 ID 목록 (예: 3, 4, 5)
-                    </p>
-                  </div>
-
-                  {/* 사용자 정의 설명 */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="user_agent_description"
-                      className="flex items-center gap-2"
-                    >
-                      <FileText className="h-4 w-4" />
-                      <span>사용자 정의 설명</span>
-                    </Label>
-                    <Textarea
-                      id="user_agent_description"
-                      value={formData.user_agent_description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          user_agent_description: e.target.value,
-                        })
-                      }
-                      placeholder="사용자가 정의하는 에이전트 설명"
-                      className="pl-6 min-h-[80px]"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      사용자가 정의하는 에이전트 설명 (선택사항)
                     </p>
                   </div>
                 </div>
