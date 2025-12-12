@@ -402,11 +402,9 @@ export function AgentAddPage({ settings, personas }: AgentAddPageProps) {
                           >
                             <div className="flex flex-col items-start">
                               <span className="font-medium">
-                                {persona.name || "이름 없음"}
+                                {persona.name || "이름 없음"} ({persona.id})
                               </span>
-                              <span className="text-xs text-muted-foreground">
-                                ID: {persona.id}
-                                <br />
+                              <span className="text-xs text-muted-foreground text-left">
                                 설명: {persona.description}
                               </span>
                             </div>
