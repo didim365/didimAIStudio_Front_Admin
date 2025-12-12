@@ -93,17 +93,17 @@ function ModelPage({ catalog }: ModelPageProps) {
                   />
                   <InfoRow
                     icon={<Tag className="h-4 w-4" />}
-                    label="Provider"
+                    label="제공자"
                     value={catalog.provider}
                   />
                   <InfoRow
                     icon={<Tag className="h-4 w-4" />}
-                    label="Version"
+                    label="버전"
                     value={catalog.version || "N/A"}
                   />
                   <InfoRow
                     icon={<Link2 className="h-4 w-4" />}
-                    label="Endpoint URL"
+                    label="엔드포인트 URL"
                     value={
                       catalog.endpoints_url ? (
                         <a
@@ -137,7 +137,7 @@ function ModelPage({ catalog }: ModelPageProps) {
 
               <div className="space-y-2">
                 <div className="text-sm font-medium text-muted-foreground">
-                  Description
+                  설명
                 </div>
                 <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm leading-relaxed">
                   {catalog.description?.trim() || "설명이 없습니다."}
@@ -158,12 +158,12 @@ function ModelPage({ catalog }: ModelPageProps) {
               <div className="grid gap-4 sm:grid-cols-2">
                 <InfoRow
                   icon={<Coins className="h-4 w-4" />}
-                  label="Input($)"
+                  label="입력($)"
                   value={formatCurrency(catalog.input_cost_per_token)}
                 />
                 <InfoRow
                   icon={<Coins className="h-4 w-4" />}
-                  label="Output($)"
+                  label="출력($)"
                   value={formatCurrency(catalog.output_cost_per_token)}
                 />
               </div>
@@ -180,17 +180,17 @@ function ModelPage({ catalog }: ModelPageProps) {
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <InfoRow
                 icon={<Hash className="h-4 w-4" />}
-                label="Max tokens"
+                label="최대 토큰"
                 value={formatNumber(catalog.max_tokens)}
               />
               <InfoRow
                 icon={<Hash className="h-4 w-4" />}
-                label="Max input"
+                label="최대 입력"
                 value={formatNumber(catalog.max_input_tokens)}
               />
               <InfoRow
                 icon={<Hash className="h-4 w-4" />}
-                label="Max output"
+                label="최대 출력"
                 value={formatNumber(catalog.max_output_tokens)}
               />
             </CardContent>
