@@ -24,10 +24,11 @@ import {
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
+import { RefreshCw, AlertCircle, ExternalLink, Plus } from "lucide-react";
 import { Pagination } from "@/shared/ui/pagination";
 import { formatDate } from "@/shared/utils/formatDate";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { CATEGORIES, DEPLOYMENT_TYPES } from "../_constants/modelConstants";
 import { getCategoryLabel } from "../_utils/getCategoryLabel";
 import { formatNumber } from "../_utils/formatNumber";
@@ -37,8 +38,6 @@ type AICategoryEnum = components["schemas"]["AICategoryEnum"];
 
 function ModelsPage() {
   const router = useRouter();
-  const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
 
   // URL 쿼리 파라미터 관리 - useState와 동일한 API
   const [page, setPage] = useQueryParam<number>("page", 1);
@@ -61,25 +60,23 @@ function ModelsPage() {
   const models = data?.items || [];
 
   function handleRowClick(modelId: number) {
-    router.push(`${basePath}/models/${modelId}`);
+    router.push(`/studio/templates/models/${modelId}`);
   }
 
   return (
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">모델 관리</h1>
-        <p className="mt-2 text-slate-600">
-          시스템의 모든 AI 모델을 관리하세요
-        </p>
+        <h1 className="text-3xl font-bold">모델 템플릿 관리</h1>
+        <p className="mt-2 text-slate-600">모델 템플릿을 조회하고 관리하세요</p>
       </div>
 
       {/* 필터 */}
       <Card className="mb-6">
         <CardContent>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col md:flex-row gap-4">
             {/* 필터 옵션 */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 flex-1">
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="카테고리" />
@@ -127,6 +124,14 @@ function ModelsPage() {
                 새로고침
               </Button>
             </div>
+            <div className="flex gap-2">
+              <Link href={"/studio/templates/models/add"}>
+                <Button className="gap-2 cursor-pointer">
+                  <Plus className="h-4 w-4" />
+                  모델 템플릿 생성
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -135,7 +140,7 @@ function ModelsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            모델 목록 ({data?.total})
+            모델 템플릿 목록 ({data?.total})
           </CardTitle>
         </CardHeader>
         <CardContent>
