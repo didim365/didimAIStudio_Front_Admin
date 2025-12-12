@@ -77,10 +77,6 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "에이전트 이름을 입력하세요.";
-    }
-
     if (!formData.description.trim()) {
       newErrors.description = "에이전트 설명을 입력하세요.";
     }
@@ -330,22 +326,44 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                       <Cpu className="h-4 w-4" />
                       <span>모델 ID *</span>
                     </Label>
-                    <Input
-                      id="model_my_page_id"
-                      type="number"
+                    <Select
                       value={formData.model_my_page_id}
-                      onChange={(e) => {
+                      onValueChange={(value) => {
                         setFormData({
                           ...formData,
-                          model_my_page_id: e.target.value,
+                          model_my_page_id: value,
                         });
                         if (errors.model_my_page_id)
                           setErrors({ ...errors, model_my_page_id: "" });
                       }}
-                      placeholder="1"
-                      className="pl-6"
                       required
-                    />
+                    >
+                      <SelectTrigger
+                        id="model_my_page_id"
+                        className="pl-6 w-full"
+                      >
+                        <SelectValue placeholder="모델을 선택하세요" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {settings.map((setting) => (
+                          <SelectItem
+                            key={setting.user_model_id}
+                            value={String(setting.user_model_id)}
+                          >
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">
+                                {setting.model_name || "이름 없음"}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ID: {setting.user_model_id}
+                                {setting.deployment_type &&
+                                  ` • ${setting.deployment_type}`}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     {errors.model_my_page_id && (
                       <p className="text-sm text-destructive flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" />
@@ -366,14 +384,12 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                       <Cpu className="h-4 w-4" />
                       <span>폴백 모델 ID *</span>
                     </Label>
-                    <Input
-                      id="fallback_model_my_page_id"
-                      type="number"
+                    <Select
                       value={formData.fallback_model_my_page_id}
-                      onChange={(e) => {
+                      onValueChange={(value) => {
                         setFormData({
                           ...formData,
-                          fallback_model_my_page_id: e.target.value,
+                          fallback_model_my_page_id: value,
                         });
                         if (errors.fallback_model_my_page_id)
                           setErrors({
@@ -381,10 +397,34 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                             fallback_model_my_page_id: "",
                           });
                       }}
-                      placeholder="2"
-                      className="pl-6"
                       required
-                    />
+                    >
+                      <SelectTrigger
+                        id="fallback_model_my_page_id"
+                        className="pl-6 w-full"
+                      >
+                        <SelectValue placeholder="폴백 모델을 선택하세요" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {settings.map((setting) => (
+                          <SelectItem
+                            key={setting.user_model_id}
+                            value={String(setting.user_model_id)}
+                          >
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">
+                                {setting.model_name || "이름 없음"}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ID: {setting.user_model_id}
+                                {setting.deployment_type &&
+                                  ` • ${setting.deployment_type}`}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     {errors.fallback_model_my_page_id && (
                       <p className="text-sm text-destructive flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" />
