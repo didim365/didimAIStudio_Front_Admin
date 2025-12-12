@@ -34,12 +34,14 @@ import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { cn } from "@/shared/lib/utils";
 import { GetSettingsResponse } from "@/feature/studio/data/models/_api/getSettings";
+import { GetPersonasResponse } from "@/feature/studio/data/personas/_api/getPersonas";
 
 interface AgentAddPageProps {
   settings: GetSettingsResponse;
+  personas: GetPersonasResponse;
 }
 
-export function AgentAddPage({ settings }: AgentAddPageProps) {
+export function AgentAddPage({ settings, personas }: AgentAddPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: myInfo } = useGetMyInfo();
@@ -101,9 +103,10 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
         | "EXPERIMENTAL",
       model_my_page_id: Number(formData.model_my_page_id),
       fallback_model_my_page_id: Number(formData.fallback_model_my_page_id),
-      persona_my_page_id: formData.persona_my_page_id
-        ? Number(formData.persona_my_page_id)
-        : null,
+      persona_my_page_id:
+        formData.persona_my_page_id && formData.persona_my_page_id !== "none"
+          ? Number(formData.persona_my_page_id)
+          : null,
       tool_my_page_id: toolIds && toolIds.length > 0 ? toolIds : null,
       user_agent_description: formData.user_agent_description.trim() || null,
       is_system: true,
@@ -199,7 +202,10 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                       </SelectTrigger>
                       <SelectContent>
                         {CATEGORY_OPTIONS.map((category) => (
-                          <SelectItem key={category} value={category}>
+                          <SelectItem
+                            key={`category-${category}`}
+                            value={category}
+                          >
                             <div className="flex items-center gap-2">
                               <span
                                 className={cn(
@@ -281,7 +287,7 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                       <SelectContent>
                         {settings.map((setting) => (
                           <SelectItem
-                            key={setting.user_model_id}
+                            key={`main-model-id: ${setting.user_model_id}`}
                             value={String(setting.user_model_id)}
                           >
                             <div className="flex flex-col items-start">
@@ -331,7 +337,7 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                       <SelectContent>
                         {settings.map((setting) => (
                           <SelectItem
-                            key={setting.user_model_id}
+                            key={`fallback-model-id: ${setting.user_model_id}`}
                             value={String(setting.user_model_id)}
                           >
                             <div className="flex flex-col items-start">
@@ -340,8 +346,7 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                               </span>
                               <span className="text-xs text-muted-foreground">
                                 ID: {setting.user_model_id}
-                                {setting.deployment_type &&
-                                  ` • ${setting.deployment_type}`}
+                                {setting.deployment_type}
                               </span>
                             </div>
                           </SelectItem>
@@ -375,19 +380,41 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                       <User className="h-4 w-4" />
                       <span>페르소나 ID</span>
                     </Label>
-                    <Input
-                      id="persona_my_page_id"
-                      type="number"
-                      value={formData.persona_my_page_id}
-                      onChange={(e) =>
+                    <Select
+                      value={formData.persona_my_page_id || "none"}
+                      onValueChange={(value) =>
                         setFormData({
                           ...formData,
-                          persona_my_page_id: e.target.value,
+                          persona_my_page_id: value === "none" ? "" : value,
                         })
                       }
-                      placeholder="2"
-                      className="pl-6"
-                    />
+                    >
+                      <SelectTrigger
+                        id="persona_my_page_id"
+                        className="pl-6 w-full"
+                      >
+                        <SelectValue placeholder="페르소나를 선택하세요 (선택사항)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">선택 안 함</SelectItem>
+                        {personas.items.map((persona) => (
+                          <SelectItem
+                            key={`persona-id: ${persona.id}`}
+                            value={String(persona.id)}
+                          >
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">
+                                {persona.name || "이름 없음"}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ID: {persona.id}
+                                {persona.description}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <p className="text-xs text-muted-foreground">
                       agt_persona_my_page 테이블의 페르소나 ID (선택사항)
                     </p>
