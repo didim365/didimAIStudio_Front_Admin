@@ -34,11 +34,18 @@ import {
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { cn } from "@/shared/lib/utils";
+import { GetSettingsResponse } from "@/feature/studio/data/models/_api/getSettings";
 
-export function AgentAddPage() {
+interface AgentAddPageProps {
+  settings: GetSettingsResponse;
+}
+
+export function AgentAddPage({ settings }: AgentAddPageProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
+  const basePath = pathname?.startsWith("/studio/data")
+    ? "/studio/data"
+    : "/studio/templates";
   const queryClient = useQueryClient();
   const { data: myInfo } = useGetMyInfo();
 
@@ -169,17 +176,17 @@ export function AgentAddPage() {
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Link href={`${basePath}/agents`}>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="shrink-0 cursor-pointer"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href={`${basePath}/agents`}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 cursor-pointer"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              </Link>
               <div>
                 <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
                   <Bot className="h-8 w-8" />새 에이전트 추가
@@ -209,6 +216,31 @@ export function AgentAddPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-6 md:grid-cols-2">
+                  {/* 에이전트 이름 */}
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      <span>에이전트 이름 *</span>
+                    </Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => {
+                        setFormData({ ...formData, name: e.target.value });
+                        if (errors.name) setErrors({ ...errors, name: "" });
+                      }}
+                      placeholder="AI 챗봇 에이전트"
+                      className="pl-6"
+                      required
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-destructive flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.name}
+                      </p>
+                    )}
+                  </div>
+
                   {/* 카테고리 */}
                   <div className="space-y-2">
                     <Label
@@ -248,31 +280,6 @@ export function AgentAddPage() {
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  {/* 에이전트 이름 */}
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      <span>에이전트 이름 *</span>
-                    </Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => {
-                        setFormData({ ...formData, name: e.target.value });
-                        if (errors.name) setErrors({ ...errors, name: "" });
-                      }}
-                      placeholder="AI 챗봇 에이전트"
-                      className="pl-6"
-                      required
-                    />
-                    {errors.name && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.name}
-                      </p>
-                    )}
                   </div>
 
                   {/* 설명 */}
