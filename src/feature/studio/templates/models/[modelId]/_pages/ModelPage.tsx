@@ -144,12 +144,6 @@ function InfoRow({
   );
 }
 
-function pickPrimaryModel(
-  catalog: GetCatalogResponse
-): GetCatalogResponse | null {
-  return catalog ?? null;
-}
-
 function sortEntriesForDisplay(entries: Array<[string, unknown]>) {
   return entries.sort(([a], [b]) => a.localeCompare(b, "en"));
 }
@@ -167,9 +161,6 @@ function getInitials(value?: string | null) {
 }
 
 function ModelPage({ catalog }: ModelPageProps) {
-  const model = pickPrimaryModel(catalog);
-  if (!model) return null;
-
   const knownKeys = new Set([
     "id",
     "model_name",
@@ -190,7 +181,7 @@ function ModelPage({ catalog }: ModelPageProps) {
   ]);
 
   const additionalEntries = sortEntriesForDisplay(
-    Object.entries(model as Record<string, unknown>).filter(
+    Object.entries(catalog as Record<string, unknown>).filter(
       ([key]) => !knownKeys.has(key)
     )
   );
@@ -213,7 +204,7 @@ function ModelPage({ catalog }: ModelPageProps) {
             <h1 className="text-3xl font-bold tracking-tight">
               템플릿 모델 상세 정보
             </h1>
-            <p className="text-muted-foreground">모델 ID: {model.id}</p>
+            <p className="text-muted-foreground">모델 ID: {catalog.id}</p>
           </div>
         </div>
       </div>
@@ -241,18 +232,18 @@ function ModelPage({ catalog }: ModelPageProps) {
                   <div className="flex flex-col items-center gap-4 min-w-[150px]">
                     <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
                       <AvatarImage
-                        src={model.logo || undefined}
-                        alt={model.model_name}
+                        src={catalog.logo || undefined}
+                        alt={catalog.model_name}
                       />
                       <AvatarFallback className="text-3xl">
-                        {getInitials(model.model_name)}
+                        {getInitials(catalog.model_name)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-wrap items-center justify-center gap-2">
-                      <Badge variant={getStatusBadgeVariant(model.status)}>
-                        {model.status}
+                      <Badge variant={getStatusBadgeVariant(catalog.status)}>
+                        {catalog.status}
                       </Badge>
-                      <Badge variant="outline">{model.category}</Badge>
+                      <Badge variant="outline">{catalog.category}</Badge>
                     </div>
                   </div>
 
@@ -261,30 +252,30 @@ function ModelPage({ catalog }: ModelPageProps) {
                     <InfoRow
                       icon={<Hash className="h-4 w-4" />}
                       label="모델명"
-                      value={model.model_name}
+                      value={catalog.model_name}
                     />
                     <InfoRow
                       icon={<Tag className="h-4 w-4" />}
                       label="Provider"
-                      value={model.provider}
+                      value={catalog.provider}
                     />
                     <InfoRow
                       icon={<Tag className="h-4 w-4" />}
                       label="Version"
-                      value={model.version || "N/A"}
+                      value={catalog.version || "N/A"}
                     />
                     <InfoRow
                       icon={<Link2 className="h-4 w-4" />}
                       label="Endpoint URL"
                       value={
-                        model.endpoints_url ? (
+                        catalog.endpoints_url ? (
                           <a
-                            href={model.endpoints_url}
+                            href={catalog.endpoints_url}
                             target="_blank"
                             rel="noreferrer"
                             className="text-primary underline underline-offset-4 break-all"
                           >
-                            {model.endpoints_url}
+                            {catalog.endpoints_url}
                           </a>
                         ) : (
                           "N/A"
@@ -295,12 +286,12 @@ function ModelPage({ catalog }: ModelPageProps) {
                     <InfoRow
                       icon={<Calendar className="h-4 w-4" />}
                       label="생성일"
-                      value={formatDate(model.created_at)}
+                      value={formatDate(catalog.created_at)}
                     />
                     <InfoRow
                       icon={<Clock className="h-4 w-4" />}
                       label="최근 수정일"
-                      value={formatDate(model.updated_at)}
+                      value={formatDate(catalog.updated_at)}
                     />
                   </div>
                 </div>
@@ -312,7 +303,7 @@ function ModelPage({ catalog }: ModelPageProps) {
                     Description
                   </div>
                   <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm leading-relaxed">
-                    {model.description?.trim() || "설명이 없습니다."}
+                    {catalog.description?.trim() || "설명이 없습니다."}
                   </div>
                 </div>
               </CardContent>
@@ -331,12 +322,12 @@ function ModelPage({ catalog }: ModelPageProps) {
                   <InfoRow
                     icon={<Coins className="h-4 w-4" />}
                     label="Input"
-                    value={formatCurrency(model.input_cost_per_token)}
+                    value={formatCurrency(catalog.input_cost_per_token)}
                   />
                   <InfoRow
                     icon={<Coins className="h-4 w-4" />}
                     label="Output"
-                    value={formatCurrency(model.output_cost_per_token)}
+                    value={formatCurrency(catalog.output_cost_per_token)}
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -356,17 +347,17 @@ function ModelPage({ catalog }: ModelPageProps) {
                 <InfoRow
                   icon={<Hash className="h-4 w-4" />}
                   label="Max tokens"
-                  value={formatNumber(model.max_tokens)}
+                  value={formatNumber(catalog.max_tokens)}
                 />
                 <InfoRow
                   icon={<Hash className="h-4 w-4" />}
                   label="Max input"
-                  value={formatNumber(model.max_input_tokens)}
+                  value={formatNumber(catalog.max_input_tokens)}
                 />
                 <InfoRow
                   icon={<Hash className="h-4 w-4" />}
                   label="Max output"
-                  value={formatNumber(model.max_output_tokens)}
+                  value={formatNumber(catalog.max_output_tokens)}
                 />
               </CardContent>
             </Card>
@@ -394,54 +385,58 @@ function ModelPage({ catalog }: ModelPageProps) {
                     <TableBody>
                       <TableRow>
                         <TableCell className="font-medium">id</TableCell>
-                        <TableCell>{renderFieldValue(model.id)}</TableCell>
+                        <TableCell>{renderFieldValue(catalog.id)}</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">
                           model_name
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(model.model_name)}
+                          {renderFieldValue(catalog.model_name)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">provider</TableCell>
                         <TableCell>
-                          {renderFieldValue(model.provider)}
+                          {renderFieldValue(catalog.provider)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">category</TableCell>
                         <TableCell>
-                          {renderFieldValue(model.category)}
+                          {renderFieldValue(catalog.category)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">status</TableCell>
-                        <TableCell>{renderFieldValue(model.status)}</TableCell>
+                        <TableCell>
+                          {renderFieldValue(catalog.status)}
+                        </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">version</TableCell>
-                        <TableCell>{renderFieldValue(model.version)}</TableCell>
+                        <TableCell>
+                          {renderFieldValue(catalog.version)}
+                        </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">
                           endpoints_url
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(model.endpoints_url)}
+                          {renderFieldValue(catalog.endpoints_url)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">logo</TableCell>
-                        <TableCell>{renderFieldValue(model.logo)}</TableCell>
+                        <TableCell>{renderFieldValue(catalog.logo)}</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">
                           description
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(model.description)}
+                          {renderFieldValue(catalog.description)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -449,7 +444,7 @@ function ModelPage({ catalog }: ModelPageProps) {
                           max_tokens
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(model.max_tokens)}
+                          {renderFieldValue(catalog.max_tokens)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -457,7 +452,7 @@ function ModelPage({ catalog }: ModelPageProps) {
                           max_input_tokens
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(model.max_input_tokens)}
+                          {renderFieldValue(catalog.max_input_tokens)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -465,7 +460,7 @@ function ModelPage({ catalog }: ModelPageProps) {
                           max_output_tokens
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(model.max_output_tokens)}
+                          {renderFieldValue(catalog.max_output_tokens)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -473,7 +468,7 @@ function ModelPage({ catalog }: ModelPageProps) {
                           input_cost_per_token
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(model.input_cost_per_token)}
+                          {renderFieldValue(catalog.input_cost_per_token)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -481,7 +476,7 @@ function ModelPage({ catalog }: ModelPageProps) {
                           output_cost_per_token
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(model.output_cost_per_token)}
+                          {renderFieldValue(catalog.output_cost_per_token)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -489,7 +484,7 @@ function ModelPage({ catalog }: ModelPageProps) {
                           created_at
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(model.created_at)}
+                          {renderFieldValue(catalog.created_at)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -497,7 +492,7 @@ function ModelPage({ catalog }: ModelPageProps) {
                           updated_at
                         </TableCell>
                         <TableCell>
-                          {renderFieldValue(model.updated_at)}
+                          {renderFieldValue(catalog.updated_at)}
                         </TableCell>
                       </TableRow>
 
