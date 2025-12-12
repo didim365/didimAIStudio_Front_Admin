@@ -33,14 +33,12 @@ import {
 import { formatDate } from "@/shared/utils/formatDate";
 import type { GetCatalogResponse } from "../_api/getCatalog";
 
-type Catalog = GetCatalogResponse;
-
 interface ModelPageProps {
-  catalog: Catalog;
+  catalog: GetCatalogResponse;
 }
 
 function getStatusBadgeVariant(
-  status?: Catalog["status"]
+  status?: GetCatalogResponse["status"]
 ): "default" | "secondary" | "destructive" | "outline" {
   switch (status) {
     case "STABLE":
@@ -146,7 +144,9 @@ function InfoRow({
   );
 }
 
-function pickPrimaryModel(catalog: Catalog): Catalog | null {
+function pickPrimaryModel(
+  catalog: GetCatalogResponse
+): GetCatalogResponse | null {
   return catalog ?? null;
 }
 
