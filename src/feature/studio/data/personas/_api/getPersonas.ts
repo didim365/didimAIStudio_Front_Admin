@@ -1,7 +1,7 @@
 import { paths } from "@/shared/types/api/agents";
 import axiosInstance from "@/shared/utils/axiosInstance";
 
-type GetPersonasResponse =
+export type GetPersonasResponse =
   paths["/v1/personas/data"]["get"]["responses"]["200"]["content"]["application/json"];
 
 type GetPersonasParams =

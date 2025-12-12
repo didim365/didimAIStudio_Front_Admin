@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -29,16 +29,20 @@ import {
   Cpu,
   User,
   Wrench,
-  AlertCircle,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { cn } from "@/shared/lib/utils";
+import { GetSettingsResponse } from "@/feature/studio/data/models/_api/getSettings";
+import { GetPersonasResponse } from "@/feature/studio/data/personas/_api/getPersonas";
 
-export function AgentAddPage() {
+interface AgentAddPageProps {
+  settings: GetSettingsResponse;
+  personas: GetPersonasResponse;
+}
+
+export function AgentAddPage({ settings, personas }: AgentAddPageProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const queryClient = useQueryClient();
   const { data: myInfo } = useGetMyInfo();
 
@@ -50,10 +54,7 @@ export function AgentAddPage() {
     fallback_model_my_page_id: "",
     persona_my_page_id: "",
     tool_my_page_id: "",
-    user_agent_description: "",
   });
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // 에이전트 생성 mutation
   const { mutate: createAgent, isPending: isCreating } = usePostAgent({
@@ -63,65 +64,15 @@ export function AgentAddPage() {
         queryKey: ["agents"],
       });
       // 생성된 에이전트 상세 페이지로 이동
-      router.push(`${basePath}/agents/${data.id}`);
+      router.push(`/studio/templates/agents/${data.id}`);
     },
     onError: (error: Error) => {
       toast.error(`에이전트 생성 실패: ${error.message}`);
     },
   });
 
-  // 폼 검증
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "에이전트 이름을 입력하세요.";
-    }
-
-    if (!formData.description.trim()) {
-      newErrors.description = "에이전트 설명을 입력하세요.";
-    }
-
-    if (!formData.model_my_page_id) {
-      newErrors.model_my_page_id = "모델 ID를 입력하세요.";
-    } else if (isNaN(Number(formData.model_my_page_id))) {
-      newErrors.model_my_page_id = "유효한 숫자를 입력하세요.";
-    }
-
-    if (!formData.fallback_model_my_page_id) {
-      newErrors.fallback_model_my_page_id = "폴백 모델 ID를 입력하세요.";
-    } else if (isNaN(Number(formData.fallback_model_my_page_id))) {
-      newErrors.fallback_model_my_page_id = "유효한 숫자를 입력하세요.";
-    }
-
-    if (
-      formData.persona_my_page_id &&
-      isNaN(Number(formData.persona_my_page_id))
-    ) {
-      newErrors.persona_my_page_id = "유효한 숫자를 입력하세요.";
-    }
-
-    if (formData.tool_my_page_id) {
-      const toolIds = formData.tool_my_page_id
-        .split(",")
-        .map((id) => id.trim())
-        .filter((id) => id.length > 0);
-      if (toolIds.some((id) => isNaN(Number(id)))) {
-        newErrors.tool_my_page_id =
-          "유효한 숫자들을 쉼표로 구분하여 입력하세요.";
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
 
     if (!myInfo?.id) {
       toast.error("사용자 정보를 불러올 수 없습니다.");
@@ -151,17 +102,15 @@ export function AgentAddPage() {
         | "EXPERIMENTAL",
       model_my_page_id: Number(formData.model_my_page_id),
       fallback_model_my_page_id: Number(formData.fallback_model_my_page_id),
-      persona_my_page_id: formData.persona_my_page_id
-        ? Number(formData.persona_my_page_id)
-        : null,
+      persona_my_page_id:
+        formData.persona_my_page_id && formData.persona_my_page_id !== "none"
+          ? Number(formData.persona_my_page_id)
+          : null,
       tool_my_page_id: toolIds && toolIds.length > 0 ? toolIds : null,
-      user_agent_description: formData.user_agent_description.trim() || null,
       is_system: true,
       is_public: true,
     });
   };
-
-  const selectedCategory = categoryConfig[formData.category];
 
   return (
     <div className="py-8 px-4">
@@ -169,17 +118,17 @@ export function AgentAddPage() {
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Link href={`${basePath}/agents`}>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="shrink-0 cursor-pointer"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href={"/studio/templates/agents"}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 cursor-pointer"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              </Link>
               <div>
                 <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
                   <Bot className="h-8 w-8" />새 에이전트 추가
@@ -209,6 +158,24 @@ export function AgentAddPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-6 md:grid-cols-2">
+                  {/* 에이전트 이름 */}
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      <span>에이전트 이름 *</span>
+                    </Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      placeholder="AI 챗봇 에이전트"
+                      className="pl-6"
+                      required
+                    />
+                  </div>
+
                   {/* 카테고리 */}
                   <div className="space-y-2">
                     <Label
@@ -233,7 +200,10 @@ export function AgentAddPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {CATEGORY_OPTIONS.map((category) => (
-                          <SelectItem key={category} value={category}>
+                          <SelectItem
+                            key={`category-${category}`}
+                            value={category}
+                          >
                             <div className="flex items-center gap-2">
                               <span
                                 className={cn(
@@ -250,31 +220,6 @@ export function AgentAddPage() {
                     </Select>
                   </div>
 
-                  {/* 에이전트 이름 */}
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      <span>에이전트 이름 *</span>
-                    </Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => {
-                        setFormData({ ...formData, name: e.target.value });
-                        if (errors.name) setErrors({ ...errors, name: "" });
-                      }}
-                      placeholder="AI 챗봇 에이전트"
-                      className="pl-6"
-                      required
-                    />
-                    {errors.name && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.name}
-                      </p>
-                    )}
-                  </div>
-
                   {/* 설명 */}
                   <div className="space-y-2 md:col-span-2">
                     <Label
@@ -287,24 +232,16 @@ export function AgentAddPage() {
                     <Textarea
                       id="description"
                       value={formData.description}
-                      onChange={(e) => {
+                      onChange={(e) =>
                         setFormData({
                           ...formData,
                           description: e.target.value,
-                        });
-                        if (errors.description)
-                          setErrors({ ...errors, description: "" });
-                      }}
+                        })
+                      }
                       placeholder="에이전트의 기능과 목적을 설명하세요"
                       className="pl-6 min-h-[100px]"
                       required
                     />
-                    {errors.description && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.description}
-                      </p>
-                    )}
                   </div>
                 </div>
               </CardContent>
@@ -329,28 +266,42 @@ export function AgentAddPage() {
                       <Cpu className="h-4 w-4" />
                       <span>모델 ID *</span>
                     </Label>
-                    <Input
-                      id="model_my_page_id"
-                      type="number"
+                    <Select
                       value={formData.model_my_page_id}
-                      onChange={(e) => {
+                      onValueChange={(value) =>
                         setFormData({
                           ...formData,
-                          model_my_page_id: e.target.value,
-                        });
-                        if (errors.model_my_page_id)
-                          setErrors({ ...errors, model_my_page_id: "" });
-                      }}
-                      placeholder="1"
-                      className="pl-6"
+                          model_my_page_id: value,
+                        })
+                      }
                       required
-                    />
-                    {errors.model_my_page_id && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.model_my_page_id}
-                      </p>
-                    )}
+                    >
+                      <SelectTrigger
+                        id="model_my_page_id"
+                        className="pl-6 w-full"
+                      >
+                        <SelectValue placeholder="모델을 선택하세요" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {settings.map((setting) => (
+                          <SelectItem
+                            key={`main-model-id: ${setting.user_model_id}`}
+                            value={String(setting.user_model_id)}
+                          >
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">
+                                {setting.model_name || "이름 없음"}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ID: {setting.user_model_id}
+                                {setting.deployment_type &&
+                                  ` • ${setting.deployment_type}`}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <p className="text-xs text-muted-foreground">
                       agt_model_my_page 테이블의 모델 ID
                     </p>
@@ -365,31 +316,41 @@ export function AgentAddPage() {
                       <Cpu className="h-4 w-4" />
                       <span>폴백 모델 ID *</span>
                     </Label>
-                    <Input
-                      id="fallback_model_my_page_id"
-                      type="number"
+                    <Select
                       value={formData.fallback_model_my_page_id}
-                      onChange={(e) => {
+                      onValueChange={(value) =>
                         setFormData({
                           ...formData,
-                          fallback_model_my_page_id: e.target.value,
-                        });
-                        if (errors.fallback_model_my_page_id)
-                          setErrors({
-                            ...errors,
-                            fallback_model_my_page_id: "",
-                          });
-                      }}
-                      placeholder="2"
-                      className="pl-6"
+                          fallback_model_my_page_id: value,
+                        })
+                      }
                       required
-                    />
-                    {errors.fallback_model_my_page_id && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.fallback_model_my_page_id}
-                      </p>
-                    )}
+                    >
+                      <SelectTrigger
+                        id="fallback_model_my_page_id"
+                        className="pl-6 w-full"
+                      >
+                        <SelectValue placeholder="폴백 모델을 선택하세요" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {settings.map((setting) => (
+                          <SelectItem
+                            key={`fallback-model-id: ${setting.user_model_id}`}
+                            value={String(setting.user_model_id)}
+                          >
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">
+                                {setting.model_name || "이름 없음"}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ID: {setting.user_model_id}
+                                {setting.deployment_type}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <p className="text-xs text-muted-foreground">
                       폴백 모델 ID (my page 모델 테이블)
                     </p>
@@ -417,27 +378,40 @@ export function AgentAddPage() {
                       <User className="h-4 w-4" />
                       <span>페르소나 ID</span>
                     </Label>
-                    <Input
-                      id="persona_my_page_id"
-                      type="number"
-                      value={formData.persona_my_page_id}
-                      onChange={(e) => {
+                    <Select
+                      value={formData.persona_my_page_id || "none"}
+                      onValueChange={(value) =>
                         setFormData({
                           ...formData,
-                          persona_my_page_id: e.target.value,
-                        });
-                        if (errors.persona_my_page_id)
-                          setErrors({ ...errors, persona_my_page_id: "" });
-                      }}
-                      placeholder="2"
-                      className="pl-6"
-                    />
-                    {errors.persona_my_page_id && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.persona_my_page_id}
-                      </p>
-                    )}
+                          persona_my_page_id: value === "none" ? "" : value,
+                        })
+                      }
+                    >
+                      <SelectTrigger
+                        id="persona_my_page_id"
+                        className="pl-6 w-full"
+                      >
+                        <SelectValue placeholder="페르소나를 선택하세요 (선택사항)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">선택 안 함</SelectItem>
+                        {personas.items.map((persona) => (
+                          <SelectItem
+                            key={`persona-id: ${persona.id}`}
+                            value={String(persona.id)}
+                          >
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">
+                                {persona.name || "이름 없음"} ({persona.id})
+                              </span>
+                              <span className="text-xs text-muted-foreground text-left">
+                                설명: {persona.description}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <p className="text-xs text-muted-foreground">
                       agt_persona_my_page 테이블의 페르소나 ID (선택사항)
                     </p>
@@ -455,51 +429,17 @@ export function AgentAddPage() {
                     <Input
                       id="tool_my_page_id"
                       value={formData.tool_my_page_id}
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          tool_my_page_id: e.target.value,
-                        });
-                        if (errors.tool_my_page_id)
-                          setErrors({ ...errors, tool_my_page_id: "" });
-                      }}
-                      placeholder="3, 4, 5"
-                      className="pl-6"
-                    />
-                    {errors.tool_my_page_id && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.tool_my_page_id}
-                      </p>
-                    )}
-                    <p className="text-xs text-muted-foreground">
-                      쉼표로 구분된 도구 ID 목록 (예: 3, 4, 5)
-                    </p>
-                  </div>
-
-                  {/* 사용자 정의 설명 */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="user_agent_description"
-                      className="flex items-center gap-2"
-                    >
-                      <FileText className="h-4 w-4" />
-                      <span>사용자 정의 설명</span>
-                    </Label>
-                    <Textarea
-                      id="user_agent_description"
-                      value={formData.user_agent_description}
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          user_agent_description: e.target.value,
+                          tool_my_page_id: e.target.value,
                         })
                       }
-                      placeholder="사용자가 정의하는 에이전트 설명"
-                      className="pl-6 min-h-[80px]"
+                      placeholder="3, 4, 5"
+                      className="pl-6"
                     />
                     <p className="text-xs text-muted-foreground">
-                      사용자가 정의하는 에이전트 설명 (선택사항)
+                      쉼표로 구분된 도구 ID 목록 (예: 3, 4, 5)
                     </p>
                   </div>
                 </div>
