@@ -29,7 +29,6 @@ import {
   Cpu,
   User,
   Wrench,
-  AlertCircle,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
@@ -56,8 +55,6 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
     user_agent_description: "",
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
   // 에이전트 생성 mutation
   const { mutate: createAgent, isPending: isCreating } = usePostAgent({
     onSuccess: (data) => {
@@ -73,54 +70,8 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
     },
   });
 
-  // 폼 검증
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.description.trim()) {
-      newErrors.description = "에이전트 설명을 입력하세요.";
-    }
-
-    if (!formData.model_my_page_id) {
-      newErrors.model_my_page_id = "모델 ID를 입력하세요.";
-    } else if (isNaN(Number(formData.model_my_page_id))) {
-      newErrors.model_my_page_id = "유효한 숫자를 입력하세요.";
-    }
-
-    if (!formData.fallback_model_my_page_id) {
-      newErrors.fallback_model_my_page_id = "폴백 모델 ID를 입력하세요.";
-    } else if (isNaN(Number(formData.fallback_model_my_page_id))) {
-      newErrors.fallback_model_my_page_id = "유효한 숫자를 입력하세요.";
-    }
-
-    if (
-      formData.persona_my_page_id &&
-      isNaN(Number(formData.persona_my_page_id))
-    ) {
-      newErrors.persona_my_page_id = "유효한 숫자를 입력하세요.";
-    }
-
-    if (formData.tool_my_page_id) {
-      const toolIds = formData.tool_my_page_id
-        .split(",")
-        .map((id) => id.trim())
-        .filter((id) => id.length > 0);
-      if (toolIds.some((id) => isNaN(Number(id)))) {
-        newErrors.tool_my_page_id =
-          "유효한 숫자들을 쉼표로 구분하여 입력하세요.";
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
 
     if (!myInfo?.id) {
       toast.error("사용자 정보를 불러올 수 없습니다.");
@@ -215,20 +166,13 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                     <Input
                       id="name"
                       value={formData.name}
-                      onChange={(e) => {
-                        setFormData({ ...formData, name: e.target.value });
-                        if (errors.name) setErrors({ ...errors, name: "" });
-                      }}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                       placeholder="AI 챗봇 에이전트"
                       className="pl-6"
                       required
                     />
-                    {errors.name && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.name}
-                      </p>
-                    )}
                   </div>
 
                   {/* 카테고리 */}
@@ -284,24 +228,16 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                     <Textarea
                       id="description"
                       value={formData.description}
-                      onChange={(e) => {
+                      onChange={(e) =>
                         setFormData({
                           ...formData,
                           description: e.target.value,
-                        });
-                        if (errors.description)
-                          setErrors({ ...errors, description: "" });
-                      }}
+                        })
+                      }
                       placeholder="에이전트의 기능과 목적을 설명하세요"
                       className="pl-6 min-h-[100px]"
                       required
                     />
-                    {errors.description && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.description}
-                      </p>
-                    )}
                   </div>
                 </div>
               </CardContent>
@@ -328,14 +264,12 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                     </Label>
                     <Select
                       value={formData.model_my_page_id}
-                      onValueChange={(value) => {
+                      onValueChange={(value) =>
                         setFormData({
                           ...formData,
                           model_my_page_id: value,
-                        });
-                        if (errors.model_my_page_id)
-                          setErrors({ ...errors, model_my_page_id: "" });
-                      }}
+                        })
+                      }
                       required
                     >
                       <SelectTrigger
@@ -364,12 +298,6 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.model_my_page_id && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.model_my_page_id}
-                      </p>
-                    )}
                     <p className="text-xs text-muted-foreground">
                       agt_model_my_page 테이블의 모델 ID
                     </p>
@@ -386,17 +314,12 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                     </Label>
                     <Select
                       value={formData.fallback_model_my_page_id}
-                      onValueChange={(value) => {
+                      onValueChange={(value) =>
                         setFormData({
                           ...formData,
                           fallback_model_my_page_id: value,
-                        });
-                        if (errors.fallback_model_my_page_id)
-                          setErrors({
-                            ...errors,
-                            fallback_model_my_page_id: "",
-                          });
-                      }}
+                        })
+                      }
                       required
                     >
                       <SelectTrigger
@@ -425,12 +348,6 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.fallback_model_my_page_id && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.fallback_model_my_page_id}
-                      </p>
-                    )}
                     <p className="text-xs text-muted-foreground">
                       폴백 모델 ID (my page 모델 테이블)
                     </p>
@@ -462,23 +379,15 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                       id="persona_my_page_id"
                       type="number"
                       value={formData.persona_my_page_id}
-                      onChange={(e) => {
+                      onChange={(e) =>
                         setFormData({
                           ...formData,
                           persona_my_page_id: e.target.value,
-                        });
-                        if (errors.persona_my_page_id)
-                          setErrors({ ...errors, persona_my_page_id: "" });
-                      }}
+                        })
+                      }
                       placeholder="2"
                       className="pl-6"
                     />
-                    {errors.persona_my_page_id && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.persona_my_page_id}
-                      </p>
-                    )}
                     <p className="text-xs text-muted-foreground">
                       agt_persona_my_page 테이블의 페르소나 ID (선택사항)
                     </p>
@@ -496,23 +405,15 @@ export function AgentAddPage({ settings }: AgentAddPageProps) {
                     <Input
                       id="tool_my_page_id"
                       value={formData.tool_my_page_id}
-                      onChange={(e) => {
+                      onChange={(e) =>
                         setFormData({
                           ...formData,
                           tool_my_page_id: e.target.value,
-                        });
-                        if (errors.tool_my_page_id)
-                          setErrors({ ...errors, tool_my_page_id: "" });
-                      }}
+                        })
+                      }
                       placeholder="3, 4, 5"
                       className="pl-6"
                     />
-                    {errors.tool_my_page_id && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.tool_my_page_id}
-                      </p>
-                    )}
                     <p className="text-xs text-muted-foreground">
                       쉼표로 구분된 도구 ID 목록 (예: 3, 4, 5)
                     </p>
