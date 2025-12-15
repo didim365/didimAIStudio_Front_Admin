@@ -10,6 +10,7 @@ import {
   Database,
   Hash,
   Link2,
+  Pencil,
   Tag,
 } from "lucide-react";
 
@@ -50,6 +51,14 @@ function ModelPage({ catalog }: ModelPageProps) {
             </h1>
             <p className="text-muted-foreground">모델 ID: {catalog.id}</p>
           </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link href={`/studio/templates/models/${catalog.id}/edit`}>
+            <Button className="cursor-pointer">
+              <Pencil className="h-4 w-4 mr-2" />
+              수정
+            </Button>
+          </Link>
         </div>
       </div>
 
