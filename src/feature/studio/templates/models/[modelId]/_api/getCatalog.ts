@@ -1,11 +1,12 @@
-
 import axiosInstance from "@/shared/utils/axiosInstance";
 import { cookies } from "next/headers";
-import { paths } from "@/shared/types/api/models";
+import { operations } from "@/shared/types/api/models";
 
-// API 타입 추출 (동적 게이트웨이 라우터 사용)
+/**
+ * 특정 AI 모델 상세 조회 응답 타입
+ */
 export type GetCatalogResponse =
-  paths["/v1/catalog/{model_id}"]["get"]["responses"]["200"]["content"]["application/json"];
+  operations["get_model_v1_catalog__model_id__get"]["responses"]["200"]["content"]["application/json"];
 
 type GetCatalogParams = {
   model_id: number;
