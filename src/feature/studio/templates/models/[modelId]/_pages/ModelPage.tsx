@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -12,6 +15,7 @@ import {
   Link2,
   Pencil,
   Tag,
+  Trash2,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -19,18 +23,55 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Separator } from "@/shared/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/ui/alert-dialog";
 import { formatDate } from "@/shared/utils/formatDate";
 import type { GetCatalogResponse } from "../_api/getCatalog";
 import { getStatusBadgeVariant } from "../_utils/getStatusBadgeVariant";
 import { formatNumber, formatCurrency } from "../_utils/formatters";
 import { getInitials } from "../_utils/getInitials";
 import { InfoRow } from "../_components/InfoRow";
+import { useDeleteCatalog } from "../_hooks/useDeleteCatalog";
 
 interface ModelPageProps {
   catalog: GetCatalogResponse;
 }
 
 function ModelPage({ catalog }: ModelPageProps) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  // 모델 삭제 mutation
+  const { mutate: deleteCatalog, isPending: isDeleting } = useDeleteCatalog({
+    onSuccess: () => {
+      // 모델 목록 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: ["catalogs"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["catalog"],
+      });
+      setShowDeleteDialog(false);
+      router.push("/studio/templates/models");
+    },
+    meta: {
+      successMessage: "모델이 성공적으로 삭제되었습니다.",
+    },
+  });
+
+  const handleDelete = () => {
+    deleteCatalog({ model_id: catalog.id });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -59,8 +100,43 @@ function ModelPage({ catalog }: ModelPageProps) {
               수정
             </Button>
           </Link>
+          <Button
+            variant="destructive"
+            className="cursor-pointer"
+            onClick={() => setShowDeleteDialog(true)}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            제거
+          </Button>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>모델 삭제 확인</AlertDialogTitle>
+            <AlertDialogDescription>
+              정말 <span className="font-semibold">{catalog.model_name}</span>
+              을(를) 삭제하시겠습니까?
+              <br />
+              <span className="text-destructive mt-2 block">
+                이 작업은 되돌릴 수 없습니다.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {isDeleting ? "삭제 중..." : "삭제"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-2">
