@@ -23,7 +23,7 @@ import {
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { RefreshCw, AlertCircle, ExternalLink, Plus } from "lucide-react";
+import { RefreshCw, AlertCircle, Plus } from "lucide-react";
 import { Pagination } from "@/shared/ui/pagination";
 import { formatDate } from "@/shared/utils/formatDate";
 import { useRouter } from "next/navigation";
@@ -160,32 +160,17 @@ function ModelsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-center w-[5%]">ID</TableHead>
-                    <TableHead className="text-left w-[15%]">모델</TableHead>
-                    <TableHead className="text-center w-[8%]">
-                      카테고리
-                    </TableHead>
-                    <TableHead className="text-left w-[6%]">버전</TableHead>
-                    <TableHead className="text-center w-[7%]">상태</TableHead>
-                    <TableHead className="text-center w-[8%]">
-                      최대 토큰
-                    </TableHead>
-                    <TableHead className="text-center w-[8%]">
-                      입력 토큰
-                    </TableHead>
-                    <TableHead className="text-center w-[8%]">
-                      출력 토큰
-                    </TableHead>
-                    <TableHead className="text-center w-[9%]">
-                      입력 비용
-                    </TableHead>
-                    <TableHead className="text-center w-[9%]">
-                      출력 비용
-                    </TableHead>
-                    <TableHead className="text-center w-[10%]">
-                      생성일
-                    </TableHead>
-                    <TableHead className="text-center w-[7%]">작업</TableHead>
+                    <TableHead className="text-center">ID</TableHead>
+                    <TableHead className="text-left">모델</TableHead>
+                    <TableHead className="text-center">카테고리</TableHead>
+                    <TableHead className="text-left">버전</TableHead>
+                    <TableHead className="text-center">상태</TableHead>
+                    <TableHead className="text-center">최대 토큰</TableHead>
+                    <TableHead className="text-center">입력 토큰</TableHead>
+                    <TableHead className="text-center">출력 토큰</TableHead>
+                    <TableHead className="text-center">입력 비용</TableHead>
+                    <TableHead className="text-center">출력 비용</TableHead>
+                    <TableHead className="text-center">생성일</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -253,22 +238,6 @@ function ModelsPage() {
                       </TableCell>
                       <TableCell className="text-center text-sm text-muted-foreground">
                         {formatDate(model.created_at)}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {model.endpoints_url && (
-                          <div className="flex justify-center">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                window.open(model.endpoints_url!, "_blank");
-                              }}
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
                       </TableCell>
                     </TableRow>
                   ))}
