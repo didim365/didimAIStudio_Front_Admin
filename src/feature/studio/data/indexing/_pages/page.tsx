@@ -12,8 +12,16 @@ import {
 } from "@/shared/ui/select";
 import { Search, RefreshCw, Plus, FileText } from "lucide-react";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
+import { paths } from "@/shared/types/api/indexing";
 
-export default function IndexingPage() {
+type GetCategoriesResponse =
+  paths["/v1/documents/categories"]["get"]["responses"]["200"]["content"]["application/json"];
+
+interface IndexingPageProps {
+  categories: GetCategoriesResponse;
+}
+
+export default function IndexingPage({ categories }: IndexingPageProps) {
   // URL 쿼리 파라미터 관리
   const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
     debounce: 300,
