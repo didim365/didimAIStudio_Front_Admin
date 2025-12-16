@@ -1,19 +1,10 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/ui/select";
-import {
-  Search,
   RefreshCw,
   Plus,
   FileText,
@@ -23,7 +14,6 @@ import {
   FileArchive,
   TrendingUp,
 } from "lucide-react";
-import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { paths } from "@/shared/types/api/indexing";
 
 type GetCategoriesResponse =
@@ -45,17 +35,6 @@ function formatBytes(bytes: number): string {
 }
 
 export default function IndexingPage({ categories }: IndexingPageProps) {
-  // URL 쿼리 파라미터 관리
-  const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
-    debounce: 300,
-  });
-  const [searchType, setSearchType] = useQueryParam<string>(
-    "searchType",
-    "name"
-  );
-  const [page, setPage] = useQueryParam<number>("page", 1);
-  const pageSize = 20;
-
   // TODO: API 호출 훅 구현 필요
   const isLoading = false;
   const documents: any[] = [];
@@ -79,22 +58,6 @@ export default function IndexingPage({ categories }: IndexingPageProps) {
           ) / categories.length
         )
       : 0;
-
-  // 검색 필터링
-  const filteredCategories =
-    categories?.filter((category) => {
-      if (!searchQuery) return true;
-      const query = searchQuery.toLowerCase();
-      switch (searchType) {
-        case "id":
-          return String(category.category_id).includes(query);
-        case "description":
-          return category.description?.toLowerCase().includes(query);
-        case "name":
-        default:
-          return category.category_name?.toLowerCase().includes(query);
-      }
-    }) || [];
 
   return (
     <div className="space-y-6">
@@ -163,63 +126,25 @@ export default function IndexingPage({ categories }: IndexingPageProps) {
         </div>
       )}
 
-      {/* 검색 및 필터 */}
+      {/* 액션 버튼 */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col gap-4">
-            {/* 검색 바 */}
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={
-                    searchType === "id"
-                      ? "ID로 검색..."
-                      : searchType === "description"
-                      ? "설명으로 검색..."
-                      : "이름으로 검색..."
-                  }
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setPage(1);
-                  }}
-                  className="pl-10"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button className="gap-2 cursor-pointer">
-                  <Plus className="h-4 w-4" />
-                  문서 업로드
-                </Button>
-              </div>
-            </div>
-
-            {/* 필터 옵션 */}
-            <div className="flex flex-wrap gap-2">
-              <Select value={searchType} onValueChange={setSearchType}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="검색 타입" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="name">문서 이름</SelectItem>
-                  <SelectItem value="id">문서 ID</SelectItem>
-                  <SelectItem value="description">문서 설명</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={handleRefresh}
-                disabled={isLoading}
-              >
-                <RefreshCw
-                  className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-                />
-                새로고침
-              </Button>
-            </div>
+          <div className="flex flex-wrap gap-2">
+            <Button className="gap-2 cursor-pointer">
+              <Plus className="h-4 w-4" />
+              문서 업로드
+            </Button>
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={handleRefresh}
+              disabled={isLoading}
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+              />
+              새로고침
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -229,22 +154,20 @@ export default function IndexingPage({ categories }: IndexingPageProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Folder className="h-5 w-5" />
-            카테고리 목록 ({filteredCategories.length})
+            카테고리 목록 ({categories?.length || 0})
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {filteredCategories.length === 0 ? (
+          {!categories || categories.length === 0 ? (
             <div className="text-center py-12">
               <Folder className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">
-                {searchQuery
-                  ? "검색 결과가 없습니다"
-                  : "등록된 카테고리가 없습니다"}
+                등록된 카테고리가 없습니다
               </p>
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {filteredCategories.map((category) => (
+              {categories.map((category) => (
                 <Card
                   key={category.category_id}
                   className="hover:shadow-md transition-shadow"
