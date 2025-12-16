@@ -1,5 +1,4 @@
 import axiosInstance from "@/shared/utils/axiosInstance";
-import { cookies } from "next/headers";
 import { paths } from "@/shared/types/api/agents";
 
 // API 타입 추출
@@ -17,16 +16,8 @@ type GetScenarioParams = {
 const getScenario = async (
   params: GetScenarioParams
 ): Promise<GetScenarioResponse> => {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-
   const response = await axiosInstance.agent.get<GetScenarioResponse>(
-    `/scenarios/data/${params.scenario_id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
+    `/scenarios/data/${params.scenario_id}`
   );
   return response.data;
 };

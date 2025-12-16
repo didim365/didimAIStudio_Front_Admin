@@ -59,7 +59,7 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
         queryKey: ["persona", persona.id],
       });
 
-      router.push(`/studio/templates/personas/${persona.id}`);
+      router.push(`/studio/data/personas/${persona.id}`);
     },
   });
 
@@ -92,7 +92,7 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => router.push(`/studio/templates/personas/${persona.id}`)}
+              onClick={() => router.push(`/studio/data/personas/${persona.id}`)}
               className="shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />

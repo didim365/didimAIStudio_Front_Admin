@@ -1,6 +1,5 @@
 import { paths } from "@/shared/types/api/auth";
 import axiosInstance from "@/shared/utils/axiosInstance";
-import { cookies } from "next/headers";
 
 // API 타입 추출
 export type GetRoleResponse =
@@ -12,16 +11,8 @@ export type GetRoleResponse =
  * @description 특정 역할 정보를 조회합니다.
  */
 const getRole = async (roleId: number): Promise<GetRoleResponse> => {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-
   const response = await axiosInstance.auth.get<GetRoleResponse>(
-    `/roles/${roleId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
+    `/roles/${roleId}`
   );
   return response.data;
 };

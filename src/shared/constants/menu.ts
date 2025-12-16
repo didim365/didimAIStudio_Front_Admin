@@ -4,6 +4,7 @@ import {
   Cpu,
   Database,
   FileCode,
+  FileText,
   Group,
   Key,
   List,
@@ -108,6 +109,11 @@ const MENU: MenuItem[] = [
             name: "모델 관리",
             href: "/studio/data/models",
             icon: Cpu,
+          },
+          {
+            name: "지식 관리",
+            href: "/studio/data/indexing",
+            icon: FileText,
           },
           {
             name: "도구 관리",
