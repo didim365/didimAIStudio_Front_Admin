@@ -1,5 +1,4 @@
 import axiosInstance from "@/shared/utils/axiosInstance";
-import { cookies } from "next/headers";
 import { paths } from "@/shared/types/api/tools";
 
 // API 타입 추출
@@ -22,15 +21,9 @@ const getTool = async (
   params: GetToolPathParams,
   queryParams?: GetToolParams
 ): Promise<GetToolResponse> => {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-
   const response = await axiosInstance.tools.get<GetToolResponse>(
     `/mcp-tools/${params.tool_id}`,
     {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
       params: queryParams,
     }
   );
