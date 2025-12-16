@@ -33,7 +33,7 @@ export default function IndexingPage({ categories }: IndexingPageProps) {
   };
 
   // Categories 통계 계산
-  const totalCategories = categories?.length || 0;
+  const totalCategories = categories.length;
   const totalDocuments =
     categories?.reduce((sum, cat) => sum + (cat.document_count || 0), 0) || 0;
   const totalSize =
