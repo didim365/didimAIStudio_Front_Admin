@@ -44,7 +44,9 @@ import Link from "next/link";
 export default function AgentsPage() {
   const router = useRouter();
   const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
+  const basePath = pathname?.startsWith("/studio/data")
+    ? "/studio/data"
+    : "/studio/templates";
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // 검색 필드들
@@ -126,8 +128,8 @@ export default function AgentsPage() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">에이전트 관리</h1>
-        <p className="mt-2">에이전트 정보 조회 및 관리</p>
+        <h1 className="text-3xl font-bold">에이전트 데이터 관리</h1>
+        <p className="mt-2">에이전트 정보 조회 및 데이터 관리</p>
       </div>
 
       {/* 검색 및 필터 */}

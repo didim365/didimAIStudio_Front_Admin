@@ -124,8 +124,8 @@ export default function AgentsPage() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">에이전트 관리</h1>
-        <p className="mt-2">에이전트 정보 조회 및 관리</p>
+        <h1 className="text-3xl font-bold">에이전트 템플릿 관리</h1>
+        <p className="mt-2">에이전트 템플릿 조회 및 관리</p>
       </div>
 
       {/* 검색 및 필터 */}

@@ -64,8 +64,10 @@ export default function ScenariosPage() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">시나리오 관리</h1>
-        <p className="mt-2 text-slate-600">등록된 모든 시나리오를 관리합니다</p>
+        <h1 className="text-3xl font-bold">시나리오 데이터 관리</h1>
+        <p className="mt-2 text-slate-600">
+          등록된 모든 시나리오 데이터를 관리합니다
+        </p>
       </div>
 
       {/* 검색 및 필터 */}
