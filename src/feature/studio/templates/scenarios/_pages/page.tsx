@@ -19,7 +19,9 @@ import { usePathname } from "next/navigation";
 
 export default function ScenariosPage() {
   const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
+  const basePath = pathname?.startsWith("/studio/data")
+    ? "/studio/data"
+    : "/studio/templates";
   // URL 쿼리 파라미터 관리
   const [searchQuery, setSearchQuery] = useQueryParam<string>("search", "", {
     debounce: 300,
@@ -67,8 +69,10 @@ export default function ScenariosPage() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">시나리오 관리</h1>
-        <p className="mt-2 text-slate-600">등록된 모든 시나리오를 관리합니다</p>
+        <h1 className="text-3xl font-bold">시나리오 템플릿 관리</h1>
+        <p className="mt-2 text-slate-600">
+          등록된 모든 시나리오 템플릿을 관리합니다
+        </p>
       </div>
 
       {/* 검색 및 필터 */}

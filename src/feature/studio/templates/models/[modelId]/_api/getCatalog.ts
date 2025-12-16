@@ -1,5 +1,4 @@
 import axiosInstance from "@/shared/utils/axiosInstance";
-import { cookies } from "next/headers";
 import { operations } from "@/shared/types/api/models";
 
 /**
@@ -19,16 +18,8 @@ type GetCatalogParams = {
 const getCatalog = async (
   params: GetCatalogParams
 ): Promise<GetCatalogResponse> => {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-
   const response = await axiosInstance.models.get<GetCatalogResponse>(
-    `/catalog/${params.model_id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
+    `/catalog/${params.model_id}`
   );
   return response.data;
 };
