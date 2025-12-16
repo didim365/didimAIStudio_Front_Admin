@@ -21,7 +21,9 @@ import { usePathname } from "next/navigation";
 
 export default function ToolsPage() {
   const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
+  const basePath = pathname?.startsWith("/studio/data")
+    ? "/studio/data"
+    : "/studio/templates";
   const [statusFilter, setStatusFilter] = useQueryParam<string>(
     "status",
     "all"
@@ -45,9 +47,9 @@ export default function ToolsPage() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">도구 관리</h1>
+        <h1 className="text-3xl font-bold">도구 템플릿 관리</h1>
         <p className="mt-2 text-slate-600">
-          등록된 모든 MCP 도구 템플릿을 관리합니다
+          등록된 MCP 도구 템플릿을 관리합니다
         </p>
       </div>
 
