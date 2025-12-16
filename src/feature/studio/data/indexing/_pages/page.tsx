@@ -12,26 +12,15 @@ import {
   Database,
   Calendar,
   FileArchive,
-  TrendingUp,
 } from "lucide-react";
 import { paths } from "@/shared/types/api/indexing";
+import { formatBytes } from "@/shared/utils/formatBytes";
 
 type GetCategoriesResponse =
   paths["/v1/documents/categories"]["get"]["responses"]["200"]["content"]["application/json"];
 
 interface IndexingPageProps {
   categories: GetCategoriesResponse;
-}
-
-/**
- * 바이트를 읽기 쉬운 형식으로 변환
- */
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
 }
 
 export default function IndexingPage({ categories }: IndexingPageProps) {
