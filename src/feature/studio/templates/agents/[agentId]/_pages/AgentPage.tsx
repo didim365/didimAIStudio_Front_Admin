@@ -35,6 +35,7 @@ import {
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
+import { CATEGORY_LABELS } from "../../_constants/agentCategoryConstants";
 
 type GetAgentResponse =
   paths["/v1/agents/data/{agent_id}"]["get"]["responses"]["200"]["content"]["application/json"];
@@ -42,17 +43,6 @@ type GetAgentResponse =
 interface AgentPageProps {
   agent: GetAgentResponse;
 }
-
-const categoryLabels: Record<string, string> = {
-  CHATBOT: "챗봇",
-  REACT: "ReAct",
-  MULTI_AGENT_SYSTEM: "다중 에이전트 시스템",
-  REFLECTION_CRITIQUE: "반성/비판",
-  PLANNING_AGENT: "계획 에이전트",
-  DATABASE: "데이터베이스",
-  EVALUATION: "평가",
-  EXPERIMENTAL: "실험적",
-};
 
 function AgentPage({ agent }: AgentPageProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -63,7 +53,7 @@ function AgentPage({ agent }: AgentPageProps) {
     // TODO: 삭제 후 에이전트 목록 페이지로 이동하거나 리프레시
   };
 
-  const categoryLabel = categoryLabels[agent.category] || agent.category;
+  const categoryLabel = CATEGORY_LABELS[agent.category] || agent.category;
 
   return (
     <div className="space-y-6">

@@ -35,31 +35,13 @@ import { useRouter } from "next/navigation";
 import { paths } from "@/shared/types/api/agents";
 import Link from "next/link";
 import { toast } from "sonner";
+import {
+  CATEGORY_LABELS,
+  CATEGORY_OPTIONS,
+} from "../../../_constants/agentCategoryConstants";
 
 type GetAgentResponse =
   paths["/v1/agents/data/{agent_id}"]["get"]["responses"]["200"]["content"]["application/json"];
-
-const categoryLabels: Record<string, string> = {
-  CHATBOT: "챗봇",
-  REACT: "ReAct",
-  MULTI_AGENT_SYSTEM: "다중 에이전트 시스템",
-  REFLECTION_CRITIQUE: "반성/비판",
-  PLANNING_AGENT: "계획 에이전트",
-  DATABASE: "데이터베이스",
-  EVALUATION: "평가",
-  EXPERIMENTAL: "실험적",
-};
-
-const categoryOptions = [
-  { value: "CHATBOT", label: "챗봇" },
-  { value: "REACT", label: "ReAct" },
-  { value: "MULTI_AGENT_SYSTEM", label: "다중 에이전트 시스템" },
-  { value: "REFLECTION_CRITIQUE", label: "반성/비판" },
-  { value: "PLANNING_AGENT", label: "계획 에이전트" },
-  { value: "DATABASE", label: "데이터베이스" },
-  { value: "EVALUATION", label: "평가" },
-  { value: "EXPERIMENTAL", label: "실험적" },
-];
 
 export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
   const router = useRouter();
@@ -184,7 +166,7 @@ export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
   };
 
   const categoryLabel =
-    categoryLabels[formData.category] || formData.category || "미지정";
+    CATEGORY_LABELS[formData.category] || formData.category || "미지정";
 
   return (
     <form onSubmit={handleSubmit}>
@@ -287,7 +269,7 @@ export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
                       <SelectValue placeholder="카테고리를 선택하세요" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categoryOptions.map((option) => (
+                      {CATEGORY_OPTIONS.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
