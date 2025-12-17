@@ -49,10 +49,8 @@ export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
 
   const [formData, setFormData] = useState<{
     name: string;
-    user_agent_title: string;
     category: string;
     description: string;
-    user_agent_description: string;
     is_public: boolean;
     model_my_page_id: string;
     fallback_model_my_page_id: string;
@@ -60,10 +58,8 @@ export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
     tool_my_page_id: string;
   }>({
     name: agent.name || "",
-    user_agent_title: agent.user_agent_title || "",
     category: agent.category || "",
     description: agent.description || "",
-    user_agent_description: agent.user_agent_description || "",
     is_public: agent.is_public ?? false,
     model_my_page_id: agent.model_my_page_id?.toString() || "",
     fallback_model_my_page_id:
@@ -152,8 +148,6 @@ export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
           | "EXPERIMENTAL",
         name: formData.name.trim(),
         description: formData.description.trim(),
-        user_agent_title: formData.user_agent_title.trim() || null,
-        user_agent_description: formData.user_agent_description.trim() || null,
         is_system: agent.is_system,
         is_public: formData.is_public,
         persona_my_page_id: toNumberOrNull(formData.persona_my_page_id),
@@ -226,29 +220,6 @@ export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
                   />
                 </div>
 
-                {/* User Agent Title */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="user_agent_title"
-                    className="flex items-center gap-2"
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span>사용자 정의 제목</span>
-                  </Label>
-                  <Input
-                    id="user_agent_title"
-                    value={formData.user_agent_title}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        user_agent_title: e.target.value,
-                      })
-                    }
-                    placeholder="사용자 정의 제목을 입력하세요"
-                    className="pl-6"
-                  />
-                </div>
-
                 {/* Category */}
                 <div className="space-y-2">
                   <Label htmlFor="category" className="flex items-center gap-2">
@@ -303,30 +274,6 @@ export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
                     className="min-h-[120px]"
                     rows={5}
                     required
-                  />
-                </div>
-
-                {/* User Agent Description */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="user_agent_description"
-                    className="flex items-center gap-2"
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span>사용자 정의 설명</span>
-                  </Label>
-                  <Textarea
-                    id="user_agent_description"
-                    value={formData.user_agent_description}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        user_agent_description: e.target.value,
-                      })
-                    }
-                    placeholder="사용자 정의 설명을 입력하세요"
-                    className="min-h-[120px]"
-                    rows={5}
                   />
                 </div>
 
