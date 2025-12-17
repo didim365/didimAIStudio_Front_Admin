@@ -32,13 +32,13 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { useGetAgents } from "../hooks/useGetAgents";
+import { useGetAgents } from "../_hooks/useGetAgents";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
 import { useRouter } from "next/navigation";
-import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
+import { categoryConfig, CATEGORY_OPTIONS } from "../_constants/categoryConfig";
 import { formatDate } from "@/shared/utils/formatDate";
-import { parseBooleanFilter } from "@/feature/studio/templates/agents/utils/parseBooleanFilter";
+import { parseBooleanFilter } from "../_utils/parseBooleanFilter";
 import Link from "next/link";
 
 export default function AgentsPage() {

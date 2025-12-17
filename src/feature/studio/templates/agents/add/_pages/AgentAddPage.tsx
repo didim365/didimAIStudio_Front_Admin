@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { usePostAgent } from "../hooks/usePostAgent";
+import { usePostAgent } from "../_hooks/usePostAgent";
 import { useGetMyInfo } from "@/shared/hooks/useGetMyInfo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
@@ -31,7 +31,10 @@ import {
   Wrench,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
+import {
+  categoryConfig,
+  CATEGORY_OPTIONS,
+} from "../../_constants/categoryConfig";
 import { cn } from "@/shared/lib/utils";
 import { GetSettingsResponse } from "@/feature/studio/data/models/_api/getSettings";
 import { GetPersonasResponse } from "@/feature/studio/data/personas/_api/getPersonas";

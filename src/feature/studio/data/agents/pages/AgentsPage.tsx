@@ -38,7 +38,7 @@ import { Pagination } from "@/shared/ui/pagination";
 import { useRouter, usePathname } from "next/navigation";
 import { categoryConfig, CATEGORY_OPTIONS } from "../constants/categoryConfig";
 import { formatDate } from "@/shared/utils/formatDate";
-import { parseBooleanFilter } from "@/feature/studio/templates/agents/utils/parseBooleanFilter";
+import { parseBooleanFilter } from "@/feature/studio/templates/agents/_utils/parseBooleanFilter";
 import Link from "next/link";
 
 export default function AgentsPage() {

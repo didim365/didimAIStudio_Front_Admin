@@ -1,4 +1,4 @@
-import AgentAddPage from "@/feature/studio/templates/agents/pages/AgentAddPage";
+import AgentAddPage from "@/feature/studio/templates/agents/add/_pages/AgentAddPage";
 import getSettings from "@/feature/studio/data/models/_api/getSettings";
 import getPersonas from "@/feature/studio/data/personas/_api/getPersonas";
 

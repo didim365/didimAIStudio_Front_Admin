@@ -41,7 +41,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { parseBooleanFilter } from "@/feature/studio/templates/agents/utils/parseBooleanFilter";
+import { parseBooleanFilter } from "@/feature/studio/templates/agents/_utils/parseBooleanFilter";
 import { formatDate } from "@/shared/utils/formatDate";
 
 export default function PersonasPage() {
