@@ -4,8 +4,10 @@ import getSettings from "@/feature/studio/data/models/_api/getSettings";
 
 async function Page({ params }: { params: Promise<{ agentId: string }> }) {
   const { agentId } = await params;
-  const agent = await getAgent({ agent_id: Number(agentId) });
-  const settings = await getSettings();
+  const [agent, settings] = await Promise.all([
+    getAgent({ agent_id: Number(agentId) }),
+    getSettings(),
+  ]);
 
   return <AgentEditPage agent={agent} settings={settings} />;
 }
