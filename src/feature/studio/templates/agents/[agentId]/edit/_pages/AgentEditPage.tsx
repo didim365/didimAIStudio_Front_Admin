@@ -81,13 +81,10 @@ export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
         queryKey: ["agent", agent.id],
       });
 
-      toast.success("에이전트가 성공적으로 수정되었습니다.");
       router.push(`/studio/templates/agents/${agent.id}`);
     },
-    onError: (error) => {
-      toast.error("에이전트 수정에 실패했습니다.", {
-        description: error.message,
-      });
+    meta: {
+      successMessage: "에이전트가 성공적으로 수정되었습니다.",
     },
   });
 
