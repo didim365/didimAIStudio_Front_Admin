@@ -2,7 +2,7 @@
 
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/agents";
-import getAgents from "../api/getAgents";
+import getAgents from "../_api/getAgents";
 
 type GetAgentsResponse =
   paths["/v1/agents/data"]["get"]["responses"]["200"]["content"]["application/json"];

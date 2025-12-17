@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePutPersona } from "../_hooks/usePutPersona";
+import { usePutMyPersona } from "../_hooks/usePutMyPersona";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import {
   Lock,
@@ -12,7 +12,6 @@ import {
   UserCircle,
   FileText,
   Tag,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -32,34 +31,33 @@ import {
   CATEGORY_OPTIONS,
   PersonaCategoryEnum,
 } from "../../../_constants/categoryConfig";
-import { GetPersonaResponse } from "../../_api/getPersona";
+import { GetMyPersonaResponse } from "../../_api/getMyPersona";
 
 interface PersonaEditPageProps {
-  persona: GetPersonaResponse;
+  myPersona: GetMyPersonaResponse;
 }
 
-function PersonaEditPage({ persona }: PersonaEditPageProps) {
+function PersonaEditPage({ myPersona }: PersonaEditPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
-    name: persona.name,
-    description: persona.description,
-    category: persona.category,
-    is_public: persona.is_public ?? true,
-    system_prompt: persona.system_prompt,
+    name: myPersona.user_my_persona_title || "",
+    description: myPersona.user_my_persona_description || "",
+    category: "GENERAL" as PersonaCategoryEnum,
+    is_public: true,
   });
 
-  const { mutate: updatePersona, isPending: isUpdating } = usePutPersona({
+  const { mutate: updatePersona, isPending: isUpdating } = usePutMyPersona({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["personas"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["persona", persona.id],
+        queryKey: ["persona", myPersona.id],
       });
 
-      router.push(`/studio/data/personas/${persona.id}`);
+      router.push(`/studio/data/personas/${myPersona.id}`);
     },
   });
 
@@ -68,16 +66,14 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
 
     updatePersona({
       params: {
-        persona_id: persona.id,
+        my_page_id: myPersona.id,
       },
       data: {
-        user_id: persona.user_id,
-        name: formData.name,
-        description: formData.description,
-        system_prompt: formData.system_prompt,
-        is_system: persona.is_system,
-        category: formData.category,
-        is_public: formData.is_public,
+        user_id: myPersona.user_id,
+        persona_data_id: myPersona.persona_data_id,
+        user_my_persona_title: formData.name || null,
+        user_my_persona_description: formData.description || null,
+        is_favorite: myPersona.is_favorite ?? false,
       },
     });
   };
@@ -92,7 +88,9 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => router.push(`/studio/data/personas/${persona.id}`)}
+              onClick={() =>
+                router.push(`/studio/data/personas/${myPersona.id}`)
+              }
               className="shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />
@@ -101,7 +99,9 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
               <h1 className="text-3xl font-bold tracking-tight">
                 페르소나 정보 수정
               </h1>
-              <p className="text-muted-foreground">페르소나 ID: {persona.id}</p>
+              <p className="text-muted-foreground">
+                페르소나 ID: {myPersona.id}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -225,44 +225,6 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
                     </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* System Prompt Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5" />
-                시스템 프롬프트
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="system_prompt"
-                  className="flex items-center gap-2"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  <span>AI 모델에 전달되는 프롬프트 *</span>
-                </Label>
-                <Textarea
-                  id="system_prompt"
-                  value={formData.system_prompt}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      system_prompt: e.target.value,
-                    })
-                  }
-                  placeholder="시스템 프롬프트를 입력하세요"
-                  className="pl-6 font-mono text-sm field-sizing-content"
-                  rows={10}
-                  required
-                />
-                <p className="text-xs text-muted-foreground pl-6">
-                  이 프롬프트는 AI 모델의 동작을 정의하는 핵심 설정입니다.
-                </p>
               </div>
             </CardContent>
           </Card>
