@@ -166,7 +166,7 @@ export function Sidebar() {
 
                 return (
                   <SidebarMenuItem key={item.name}>
-                    {hasChildren ? (
+                    {hasChildren && (
                       <>
                         <SidebarMenuButton
                           onClick={() => toggleMenu(menuKey)}
@@ -200,20 +200,18 @@ export function Sidebar() {
                           </SidebarMenuSub>
                         )}
                       </>
-                    ) : (
-                      "icon" in item &&
-                      item.icon && (
-                        <SidebarMenuButton
-                          asChild
-                          isActive={isActive}
-                          tooltip={item.name}
-                        >
-                          <Link href={item.href}>
-                            <item.icon />
-                            <span>{item.name}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      )
+                    )}
+                    {!hasChildren && (
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        tooltip={item.name}
+                      >
+                        <Link href={item.href}>
+                          {item.icon && <item.icon />}
+                          <span>{item.name}</span>
+                        </Link>
+                      </SidebarMenuButton>
                     )}
                   </SidebarMenuItem>
                 );
