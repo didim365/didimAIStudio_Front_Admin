@@ -33,7 +33,7 @@ type MenuChildItem = {
 type MenuItemProps = {
   item: MenuChildItem;
   pathname: string;
-  expandedMenus: string[];
+  expandedMenus: Set<string>;
   onToggleMenu: (menuKey: string) => void;
   menuKey: string;
 };
@@ -54,7 +54,7 @@ function MenuSubItemComponent({
   menuKey,
 }: MenuItemProps) {
   const hasChildren = item.children && item.children.length > 0;
-  const isExpanded = expandedMenus.includes(menuKey);
+  const isExpanded = expandedMenus.has(menuKey);
   const isActive = isMenuItemActive(item, pathname);
 
   if (hasChildren) {
@@ -110,16 +110,20 @@ function MenuSubItemComponent({
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
 
   const { data: myInfo } = useGetMyInfo();
 
   const toggleMenu = (menuName: string) => {
-    setExpandedMenus((prev) =>
-      prev.includes(menuName)
-        ? prev.filter((name) => name !== menuName)
-        : [...prev, menuName]
-    );
+    setExpandedMenus((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(menuName)) {
+        newSet.delete(menuName);
+      } else {
+        newSet.add(menuName);
+      }
+      return newSet;
+    });
   };
 
   const handleLogout = async () => {
@@ -158,7 +162,7 @@ export function Sidebar() {
               {MENU.map((item) => {
                 const hasChildren = item.children && item.children.length > 0;
                 const menuKey = item.name;
-                const isExpanded = expandedMenus.includes(menuKey);
+                const isExpanded = expandedMenus.has(menuKey);
                 const isActive = isMenuItemActive(
                   item as MenuChildItem,
                   pathname
@@ -173,7 +177,7 @@ export function Sidebar() {
                           isActive={isActive}
                           tooltip={item.name}
                         >
-                          {"icon" in item && item.icon && <item.icon />}
+                          {item.icon && <item.icon />}
                           <span>{item.name}</span>
                           <ChevronRight
                             className={cn(
