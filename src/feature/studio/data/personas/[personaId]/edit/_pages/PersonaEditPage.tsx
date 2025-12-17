@@ -12,7 +12,6 @@ import {
   UserCircle,
   FileText,
   Tag,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -47,7 +46,6 @@ function PersonaEditPage({ myPersona }: PersonaEditPageProps) {
     description: myPersona.user_my_persona_description || "",
     category: "GENERAL" as PersonaCategoryEnum,
     is_public: true,
-    system_prompt: "",
   });
 
   const { mutate: updatePersona, isPending: isUpdating } = usePutMyPersona({
@@ -227,44 +225,6 @@ function PersonaEditPage({ myPersona }: PersonaEditPageProps) {
                     </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* System Prompt Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5" />
-                시스템 프롬프트
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="system_prompt"
-                  className="flex items-center gap-2"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  <span>AI 모델에 전달되는 프롬프트 *</span>
-                </Label>
-                <Textarea
-                  id="system_prompt"
-                  value={formData.system_prompt}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      system_prompt: e.target.value,
-                    })
-                  }
-                  placeholder="시스템 프롬프트를 입력하세요"
-                  className="pl-6 font-mono text-sm field-sizing-content"
-                  rows={10}
-                  required
-                />
-                <p className="text-xs text-muted-foreground pl-6">
-                  이 프롬프트는 AI 모델의 동작을 정의하는 핵심 설정입니다.
-                </p>
               </div>
             </CardContent>
           </Card>
