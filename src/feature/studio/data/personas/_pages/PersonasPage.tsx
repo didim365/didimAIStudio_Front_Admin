@@ -28,7 +28,7 @@ import {
   CATEGORY_OPTIONS,
   PersonaCategoryEnum,
 } from "../_constants/categoryConfig";
-import useGetPersonas from "../_hooks/useGetPersonas";
+import useGetMyPersonas from "../_hooks/useGetMyPersonas";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
 import Link from "next/link";
@@ -46,7 +46,7 @@ import { formatDate } from "@/shared/utils/formatDate";
 import { paths } from "@/shared/types/api/agents";
 
 type PersonaDataResponse =
-  paths["/v1/personas/data"]["get"]["responses"]["200"]["content"]["application/json"];
+  paths["/v1/personas/my"]["get"]["responses"]["200"]["content"]["application/json"];
 
 export default function PersonasPage() {
   const router = useRouter();
@@ -115,7 +115,7 @@ export default function PersonasPage() {
     size,
   };
 
-  const { data, isLoading, refetch } = useGetPersonas(queryParams);
+  const { data, isLoading, refetch } = useGetMyPersonas(queryParams);
 
   const handleViewDetails = (personaId: number) => {
     router.push(`/studio/data/personas/${personaId}`);
@@ -412,11 +412,10 @@ export default function PersonasPage() {
                   )}
                   {data?.items.map(
                     (persona: PersonaDataResponse["items"][number]) => {
-                      // 사용자 입력 데이터 우선, 없으면 템플릿 데이터 사용
-                      const displayTitle =
-                        persona.user_persona_title || persona.name;
+                      // 사용자 입력 데이터 사용
+                      const displayTitle = persona.user_my_persona_title || "-";
                       const displayDescription =
-                        persona.user_persona_description || persona.description;
+                        persona.user_my_persona_description || "-";
                       return (
                         <TableRow
                           key={persona.id}
@@ -442,35 +441,19 @@ export default function PersonasPage() {
                           <TableCell>
                             <Badge
                               variant="outline"
-                              className={
-                                categoryConfig[persona.category]?.color ||
-                                "bg-gray-100 text-gray-800"
-                              }
+                              className="bg-gray-100 text-gray-800"
                             >
-                              {categoryConfig[persona.category]?.label ||
-                                persona.category}
+                              -
                             </Badge>
                           </TableCell>
                           <TableCell>
                             <div className="flex justify-center">
-                              {persona.is_public && (
-                                <Badge
-                                  variant="outline"
-                                  className="bg-teal-100 text-teal-800"
-                                >
-                                  <Unlock className="h-3 w-3 mr-1" />
-                                  공개
-                                </Badge>
-                              )}
-                              {!persona.is_public && (
-                                <Badge
-                                  variant="outline"
-                                  className="bg-orange-100 text-orange-800"
-                                >
-                                  <Lock className="h-3 w-3 mr-1" />
-                                  비공개
-                                </Badge>
-                              )}
+                              <Badge
+                                variant="outline"
+                                className="bg-gray-100 text-gray-800"
+                              >
+                                -
+                              </Badge>
                             </div>
                           </TableCell>
                           <TableCell className="text-sm text-slate-600">
