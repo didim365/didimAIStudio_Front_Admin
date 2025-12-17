@@ -40,6 +40,7 @@ import {
   CATEGORY_OPTIONS,
 } from "../../../_constants/agentCategoryConstants";
 import { GetSettingsResponse } from "@/feature/studio/data/models/_api/getSettings";
+import { GetPersonasResponse } from "@/feature/studio/data/personas/_api/getPersonas";
 
 type GetAgentResponse =
   paths["/v1/agents/data/{agent_id}"]["get"]["responses"]["200"]["content"]["application/json"];
@@ -47,15 +48,20 @@ type GetAgentResponse =
 export function AgentEditPage({
   agent,
   settings,
+  personas,
 }: {
   agent: GetAgentResponse;
   settings: GetSettingsResponse;
+  personas: GetPersonasResponse;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   // Ensure settings is an array
   const settingsList = Array.isArray(settings) ? settings : [];
+
+  // Ensure personas.items is an array
+  const personasList = personas?.items || [];
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -463,19 +469,44 @@ export function AgentEditPage({
                     <Sparkles className="h-4 w-4" />
                     <span>페르소나 ID</span>
                   </Label>
-                  <Input
-                    id="persona_my_page_id"
-                    type="number"
-                    value={formData.persona_my_page_id}
-                    onChange={(e) =>
+                  <Select
+                    value={formData.persona_my_page_id || "none"}
+                    onValueChange={(value) =>
                       setFormData({
                         ...formData,
-                        persona_my_page_id: e.target.value,
+                        persona_my_page_id: value === "none" ? "" : value,
                       })
                     }
-                    placeholder="페르소나 ID를 입력하세요"
-                    className="pl-6"
-                  />
+                  >
+                    <SelectTrigger
+                      id="persona_my_page_id"
+                      className="pl-6 w-full"
+                    >
+                      <SelectValue placeholder="페르소나를 선택하세요 (선택사항)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">없음</SelectItem>
+                      {personasList.map((persona) => (
+                        <SelectItem
+                          key={`persona-id: ${persona.id}`}
+                          value={String(persona.id)}
+                        >
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">
+                              {persona.name || "이름 없음"}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              ID: {persona.id}
+                              {persona.category && ` • ${persona.category}`}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    페르소나를 선택하세요 (선택사항)
+                  </p>
                 </div>
 
                 {/* Tool My Page IDs */}
