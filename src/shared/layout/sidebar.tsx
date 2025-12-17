@@ -38,27 +38,12 @@ type MenuItemProps = {
   menuKey: string;
 };
 
-function checkIfActive(
-  menuItem: MenuChildItem,
-  currentPathname: string,
-  currentMenuKey: string,
-  currentExpandedMenus: string[]
-): boolean {
-  if (menuItem.children && menuItem.children.length > 0) {
-    return menuItem.children.some((child) => {
-      const childKey = `${currentMenuKey}|${child.name}`;
-      return checkIfActive(
-        child,
-        currentPathname,
-        childKey,
-        currentExpandedMenus
-      );
-    });
+// 단일 함수로 활성 상태 체크 통합
+function isMenuItemActive(item: MenuChildItem, pathname: string): boolean {
+  if (item.children && item.children.length > 0) {
+    return item.children.some((child) => isMenuItemActive(child, pathname));
   }
-  return (
-    currentPathname === menuItem.href ||
-    currentPathname.startsWith(menuItem.href + "/")
-  );
+  return pathname === item.href || pathname.startsWith(item.href + "/");
 }
 
 function MenuSubItemComponent({
@@ -70,24 +55,14 @@ function MenuSubItemComponent({
 }: MenuItemProps) {
   const hasChildren = item.children && item.children.length > 0;
   const isExpanded = expandedMenus.includes(menuKey);
-
-  const isChildActive = hasChildren
-    ? item.children?.some((child) => {
-        const childMenuKey = `${menuKey}|${child.name}`;
-        return checkIfActive(child, pathname, childMenuKey, expandedMenus);
-      })
-    : false;
-
-  const isActive =
-    !hasChildren &&
-    (pathname === item.href || pathname.startsWith(item.href + "/"));
+  const isActive = isMenuItemActive(item, pathname);
 
   if (hasChildren) {
     return (
       <SidebarMenuSubItem>
         <SidebarMenuButton
           onClick={() => onToggleMenu(menuKey)}
-          isActive={isActive || isChildActive}
+          isActive={isActive}
           size="sm"
         >
           <item.icon />
@@ -152,39 +127,6 @@ export function Sidebar() {
     router.push("/");
   };
 
-  const checkIfAnyChildActive = (item: (typeof MENU)[0]): boolean => {
-    if (!item.children || item.children.length === 0) {
-      return false;
-    }
-    return item.children.some((child) => {
-      const childMenuKey = `${item.name}|${child.name}`;
-      return checkIfChildActive(child, pathname, childMenuKey, expandedMenus);
-    });
-  };
-
-  const checkIfChildActive = (
-    menuItem: MenuChildItem,
-    currentPathname: string,
-    currentMenuKey: string,
-    currentExpandedMenus: string[]
-  ): boolean => {
-    if (menuItem.children && menuItem.children.length > 0) {
-      return menuItem.children.some((child) => {
-        const childKey = `${currentMenuKey}|${child.name}`;
-        return checkIfChildActive(
-          child,
-          currentPathname,
-          childKey,
-          currentExpandedMenus
-        );
-      });
-    }
-    return (
-      currentPathname === menuItem.href ||
-      currentPathname.startsWith(menuItem.href + "/")
-    );
-  };
-
   return (
     <UISidebar collapsible="icon">
       <SidebarHeader>
@@ -217,12 +159,10 @@ export function Sidebar() {
                 const hasChildren = item.children && item.children.length > 0;
                 const menuKey = item.name;
                 const isExpanded = expandedMenus.includes(menuKey);
-                const isChildActive = checkIfAnyChildActive(item);
-                const isActive =
-                  !hasChildren &&
-                  item.href !== undefined &&
-                  (pathname === item.href ||
-                    pathname.startsWith(item.href + "/"));
+                const isActive = isMenuItemActive(
+                  item as MenuChildItem,
+                  pathname
+                );
 
                 return (
                   <SidebarMenuItem key={item.name}>
@@ -230,7 +170,7 @@ export function Sidebar() {
                       <>
                         <SidebarMenuButton
                           onClick={() => toggleMenu(menuKey)}
-                          isActive={isActive || isChildActive}
+                          isActive={isActive}
                           tooltip={item.name}
                         >
                           {"icon" in item && item.icon && <item.icon />}
