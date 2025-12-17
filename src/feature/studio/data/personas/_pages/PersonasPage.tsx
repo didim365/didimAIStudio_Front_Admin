@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
@@ -28,7 +28,7 @@ import {
   CATEGORY_OPTIONS,
   PersonaCategoryEnum,
 } from "../_constants/categoryConfig";
-import useGetPersonas from "../_hooks/useGetPersonas";
+import useGetMyPersonas from "../_hooks/useGetMyPersonas";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
 import Link from "next/link";
@@ -41,8 +41,12 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { parseBooleanFilter } from "@/feature/studio/templates/agents/utils/parseBooleanFilter";
+import { parseBooleanFilter } from "@/feature/studio/templates/agents/_utils/parseBooleanFilter";
 import { formatDate } from "@/shared/utils/formatDate";
+import { paths } from "@/shared/types/api/agents";
+
+type PersonaDataResponse =
+  paths["/v1/personas/my"]["get"]["responses"]["200"]["content"]["application/json"];
 
 export default function PersonasPage() {
   const router = useRouter();
@@ -111,7 +115,7 @@ export default function PersonasPage() {
     size,
   };
 
-  const { data, isLoading, refetch } = useGetPersonas(queryParams);
+  const { data, isLoading, refetch } = useGetMyPersonas(queryParams);
 
   const handleViewDetails = (personaId: number) => {
     router.push(`/studio/data/personas/${personaId}`);
@@ -244,7 +248,7 @@ export default function PersonasPage() {
             </div>
 
             {/* 필터 */}
-            <Activity mode={isFilterOpen ? "visible" : "hidden"}>
+            {isFilterOpen && (
               <div className="space-y-6 pt-4 border-t">
                 {/* 카테고리 및 불린 필터 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -364,7 +368,7 @@ export default function PersonasPage() {
                   </div>
                 </div>
               </div>
-            </Activity>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -383,14 +387,11 @@ export default function PersonasPage() {
                 <TableHeader>
                   <TableRow className="bg-slate-50">
                     <TableHead className="w-[80px]">ID</TableHead>
+                    <TableHead className="w-[120px]">사용자 ID</TableHead>
                     <TableHead className="min-w-[200px]">
                       페르소나 제목
                     </TableHead>
                     <TableHead className="min-w-[250px]">설명</TableHead>
-                    <TableHead className="w-[120px]">카테고리</TableHead>
-                    <TableHead className="w-[100px] text-center">
-                      공개
-                    </TableHead>
                     <TableHead className="w-[120px]">생성일</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -398,78 +399,48 @@ export default function PersonasPage() {
                   {data?.items.length === 0 && (
                     <TableRow>
                       <TableCell
-                        colSpan={6}
+                        colSpan={5}
                         className="text-center py-12 text-slate-500"
                       >
                         등록된 페르소나 사용자 데이터가 없습니다.
                       </TableCell>
                     </TableRow>
                   )}
-                  {data?.items.map((persona) => {
-                    // 사용자 입력 데이터 우선, 없으면 템플릿 데이터 사용
-                    const displayTitle =
-                      persona.user_persona_title || persona.name;
-                    const displayDescription =
-                      persona.user_persona_description || persona.description;
-                    return (
-                      <TableRow
-                        key={persona.id}
-                        className="hover:bg-slate-50 transition-colors cursor-pointer"
-                        onClick={() => handleViewDetails(persona.id)}
-                      >
-                        <TableCell className="font-mono text-sm text-slate-600">
-                          {persona.id}
-                        </TableCell>
-                        <TableCell>
-                          <div className="font-semibold line-clamp-2 text-slate-900">
-                            {displayTitle}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm line-clamp-2 text-slate-700">
-                            {displayDescription}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={
-                              categoryConfig[persona.category]?.color ||
-                              "bg-gray-100 text-gray-800"
-                            }
-                          >
-                            {categoryConfig[persona.category]?.label ||
-                              persona.category}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-center">
-                            {persona.is_public && (
-                              <Badge
-                                variant="outline"
-                                className="bg-teal-100 text-teal-800"
-                              >
-                                <Unlock className="h-3 w-3 mr-1" />
-                                공개
-                              </Badge>
-                            )}
-                            {!persona.is_public && (
-                              <Badge
-                                variant="outline"
-                                className="bg-orange-100 text-orange-800"
-                              >
-                                <Lock className="h-3 w-3 mr-1" />
-                                비공개
-                              </Badge>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm text-slate-600">
-                          {formatDate(persona.created_at)}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                  {data?.items.map(
+                    (persona: PersonaDataResponse["items"][number]) => {
+                      // 사용자 입력 데이터 사용
+                      const displayTitle = persona.user_my_persona_title || "-";
+                      const displayDescription =
+                        persona.user_my_persona_description || "-";
+                      return (
+                        <TableRow
+                          key={persona.id}
+                          className="hover:bg-slate-50 transition-colors cursor-pointer"
+                          onClick={() => handleViewDetails(persona.id)}
+                        >
+                          <TableCell className="font-mono text-sm text-slate-600">
+                            {persona.id}
+                          </TableCell>
+                          <TableCell className="font-mono text-sm text-slate-600">
+                            {persona.user_id}
+                          </TableCell>
+                          <TableCell>
+                            <div className="font-semibold line-clamp-2 text-slate-900">
+                              {displayTitle}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm line-clamp-2 text-slate-700">
+                              {displayDescription}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm text-slate-600">
+                            {formatDate(persona.created_at)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }
+                  )}
                 </TableBody>
               </Table>
             </div>

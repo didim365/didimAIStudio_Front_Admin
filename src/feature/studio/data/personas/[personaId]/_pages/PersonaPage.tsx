@@ -18,8 +18,6 @@ import {
   User,
   Calendar,
   Shield,
-  Lock,
-  Unlock,
   ArrowLeft,
   Pencil,
   Trash2,
@@ -32,30 +30,24 @@ import {
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
-import { categoryConfig } from "../../_constants/categoryConfig";
 
-import type { GetPersonaResponse } from "../_api/getPersona";
+import type { GetMyPersonaResponse } from "../_api/getMyPersona";
 import useDeletePersona from "../_hooks/useDeletePersona";
 import { useRouter } from "next/navigation";
 
 interface PersonaPageProps {
-  persona: GetPersonaResponse;
+  myPersona: GetMyPersonaResponse;
 }
 
-function PersonaPage({ persona }: PersonaPageProps) {
+function PersonaPage({ myPersona }: PersonaPageProps) {
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { mutate: deletePersona } = useDeletePersona();
 
   const handleDelete = () => {
     setShowDeleteDialog(false);
-    deletePersona({ persona_id: persona.id });
+    deletePersona({ persona_id: myPersona.persona_data_id });
     router.push("/studio/data/personas");
-  };
-
-  const categoryInfo = categoryConfig[persona.category] || {
-    label: persona.category,
-    color: "bg-gray-100 text-gray-800 border-gray-200",
   };
 
   return (
@@ -76,11 +68,11 @@ function PersonaPage({ persona }: PersonaPageProps) {
             <h1 className="text-3xl font-bold tracking-tight">
               페르소나 상세 정보
             </h1>
-            <p className="text-muted-foreground">페르소나 ID: {persona.id}</p>
+            <p className="text-muted-foreground">페르소나 ID: {myPersona.id}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/studio/data/personas/${persona.id}/edit`}>
+          <Link href={`/studio/data/personas/${myPersona.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정
@@ -103,7 +95,10 @@ function PersonaPage({ persona }: PersonaPageProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>페르소나 삭제 확인</AlertDialogTitle>
             <AlertDialogDescription>
-              정말 <span className="font-semibold">{persona.name}</span>
+              정말{" "}
+              <span className="font-semibold">
+                {myPersona.user_my_persona_title || `페르소나 #${myPersona.id}`}
+              </span>
               을(를) 삭제하시겠습니까?
               <br />
               <span className="text-destructive mt-2 block">
@@ -138,7 +133,10 @@ function PersonaPage({ persona }: PersonaPageProps) {
                     <FileText className="h-4 w-4" />
                     <span className="font-medium">제목</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">{persona.name}</p>
+                  <p className="text-lg font-semibold pl-6">
+                    {myPersona.user_my_persona_title ||
+                      `페르소나 #${myPersona.id}`}
+                  </p>
                 </div>
 
                 {/* Description */}
@@ -148,7 +146,8 @@ function PersonaPage({ persona }: PersonaPageProps) {
                     <span className="font-medium">설명</span>
                   </div>
                   <p className="text-sm pl-6 leading-relaxed">
-                    {persona.description}
+                    {myPersona.user_my_persona_description ||
+                      "설명이 없습니다."}
                   </p>
                 </div>
 
@@ -156,19 +155,19 @@ function PersonaPage({ persona }: PersonaPageProps) {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Tag className="h-4 w-4" />
-                    <span className="font-medium">페르소나 ID</span>
+                    <span className="font-medium">마이페이지 ID</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">#{persona.id}</p>
+                  <p className="text-lg font-semibold pl-6">#{myPersona.id}</p>
                 </div>
 
-                {/* Category */}
+                {/* Persona Data ID */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Tag className="h-4 w-4" />
-                    <span className="font-medium">카테고리</span>
+                    <span className="font-medium">원본 페르소나 데이터 ID</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {categoryInfo.label}
+                    #{myPersona.persona_data_id}
                   </p>
                 </div>
               </div>
@@ -176,28 +175,28 @@ function PersonaPage({ persona }: PersonaPageProps) {
           </CardContent>
         </Card>
 
-        {/* System Prompt Card */}
+        {/* Connections Card */}
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5" />
-              시스템 프롬프트
+              연결 정보
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Sparkles className="h-4 w-4" />
-                <span className="font-medium">AI 모델에 전달되는 프롬프트</span>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">연결된 시나리오</span>
+                </div>
+                <Badge variant="outline">{myPersona.count_scenario}개</Badge>
               </div>
-              <div className="ml-6 p-4 bg-muted rounded-lg border border-border">
-                <pre className="text-sm font-mono whitespace-pre-wrap wrap-break-word">
-                  {persona.system_prompt}
-                </pre>
+              <div className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">연결된 에이전트</span>
+                </div>
+                <Badge variant="outline">{myPersona.count_agent}개</Badge>
               </div>
-              <p className="text-xs text-muted-foreground pl-6">
-                이 프롬프트는 AI 모델의 동작을 정의하는 핵심 설정입니다.
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -219,12 +218,12 @@ function PersonaPage({ persona }: PersonaPageProps) {
               </div>
               <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
                 <p className="text-sm font-mono">
-                  {formatDate(persona.created_at)}
+                  {formatDate(myPersona.created_at)}
                 </p>
               </div>
             </div>
 
-            {persona.updated_at && (
+            {myPersona.updated_at && (
               <>
                 <Separator />
                 {/* Updated At */}
@@ -235,7 +234,7 @@ function PersonaPage({ persona }: PersonaPageProps) {
                   </div>
                   <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
                     <p className="text-sm font-mono">
-                      {formatDate(persona.updated_at)}
+                      {formatDate(myPersona.updated_at)}
                     </p>
                   </div>
                 </div>
@@ -253,61 +252,44 @@ function PersonaPage({ persona }: PersonaPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Type */}
+            {/* Favorite Status */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
                 <Shield className="h-4 w-4 text-muted-foreground" />
-                <span>타입</span>
+                <span>즐겨찾기</span>
               </div>
               <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
                 <div className="flex items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className="bg-purple-100 text-purple-800 border-purple-200"
-                  >
-                    <Shield className="h-3 w-3 mr-1" />
-                    시스템 페르소나
-                  </Badge>
+                  {myPersona.is_favorite ? (
+                    <Badge
+                      variant="outline"
+                      className="bg-yellow-100 text-yellow-800 border-yellow-200"
+                    >
+                      <Shield className="h-3 w-3 mr-1" />
+                      즐겨찾기
+                    </Badge>
+                  ) : (
+                    <Badge
+                      variant="outline"
+                      className="bg-gray-100 text-gray-800 border-gray-200"
+                    >
+                      일반
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>
 
             <Separator />
 
-            {/* Public Status */}
+            {/* User ID */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
-                {persona.is_public && (
-                  <Unlock className="h-4 w-4 text-muted-foreground" />
-                )}
-                {!persona.is_public && (
-                  <Lock className="h-4 w-4 text-muted-foreground" />
-                )}
-                <span>공개 설정</span>
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span>사용자 ID</span>
               </div>
               <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
-                {persona.is_public && (
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className="bg-teal-100 text-teal-800 border-teal-200"
-                    >
-                      <Unlock className="h-3 w-3 mr-1" />
-                      공개
-                    </Badge>
-                  </div>
-                )}
-                {!persona.is_public && (
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className="bg-orange-100 text-orange-800 border-orange-200"
-                    >
-                      <Lock className="h-3 w-3 mr-1" />
-                      비공개
-                    </Badge>
-                  </div>
-                )}
+                <p className="text-sm font-mono">{myPersona.user_id}</p>
               </div>
             </div>
           </CardContent>

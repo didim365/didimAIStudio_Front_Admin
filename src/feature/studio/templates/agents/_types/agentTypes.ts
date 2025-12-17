@@ -1,0 +1,9 @@
+export type AgentCategory =
+  | "CHATBOT"
+  | "REACT"
+  | "MULTI_AGENT_SYSTEM"
+  | "REFLECTION_CRITIQUE"
+  | "PLANNING_AGENT"
+  | "DATABASE"
+  | "EVALUATION"
+  | "EXPERIMENTAL";

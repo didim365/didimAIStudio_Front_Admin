@@ -1,4 +1,4 @@
-import PersonaAddPage from "@/feature/studio/templates/personas/add/_pages/PersonaAddPage";
+import PersonaAddPage from "@/feature/studio/data/personas/add/_pages/PersonaAddPage";
 import getMyInfo from "@/shared/api/getMyInfo";
 
 // 이 페이지는 쿠키를 사용하므로 동적 렌더링이 필요합니다
