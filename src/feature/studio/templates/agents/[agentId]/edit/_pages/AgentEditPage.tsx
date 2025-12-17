@@ -98,13 +98,6 @@ export function AgentEditPage({
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Helper function to safely convert string to number or null
-    const toNumberOrNull = (value: string): number | null => {
-      if (!value || value.trim() === "") return null;
-      const num = Number(value);
-      return isNaN(num) ? null : num;
-    };
-
     // Tool IDs 파싱
     const toolIds: number[] = formData.tool_my_page_id
       .split(",")
@@ -113,47 +106,18 @@ export function AgentEditPage({
       .map((id: string) => Number(id))
       .filter((id: number) => !isNaN(id));
 
-    // Required fields validation
-    const modelId = toNumberOrNull(formData.model_my_page_id);
-    const fallbackModelId = toNumberOrNull(formData.fallback_model_my_page_id);
-
-    if (!modelId) {
-      toast.error("모델 ID는 필수입니다.");
-      return;
-    }
-
-    if (!fallbackModelId) {
-      toast.error("폴백 모델 ID는 필수입니다.");
-      return;
-    }
-
-    if (!formData.name.trim()) {
-      toast.error("에이전트 이름은 필수입니다.");
-      return;
-    }
-
-    if (!formData.description.trim()) {
-      toast.error("에이전트 설명은 필수입니다.");
-      return;
-    }
-
-    if (!formData.category) {
-      toast.error("카테고리는 필수입니다.");
-      return;
-    }
-
     updateAgent({
       params: { agent_id: agent.id },
       data: {
         user_id: agent.user_id,
-        model_my_page_id: modelId,
-        fallback_model_my_page_id: fallbackModelId,
+        model_my_page_id: Number(formData.model_my_page_id),
+        fallback_model_my_page_id: Number(formData.fallback_model_my_page_id),
         category: formData.category as AgentCategory,
         name: formData.name.trim(),
         description: formData.description.trim(),
         is_system: agent.is_system,
         is_public: formData.is_public,
-        persona_my_page_id: toNumberOrNull(formData.persona_my_page_id),
+        persona_my_page_id: Number(formData.persona_my_page_id),
         tool_my_page_id: toolIds.length > 0 ? toolIds : null,
       },
     });
