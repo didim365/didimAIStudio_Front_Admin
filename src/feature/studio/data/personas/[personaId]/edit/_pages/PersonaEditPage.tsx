@@ -33,12 +33,14 @@ import {
   PersonaCategoryEnum,
 } from "../../../_constants/categoryConfig";
 import { GetMyPersonaResponse } from "../../_api/getMyPersona";
+import { GetPersonaResponse } from "@/feature/studio/templates/personas/[personaId]/_api/getPersona";
 
 interface PersonaEditPageProps {
-  persona: GetMyPersonaResponse;
+  myPersona: GetMyPersonaResponse;
+  persona: GetPersonaResponse;
 }
 
-function PersonaEditPage({ persona }: PersonaEditPageProps) {
+function PersonaEditPage({ myPersona, persona }: PersonaEditPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -56,10 +58,10 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
         queryKey: ["personas"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["persona", persona.id],
+        queryKey: ["persona", myPersona.id],
       });
 
-      router.push(`/studio/data/personas/${persona.id}`);
+      router.push(`/studio/data/personas/${myPersona.id}`);
     },
   });
 
@@ -92,7 +94,9 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => router.push(`/studio/data/personas/${persona.id}`)}
+              onClick={() =>
+                router.push(`/studio/data/personas/${myPersona.id}`)
+              }
               className="shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />
@@ -101,7 +105,9 @@ function PersonaEditPage({ persona }: PersonaEditPageProps) {
               <h1 className="text-3xl font-bold tracking-tight">
                 페르소나 정보 수정
               </h1>
-              <p className="text-muted-foreground">페르소나 ID: {persona.id}</p>
+              <p className="text-muted-foreground">
+                페르소나 ID: {myPersona.id}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
