@@ -1,4 +1,6 @@
-export const CATEGORY_LABELS: Record<string, string> = {
+import { AgentCategory } from "../_types/agentTypes";
+
+export const CATEGORY_LABELS: Record<AgentCategory, string> = {
   CHATBOT: "챗봇",
   REACT: "ReAct",
   MULTI_AGENT_SYSTEM: "다중 에이전트 시스템",
@@ -9,7 +11,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
   EXPERIMENTAL: "실험적",
 };
 
-export const CATEGORY_OPTIONS: { value: string; label: string }[] = [
+export const CATEGORY_OPTIONS: { value: AgentCategory; label: string }[] = [
   { value: "CHATBOT", label: "챗봇" },
   { value: "REACT", label: "ReAct" },
   { value: "MULTI_AGENT_SYSTEM", label: "다중 에이전트 시스템" },

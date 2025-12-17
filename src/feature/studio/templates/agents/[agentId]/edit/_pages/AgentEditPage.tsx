@@ -39,6 +39,7 @@ import {
   CATEGORY_LABELS,
   CATEGORY_OPTIONS,
 } from "../../../_constants/agentCategoryConstants";
+import { AgentCategory } from "../../../_types/agentTypes";
 import { GetSettingsResponse } from "@/feature/studio/data/models/_api/getSettings";
 import { GetMyPersonasResponse } from "@/feature/studio/data/personas/_api/getMyPersonas";
 
@@ -56,12 +57,6 @@ export function AgentEditPage({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  // Ensure settings is an array
-  const settingsList = Array.isArray(settings) ? settings : [];
-
-  // Ensure myPersonas.items is an array
-  const myPersonasList = myPersonas?.items || [];
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -153,15 +148,7 @@ export function AgentEditPage({
         user_id: agent.user_id,
         model_my_page_id: modelId,
         fallback_model_my_page_id: fallbackModelId,
-        category: formData.category as
-          | "CHATBOT"
-          | "REACT"
-          | "MULTI_AGENT_SYSTEM"
-          | "REFLECTION_CRITIQUE"
-          | "PLANNING_AGENT"
-          | "DATABASE"
-          | "EVALUATION"
-          | "EXPERIMENTAL",
+        category: formData.category as AgentCategory,
         name: formData.name.trim(),
         description: formData.description.trim(),
         is_system: agent.is_system,
@@ -173,7 +160,9 @@ export function AgentEditPage({
   };
 
   const categoryLabel =
-    CATEGORY_LABELS[formData.category] || formData.category || "미지정";
+    CATEGORY_LABELS[formData.category as AgentCategory] ||
+    formData.category ||
+    "미지정";
 
   return (
     <form onSubmit={handleSubmit}>
@@ -386,7 +375,7 @@ export function AgentEditPage({
                       <SelectValue placeholder="모델을 선택하세요" />
                     </SelectTrigger>
                     <SelectContent>
-                      {settingsList.map((setting) => (
+                      {settings.map((setting) => (
                         <SelectItem
                           key={`main-model-id: ${setting.user_model_id}`}
                           value={String(setting.user_model_id)}
@@ -436,7 +425,7 @@ export function AgentEditPage({
                       <SelectValue placeholder="폴백 모델을 선택하세요" />
                     </SelectTrigger>
                     <SelectContent>
-                      {settingsList.map((setting) => (
+                      {settings.map((setting) => (
                         <SelectItem
                           key={`fallback-model-id: ${setting.user_model_id}`}
                           value={String(setting.user_model_id)}
@@ -486,7 +475,7 @@ export function AgentEditPage({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">없음</SelectItem>
-                      {myPersonasList.map((persona) => (
+                      {myPersonas.items.map((persona) => (
                         <SelectItem
                           key={`persona-id: ${persona.id}`}
                           value={String(persona.id)}
