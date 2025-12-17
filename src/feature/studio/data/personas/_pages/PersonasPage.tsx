@@ -392,10 +392,6 @@ export default function PersonasPage() {
                       페르소나 제목
                     </TableHead>
                     <TableHead className="min-w-[250px]">설명</TableHead>
-                    <TableHead className="w-[120px]">카테고리</TableHead>
-                    <TableHead className="w-[100px] text-center">
-                      공개
-                    </TableHead>
                     <TableHead className="w-[120px]">생성일</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -403,7 +399,7 @@ export default function PersonasPage() {
                   {data?.items.length === 0 && (
                     <TableRow>
                       <TableCell
-                        colSpan={7}
+                        colSpan={5}
                         className="text-center py-12 text-slate-500"
                       >
                         등록된 페르소나 사용자 데이터가 없습니다.
@@ -436,24 +432,6 @@ export default function PersonasPage() {
                           <TableCell>
                             <div className="text-sm line-clamp-2 text-slate-700">
                               {displayDescription}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant="outline"
-                              className="bg-gray-100 text-gray-800"
-                            >
-                              -
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex justify-center">
-                              <Badge
-                                variant="outline"
-                                className="bg-gray-100 text-gray-800"
-                              >
-                                -
-                              </Badge>
                             </div>
                           </TableCell>
                           <TableCell className="text-sm text-slate-600">
