@@ -32,10 +32,10 @@ import {
   CATEGORY_OPTIONS,
   PersonaCategoryEnum,
 } from "../../../_constants/categoryConfig";
-import { GetPersonaResponse } from "../../_api/getPersona";
+import { GetMyPersonaResponse } from "../../_api/getMyPersona";
 
 interface PersonaEditPageProps {
-  persona: GetPersonaResponse;
+  persona: GetMyPersonaResponse;
 }
 
 function PersonaEditPage({ persona }: PersonaEditPageProps) {
