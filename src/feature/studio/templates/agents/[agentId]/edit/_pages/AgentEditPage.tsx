@@ -39,13 +39,23 @@ import {
   CATEGORY_LABELS,
   CATEGORY_OPTIONS,
 } from "../../../_constants/agentCategoryConstants";
+import { GetSettingsResponse } from "@/feature/studio/data/models/_api/getSettings";
 
 type GetAgentResponse =
   paths["/v1/agents/data/{agent_id}"]["get"]["responses"]["200"]["content"]["application/json"];
 
-export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
+export function AgentEditPage({
+  agent,
+  settings,
+}: {
+  agent: GetAgentResponse;
+  settings: GetSettingsResponse;
+}) {
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  // Ensure settings is an array
+  const settingsList = Array.isArray(settings) ? settings : [];
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -353,20 +363,45 @@ export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
                     <Cpu className="h-4 w-4" />
                     <span>모델 ID *</span>
                   </Label>
-                  <Input
-                    id="model_my_page_id"
-                    type="number"
+                  <Select
                     value={formData.model_my_page_id}
-                    onChange={(e) =>
+                    onValueChange={(value) =>
                       setFormData({
                         ...formData,
-                        model_my_page_id: e.target.value,
+                        model_my_page_id: value,
                       })
                     }
-                    placeholder="모델 ID를 입력하세요"
-                    className="pl-6"
                     required
-                  />
+                  >
+                    <SelectTrigger
+                      id="model_my_page_id"
+                      className="pl-6 w-full"
+                    >
+                      <SelectValue placeholder="모델을 선택하세요" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {settingsList.map((setting) => (
+                        <SelectItem
+                          key={`main-model-id: ${setting.user_model_id}`}
+                          value={String(setting.user_model_id)}
+                        >
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">
+                              {setting.model_name || "이름 없음"}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              ID: {setting.user_model_id}
+                              {setting.deployment_type &&
+                                ` • ${setting.deployment_type}`}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    agt_model_my_page 테이블의 모델 ID
+                  </p>
                 </div>
 
                 {/* Fallback Model My Page ID */}
@@ -378,20 +413,45 @@ export function AgentEditPage({ agent }: { agent: GetAgentResponse }) {
                     <Cpu className="h-4 w-4" />
                     <span>폴백 모델 ID *</span>
                   </Label>
-                  <Input
-                    id="fallback_model_my_page_id"
-                    type="number"
+                  <Select
                     value={formData.fallback_model_my_page_id}
-                    onChange={(e) =>
+                    onValueChange={(value) =>
                       setFormData({
                         ...formData,
-                        fallback_model_my_page_id: e.target.value,
+                        fallback_model_my_page_id: value,
                       })
                     }
-                    placeholder="폴백 모델 ID를 입력하세요"
-                    className="pl-6"
                     required
-                  />
+                  >
+                    <SelectTrigger
+                      id="fallback_model_my_page_id"
+                      className="pl-6 w-full"
+                    >
+                      <SelectValue placeholder="폴백 모델을 선택하세요" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {settingsList.map((setting) => (
+                        <SelectItem
+                          key={`fallback-model-id: ${setting.user_model_id}`}
+                          value={String(setting.user_model_id)}
+                        >
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">
+                              {setting.model_name || "이름 없음"}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              ID: {setting.user_model_id}
+                              {setting.deployment_type &&
+                                ` • ${setting.deployment_type}`}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    폴백 모델 ID (my page 모델 테이블)
+                  </p>
                 </div>
 
                 {/* Persona My Page ID */}
