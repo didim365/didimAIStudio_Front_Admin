@@ -40,7 +40,7 @@ import {
   CATEGORY_OPTIONS,
 } from "../../../_constants/agentCategoryConstants";
 import { GetSettingsResponse } from "@/feature/studio/data/models/_api/getSettings";
-import { GetPersonasResponse } from "@/feature/studio/data/personas/_api/getPersonas";
+import { GetMyPersonasResponse } from "@/feature/studio/data/personas/_api/getMyPersonas";
 
 type GetAgentResponse =
   paths["/v1/agents/data/{agent_id}"]["get"]["responses"]["200"]["content"]["application/json"];
@@ -48,11 +48,11 @@ type GetAgentResponse =
 export function AgentEditPage({
   agent,
   settings,
-  personas,
+  myPersonas,
 }: {
   agent: GetAgentResponse;
   settings: GetSettingsResponse;
-  personas: GetPersonasResponse;
+  myPersonas: GetMyPersonasResponse;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -60,8 +60,8 @@ export function AgentEditPage({
   // Ensure settings is an array
   const settingsList = Array.isArray(settings) ? settings : [];
 
-  // Ensure personas.items is an array
-  const personasList = personas?.items || [];
+  // Ensure myPersonas.items is an array
+  const myPersonasList = myPersonas?.items || [];
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -486,18 +486,19 @@ export function AgentEditPage({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">없음</SelectItem>
-                      {personasList.map((persona) => (
+                      {myPersonasList.map((persona) => (
                         <SelectItem
                           key={`persona-id: ${persona.id}`}
                           value={String(persona.id)}
                         >
                           <div className="flex flex-col items-start">
                             <span className="font-medium">
-                              {persona.name || "이름 없음"}
+                              {persona.user_my_persona_title || "이름 없음"}
                             </span>
                             <span className="text-xs text-muted-foreground">
                               ID: {persona.id}
-                              {persona.category && ` • ${persona.category}`}
+                              {persona.persona_data_id &&
+                                ` • Data ID: ${persona.persona_data_id}`}
                             </span>
                           </div>
                         </SelectItem>

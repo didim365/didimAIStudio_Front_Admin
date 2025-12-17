@@ -37,7 +37,7 @@ import {
 } from "../../_constants/categoryConfig";
 import { cn } from "@/shared/lib/utils";
 import { GetSettingsResponse } from "@/feature/studio/data/models/_api/getSettings";
-import { GetPersonasResponse } from "@/feature/studio/data/personas/_api/getPersonas";
+import { GetPersonasResponse } from "@/feature/studio/data/personas/_api/getMyPersonas";
 
 interface AgentAddPageProps {
   settings: GetSettingsResponse;
