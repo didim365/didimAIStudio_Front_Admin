@@ -33,23 +33,21 @@ import {
   PersonaCategoryEnum,
 } from "../../../_constants/categoryConfig";
 import { GetMyPersonaResponse } from "../../_api/getMyPersona";
-import { GetPersonaResponse } from "@/feature/studio/templates/personas/[personaId]/_api/getPersona";
 
 interface PersonaEditPageProps {
   myPersona: GetMyPersonaResponse;
-  persona: GetPersonaResponse;
 }
 
-function PersonaEditPage({ myPersona, persona }: PersonaEditPageProps) {
+function PersonaEditPage({ myPersona }: PersonaEditPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
-    name: persona.name,
-    description: persona.description,
-    category: persona.category,
-    is_public: persona.is_public ?? true,
-    system_prompt: persona.system_prompt,
+    name: myPersona.user_my_persona_title || "",
+    description: myPersona.user_my_persona_description || "",
+    category: "GENERAL" as PersonaCategoryEnum,
+    is_public: true,
+    system_prompt: "",
   });
 
   const { mutate: updatePersona, isPending: isUpdating } = usePutPersona({
@@ -70,14 +68,14 @@ function PersonaEditPage({ myPersona, persona }: PersonaEditPageProps) {
 
     updatePersona({
       params: {
-        persona_id: persona.id,
+        persona_id: myPersona.persona_data_id,
       },
       data: {
-        user_id: persona.user_id,
+        user_id: myPersona.user_id,
         name: formData.name,
         description: formData.description,
         system_prompt: formData.system_prompt,
-        is_system: persona.is_system,
+        is_system: false,
         category: formData.category,
         is_public: formData.is_public,
       },
