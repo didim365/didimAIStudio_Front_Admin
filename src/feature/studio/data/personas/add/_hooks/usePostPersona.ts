@@ -2,22 +2,22 @@
 
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/agents";
-import postPersona from "../_api/postPersona";
+import postMyPersona from "../_api/postMyPersona";
 
-type PostPersonaRequest =
-  paths["/v1/personas/data"]["post"]["requestBody"]["content"]["application/json"];
+type PostMyPersonaRequest =
+  paths["/v1/personas/my"]["post"]["requestBody"]["content"]["application/json"];
 
-type PostPersonaResponse =
-  paths["/v1/personas/data"]["post"]["responses"]["201"]["content"]["application/json"];
+type PostMyPersonaResponse =
+  paths["/v1/personas/my"]["post"]["responses"]["201"]["content"]["application/json"];
 
 export const usePostPersona = (
   options?: Omit<
-    UseMutationOptions<PostPersonaResponse, Error, PostPersonaRequest>,
+    UseMutationOptions<PostMyPersonaResponse, Error, PostMyPersonaRequest>,
     "mutationFn"
   >
 ) => {
-  return useMutation<PostPersonaResponse, Error, PostPersonaRequest>({
-    mutationFn: (data: PostPersonaRequest) => postPersona(data),
+  return useMutation<PostMyPersonaResponse, Error, PostMyPersonaRequest>({
+    mutationFn: (data: PostMyPersonaRequest) => postMyPersona(data),
     ...options,
   });
 };

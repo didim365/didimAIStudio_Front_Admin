@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostPersona } from "../_hooks/usePostPersona";
+import { useGetPersonas } from "@/feature/studio/templates/personas/_hooks/useGetPersonas";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -22,19 +23,14 @@ import {
   User,
   ArrowLeft,
   Save,
-  Sparkles,
   FileText,
   Tag,
-  Globe,
   UserPlus,
   Info,
+  Star,
+  Loader2,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
-import {
-  categoryConfig,
-  CATEGORY_OPTIONS,
-  PersonaCategoryEnum,
-} from "../../_constants/categoryConfig";
 import { GetMyInfoResponse } from "@/shared/api/getMyInfo";
 
 interface PersonaAddPageProps {
@@ -46,25 +42,30 @@ export function PersonaAddPage({ myInfo }: PersonaAddPageProps) {
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    system_prompt: "",
-    category: "CUSTOM" as PersonaCategoryEnum,
-    is_public: true,
-    is_system: true,
+    persona_data_id: "",
+    user_my_persona_title: "",
+    user_my_persona_description: "",
+    is_favorite: false,
   });
 
-  // 페르소나 생성 mutation
+  // 페르소나 목록 조회 (공개된 페르소나만)
+  const { data: personasData, isLoading: isLoadingPersonas } = useGetPersonas({
+    is_public: true,
+    page: 1,
+    size: 100,
+  });
+
+  // 마이페이지에 페르소나 추가 mutation
   const { mutate: createPersona, isPending: isCreating } = usePostPersona({
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["personas"],
       });
-      // 생성된 페르소나 상세 페이지로 이동
-      router.push(`/studio/templates/personas/${data.id}`);
+      // 생성된 마이페이지 페르소나 상세 페이지로 이동
+      router.push(`/studio/data/personas/${data.id}`);
     },
     meta: {
-      successMessage: "페르소나가 성공적으로 생성되었습니다.",
+      successMessage: "페르소나가 마이페이지에 성공적으로 추가되었습니다.",
     },
   });
 
@@ -76,21 +77,23 @@ export function PersonaAddPage({ myInfo }: PersonaAddPageProps) {
       return;
     }
 
+    if (!formData.persona_data_id) {
+      toast.error("페르소나를 선택해주세요.");
+      return;
+    }
+
     createPersona({
       user_id: myInfo.id.toString(),
-      name: formData.name,
-      description: formData.description,
-      system_prompt: formData.system_prompt,
-      category: formData.category,
-      is_public: formData.is_public,
-      is_system: formData.is_system,
+      persona_data_id: Number(formData.persona_data_id),
+      user_my_persona_title: formData.user_my_persona_title || null,
+      user_my_persona_description: formData.user_my_persona_description || null,
+      is_favorite: formData.is_favorite,
     });
   };
 
-  const selectedCategory = categoryConfig[formData.category] ?? {
-    label: formData.category,
-    color: "bg-neutral-100 text-neutral-800 border-neutral-200",
-  };
+  const selectedPersona = personasData?.items.find(
+    (p) => p.id.toString() === formData.persona_data_id
+  );
 
   return (
     <form onSubmit={handleSubmit}>
@@ -102,184 +105,192 @@ export function PersonaAddPage({ myInfo }: PersonaAddPageProps) {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => router.push("/studio/templates/personas")}
+              onClick={() => router.push("/studio/data/personas")}
               className="shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
               <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                <UserPlus className="h-8 w-8" />새 페르소나 추가
+                <UserPlus className="h-8 w-8" />
+                마이페이지에 페르소나 추가
               </h1>
               <p className="text-muted-foreground mt-1">
-                새로운 AI 페르소나를 생성합니다
+                기존 페르소나를 마이페이지에 추가합니다
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Button type="submit" className="shrink-0" disabled={isCreating}>
               <Save className="h-4 w-4 mr-2" />
-              {isCreating ? "생성 중..." : "페르소나 생성"}
+              {isCreating ? "추가 중..." : "페르소나 추가"}
             </Button>
           </div>
         </div>
 
         {/* Main Content */}
         <div className="grid gap-6 md:grid-cols-2">
-          {/* 기본 정보 Card */}
+          {/* 페르소나 선택 Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5" />
-                기본 정보
+                페르소나 선택
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-6">
-                {/* 공개 여부 */}
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label
-                      htmlFor="is_public"
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <Globe className="h-4 w-4" />
-                      <span>공개 페르소나</span>
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      다른 사용자에게 공개할지 여부를 설정합니다
-                    </p>
-                  </div>
-                  <Switch
-                    id="is_public"
-                    checked={formData.is_public}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, is_public: checked })
-                    }
-                  />
-                </div>
-                {/* 페르소나 이름 */}
+              <div className="space-y-4">
+                {/* 페르소나 선택 */}
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    <span>페르소나 이름 *</span>
-                  </Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    placeholder="예: Python 개발 전문가"
-                    className="pl-6"
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    다른 사용자에게 표시될 공식 페르소나 이름입니다
-                  </p>
-                </div>
-
-                {/* 카테고리 */}
-                <div className="space-y-2">
-                  <Label htmlFor="category" className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    <span>카테고리 *</span>
-                  </Label>
-                  <Select
-                    value={formData.category}
-                    onValueChange={(value: PersonaCategoryEnum) =>
-                      setFormData({ ...formData, category: value })
-                    }
-                    required
+                  <Label
+                    htmlFor="persona_data_id"
+                    className="flex items-center gap-2"
                   >
-                    <SelectTrigger id="category" className="pl-6 w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORY_OPTIONS.map((category) => {
-                        const config = categoryConfig[category];
-                        return (
-                          <SelectItem key={category} value={category}>
-                            {config.label}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                  {formData.category && (
-                    <div className="mt-2">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border ${selectedCategory.color}`}
+                    <Tag className="h-4 w-4" />
+                    <span>페르소나 *</span>
+                  </Label>
+                  {isLoadingPersonas ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : (
+                    <Select
+                      value={formData.persona_data_id}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, persona_data_id: value })
+                      }
+                      required
+                    >
+                      <SelectTrigger
+                        id="persona_data_id"
+                        className="pl-6 w-full"
                       >
-                        {selectedCategory.label}
-                      </span>
+                        <SelectValue placeholder="페르소나를 선택하세요" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {personasData?.items.map((persona) => (
+                          <SelectItem
+                            key={persona.id}
+                            value={persona.id.toString()}
+                          >
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">
+                                {persona.name || "이름 없음"}
+                              </span>
+                              {persona.description && (
+                                <span className="text-xs text-muted-foreground text-left">
+                                  {persona.description}
+                                </span>
+                              )}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    마이페이지에 추가할 페르소나를 선택하세요
+                  </p>
+                  {selectedPersona && (
+                    <div className="mt-2 p-3 bg-muted rounded-md">
+                      <p className="text-sm font-medium">
+                        {selectedPersona.name}
+                      </p>
+                      {selectedPersona.description && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {selectedPersona.description}
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
 
-                {/* 설명 */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="description"
-                    className="flex items-center gap-2"
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span>설명 *</span>
-                  </Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        description: e.target.value,
-                      })
+                {/* 즐겨찾기 */}
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label
+                      htmlFor="is_favorite"
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <Star className="h-4 w-4" />
+                      <span>즐겨찾기</span>
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      즐겨찾기로 설정하면 마이페이지 상단에 표시됩니다
+                    </p>
+                  </div>
+                  <Switch
+                    id="is_favorite"
+                    checked={formData.is_favorite}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, is_favorite: checked })
                     }
-                    placeholder="페르소나의 목적과 전문성을 설명하세요"
-                    className="pl-6 field-sizing-content"
-                    required
                   />
-                  <p className="text-xs text-muted-foreground">
-                    페르소나의 목적과 전문성을 설명하는 공식 정보입니다
-                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* 시스템 프롬프트 Card */}
+          {/* 개인 설정 Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5" />
-                시스템 프롬프트
+                <FileText className="h-5 w-5" />
+                개인 설정
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* 개인 제목 */}
                 <div className="space-y-2">
                   <Label
-                    htmlFor="system_prompt"
+                    htmlFor="user_my_persona_title"
                     className="flex items-center gap-2"
                   >
-                    <Sparkles className="h-4 w-4" />
-                    <span>시스템 프롬프트 *</span>
+                    <Tag className="h-4 w-4" />
+                    <span>개인 제목 (선택사항)</span>
                   </Label>
-                  <Textarea
-                    id="system_prompt"
-                    value={formData.system_prompt}
+                  <Input
+                    id="user_my_persona_title"
+                    value={formData.user_my_persona_title}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        system_prompt: e.target.value,
+                        user_my_persona_title: e.target.value,
                       })
                     }
-                    placeholder="예: <ROLE>당신은 10년 경력의 Python 개발 전문가입니다.</ROLE><INSTRUCTIONS>사용자의 Python 코드를 분석하고 개선 사항을 제안하세요. 명확하고 실용적인 조언을 제공하세요.</INSTRUCTIONS>"
-                    className="pl-6 font-mono text-sm field-sizing-content"
-                    required
+                    placeholder="예: 내 Python 개발 도우미"
+                    className="pl-6"
                   />
                   <p className="text-xs text-muted-foreground">
-                    AI 모델에 전달될 페르소나의 핵심 정의입니다.
+                    마이페이지에서 사용할 개인적인 별칭입니다. 입력하지 않으면
+                    원본 이름이 사용됩니다.
+                  </p>
+                </div>
+
+                {/* 개인 설명 */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="user_my_persona_description"
+                    className="flex items-center gap-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>개인 메모 (선택사항)</span>
+                  </Label>
+                  <Textarea
+                    id="user_my_persona_description"
+                    value={formData.user_my_persona_description}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        user_my_persona_description: e.target.value,
+                      })
+                    }
+                    placeholder="이 페르소나를 어떻게 사용할지 메모하세요"
+                    className="pl-6 field-sizing-content"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    개인적인 사용 목적이나 메모를 작성할 수 있습니다.
                   </p>
                 </div>
               </div>
@@ -292,7 +303,7 @@ export function PersonaAddPage({ myInfo }: PersonaAddPageProps) {
           <AlertDescription className="flex items-center gap-2">
             <Info className="h-4 w-4" />
             <span className="text-sm">
-              * 표시된 필드는 필수 입력 항목입니다. 페르소나 생성 후 추가 정보는
+              * 표시된 필드는 필수 입력 항목입니다. 페르소나 추가 후 개인 설정은
               페르소나 상세 페이지에서 수정할 수 있습니다.
             </span>
           </AlertDescription>
