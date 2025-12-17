@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/agents";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -36,6 +38,7 @@ import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
 import { CATEGORY_LABELS } from "../../_constants/agentCategoryConstants";
+import { useDeleteAgent } from "../_hooks/useDeleteAgent";
 
 type GetAgentResponse =
   paths["/v1/agents/data/{agent_id}"]["get"]["responses"]["200"]["content"]["application/json"];
@@ -45,12 +48,27 @@ interface AgentPageProps {
 }
 
 function AgentPage({ agent }: AgentPageProps) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  // 에이전트 삭제 mutation
+  const { mutate: deleteAgent, isPending: isDeleting } = useDeleteAgent({
+    onSuccess: () => {
+      // 에이전트 목록 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: ["agents"],
+      });
+      setShowDeleteDialog(false);
+      router.push("/studio/templates/agents");
+    },
+    meta: {
+      successMessage: "에이전트가 성공적으로 삭제되었습니다.",
+    },
+  });
+
   const handleDelete = () => {
-    // TODO: 에이전트 삭제 API 호출
-    setShowDeleteDialog(false);
-    // TODO: 삭제 후 에이전트 목록 페이지로 이동하거나 리프레시
+    deleteAgent({ agent_id: agent.id });
   };
 
   const categoryLabel = CATEGORY_LABELS[agent.category] || agent.category;
@@ -87,6 +105,7 @@ function AgentPage({ agent }: AgentPageProps) {
             variant="destructive"
             className="cursor-pointer"
             onClick={() => setShowDeleteDialog(true)}
+            disabled={isDeleting}
           >
             <Trash2 className="h-4 w-4 mr-2" />
             제거
@@ -110,8 +129,10 @@ function AgentPage({ agent }: AgentPageProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>삭제</AlertDialogAction>
+            <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? "삭제 중..." : "삭제"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
