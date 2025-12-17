@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePutPersona } from "../_hooks/usePutPersona";
+import { usePutMyPersona } from "../_hooks/usePutMyPersona";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import {
   Lock,
@@ -50,7 +50,7 @@ function PersonaEditPage({ myPersona }: PersonaEditPageProps) {
     system_prompt: "",
   });
 
-  const { mutate: updatePersona, isPending: isUpdating } = usePutPersona({
+  const { mutate: updatePersona, isPending: isUpdating } = usePutMyPersona({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["personas"],
@@ -68,16 +68,14 @@ function PersonaEditPage({ myPersona }: PersonaEditPageProps) {
 
     updatePersona({
       params: {
-        persona_id: myPersona.persona_data_id,
+        my_page_id: myPersona.id,
       },
       data: {
         user_id: myPersona.user_id,
-        name: formData.name,
-        description: formData.description,
-        system_prompt: formData.system_prompt,
-        is_system: false,
-        category: formData.category,
-        is_public: formData.is_public,
+        persona_data_id: myPersona.persona_data_id,
+        user_my_persona_title: formData.name || null,
+        user_my_persona_description: formData.description || null,
+        is_favorite: myPersona.is_favorite ?? false,
       },
     });
   };
