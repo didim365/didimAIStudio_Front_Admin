@@ -9,9 +9,7 @@ async function Page() {
   const settings = await getSettings();
 
   // 페르소나 목록 불러오기
-  const personas = await getPersonas({
-    is_system: false,
-  });
+  const personas = await getPersonas();
 
   return <AgentAddPage settings={settings} personas={personas} />;
 }

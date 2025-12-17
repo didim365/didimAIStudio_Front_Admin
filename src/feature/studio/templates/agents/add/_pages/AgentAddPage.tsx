@@ -37,11 +37,11 @@ import {
 } from "../../_constants/categoryConfig";
 import { cn } from "@/shared/lib/utils";
 import { GetSettingsResponse } from "@/feature/studio/data/models/_api/getSettings";
-import { GetPersonasResponse } from "@/feature/studio/data/personas/_api/getMyPersonas";
+import { GetMyPersonasResponse } from "@/feature/studio/data/personas/_api/getMyPersonas";
 
 interface AgentAddPageProps {
   settings: GetSettingsResponse;
-  personas: GetPersonasResponse;
+  personas: GetMyPersonasResponse;
 }
 
 export function AgentAddPage({ settings, personas }: AgentAddPageProps) {
@@ -405,10 +405,13 @@ export function AgentAddPage({ settings, personas }: AgentAddPageProps) {
                           >
                             <div className="flex flex-col items-start">
                               <span className="font-medium">
-                                {persona.name || "이름 없음"} ({persona.id})
+                                {persona.user_my_persona_title || "이름 없음"} (
+                                {persona.id})
                               </span>
                               <span className="text-xs text-muted-foreground text-left">
-                                설명: {persona.description}
+                                설명:{" "}
+                                {persona.user_my_persona_description ||
+                                  "설명 없음"}
                               </span>
                             </div>
                           </SelectItem>
