@@ -26,7 +26,7 @@ function PrivateModels() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">배포된 모델 관리</h1>
+        <h1 className="text-3xl font-bold">로컬 LLM 관리</h1>
         <p className="mt-2 text-slate-600">
           GPUStack에 배포된 모델을 조회하고 관리하세요
         </p>
@@ -34,13 +34,13 @@ function PrivateModels() {
 
       {/* 필터 및 액션 */}
       <Card className="mb-6">
-        <CardContent className="pt-6">
+        <CardContent>
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-slate-600">
                 <Server className="h-5 w-5" />
                 <span className="text-sm font-medium">
-                  총 {totalCount}개의 배포된 모델
+                  총 {totalCount}개의 로컬 LLM
                 </span>
               </div>
             </div>
@@ -63,7 +63,7 @@ function PrivateModels() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            배포된 모델 목록 ({totalCount})
+            로컬 LLM 목록 ({totalCount})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -76,8 +76,8 @@ function PrivateModels() {
           {!isLoading && models.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               <AlertCircle className="h-12 w-12 mb-4" />
-              <p className="text-lg font-medium">배포된 모델이 없습니다</p>
-              <p className="text-sm">모델을 배포하면 여기에 표시됩니다</p>
+              <p className="text-lg font-medium">로컬 LLM이 없습니다</p>
+              <p className="text-sm">로컬 LLM이 추가되면, 여기에 표시됩니다</p>
             </div>
           )}
           {!isLoading && models.length > 0 && (
