@@ -65,7 +65,7 @@ function ModelAddPage() {
         queryKey: ["catalogs"],
       });
       // 생성된 모델 상세 페이지로 이동
-      router.push(`/studio/templates/models/${data.id}`);
+      router.push(`/studio/templates/models/public/${data.id}`);
     },
     meta: {
       successMessage: "모델이 성공적으로 생성되었습니다.",
@@ -103,7 +103,7 @@ function ModelAddPage() {
           {/* Header */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <Link href="/studio/templates/models">
+              <Link href="/studio/templates/models/public">
                 <Button
                   type="button"
                   variant="ghost"

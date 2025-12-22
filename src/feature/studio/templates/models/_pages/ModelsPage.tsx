@@ -58,7 +58,7 @@ function ModelsPage() {
   const models = data?.items || [];
 
   function handleRowClick(modelId: number) {
-    router.push(`/studio/templates/models/${modelId}`);
+    router.push(`/studio/templates/models/public/${modelId}`);
   }
 
   return (
@@ -123,7 +123,7 @@ function ModelsPage() {
               </Button>
             </div>
             <div className="flex gap-2">
-              <Link href={"/studio/templates/models/add"}>
+              <Link href={"/studio/templates/models/public/add"}>
                 <Button className="gap-2 cursor-pointer">
                   <Plus className="h-4 w-4" />
                   모델 템플릿 생성
