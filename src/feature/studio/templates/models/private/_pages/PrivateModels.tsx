@@ -13,8 +13,15 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { RefreshCw, AlertCircle, Server, CheckCircle2 } from "lucide-react";
+import {
+  RefreshCw,
+  AlertCircle,
+  Server,
+  CheckCircle2,
+  Plus,
+} from "lucide-react";
 import { formatDate } from "@/shared/utils/formatDate";
+import Link from "next/link";
 
 function PrivateModels() {
   const { data, isLoading, refetch } = useGetPrivateModels();
@@ -44,17 +51,25 @@ function PrivateModels() {
                 </span>
               </div>
             </div>
-            <Button
-              variant="outline"
-              className="gap-2"
-              onClick={() => refetch()}
-              disabled={isLoading}
-            >
-              <RefreshCw
-                className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-              />
-              새로고침
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={() => refetch()}
+                disabled={isLoading}
+              >
+                <RefreshCw
+                  className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                />
+                새로고침
+              </Button>
+              <Link href="/studio/templates/models/private/add">
+                <Button className="gap-2 cursor-pointer">
+                  <Plus className="h-4 w-4" />
+                  로컬 LLM 템플릿 생성
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
