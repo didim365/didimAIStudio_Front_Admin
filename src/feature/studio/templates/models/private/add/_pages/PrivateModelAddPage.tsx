@@ -132,21 +132,6 @@ function PrivateModelAddPage() {
     deployModel(requestData);
   };
 
-  const getSourceIcon = () => {
-    switch (formData.source) {
-      case "huggingface":
-        return <Cloud className="h-4 w-4" />;
-      case "model_scope":
-        return <Database className="h-4 w-4" />;
-      case "local_path":
-        return <HardDrive className="h-4 w-4" />;
-      case "ollama_library":
-        return <Cpu className="h-4 w-4" />;
-      default:
-        return <Server className="h-4 w-4" />;
-    }
-  };
-
   return (
     <div className="py-8 px-4">
       <form onSubmit={handleSubmit}>
@@ -220,7 +205,6 @@ function PrivateModelAddPage() {
                   {/* 소스 타입 */}
                   <div className="space-y-2">
                     <Label htmlFor="source" className="flex items-center gap-2">
-                      {getSourceIcon()}
                       <span>소스 타입 *</span>
                     </Label>
                     <Select
@@ -369,7 +353,7 @@ function PrivateModelAddPage() {
             <Card className="md:col-span-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {getSourceIcon()}
+                  <Server className="h-5 w-5" />
                   소스별 설정
                 </CardTitle>
               </CardHeader>
