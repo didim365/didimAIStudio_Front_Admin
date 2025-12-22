@@ -63,7 +63,6 @@ function MenuSubItemComponent({
         <SidebarMenuButton
           onClick={() => onToggleMenu(menuKey)}
           isActive={isActive}
-          size="sm"
         >
           <item.icon />
           <span>{item.name}</span>
