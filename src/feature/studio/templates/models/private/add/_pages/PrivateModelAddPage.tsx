@@ -83,7 +83,7 @@ function PrivateModelAddPage() {
 
   // 모델 배포 mutation
   const { mutate: deployModel, isPending: isDeploying } = usePostDeploy({
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["private-models"],
       });
@@ -98,38 +98,7 @@ function PrivateModelAddPage() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // source에 따라 필수 필드 검증
-    let requestData: any = {
-      model_name: formData.model_name.trim(),
-      source: formData.source,
-      deployment_type: formData.deployment_type,
-      description: formData.description.trim() || null,
-      replicas: formData.replicas ? Number(formData.replicas) : null,
-      backend: formData.backend || null,
-    };
-
-    // source별 필드 추가
-    switch (formData.source) {
-      case "huggingface":
-        requestData.huggingface_repo_id = formData.huggingface_repo_id.trim();
-        requestData.huggingface_filename =
-          formData.huggingface_filename.trim() || null;
-        break;
-      case "model_scope":
-        requestData.model_scope_model_id = formData.model_scope_model_id.trim();
-        requestData.model_scope_file_path =
-          formData.model_scope_file_path.trim() || null;
-        break;
-      case "ollama_library":
-        requestData.ollama_library_model_name =
-          formData.ollama_library_model_name.trim();
-        break;
-      case "local_path":
-        requestData.local_path = formData.local_path.trim();
-        break;
-    }
-
-    deployModel(requestData);
+    deployModel({ ...formData, replicas: Number(formData.replicas) });
   };
 
   return (
