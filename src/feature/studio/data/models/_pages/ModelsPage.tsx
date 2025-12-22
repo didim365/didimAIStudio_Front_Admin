@@ -44,8 +44,6 @@ function ModelsPage() {
     user_id: userId ? parseInt(userId) : undefined,
   });
 
-  const settingsList = Array.isArray(data) ? data : [];
-
   const handleRowClick = (userModelId: number | string | null | undefined) => {
     if (userModelId) {
       router.push(`/studio/data/models/${userModelId}`);
@@ -107,7 +105,7 @@ function ModelsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            설정 목록 ({settingsList.length})
+            설정 목록 ({data?.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -126,14 +124,14 @@ function ModelsPage() {
               <p className="text-sm mt-1">{(error as Error).message}</p>
             </div>
           )}
-          {!isLoading && !error && settingsList.length === 0 && (
+          {!isLoading && !error && data?.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               <AlertCircle className="h-12 w-12 mb-4" />
               <p className="text-lg font-medium">설정을 찾을 수 없습니다</p>
               <p className="text-sm">필터 조건을 변경해보세요</p>
             </div>
           )}
-          {!isLoading && !error && settingsList.length > 0 && (
+          {!isLoading && !error && (
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
@@ -172,7 +170,7 @@ function ModelsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {settingsList.map((item, index: number) => (
+                  {data?.map((item, index: number) => (
                     <TableRow
                       key={index}
                       onClick={() => handleRowClick(item.user_model_id)}

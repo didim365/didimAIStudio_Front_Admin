@@ -61,7 +61,7 @@ function ModelPage({ catalog }: ModelPageProps) {
         queryKey: ["catalog"],
       });
       setShowDeleteDialog(false);
-      router.push("/studio/templates/models");
+      router.push("/studio/templates/models/public");
     },
     meta: {
       successMessage: "모델이 성공적으로 삭제되었습니다.",
@@ -77,7 +77,7 @@ function ModelPage({ catalog }: ModelPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/studio/templates/models">
+          <Link href="/studio/templates/models/public">
             <Button
               variant="ghost"
               size="icon"
@@ -94,7 +94,7 @@ function ModelPage({ catalog }: ModelPageProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/studio/templates/models/${catalog.id}/edit`}>
+          <Link href={`/studio/templates/models/public/${catalog.id}/edit`}>
             <Button className="cursor-pointer">
               <Pencil className="h-4 w-4 mr-2" />
               수정

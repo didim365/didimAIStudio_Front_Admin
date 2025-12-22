@@ -35,7 +35,7 @@ import { formatDate } from "@/shared/utils/formatDate";
 import { categoryConfig } from "../../_constants/categoryConfig";
 
 import type { GetPersonaResponse } from "../_api/getPersona";
-import useDeletePersona from "../_hooks/useDeletePersona";
+import useDeleteMyPersona from "../_hooks/useDeleteMyPersona";
 import { useRouter } from "next/navigation";
 
 interface PersonaPageProps {
@@ -45,11 +45,11 @@ interface PersonaPageProps {
 function PersonaPage({ persona }: PersonaPageProps) {
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const { mutate: deletePersona } = useDeletePersona();
+  const { mutate: deleteMyPersona } = useDeleteMyPersona();
 
   const handleDelete = () => {
     setShowDeleteDialog(false);
-    deletePersona({ persona_id: persona.id });
+    deleteMyPersona({ my_page_id: persona.id });
     router.push("/studio/templates/personas");
   };
 

@@ -1,6 +1,7 @@
 import {
   Bot,
   Brain,
+  Cloud,
   Cpu,
   Database,
   FileCode,
@@ -8,6 +9,7 @@ import {
   Group,
   Key,
   List,
+  Server,
   User,
   UserCog,
   Users,
@@ -77,6 +79,18 @@ const MENU: MenuItem[] = [
             name: "모델 관리",
             href: "/studio/templates/models",
             icon: Cpu,
+            children: [
+              {
+                name: "서비스형 API 관리",
+                href: "/studio/templates/models/public",
+                icon: Cloud,
+              },
+              {
+                name: "로컬 LLM 관리",
+                href: "/studio/templates/models/private",
+                icon: Server,
+              },
+            ],
           },
           {
             name: "도구 관리",
