@@ -1,5 +1,5 @@
-import PrivilegeEditPage from "@/feature/privileges/pages/PrivilegeEditPage";
-import getPrivilege from "@/feature/privileges/api/getPrivilege";
+import PrivilegeEditPage from "@/feature/privileges/[privilegeId]/edit/_pages/PrivilegeEditPage";
+import getPrivilege from "@/feature/privileges/[privilegeId]/_api/getPrivilege";
 
 async function Page({ params }: { params: Promise<{ privilegeId: string }> }) {
   const { privilegeId } = await params;

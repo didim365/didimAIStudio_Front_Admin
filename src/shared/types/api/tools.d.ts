@@ -2262,10 +2262,10 @@ export interface components {
             server_config: components["schemas"]["MCPServerConfigDTO"];
             /**
              * Secrets
-             * @description 민감 정보
+             * @description 민감 정보 - 중첩 JSON 구조 지원
              */
             secrets?: {
-                [key: string]: string;
+                [key: string]: unknown;
             } | null;
         };
         /**
@@ -2347,10 +2347,10 @@ export interface components {
             server_config?: components["schemas"]["MCPServerConfigDTO"] | null;
             /**
              * Secrets
-             * @description 민감 정보
+             * @description 민감 정보 - 중첩 JSON 구조 지원
              */
             secrets?: {
-                [key: string]: string;
+                [key: string]: unknown;
             } | null;
             /** @description 연결 상태 */
             connection_status?: components["schemas"]["MCPToolConnectionStatus"] | null;
@@ -2953,10 +2953,10 @@ export interface components {
         MCPToolUserConfigCreateDTO: {
             /**
              * Secrets
-             * @description 민감 정보 (API 키, 시크릿 등) - 사용자가 설정하는 유일한 항목
+             * @description 민감 정보 (API 키, 시크릿 등) - 중첩 JSON 구조 지원
              */
             secrets?: {
-                [key: string]: string;
+                [key: string]: unknown;
             } | null;
             /**
              * Config Name
@@ -3025,10 +3025,10 @@ export interface components {
             };
             /**
              * Secrets
-             * @description 복호화된 민감 정보 (사용자가 입력한 실제 값)
+             * @description 복호화된 민감 정보 (사용자가 입력한 실제 값) - 중첩 JSON 구조 지원
              */
             secrets?: {
-                [key: string]: string;
+                [key: string]: unknown;
             } | null;
             /**
              * Container Name
@@ -3077,10 +3077,10 @@ export interface components {
         MCPToolUserConfigUpdateDTO: {
             /**
              * Secrets
-             * @description 민감 정보 (API 키, 시크릿 등) - 사용자가 수정할 수 있는 유일한 항목
+             * @description 민감 정보 (API 키, 시크릿 등) - 중첩 JSON 구조 지원
              */
             secrets?: {
-                [key: string]: string;
+                [key: string]: unknown;
             } | null;
             /**
              * Config Name

@@ -53,7 +53,7 @@ export interface paths {
         };
         /**
          * 모델 리스트 조회
-         * @description 카테고리, 제공자, 배포 타입 필터를 기반으로 AI 모델 리스트를 조회합니다. 페이지네이션이 포함됩니다.
+         * @description 카테고리, 제공자, 배포 타입, 배포 상태 필터를 기반으로 AI 모델 리스트를 조회합니다. 페이지네이션이 포함됩니다.
          */
         get: operations["get_model_list_v1_catalog__get"];
         put?: never;
@@ -444,6 +444,262 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/models/deploy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Deploy Model
+         * @description 모델 배포 API 엔드포인트
+         *
+         *     GPUStack에 모델을 배포합니다.
+         *
+         *     GPUStack 2.0 지원하는 소스 타입:
+         *     - huggingface: huggingface_repo_id, huggingface_filename 사용
+         *     - model_scope: model_scope_model_id, model_scope_file_path 사용
+         *     - local_path: local_path 사용
+         */
+        post: operations["deploy_model_v1_models_deploy_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/models/deployed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Deployed Models
+         * @description 배포된 모델 목록 조회 API 엔드포인트
+         *
+         *     현재 GPUStack에 배포된 모든 모델의 목록을 반환합니다.
+         */
+        get: operations["get_deployed_models_v1_models_deployed_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/models/{model_id}/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Stop Model
+         * @description 모델 중지 API 엔드포인트
+         *
+         *     지정된 모델을 중지합니다.
+         *     GPUStack 2.0: model_id 정규화 적용
+         */
+        delete: operations["stop_model_v1_models__model_id__stop_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/models/resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get System Resources
+         * @description 시스템 리소스 조회 API 엔드포인트
+         *
+         *     GPUStack 시스템의 리소스 상태를 조회합니다.
+         */
+        get: operations["get_system_resources_v1_models_resources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/models/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check Gpustack Health
+         * @description GPUStack 헬스체크 API 엔드포인트
+         *
+         *     GPUStack 서비스의 상태를 확인합니다.
+         */
+        get: operations["check_gpustack_health_v1_models_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/models/deploy-local": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Deploy local model
+         * @description Deploy a local model file to GPUStack
+         */
+        post: operations["deploy_local_model_admin_models_deploy_local_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/models/{model_id}/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stop model
+         * @description Stop a running model
+         */
+        post: operations["stop_model_admin_models__model_id__stop_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/models/local": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List local models
+         * @description Get list of locally deployed models
+         */
+        get: operations["list_local_models_admin_models_local_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/models/{model_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete model
+         * @description Delete a model from GPUStack and database
+         */
+        delete: operations["delete_model_admin_models__model_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/models/gpustack/deployed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List GPUStack deployed models
+         * @description Get list of all models deployed on GPUStack (runtime status)
+         */
+        get: operations["get_gpustack_deployed_models_admin_models_gpustack_deployed_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/models/gpustack/resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get GPUStack system resources
+         * @description Get GPUStack system resources including GPU and worker status
+         */
+        get: operations["get_gpustack_resources_admin_models_gpustack_resources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/models/gpustack/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check GPUStack health
+         * @description Check GPUStack service health status
+         */
+        get: operations["check_gpustack_health_admin_models_gpustack_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -596,11 +852,121 @@ export interface components {
             created_at: string;
         };
         /**
+         * DeployedModelDTO
+         * @description Deployed model information DTO
+         * @example {
+         *       "backend": "llama-box",
+         *       "created_at": "2025-01-15T19:00:00Z",
+         *       "id": "model-123",
+         *       "name": "my-llama-model",
+         *       "ready": true,
+         *       "status": "running"
+         *     }
+         */
+        DeployedModelDTO: {
+            /**
+             * Id
+             * @description 모델 ID
+             */
+            id?: string | null;
+            /**
+             * Name
+             * @description 모델 이름
+             */
+            name?: string | null;
+            /**
+             * @description 모델 상태
+             * @default unknown
+             */
+            status: components["schemas"]["GPUStackModelStatus"];
+            /**
+             * Backend
+             * @description 사용 중인 백엔드
+             */
+            backend?: string | null;
+            /**
+             * Created At
+             * @description 생성 시각
+             */
+            created_at?: string | null;
+            /**
+             * Ready
+             * @description 사용 가능 여부
+             * @default false
+             */
+            ready: boolean;
+        };
+        /**
+         * DeployedModelsResponseDTO
+         * @description Deployed models list response DTO
+         * @example {
+         *       "models": [
+         *         {
+         *           "backend": "llama-box",
+         *           "created_at": "2025-01-15T19:00:00Z",
+         *           "id": "model-123",
+         *           "name": "my-llama-model",
+         *           "ready": true,
+         *           "status": "running"
+         *         }
+         *       ],
+         *       "status": "success",
+         *       "total_count": 1
+         *     }
+         */
+        DeployedModelsResponseDTO: {
+            /**
+             * Status
+             * @description 응답 상태
+             */
+            status: string;
+            /**
+             * Models
+             * @description 배포된 모델 목록
+             * @default []
+             */
+            models: components["schemas"]["DeployedModelDTO"][];
+            /**
+             * Total Count
+             * @description 전체 모델 수
+             * @default 0
+             */
+            total_count: number;
+        };
+        /**
          * DeploymentType
          * @description LLM 모델 배포 타입
          * @enum {string}
          */
         DeploymentType: "public_api" | "private_vllm";
+        /**
+         * GPUStackBackend
+         * @description GPUStack backend types
+         * @enum {string}
+         */
+        GPUStackBackend: "llama-box" | "vllm" | "ollama";
+        /**
+         * GPUStackDeploymentType
+         * @description GPUStack deployment types
+         * @enum {string}
+         */
+        GPUStackDeploymentType: "local_gpu" | "local_cpu" | "remote";
+        /**
+         * GPUStackModelStatus
+         * @description GPUStack model status enumeration
+         * @enum {string}
+         */
+        GPUStackModelStatus: "pending" | "running" | "stopped" | "failed" | "unknown";
+        /**
+         * GPUStackSourceType
+         * @description GPUStack model source types
+         *
+         *     GPUStack 2.0 변경사항:
+         *     - OLLAMA_LIBRARY: Deprecated (GPUStack 2.0에서 제거됨)
+         *       huggingface 소스로 마이그레이션 권장
+         * @enum {string}
+         */
+        GPUStackSourceType: "huggingface" | "ollama_library" | "model_scope" | "local_path";
         /** GenAICreateDTO */
         GenAICreateDTO: {
             /**
@@ -820,6 +1186,309 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
+         * HealthCheckResponseDTO
+         * @description Health check response DTO
+         * @example {
+         *       "gpustack_available": true,
+         *       "message": "GPUStack is running normally",
+         *       "status": "healthy",
+         *       "timestamp": "2025-01-15T21:00:00Z"
+         *     }
+         */
+        HealthCheckResponseDTO: {
+            /**
+             * Status
+             * @description 헬스체크 상태
+             */
+            status: string;
+            /**
+             * Gpustack Available
+             * @description GPUStack 사용 가능 여부
+             */
+            gpustack_available: boolean;
+            /**
+             * Timestamp
+             * @description 체크 시각
+             */
+            timestamp: string;
+            /**
+             * Message
+             * @description 상태 메시지
+             */
+            message: string;
+        };
+        /**
+         * LocalModelDeployResponseDTO
+         * @description 로컬 모델 배포 응답 DTO
+         * @example {
+         *       "deployment_status": "deploying",
+         *       "gpustack_model_id": "gpustack-abc123",
+         *       "message": "Model deployment initiated successfully",
+         *       "model_id": 123,
+         *       "model_name": "llama-2-7b"
+         *     }
+         */
+        LocalModelDeployResponseDTO: {
+            /**
+             * Model Id
+             * @description DB 모델 ID
+             */
+            model_id: number;
+            /**
+             * Model Name
+             * @description 모델 이름
+             */
+            model_name: string;
+            /**
+             * Deployment Status
+             * @description 배포 상태 (deploying, running, failed)
+             */
+            deployment_status: string;
+            /**
+             * Gpustack Model Id
+             * @description GPUStack 모델 ID
+             */
+            gpustack_model_id: string;
+            /**
+             * Message
+             * @description 응답 메시지
+             */
+            message: string;
+        };
+        /**
+         * LocalModelItemDTO
+         * @description 로컬 모델 항목 DTO
+         * @example {
+         *       "deployment_status": "running",
+         *       "gpustack_model_id": "gpustack-123",
+         *       "is_local": true,
+         *       "model_id": 1,
+         *       "model_name": "llama-2-7b"
+         *     }
+         */
+        LocalModelItemDTO: {
+            /**
+             * Model Id
+             * @description 모델 ID
+             */
+            model_id: number;
+            /**
+             * Model Name
+             * @description 모델 이름
+             */
+            model_name: string;
+            /**
+             * Deployment Status
+             * @description 배포 상태 (deploying, running, stopped, failed, unknown)
+             */
+            deployment_status: string;
+            /**
+             * Gpustack Model Id
+             * @description GPUStack 모델 ID
+             */
+            gpustack_model_id: string;
+            /**
+             * Is Local
+             * @description 로컬 배포 여부
+             */
+            is_local: boolean;
+        };
+        /**
+         * LocalModelListResponseDTO
+         * @description 로컬 모델 목록 응답 DTO
+         * @example {
+         *       "items": [
+         *         {
+         *           "deployment_status": "running",
+         *           "gpustack_model_id": "gpustack-123",
+         *           "is_local": true,
+         *           "model_id": 1,
+         *           "model_name": "llama-2-7b"
+         *         }
+         *       ],
+         *       "total": 1
+         *     }
+         */
+        LocalModelListResponseDTO: {
+            /**
+             * Items
+             * @description 로컬 모델 목록
+             */
+            items: components["schemas"]["LocalModelItemDTO"][];
+            /**
+             * Total
+             * @description 전체 모델 개수
+             */
+            total: number;
+        };
+        /**
+         * MessageResponseDTO
+         * @description 단순 메시지 응답 DTO.
+         */
+        MessageResponseDTO: {
+            /**
+             * Message
+             * @description 메시지
+             */
+            message: string;
+        };
+        /**
+         * ModelDeleteResponseDTO
+         * @description 모델 삭제 응답 DTO
+         * @example {
+         *       "gpustack_deleted": true,
+         *       "message": "Model deleted successfully",
+         *       "model_id": 1,
+         *       "model_name": "llama-2-7b",
+         *       "status": "success"
+         *     }
+         */
+        ModelDeleteResponseDTO: {
+            /**
+             * Status
+             * @description 삭제 상태 (success, partial_failure)
+             */
+            status: string;
+            /**
+             * Message
+             * @description 응답 메시지
+             */
+            message: string;
+            /**
+             * Model Id
+             * @description 삭제된 모델 ID
+             */
+            model_id: number;
+            /**
+             * Model Name
+             * @description 삭제된 모델 이름
+             */
+            model_name: string;
+            /**
+             * Gpustack Deleted
+             * @description GPUStack에서 삭제 성공 여부
+             */
+            gpustack_deleted: boolean;
+        };
+        /**
+         * ModelDeployRequestDTO
+         * @description Model deployment request DTO
+         *
+         *     GPUStack source별 필드:
+         *     - huggingface: huggingface_repo_id (필수), huggingface_filename (선택)
+         *     - ollama_library: ollama_library_model_name (필수)
+         *     - model_scope: model_scope_model_id (필수), model_scope_file_path (선택)
+         *     - local_path: local_path (필수)
+         * @example {
+         *       "description": "Qwen3 0.6B Q4_K_M quantized model",
+         *       "huggingface_filename": "Qwen3-0.6B-Q4_K_M.gguf",
+         *       "huggingface_repo_id": "unsloth/Qwen3-0.6B-GGUF",
+         *       "model_name": "qwen3-0.6b-q4km",
+         *       "source": "huggingface"
+         *     }
+         */
+        ModelDeployRequestDTO: {
+            /**
+             * Model Name
+             * @description 배포할 모델 이름
+             */
+            model_name: string;
+            /**
+             * @description 모델 소스 타입
+             * @default huggingface
+             */
+            source: components["schemas"]["GPUStackSourceType"];
+            /**
+             * Huggingface Repo Id
+             * @description HuggingFace 리포지토리 ID (예: unsloth/Qwen3-0.6B-GGUF)
+             */
+            huggingface_repo_id?: string | null;
+            /**
+             * Huggingface Filename
+             * @description GGUF 파일명 (예: Qwen3-0.6B-Q4_K_M.gguf)
+             */
+            huggingface_filename?: string | null;
+            /**
+             * Ollama Library Model Name
+             * @description Ollama 라이브러리 모델명
+             */
+            ollama_library_model_name?: string | null;
+            /**
+             * Model Scope Model Id
+             * @description Model Scope 모델 ID
+             */
+            model_scope_model_id?: string | null;
+            /**
+             * Model Scope File Path
+             * @description Model Scope 파일 경로
+             */
+            model_scope_file_path?: string | null;
+            /**
+             * Local Path
+             * @description 로컬 모델 파일 경로
+             */
+            local_path?: string | null;
+            /**
+             * Model Path
+             * @description 레거시: 모델 경로 (후방 호환성)
+             */
+            model_path?: string | null;
+            /** @description 사용할 백엔드 (자동 선택 시 None) */
+            backend?: components["schemas"]["GPUStackBackend"] | null;
+            /**
+             * @description [Deprecated] 배포 타입 (GPUStack 2.0에서 제거됨)
+             * @default local_gpu
+             */
+            deployment_type: components["schemas"]["GPUStackDeploymentType"];
+            /**
+             * Description
+             * @description 모델 설명
+             */
+            description?: string | null;
+            /**
+             * Replicas
+             * @description 모델 인스턴스 복제본 수 (GPUStack 2.0)
+             */
+            replicas?: number | null;
+            /**
+             * Gpu Count
+             * @description [Deprecated] 사용할 GPU 개수 (replicas로 대체됨)
+             */
+            gpu_count?: number | null;
+        };
+        /**
+         * ModelDeployResponseDTO
+         * @description Model deployment response DTO
+         * @example {
+         *       "deployment_id": "deploy-456",
+         *       "message": "Model deployed successfully",
+         *       "model_id": "1",
+         *       "status": "deployed"
+         *     }
+         */
+        ModelDeployResponseDTO: {
+            /**
+             * Status
+             * @description 배포 상태
+             */
+            status: string;
+            /**
+             * Model Id
+             * @description 배포된 모델 ID
+             */
+            model_id?: string | null;
+            /**
+             * Deployment Id
+             * @description 배포 ID
+             */
+            deployment_id?: string | null;
+            /**
+             * Message
+             * @description 배포 결과 메시지
+             */
+            message: string;
+        };
+        /**
          * ModelServingStatusDTO
          * @description 모델 서빙 상태 DTO
          */
@@ -872,6 +1541,45 @@ export interface components {
          * @enum {string}
          */
         ModelStatusEnum: "ALPHA" | "BETA" | "STABLE" | "DEPRECATED";
+        /**
+         * ModelStopResponseDTO
+         * @description Model stop response DTO
+         * @example {
+         *       "message": "Model stopped successfully",
+         *       "model_id": "model-123",
+         *       "model_name": "my-model",
+         *       "operation": "stop",
+         *       "status": "success"
+         *     }
+         */
+        ModelStopResponseDTO: {
+            /**
+             * Status
+             * @description 중지 상태
+             */
+            status: string;
+            /**
+             * Model Id
+             * @description 중지된 모델 ID
+             */
+            model_id: string;
+            /**
+             * Model Name
+             * @description 중지된 모델 이름
+             */
+            model_name?: string | null;
+            /**
+             * Message
+             * @description 중지 결과 메시지
+             */
+            message: string;
+            /**
+             * Operation
+             * @description 수행된 작업
+             * @default stop
+             */
+            operation: string;
+        };
         /** PaginatedResponseDTO[CommentResponseDTO] */
         PaginatedResponseDTO_CommentResponseDTO_: {
             /**
@@ -935,7 +1643,118 @@ export interface components {
          * @enum {string}
          */
         SortOrderEnum: "ASC" | "DESC";
+        /**
+         * SystemResourcesDTO
+         * @description System resources DTO
+         */
+        SystemResourcesDTO: {
+            /**
+             * Worker Id
+             * @description 워커 ID
+             */
+            worker_id?: string | null;
+            /**
+             * Status
+             * @description 워커 상태
+             */
+            status?: string | null;
+            /**
+             * Gpu Count
+             * @description GPU 개수
+             */
+            gpu_count?: number | null;
+            /**
+             * Memory Total
+             * @description 총 메모리
+             */
+            memory_total?: string | null;
+            /**
+             * Memory Used
+             * @description 사용 중인 메모리
+             */
+            memory_used?: string | null;
+        };
+        /**
+         * SystemResourcesResponseDTO
+         * @description System resources response DTO
+         * @example {
+         *       "gpu_devices": [],
+         *       "gpustack_available": true,
+         *       "status": "success",
+         *       "system_status": "healthy",
+         *       "timestamp": "2025-01-15T21:00:00Z",
+         *       "workers": []
+         *     }
+         */
+        SystemResourcesResponseDTO: {
+            /**
+             * Status
+             * @description 응답 상태
+             */
+            status: string;
+            /**
+             * System Status
+             * @description 시스템 상태
+             */
+            system_status: string;
+            /**
+             * Gpustack Available
+             * @description GPUStack 사용 가능 여부
+             */
+            gpustack_available: boolean;
+            /**
+             * Timestamp
+             * @description 조회 시각
+             */
+            timestamp: string;
+            /**
+             * Workers
+             * @description 워커 목록
+             * @default []
+             */
+            workers: components["schemas"]["SystemResourcesDTO"][];
+            /**
+             * Gpu Devices
+             * @description GPU 장치 목록
+             * @default []
+             */
+            gpu_devices: Record<string, never>[];
+            /**
+             * Error
+             * @description 에러 메시지
+             */
+            error?: string | null;
+        };
         UserLLMConfigDTO: Record<string, never>;
+        /**
+         * UserLLMConfigListForModelResponseDTO
+         * @description 특정 모델에 대한 사용자 설정 목록 조회 응답 DTO.
+         */
+        UserLLMConfigListForModelResponseDTO: {
+            /**
+             * Model Id
+             * @description 모델 ID
+             */
+            model_id: number;
+            /**
+             * User Id
+             * @description 사용자 ID
+             */
+            user_id: number;
+            /**
+             * Configs
+             * @description 설정 목록
+             */
+            configs: components["schemas"]["UserLLMConfigResponseDTO"][];
+            /**
+             * Count
+             * @description 설정 개수
+             */
+            count: number;
+        } & {
+            [key: string]: unknown;
+        };
+        UserLLMConfigResponseDTO: Record<string, never>;
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -1017,6 +1836,8 @@ export interface operations {
                 provider?: string | null;
                 /** @description 배포 타입 (PRIVATE_VLLM 또는 PUBLIC_API) */
                 deployment_type?: string | null;
+                /** @description 배포 상태 (running, deploying 등) - ADMIN만 사용 가능 */
+                deployment_status?: string | null;
                 /** @description 페이지 번호 */
                 page?: number;
                 /** @description 페이지 크기 */
@@ -1028,7 +1849,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 검색 성공 */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -1096,13 +1917,13 @@ export interface operations {
             };
         };
         responses: {
-            /** @description 검색 성공 */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedResponseDTO_GenAIResponseDTO_"];
+                    "application/json": components["schemas"]["GenAIResponseDTO"];
                 };
             };
             /** @description 잘못된 검색 조건 */
@@ -1174,6 +1995,8 @@ export interface operations {
                 category?: components["schemas"]["AICategoryEnum"] | null;
                 /** @description 모델 제공자 */
                 provider?: string | null;
+                /** @description 배포 상태 (running, deploying 등) - ADMIN만 사용 가능 */
+                deployment_status?: string | null;
                 /** @description 모델 상태 */
                 status?: components["schemas"]["ModelStatusEnum"] | null;
                 /** @description 정렬 기준 */
@@ -1258,13 +2081,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 검색 성공 */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedResponseDTO_GenAIResponseDTO_"];
+                    "application/json": components["schemas"]["GenAIResponseDTO"];
                 };
             };
             /** @description 잘못된 검색 조건 */
@@ -1329,13 +2152,13 @@ export interface operations {
             };
         };
         responses: {
-            /** @description 검색 성공 */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedResponseDTO_GenAIResponseDTO_"];
+                    "application/json": components["schemas"]["GenAIResponseDTO"];
                 };
             };
             /** @description 잘못된 검색 조건 */
@@ -1396,15 +2219,6 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 검색 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedResponseDTO_GenAIResponseDTO_"];
-                };
-            };
             /** @description Successful Response */
             204: {
                 headers: {
@@ -1641,7 +2455,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>[];
+                    "application/json": components["schemas"]["UserLLMConfigResponseDTO"][];
                 };
             };
             /** @description 잘못된 요청 */
@@ -1711,7 +2525,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["UserLLMConfigListForModelResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 */
@@ -1928,7 +2742,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["UserLLMConfigResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 */
@@ -2398,7 +3212,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["UserLLMConfigResponseDTO"][] | components["schemas"]["MessageResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 */
@@ -2465,7 +3279,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["UserLLMConfigResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 */
@@ -2899,6 +3713,396 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    deploy_model_v1_models_deploy_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModelDeployRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description 모델 배포 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelDeployResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 필요 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 배포 실패 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_deployed_models_v1_models_deployed_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 배포된 모델 목록 조회 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeployedModelsResponseDTO"];
+                };
+            };
+            /** @description 인증 필요 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 조회 실패 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    stop_model_v1_models__model_id__stop_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 모델 중지 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelStopResponseDTO"];
+                };
+            };
+            /** @description 인증 필요 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 모델을 찾을 수 없음 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 중지 실패 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_system_resources_v1_models_resources_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 시스템 리소스 조회 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SystemResourcesResponseDTO"];
+                };
+            };
+            /** @description 인증 필요 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 조회 실패 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    check_gpustack_health_v1_models_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 헬스체크 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthCheckResponseDTO"];
+                };
+            };
+            /** @description 인증 필요 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 서비스 이용 불가 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deploy_local_model_admin_models_deploy_local_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModelDeployRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalModelDeployResponseDTO"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stop_model_admin_models__model_id__stop_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelStopResponseDTO"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_local_models_admin_models_local_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalModelListResponseDTO"];
+                };
+            };
+        };
+    };
+    delete_model_admin_models__model_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelDeleteResponseDTO"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_gpustack_deployed_models_admin_models_gpustack_deployed_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeployedModelsResponseDTO"];
+                };
+            };
+        };
+    };
+    get_gpustack_resources_admin_models_gpustack_resources_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SystemResourcesResponseDTO"];
+                };
+            };
+        };
+    };
+    check_gpustack_health_admin_models_gpustack_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthCheckResponseDTO"];
+                };
             };
         };
     };

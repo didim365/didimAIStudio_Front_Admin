@@ -63,11 +63,12 @@ export function useQueryParam<T extends QueryParamValue>(
   const updateUrl = (value: T) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    // 초기값이거나 빈 값이거나 "all"인 경우 파라미터 제거
+    // 초기값이거나 빈 값이거나 "all", "none"인 경우 파라미터 제거
     if (
       value === initialValue ||
       value === "" ||
       value === "all" ||
+      value === "none" ||
       value === null
     ) {
       params.delete(key);
