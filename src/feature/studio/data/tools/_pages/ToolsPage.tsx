@@ -123,7 +123,7 @@ export default function ToolsPage() {
                   value={containerStatus}
                   onValueChange={setContainerStatus}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="상태 선택" />
                   </SelectTrigger>
                   <SelectContent>
