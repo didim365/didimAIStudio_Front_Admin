@@ -67,7 +67,7 @@ export default function ToolsPage() {
 
       {/* 액션 바 */}
       <Card className="border-slate-200 shadow-sm">
-        <CardContent className="pt-6">
+        <CardContent>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="text-sm text-slate-600">
@@ -94,19 +94,16 @@ export default function ToolsPage() {
       </Card>
 
       {/* 컨테이너 테이블 */}
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="border-b border-slate-100">
+      <Card>
+        <CardHeader>
           <CardTitle className="text-lg font-semibold">컨테이너 목록</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent>
           {isLoading && (
-            <div className="text-center py-12 text-slate-500">
-              <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2" />
-              <p>컨테이너 정보를 불러오는 중...</p>
-            </div>
+            <div className="text-center py-8 text-slate-500">로딩 중...</div>
           )}
           {!isLoading && (
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-lg">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -130,7 +127,7 @@ export default function ToolsPage() {
                     <TableRow>
                       <TableCell
                         colSpan={9}
-                        className="text-center py-12 text-slate-500"
+                        className="text-center py-8 text-slate-500"
                       >
                         등록된 컨테이너가 없습니다.
                       </TableCell>
