@@ -12,16 +12,13 @@ import {
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
 import { RefreshCw } from "lucide-react";
-import { useGetContainers } from "../_hooks/useGetContainers";
+import { useGetUserConfigs } from "../_hooks/useGetUserConfigs";
 import { cn } from "@/shared/lib/utils";
-import {
-  STATUS_CONFIG,
-  HEALTH_STATUS_CONFIG,
-} from "../_constants/containerConfigs";
+import { STATUS_CONFIG } from "../_constants/containerConfigs";
 import { formatDate } from "@/shared/utils/formatDate";
 
 export default function ToolsPage() {
-  const { data, refetch, isFetching } = useGetContainers();
+  const { data, refetch, isFetching } = useGetUserConfigs();
 
   const isLoading = isFetching && !data;
 
@@ -47,7 +44,7 @@ export default function ToolsPage() {
               <div className="text-sm text-slate-600">
                 총{" "}
                 <span className="font-semibold text-slate-900">
-                  {data?.length ?? 0}
+                  {data?.total ?? 0}
                 </span>
                 개의 컨테이너
               </div>
@@ -84,98 +81,84 @@ export default function ToolsPage() {
                     <TableHead className="text-center w-20">
                       Config ID
                     </TableHead>
+                    <TableHead>설정 이름</TableHead>
                     <TableHead>도구 이름</TableHead>
-                    <TableHead>컨테이너 이름</TableHead>
                     <TableHead className="text-center">사용자 ID</TableHead>
-                    <TableHead className="text-center">포트</TableHead>
                     <TableHead className="text-center">상태</TableHead>
-                    <TableHead className="text-center">헬스 상태</TableHead>
-                    <TableHead className="text-center">
-                      마지막 헬스 체크
-                    </TableHead>
+                    <TableHead className="text-center">활성화</TableHead>
                     <TableHead className="text-center">생성 시간</TableHead>
+                    <TableHead className="text-center">수정 시간</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data?.map((container, index) => {
-                    const statusConfig =
-                      STATUS_CONFIG[
-                        container.container_status?.toLowerCase()
-                      ] || STATUS_CONFIG.pending;
-                    const healthConfig =
-                      HEALTH_STATUS_CONFIG[
-                        container.health_status?.toLowerCase() || "unknown"
-                      ] || HEALTH_STATUS_CONFIG.unknown;
+                  {data?.items?.map((config, index) => {
+                    const statusConfig = config.container_status
+                      ? STATUS_CONFIG[
+                          config.container_status.toLowerCase() as keyof typeof STATUS_CONFIG
+                        ] || STATUS_CONFIG.pending
+                      : STATUS_CONFIG.pending;
 
                     return (
                       <TableRow
-                        key={`${container.config_id}-${container.user_id}-${index}`}
+                        key={`${config.config_id}-${config.user_id}-${index}`}
                         className="hover:bg-slate-50 transition-colors"
                       >
                         <TableCell className="text-center">
                           <span className="text-sm font-mono font-medium">
-                            {container.config_id}
+                            {config.config_id}
                           </span>
                         </TableCell>
                         <TableCell>
                           <div className="font-medium">
-                            {container.tool_name || "-"}
+                            {config.config_name || "-"}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="font-mono text-sm">
-                            {container.container_name || "-"}
+                          <div className="font-medium">
+                            {config.tool_name || "-"}
                           </div>
                         </TableCell>
                         <TableCell className="text-center">
                           <span className="text-sm font-mono">
-                            {container.user_id || "-"}
+                            {config.user_id || "-"}
                           </span>
                         </TableCell>
                         <TableCell className="text-center">
-                          {container.container_port ? (
-                            <span className="text-sm font-mono font-medium">
-                              {container.container_port}
-                            </span>
-                          ) : (
-                            <span className="text-sm text-slate-400">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge
-                            variant={statusConfig.variant}
-                            className={cn(
-                              "flex items-center gap-1 w-fit mx-auto",
-                              statusConfig.className
-                            )}
-                          >
-                            {statusConfig.icon}
-                            {statusConfig.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {container.health_status ? (
+                          {config.container_status ? (
                             <Badge
-                              variant={healthConfig.variant}
+                              variant={statusConfig.variant}
                               className={cn(
                                 "flex items-center gap-1 w-fit mx-auto",
-                                healthConfig.className
+                                statusConfig.className
                               )}
                             >
-                              {healthConfig.label}
+                              {statusConfig.icon}
+                              {statusConfig.label}
                             </Badge>
                           ) : (
                             <span className="text-sm text-slate-400">-</span>
                           )}
                         </TableCell>
                         <TableCell className="text-center">
+                          <Badge
+                            variant={config.is_active ? "default" : "secondary"}
+                            className="w-fit mx-auto"
+                          >
+                            {config.is_active ? "활성" : "비활성"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
                           <span className="text-xs text-slate-600">
-                            {formatDate(container.last_health_check)}
+                            {config.created_at
+                              ? formatDate(config.created_at)
+                              : "-"}
                           </span>
                         </TableCell>
                         <TableCell className="text-center">
                           <span className="text-xs text-slate-600">
-                            {formatDate(container.created_at)}
+                            {config.updated_at
+                              ? formatDate(config.updated_at)
+                              : "-"}
                           </span>
                         </TableCell>
                       </TableRow>
