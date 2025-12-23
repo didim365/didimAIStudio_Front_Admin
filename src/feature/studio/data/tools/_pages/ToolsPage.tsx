@@ -14,46 +14,20 @@ import { Badge } from "@/shared/ui/badge";
 import { RefreshCw } from "lucide-react";
 import { useGetContainers } from "../_hooks/useGetContainers";
 import { cn } from "@/shared/lib/utils";
-import { useEffect } from "react";
 import {
   STATUS_CONFIG,
   HEALTH_STATUS_CONFIG,
 } from "../_constants/containerConfigs";
-
-function formatDate(dateString: string | null) {
-  if (!dateString) return "-";
-  try {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date);
-  } catch {
-    return dateString;
-  }
-}
+import { formatDate } from "@/shared/utils/formatDate";
 
 export default function ToolsPage() {
-  const { data, mutate, isPending } = useGetContainers({
-    onSuccess: () => {
-      // 데이터 로드 성공 처리
-    },
-  });
+  const { data, mutate, isPending } = useGetContainers();
 
-  const containers = data || [];
   const isLoading = isPending && !data;
 
   const handleRefresh = () => {
     mutate(undefined);
   };
-
-  useEffect(() => {
-    mutate(undefined);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className="space-y-6">
@@ -73,7 +47,7 @@ export default function ToolsPage() {
               <div className="text-sm text-slate-600">
                 총{" "}
                 <span className="font-semibold text-slate-900">
-                  {containers.length}
+                  {data?.length ?? 0}
                 </span>
                 개의 컨테이너
               </div>
@@ -123,17 +97,7 @@ export default function ToolsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {containers.length === 0 && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={9}
-                        className="text-center py-8 text-slate-500"
-                      >
-                        등록된 컨테이너가 없습니다.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                  {containers.map((container, index) => {
+                  {data?.map((container, index) => {
                     const statusConfig =
                       STATUS_CONFIG[
                         container.container_status?.toLowerCase()
