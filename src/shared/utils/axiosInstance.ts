@@ -10,6 +10,7 @@ const HTTP_API_GATEWAY = {
   presigned: "/cloud-storage",
   tools: "/mcp-tools",
   auth: "/auth",
+  admin: "/admin",
 } as const;
 
 type GatewayKey = keyof typeof HTTP_API_GATEWAY;
