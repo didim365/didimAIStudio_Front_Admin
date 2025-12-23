@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/shared/utils/formatDate";
 import Link from "next/link";
+import { cn } from "@/shared/lib/utils";
 
 function PrivateModels() {
   const { data, isLoading, refetch } = useGetPrivateModels();
@@ -59,7 +60,7 @@ function PrivateModels() {
                 disabled={isLoading}
               >
                 <RefreshCw
-                  className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                  className={cn("h-4 w-4", isLoading && "animate-spin")}
                 />
                 새로고침
               </Button>
