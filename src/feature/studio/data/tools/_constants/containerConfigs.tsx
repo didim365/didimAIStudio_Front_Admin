@@ -79,3 +79,14 @@ export const HEALTH_STATUS_CONFIG: Record<
     className: "bg-slate-50 text-slate-700 border-slate-200",
   },
 };
+
+// 컨테이너 상태 옵션 (Select 드롭다운용)
+export const STATUS_OPTIONS = [
+  { value: "all", label: "전체" },
+  { value: "running", label: "실행 중" },
+  { value: "stopped", label: "중지됨" },
+  { value: "pending", label: "대기 중" },
+  { value: "error", label: "오류" },
+  { value: "conflict", label: "충돌" },
+  { value: "terminating", label: "종료 중" },
+] as const;
