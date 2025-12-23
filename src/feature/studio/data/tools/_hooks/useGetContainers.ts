@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { paths } from "@/shared/types/api/tools";
 import getContainers from "../_api/getContainers";
 
@@ -12,25 +12,20 @@ type GetContainersParams =
 
 /**
  * 컨테이너 조회 훅
- * @param options - 추가 mutation 옵션 (onSuccess, onError, meta 등)
- * @description 컨테이너 목록을 조회하는 mutation 훅입니다.
+ * @param params - 조회 파라미터
+ * @param options - 추가 query 옵션 (onSuccess, onError, meta 등)
+ * @description 컨테이너 목록을 조회하는 query 훅입니다.
  */
 export const useGetContainers = (
+  params?: GetContainersParams,
   options?: Omit<
-    UseMutationOptions<
-      GetContainersResponse,
-      Error,
-      GetContainersParams | undefined
-    >,
-    "mutationFn"
+    UseQueryOptions<GetContainersResponse, Error>,
+    "queryKey" | "queryFn"
   >
 ) => {
-  return useMutation<
-    GetContainersResponse,
-    Error,
-    GetContainersParams | undefined
-  >({
-    mutationFn: (params?: GetContainersParams) => getContainers(params),
+  return useQuery<GetContainersResponse, Error>({
+    queryKey: ["containers", params],
+    queryFn: () => getContainers(params),
     ...options,
   });
 };

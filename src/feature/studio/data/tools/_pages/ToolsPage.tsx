@@ -21,12 +21,12 @@ import {
 import { formatDate } from "@/shared/utils/formatDate";
 
 export default function ToolsPage() {
-  const { data, mutate, isPending } = useGetContainers();
+  const { data, refetch, isFetching } = useGetContainers();
 
-  const isLoading = isPending && !data;
+  const isLoading = isFetching && !data;
 
   const handleRefresh = () => {
-    mutate(undefined);
+    refetch();
   };
 
   return (
@@ -56,10 +56,10 @@ export default function ToolsPage() {
               variant="outline"
               className="gap-2"
               onClick={handleRefresh}
-              disabled={isPending}
+              disabled={isFetching}
             >
               <RefreshCw
-                className={cn("h-4 w-4", isPending && "animate-spin")}
+                className={cn("h-4 w-4", isFetching && "animate-spin")}
               />
               새로고침
             </Button>
