@@ -9,7 +9,6 @@ const HTTP_API_GATEWAY = {
   agent: "/agents",
   presigned: "/cloud-storage",
   tools: "/mcp-tools",
-  admin: "/admin",
   auth: "/auth",
 } as const;
 
