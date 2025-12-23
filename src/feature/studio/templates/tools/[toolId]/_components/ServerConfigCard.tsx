@@ -583,9 +583,6 @@ export function ServerConfigCard({ config, toolId }: ServerConfigCardProps) {
                 const isEditable = editableFields.includes(
                   key as (typeof editableFields)[number]
                 );
-                if (isEmptyValue(value)) {
-                  return null;
-                }
                 return (
                   <div
                     key={key}
