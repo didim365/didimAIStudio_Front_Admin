@@ -1,5 +1,5 @@
-import ModelEditPage from "@/feature/studio/templates/models/[modelId]/edit/_pages/ModelEditPage";
-import getCatalog from "@/feature/studio/templates/models/[modelId]/_api/getCatalog";
+import ModelEditPage from "@/feature/studio/templates/models/public/[modelId]/edit/_pages/ModelEditPage";
+import getCatalog from "@/feature/studio/templates/models/public/[modelId]/_api/getCatalog";
 
 async function Page({ params }: { params: Promise<{ modelId: string }> }) {
   const { modelId } = await params;

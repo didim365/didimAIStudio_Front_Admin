@@ -78,7 +78,7 @@ function ModelEditPage({ catalog }: ModelEditPageProps) {
       queryClient.invalidateQueries({
         queryKey: ["catalog", catalog.id],
       });
-      router.push(`/studio/templates/models/${catalog.id}`);
+      router.push(`/studio/templates/models/public/${catalog.id}`);
     },
     meta: {
       successMessage: "모델 정보가 성공적으로 수정되었습니다.",
@@ -122,7 +122,7 @@ function ModelEditPage({ catalog }: ModelEditPageProps) {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link href={`/studio/templates/models/${catalog.id}`}>
+            <Link href={`/studio/templates/models/public/${catalog.id}`}>
               <Button
                 type="button"
                 variant="ghost"
