@@ -21,6 +21,10 @@ import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 import { usePutToolConfig } from "../_hooks/usePutToolConfig";
+import { paths } from "@/shared/types/api/tools";
+
+type PutToolConfigRequest =
+  paths["/v1/mcp-tools/{tool_id}/config"]["put"]["requestBody"]["content"]["application/json"];
 import { useQueryClient } from "@tanstack/react-query";
 import { Save, Loader2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
@@ -516,7 +520,12 @@ export function ServerConfigCard({ config, toolId }: ServerConfigCardProps) {
   const handleSave = () => {
     updateConfig({
       params: { tool_id: toolId },
-      data: editedConfig,
+      data: {
+        server_config:
+          editedConfig.server_config as unknown as PutToolConfigRequest["server_config"],
+        secrets: editedConfig.secrets,
+        health_check_enabled: editedConfig.health_check_enabled,
+      },
     });
   };
 
