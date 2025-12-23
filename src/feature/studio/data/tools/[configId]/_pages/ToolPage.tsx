@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import {
@@ -35,18 +37,35 @@ import { GetUserConfigResponse } from "../_api/getUserConfig";
 import JsonView from "@uiw/react-json-view";
 import { STATUS_CONFIG } from "../../_constants/containerConfigs";
 import { cn } from "@/shared/lib/utils";
+import { useDeleteUserConfig } from "../_hooks/useDeleteUserConfig";
 
 interface ToolPageProps {
   config: GetUserConfigResponse;
 }
 
 function ToolPage({ config }: ToolPageProps) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  // 사용자 설정 삭제 mutation
+  const { mutate: deleteUserConfig, isPending: isDeleting } =
+    useDeleteUserConfig({
+      onSuccess: () => {
+        // 사용자 설정 목록 쿼리 무효화
+        queryClient.invalidateQueries({
+          queryKey: ["user-configs"],
+        });
+        setShowDeleteDialog(false);
+        router.push("/studio/data/tools");
+      },
+      meta: {
+        successMessage: "설정이 성공적으로 삭제되었습니다.",
+      },
+    });
+
   const handleDelete = () => {
-    // TODO: 설정 삭제 API 호출
-    setShowDeleteDialog(false);
-    // TODO: 삭제 후 설정 목록 페이지로 이동하거나 리프레시
+    deleteUserConfig({ config_id: config.config_id });
   };
 
   const statusConfig =
@@ -93,9 +112,10 @@ function ToolPage({ config }: ToolPageProps) {
             variant="destructive"
             className="cursor-pointer"
             onClick={() => setShowDeleteDialog(true)}
+            disabled={isDeleting}
           >
             <Trash2 className="h-4 w-4 mr-2" />
-            제거
+            {isDeleting ? "삭제 중..." : "제거"}
           </Button>
         </div>
       </div>
@@ -116,8 +136,10 @@ function ToolPage({ config }: ToolPageProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>삭제</AlertDialogAction>
+            <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? "삭제 중..." : "삭제"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
