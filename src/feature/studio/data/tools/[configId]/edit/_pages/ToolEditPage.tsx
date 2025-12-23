@@ -33,7 +33,6 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { GetUserConfigResponse } from "../../_api/getUserConfig";
-import { Badge } from "@/shared/ui/badge";
 
 interface ToolEditPageProps {
   config: GetUserConfigResponse;
@@ -76,11 +75,9 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
     let server_config: Record<string, unknown> | null = null;
     try {
       const trimmedText = formData.server_configText.trim();
-      if (trimmedText) {
-        const parsed = JSON.parse(trimmedText);
-        if (typeof parsed === "object" && parsed !== null) {
-          server_config = parsed as Record<string, unknown>;
-        }
+      const parsed = JSON.parse(trimmedText);
+      if (typeof parsed === "object" && parsed !== null) {
+        server_config = parsed as Record<string, unknown>;
       }
     } catch (error) {
       console.error(error);
@@ -91,11 +88,9 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
     let secrets: Record<string, unknown> | null = null;
     try {
       const trimmedText = formData.secretsText.trim();
-      if (trimmedText) {
-        const parsed = JSON.parse(trimmedText);
-        if (typeof parsed === "object" && parsed !== null) {
-          secrets = parsed as Record<string, unknown>;
-        }
+      const parsed = JSON.parse(trimmedText);
+      if (typeof parsed === "object" && parsed !== null) {
+        secrets = parsed as Record<string, unknown>;
       }
     } catch (error) {
       console.error(error);
@@ -134,9 +129,6 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
               <h1 className="text-3xl font-bold tracking-tight">
                 도구 설정 수정
               </h1>
-              <p className="text-muted-foreground">
-                설정 ID: {config.config_id} | 도구 ID: {config.tool_id}
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -182,47 +174,6 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
                     required
                   />
                 </div>
-
-                {/* User ID (Read-only) */}
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-muted-foreground">
-                    <Activity className="h-4 w-4" />
-                    <span>사용자 ID</span>
-                  </Label>
-                  <div className="pl-6">
-                    <Badge variant="outline" className="text-sm font-normal">
-                      {config.user_id}
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* Tool ID (Read-only) */}
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-muted-foreground">
-                    <Wrench className="h-4 w-4" />
-                    <span>도구 ID</span>
-                  </Label>
-                  <div className="pl-6">
-                    <Badge variant="outline" className="text-sm font-normal">
-                      {config.tool_id}
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* Tool Name (Read-only) */}
-                {config.tool_name && (
-                  <div className="space-y-2">
-                    <Label className="flex items-center gap-2 text-muted-foreground">
-                      <Wrench className="h-4 w-4" />
-                      <span>도구 이름</span>
-                    </Label>
-                    <div className="pl-6">
-                      <Badge variant="outline" className="text-sm font-normal">
-                        {config.tool_name}
-                      </Badge>
-                    </div>
-                  </div>
-                )}
 
                 {/* Active Status */}
                 <div className="space-y-2">
