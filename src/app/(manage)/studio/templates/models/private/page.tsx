@@ -1,5 +1,5 @@
-import ModelsPage from "@/feature/studio/templates/models/public/_pages/ModelsPage";
+import PrivateModels from "@/feature/studio/templates/models/private/_pages/PrivateModels";
 
 export default function Page() {
-  return <ModelsPage />;
+  return <PrivateModels />;
 }
