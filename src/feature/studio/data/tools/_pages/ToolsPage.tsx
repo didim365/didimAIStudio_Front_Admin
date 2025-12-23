@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -28,6 +29,8 @@ import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
 
 export default function ToolsPage() {
+  const router = useRouter();
+
   // 필터 상태 관리
   const [userId, setUserId] = useQueryParam<string>("user_id", "", {
     debounce: 300,
@@ -60,6 +63,10 @@ export default function ToolsPage() {
 
   const handleRefresh = () => {
     refetch();
+  };
+
+  const handleRowClick = (configId: number) => {
+    router.push(`/studio/data/tools/${configId}`);
   };
 
   // 전체 페이지 수 계산
@@ -214,7 +221,8 @@ export default function ToolsPage() {
                   return (
                     <TableRow
                       key={`${config.config_id}-${config.user_id}-${index}`}
-                      className="hover:bg-slate-50 transition-colors"
+                      className="hover:bg-slate-50 transition-colors cursor-pointer"
+                      onClick={() => handleRowClick(config.config_id)}
                     >
                       <TableCell className="text-center">
                         <span className="text-sm font-mono font-medium">
