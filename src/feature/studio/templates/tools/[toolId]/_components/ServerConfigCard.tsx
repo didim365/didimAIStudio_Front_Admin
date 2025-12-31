@@ -21,6 +21,10 @@ import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 import { usePutToolConfig } from "../_hooks/usePutToolConfig";
+import { paths } from "@/shared/types/api/tools";
+
+type PutToolConfigRequest =
+  paths["/v1/mcp-tools/{tool_id}/config"]["put"]["requestBody"]["content"]["application/json"];
 import { useQueryClient } from "@tanstack/react-query";
 import { Save, Loader2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
@@ -502,6 +506,13 @@ export function ServerConfigCard({ config, toolId }: ServerConfigCardProps) {
   const serverConfigEntries = Object.entries(editedConfig);
   const queryClient = useQueryClient();
 
+  // 편집 가능한 필드 목록 (PutToolConfigRequest에 포함된 필드만)
+  const editableFields = [
+    "server_config",
+    "secrets",
+    "health_check_enabled",
+  ] as const;
+
   const { mutate: updateConfig, isPending } = usePutToolConfig({
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -516,7 +527,12 @@ export function ServerConfigCard({ config, toolId }: ServerConfigCardProps) {
   const handleSave = () => {
     updateConfig({
       params: { tool_id: toolId },
-      data: editedConfig,
+      data: {
+        server_config:
+          editedConfig.server_config as unknown as PutToolConfigRequest["server_config"],
+        secrets: editedConfig.secrets,
+        health_check_enabled: editedConfig.health_check_enabled,
+      },
     });
   };
 
@@ -564,9 +580,9 @@ export function ServerConfigCard({ config, toolId }: ServerConfigCardProps) {
               {serverConfigEntries.map(([key, value]) => {
                 const ValueIcon = getValueIcon(value);
                 const bgColorClass = getValueBgColor(value);
-                if (isEmptyValue(value)) {
-                  return null;
-                }
+                const isEditable = editableFields.includes(
+                  key as (typeof editableFields)[number]
+                );
                 return (
                   <div
                     key={key}
@@ -581,14 +597,21 @@ export function ServerConfigCard({ config, toolId }: ServerConfigCardProps) {
                         <span className="font-mono font-bold text-sm text-foreground">
                           {key}
                         </span>
+                        {!isEditable && (
+                          <Badge variant="outline" className="text-xs">
+                            읽기 전용
+                          </Badge>
+                        )}
                       </div>
 
                       {/* Value */}
                       <div className="ml-9 pl-4 border-l-2 border-border">
                         <ConfigValue
                           value={value}
-                          onChange={(newValue) =>
-                            handleValueChange(key, newValue)
+                          onChange={
+                            isEditable
+                              ? (newValue) => handleValueChange(key, newValue)
+                              : undefined
                           }
                         />
                       </div>
