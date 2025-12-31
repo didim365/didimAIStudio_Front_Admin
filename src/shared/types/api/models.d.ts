@@ -1754,7 +1754,116 @@ export interface components {
         } & {
             [key: string]: unknown;
         };
-        UserLLMConfigResponseDTO: Record<string, never>;
+        /**
+         * UserLLMConfigResponseDTO
+         * @description GET /v1/settings 응답 전용 DTO.
+         *
+         *     OpenAPI 스키마에서 명시적 필드 정보를 제공하기 위한 독립적인 응답 DTO.
+         *     UserLLMConfigDTO의 @model_serializer가 Dict를 반환하여 스키마가 빈 객체로 표시되는 문제 해결.
+         *
+         *     Note: 상속 대신 독립 클래스로 정의하여 Pydantic이 필드를 자동 추출하도록 함.
+         * @example {
+         *       "api_key": "sk-1***4567",
+         *       "created_at": "2024-03-20T00:00:00",
+         *       "deployment_type": "PUBLIC_API",
+         *       "description": "Production GPT-4 configuration",
+         *       "is_active": true,
+         *       "model_id": 2,
+         *       "model_name": "gpt-4",
+         *       "model_path": "/models/gpt-4",
+         *       "provider": "openai",
+         *       "settings": {
+         *         "temperature": 0.7,
+         *         "top_p": 0.95
+         *       },
+         *       "updated_at": "2024-03-20T00:00:00",
+         *       "user_id": 1,
+         *       "user_llm_title": "My GPT-4 Config",
+         *       "user_model_id": 1
+         *     }
+         */
+        UserLLMConfigResponseDTO: {
+            /**
+             * User Model Id
+             * @description 사용자 모델 PK_ID
+             */
+            user_model_id?: number | null;
+            /**
+             * User Id
+             * @description 사용자 ID
+             */
+            user_id: number;
+            /**
+             * Model Id
+             * @description 모델 ID
+             */
+            model_id: number;
+            /**
+             * Model Name
+             * @description 모델 이름
+             */
+            model_name?: string | null;
+            /**
+             * Provider
+             * @description 제공자 (예: openai, anthropic 등)
+             */
+            provider?: string | null;
+            /** @description 배포 타입 (PUBLIC_API 또는 PRIVATE_VLLM) */
+            deployment_type: components["schemas"]["DeploymentType"];
+            /**
+             * Is Active
+             * @description 활성화 여부
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * User Llm Title
+             * @description 사용자가 정의한 LLM 모델 타이틀
+             */
+            user_llm_title?: string | null;
+            /**
+             * Api Key
+             * @description API 키 (마스킹 처리됨)
+             */
+            api_key?: string | null;
+            /**
+             * Api Endpoint
+             * @description API 엔드포인트 URL (PRIVATE_VLLM 타입일 때만 포함)
+             */
+            api_endpoint?: string | null;
+            /**
+             * Prompt Template
+             * @description 프롬프트 템플릿
+             */
+            prompt_template?: string | null;
+            /**
+             * Settings
+             * @description LLM 설정 (temperature, top_p 등)
+             */
+            settings?: Record<string, never>;
+            /**
+             * Model Path
+             * @description 모델 경로 (settings에서 추출)
+             */
+            model_path?: string | null;
+            /**
+             * Description
+             * @description 설정 설명
+             */
+            description?: string | null;
+            /**
+             * Created At
+             * @description 생성일시
+             */
+            created_at?: string | null;
+            /**
+             * Updated At
+             * @description 수정일시
+             */
+            updated_at?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
