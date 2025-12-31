@@ -47,7 +47,9 @@ import Link from "next/link";
 export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
   const router = useRouter();
   const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
+  const basePath = pathname?.startsWith("/studio/data")
+    ? "/studio/data"
+    : "/studio/templates";
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
@@ -297,7 +299,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                       className="flex items-center gap-2"
                     >
                       <Code2 className="h-4 w-4" />
-                      <span>정의 이름</span>
+                      <span>시스템 내부 식별자</span>
                     </Label>
                     <Input
                       id="definition_name"

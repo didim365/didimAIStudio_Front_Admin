@@ -159,9 +159,6 @@ function ModelsPage() {
                       수정일
                     </TableHead>
                     <TableHead className="whitespace-nowrap text-center">
-                      ID
-                    </TableHead>
-                    <TableHead className="whitespace-nowrap text-center">
                       모델 ID
                     </TableHead>
                     <TableHead className="whitespace-nowrap text-center">
@@ -186,10 +183,10 @@ function ModelsPage() {
                         {item.model_name ?? "-"}
                       </TableCell>
                       <TableCell className="text-center">
-                        {item.user_id ?? "-"}
+                        {item.user_id}
                       </TableCell>
                       <TableCell className="text-center">
-                        {item.deployment_type ?? "-"}
+                        {item.deployment_type}
                       </TableCell>
                       <TableCell className="text-center">
                         {item.is_active ? "활성화" : "비활성화"}
@@ -201,10 +198,7 @@ function ModelsPage() {
                         {formatDate(item.updated_at)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {item.id ?? "-"}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {item.model_id ?? "-"}
+                        {item.model_id}
                       </TableCell>
                       <TableCell className="text-center">
                         {item.provider ?? "-"}

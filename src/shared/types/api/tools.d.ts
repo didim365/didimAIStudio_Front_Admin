@@ -260,11 +260,15 @@ export interface paths {
          *         💡 **다음 단계**:
          *         - 이 템플릿 설정을 참고하여 `POST /v1/mcp-tools/{tool_id}/user-configs` 엔드포인트로 자신만의 설정을 생성하세요.
          *         - 생성된 개인화 설정은 `GET /v1/mcp-tools/{tool_id}/user-configs/{config_id}`로 조회할 수 있습니다.
+         *
+         *         ✅ **Step02 수정**: mcp_tool_config 우선 조회 (PUT 후 GET 시 변경값 반환)
          */
         get: operations["get_tool_config_v1_mcp_tools__tool_id__config_get"];
         /**
          * 도구 설정 업데이트
          * @description 특정 도구의 JSON 기반 확장 설정을 업데이트합니다.
+         *
+         *         ✅ **Step02 수정**: GET과 동일한 응답 구조 반환
          */
         put: operations["update_tool_config_v1_mcp_tools__tool_id__config_put"];
         /**
@@ -341,6 +345,27 @@ export interface paths {
          * @description 특정 도구의 설정을 삭제합니다.
          */
         delete: operations["delete_tool_config_v1_mcp_tools__tool_id__config_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcp-tools/{tool_id}/functions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * MCP 도구 Function 목록 조회
+         * @description 도구가 제공하는 Function 목록과 상세 정보를 조회합니다.
+         *         Function 정보는 도구 등록/수정 시 `mcp-tools-spec.yml` 파일에서 동기화됩니다.
+         */
+        get: operations["get_tool_functions_v1_mcp_tools__tool_id__functions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1393,6 +1418,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/user-configs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 전체 사용자 도구 설정 목록 조회
+         * @description 관리자 권한으로 전체 사용자의 도구 설정 목록을 필터링하여 조회합니다.
+         */
+        get: operations["get_all_user_configs_v1_admin_user_configs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/user-configs/{config_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 사용자 설정 상세 조회
+         * @description 특정 사용자 설정의 상세 정보를 조회합니다.
+         */
+        get: operations["get_user_config_v1_admin_user_configs__config_id__get"];
+        /**
+         * 사용자 설정 수정
+         * @description 관리자 권한으로 사용자 설정을 수정합니다.
+         */
+        put: operations["update_user_config_v1_admin_user_configs__config_id__put"];
+        post?: never;
+        /**
+         * 사용자 설정 삭제
+         * @description 관리자 권한으로 사용자 설정을 삭제합니다.
+         */
+        delete: operations["delete_user_config_v1_admin_user_configs__config_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/containers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 전체 컨테이너 목록 상세 조회
+         * @description 전체 컨테이너의 상세 목록(상태, 포트, 헬스 등)을 조회합니다.
+         */
+        get: operations["get_all_containers_v1_admin_containers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/containers/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 전체 컨테이너 상태 요약
+         * @description 전체 시스템의 컨테이너 상태별 카운트를 집계하여 조회합니다.
+         */
+        get: operations["get_container_status_summary_v1_admin_containers_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1553,6 +1666,33 @@ export interface components {
             suggested_actions?: string[];
         };
         /**
+         * ContainerDTO
+         * @description 컨테이너 상세 정보 DTO
+         */
+        ContainerDTO: {
+            /** Config Id */
+            config_id: number;
+            /** User Id */
+            user_id: string;
+            /** Tool Name */
+            tool_name: string | null;
+            /** Container Name */
+            container_name: string | null;
+            /** Container Status */
+            container_status: string;
+            /** Container Port */
+            container_port: number | null;
+            /** Health Status */
+            health_status: string | null;
+            /** Last Health Check */
+            last_health_check: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
          * ContainerStatus
          * @description 컨테이너 상태
          * @enum {string}
@@ -1629,6 +1769,53 @@ export interface components {
              * @description 응답 시간
              */
             timestamp?: string;
+        };
+        /**
+         * ContainerStatusSummaryDTO
+         * @description 컨테이너 상태 집계 요약 DTO
+         */
+        ContainerStatusSummaryDTO: {
+            /**
+             * Total
+             * @description 전체 컨테이너 수
+             */
+            total: number;
+            /**
+             * Running
+             * @description 실행 중인 컨테이너 수
+             * @default 0
+             */
+            running: number;
+            /**
+             * Stopped
+             * @description 중지된 컨테이너 수
+             * @default 0
+             */
+            stopped: number;
+            /**
+             * Error
+             * @description 오류 상태인 컨테이너 수
+             * @default 0
+             */
+            error: number;
+            /**
+             * Starting
+             * @description 시작 중인 컨테이너 수
+             * @default 0
+             */
+            starting: number;
+            /**
+             * Stopping
+             * @description 중지 중인 컨테이너 수
+             * @default 0
+             */
+            stopping: number;
+            /**
+             * Last Updated
+             * Format: date-time
+             * @description 마지막 집계 시간
+             */
+            last_updated?: string;
         };
         /**
          * DeleteResponseDTO
@@ -1770,17 +1957,10 @@ export interface components {
          */
         DeploymentResponseDTO: {
             /**
-             * Correlation Id
-             * @description 상관관계 ID
-             */
-            correlation_id: string;
-            /**
              * Tool Id
              * @description 도구 ID
              */
             tool_id: number;
-            /** @description 수행된 액션 */
-            action: components["schemas"]["DeploymentAction"];
             /** @description 현재 상태 */
             status: components["schemas"]["DeploymentStatus"];
             /**
@@ -1788,6 +1968,13 @@ export interface components {
              * @description 상태 메시지
              */
             message: string;
+            /**
+             * Correlation Id
+             * @description 상관관계 ID
+             */
+            correlation_id?: string | null;
+            /** @description 수행된 액션 */
+            action?: components["schemas"]["DeploymentAction"] | null;
             /**
              * Estimated Completion Time
              * @description 예상 완료 시간
@@ -1799,6 +1986,53 @@ export interface components {
              * @description 요청 생성 시간
              */
             created_at?: string;
+            /**
+             * Success
+             * @description 작업 성공 여부
+             */
+            success?: boolean | null;
+            /**
+             * Tool Name
+             * @description 도구 이름
+             */
+            tool_name?: string | null;
+            /**
+             * Error
+             * @description 에러 메시지
+             */
+            error?: string | null;
+            /**
+             * Timestamp
+             * @description 응답 시간
+             */
+            timestamp?: string | null;
+            /**
+             * Container Url
+             * @description 컨테이너 URL
+             */
+            container_url?: string | null;
+            /**
+             * Container Id
+             * @description 컨테이너 ID
+             */
+            container_id?: string | null;
+            /**
+             * Shared Container
+             * @description 공유 컨테이너 여부
+             */
+            shared_container?: boolean | null;
+            /**
+             * Reused Existing
+             * @description 기존 컨테이너 재사용 여부
+             */
+            reused_existing?: boolean | null;
+            /**
+             * Conflict Info
+             * @description 충돌 정보
+             */
+            conflict_info?: {
+                [key: string]: unknown;
+            } | null;
         };
         /**
          * DeploymentStatus
@@ -2045,6 +2279,50 @@ export interface components {
                     [key: string]: unknown;
                 };
             };
+        };
+        /**
+         * MCPFunctionDTO
+         * @description MCP Function DTO
+         */
+        MCPFunctionDTO: {
+            /**
+             * Name
+             * @description 함수 이름
+             */
+            name: string;
+            /**
+             * Description
+             * @description 함수 설명
+             */
+            description?: string | null;
+            /**
+             * Input Schema
+             * @description 입력 스키마 (JSON Schema)
+             */
+            input_schema?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /**
+         * MCPFunctionListResponseDTO
+         * @description MCP Function 목록 응답 DTO
+         */
+        MCPFunctionListResponseDTO: {
+            /**
+             * Tool Id
+             * @description MCP Tool ID
+             */
+            tool_id: number;
+            /**
+             * Functions
+             * @description 함수 목록 (문자열 또는 상세 정보)
+             */
+            functions?: string[] | components["schemas"]["MCPFunctionDTO"][];
+            /**
+             * Last Updated
+             * @description 마지막 업데이트 시간
+             */
+            last_updated?: string | null;
         };
         /**
          * MCPServerConfigDTO
@@ -2340,7 +2618,7 @@ export interface components {
         };
         /**
          * MCPToolConfigEnhancedUpdateDTO
-         * @description 확장된 MCP Tool 설정 수정 DTO
+         * @description 확장된 MCP Tool 설정 수정 DTO (Legacy / Partial Update)
          */
         MCPToolConfigEnhancedUpdateDTO: {
             /** @description 서버 설정 */
@@ -2354,6 +2632,116 @@ export interface components {
             } | null;
             /** @description 연결 상태 */
             connection_status?: components["schemas"]["MCPToolConnectionStatus"] | null;
+            /**
+             * Health Check Enabled
+             * @description 헬스 체크 활성화
+             */
+            health_check_enabled?: boolean | null;
+        };
+        /**
+         * MCPToolConfigTemplateResponseDTO
+         * @description GET/PUT 통합 응답 DTO (Step02 #7)
+         *
+         *     템플릿 설정 조회(GET) 및 업데이트(PUT) 응답을 통일하여
+         *     프론트엔드에서 동일한 모델로 처리할 수 있도록 합니다.
+         */
+        MCPToolConfigTemplateResponseDTO: {
+            /**
+             * Id
+             * @description 설정 ID (legacy 호환, tool_id와 동일)
+             */
+            id: number;
+            /**
+             * Tool Id
+             * @description 도구 ID
+             */
+            tool_id: number;
+            /**
+             * Mcp Tool Id
+             * @description 도구 ID (legacy 호환)
+             */
+            mcp_tool_id: number;
+            /**
+             * Server Config
+             * @description 서버 설정
+             */
+            server_config?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Client Config
+             * @description 클라이언트 설정
+             */
+            client_config?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Secrets
+             * @description secrets 템플릿
+             */
+            secrets?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Deployment Type
+             * @description 배포 타입
+             * @default CONTAINER
+             */
+            deployment_type: string;
+            /**
+             * Health Check Enabled
+             * @description 헬스 체크 활성화
+             * @default true
+             */
+            health_check_enabled: boolean;
+            /**
+             * Has Secrets
+             * @description secrets 존재 여부
+             * @default false
+             */
+            has_secrets: boolean;
+            /**
+             * Env Keys
+             * @description 환경 변수 키 목록
+             */
+            env_keys?: string[];
+            /**
+             * Capabilities
+             * @description 도구 기능 목록
+             */
+            capabilities?: string[];
+            /**
+             * Config Schema Version
+             * @description 설정 스키마 버전
+             * @default v1
+             */
+            config_schema_version: string;
+            /**
+             * Is Verified
+             * @description 검증 여부
+             * @default false
+             */
+            is_verified: boolean;
+            /**
+             * Last Verification At
+             * @description 마지막 검증 시간
+             */
+            last_verification_at?: string | null;
+            /**
+             * Verification Error
+             * @description 검증 오류
+             */
+            verification_error?: string | null;
+            /**
+             * Created At
+             * @description 생성일시
+             */
+            created_at?: string | null;
+            /**
+             * Updated At
+             * @description 수정일시
+             */
+            updated_at?: string | null;
         };
         /**
          * MCPToolConnectionStatus
@@ -3206,6 +3594,32 @@ export interface components {
          */
         MCPTransportType: "streamable_http" | "stdio" | "sse";
         /**
+         * PaginatedUserConfigsDTO
+         * @description 페이지네이션된 사용자 설정 목록 DTO
+         */
+        PaginatedUserConfigsDTO: {
+            /**
+             * Total
+             * @description 전체 항목 수
+             */
+            total: number;
+            /**
+             * Page
+             * @description 현재 페이지
+             */
+            page: number;
+            /**
+             * Size
+             * @description 페이지 크기
+             */
+            size: number;
+            /**
+             * Items
+             * @description 설정 목록
+             */
+            items: components["schemas"]["UserConfigSummaryDTO"][];
+        };
+        /**
          * ResponseStatus
          * @description 응답 상태
          * @enum {string}
@@ -3409,6 +3823,139 @@ export interface components {
              * @description 응답 시간
              */
             timestamp?: string;
+        };
+        /**
+         * UserConfigDetailDTO
+         * @description 사용자 설정 상세 정보 DTO
+         */
+        UserConfigDetailDTO: {
+            /**
+             * Config Id
+             * @description 설정 ID
+             */
+            config_id: number;
+            /**
+             * User Id
+             * @description 사용자 ID
+             */
+            user_id: string;
+            /**
+             * Tool Id
+             * @description 도구 ID
+             */
+            tool_id: number;
+            /**
+             * Tool Name
+             * @description 도구 이름
+             */
+            tool_name?: string | null;
+            /**
+             * Config Name
+             * @description 설정 이름
+             */
+            config_name: string;
+            /**
+             * Container Status
+             * @description 컨테이너 상태
+             */
+            container_status?: string | null;
+            /**
+             * Created At
+             * @description 생성 일시
+             */
+            created_at?: string | null;
+            /**
+             * Updated At
+             * @description 수정 일시
+             */
+            updated_at?: string | null;
+            /**
+             * Is Active
+             * @description 활성화 여부
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Server Config
+             * @description 서버 설정
+             */
+            server_config?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Env Keys
+             * @description 환경 변수 키 목록
+             */
+            env_keys?: string[];
+            /**
+             * Capabilities
+             * @description 지원 기능 목록
+             */
+            capabilities?: string[];
+            /**
+             * Has Secrets
+             * @description 민감 정보 포함 여부
+             * @default false
+             */
+            has_secrets: boolean;
+            /**
+             * Config Schema Version
+             * @description 스키마 버전
+             * @default v1
+             */
+            config_schema_version: string;
+        };
+        /**
+         * UserConfigSummaryDTO
+         * @description 사용자 설정 요약 정보 DTO
+         */
+        UserConfigSummaryDTO: {
+            /**
+             * Config Id
+             * @description 설정 ID
+             */
+            config_id: number;
+            /**
+             * User Id
+             * @description 사용자 ID
+             */
+            user_id: string;
+            /**
+             * Tool Id
+             * @description 도구 ID
+             */
+            tool_id: number;
+            /**
+             * Tool Name
+             * @description 도구 이름
+             */
+            tool_name?: string | null;
+            /**
+             * Config Name
+             * @description 설정 이름
+             */
+            config_name: string;
+            /**
+             * Container Status
+             * @description 컨테이너 상태
+             */
+            container_status?: string | null;
+            /**
+             * Created At
+             * @description 생성 일시
+             */
+            created_at?: string | null;
+            /**
+             * Updated At
+             * @description 수정 일시
+             */
+            updated_at?: string | null;
+            /**
+             * Is Active
+             * @description 활성화 여부
+             * @default true
+             */
+            is_active: boolean;
         };
         /**
          * UserDeploymentRequestDTO
@@ -4595,9 +5142,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["MCPToolConfigTemplateResponseDTO"];
                 };
             };
             /** @description 도구를 찾을 수 없음 */
@@ -4658,7 +5203,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MCPToolConfigEnhancedResponseDTO"];
+                    "application/json": components["schemas"]["MCPToolConfigTemplateResponseDTO"];
                 };
             };
             /** @description 잘못된 설정 데이터 */
@@ -4916,6 +5461,66 @@ export interface operations {
                      *         "message": "Internal server error",
                      *         "path": "/v1/mcp-tools/{tool_id}/config",
                      *         "method": "DELETE"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_tool_functions_v1_mcp_tools__tool_id__functions_get: {
+        parameters: {
+            query?: {
+                /** @description 상세 정보 포함 여부 */
+                detail?: boolean;
+            };
+            header?: never;
+            path: {
+                tool_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 조회 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MCPFunctionListResponseDTO"];
+                };
+            };
+            /** @description 도구를 찾을 수 없음 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/mcp-tools/{tool_id}/functions",
+                     *         "method": "GET"
                      *       }
                      *     }
                      */
@@ -7699,6 +8304,393 @@ export interface operations {
                      *         "code": 500,
                      *         "message": "Internal server error",
                      *         "path": "/v1/dashboard/health-history/{tool_id}/{config_id}",
+                     *         "method": "GET"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_all_user_configs_v1_admin_user_configs_get: {
+        parameters: {
+            query?: {
+                /** @description 사용자 ID 필터 */
+                user_id?: string | null;
+                /** @description 도구 ID 필터 */
+                tool_id?: number | null;
+                /** @description 컨테이너 상태 필터 */
+                container_status?: string | null;
+                /** @description 설정 이름 검색 (부분 일치) */
+                config_name?: string | null;
+                /** @description 페이지 번호 */
+                page?: number;
+                /** @description 페이지 크기 */
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedUserConfigsDTO"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/admin/user-configs",
+                     *         "method": "GET"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_user_config_v1_admin_user_configs__config_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                config_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserConfigDetailDTO"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/admin/user-configs/{config_id}",
+                     *         "method": "GET"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    update_user_config_v1_admin_user_configs__config_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                config_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserConfigDetailDTO"];
+                };
+            };
+            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 403,
+                     *         "message": "Insufficient permissions",
+                     *         "path": "/v1/admin/user-configs/{config_id}",
+                     *         "method": "PUT"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 입력 데이터 유효성 검증 실패 */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/admin/user-configs/{config_id}",
+                     *         "method": "PUT"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_user_config_v1_admin_user_configs__config_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                config_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 403,
+                     *         "message": "Insufficient permissions",
+                     *         "path": "/v1/admin/user-configs/{config_id}",
+                     *         "method": "DELETE"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/admin/user-configs/{config_id}",
+                     *         "method": "DELETE"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_all_containers_v1_admin_containers_get: {
+        parameters: {
+            query?: {
+                /** @description 컨테이너 상태 필터 */
+                status?: string | null;
+                /** @description 헬스 상태 필터 */
+                health_status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContainerDTO"][];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/admin/containers",
+                     *         "method": "GET"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_container_status_summary_v1_admin_containers_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContainerStatusSummaryDTO"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/admin/containers/status",
                      *         "method": "GET"
                      *       }
                      *     }
