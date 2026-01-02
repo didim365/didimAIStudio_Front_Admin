@@ -49,27 +49,6 @@ const themes = [
   },
 ];
 
-// 폰트 옵션
-const fonts = [
-  {
-    id: "pretendard",
-    name: "Pretendard",
-    family: "Pretendard",
-    description: "한글 최적화 산돌체",
-  },
-  {
-    id: "inter",
-    name: "Inter",
-    family: "Inter, sans-serif",
-    description: "모던한 영문 폰트",
-  },
-  {
-    id: "noto-sans",
-    name: "Noto Sans KR",
-    family: "'Noto Sans KR', sans-serif",
-    description: "구글 노토산스",
-  },
-];
 
 export function ThemeSettings() {
   const { theme, setTheme } = useTheme();
@@ -84,18 +63,10 @@ export function ThemeSettings() {
     return "monochrome";
   });
 
-  const [selectedFont, setSelectedFont] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem("font") || "pretendard";
-    }
-    return "pretendard";
-  });
-
-  const applySettings = (themeId: string, fontId: string) => {
+  const applySettings = (themeId: string) => {
     if (typeof window === 'undefined') return;
 
     const theme = themes.find((t) => t.id === themeId);
-    const font = fonts.find((f) => f.id === fontId);
 
     if (theme) {
       document.documentElement.style.setProperty("--color-primary", theme.colors.primary);
@@ -107,30 +78,20 @@ export function ThemeSettings() {
       document.documentElement.style.setProperty("--chart-color-2", theme.colors.secondary);
       document.documentElement.style.setProperty("--chart-color-3", theme.colors.accent);
     }
-
-    if (font) {
-      document.body.style.fontFamily = font.family;
-    }
   };
 
   // 초기 설정 적용
   useEffect(() => {
-    applySettings(selectedTheme, selectedFont);
-  }, [selectedTheme, selectedFont]);
+    applySettings(selectedTheme);
+  }, [selectedTheme]);
 
   const handleThemeChange = (themeId: string) => {
     setSelectedTheme(themeId);
     localStorage.setItem("theme", themeId);
-    applySettings(themeId, selectedFont);
+    applySettings(themeId);
 
     // 테마 변경 이벤트 발생시켜 차트 리렌더링
     window.dispatchEvent(new Event('themeChanged'));
-  };
-
-  const handleFontChange = (fontId: string) => {
-    setSelectedFont(fontId);
-    localStorage.setItem("font", fontId);
-    applySettings(selectedTheme, fontId);
   };
 
   const handleDarkModeChange = (checked: boolean) => {
@@ -187,7 +148,7 @@ export function ThemeSettings() {
           <SheetHeader>
             <SheetTitle>테마 설정</SheetTitle>
             <SheetDescription>
-              컬러 테마와 폰트를 선택하여 맞춤 설정하세요
+              컬러 테마를 선택하여 맞춤 설정하세요
             </SheetDescription>
           </SheetHeader>
 
@@ -279,55 +240,6 @@ export function ThemeSettings() {
 
             <Separator />
 
-            {/* 폰트 섹션 */}
-            <div>
-              <Label className="text-sm font-medium mb-3 block">
-                폰트
-              </Label>
-              <div className="grid gap-3">
-                {fonts.map((font) => (
-                  <button
-                    key={font.id}
-                    onClick={() => handleFontChange(font.id)}
-                    className={`w-full p-4 rounded-lg border transition-all text-left ${
-                      selectedFont === font.id
-                        ? "border-primary bg-accent/50"
-                        : "border-border hover:border-primary/50 hover:bg-accent/30"
-                    }`}
-                    style={{ fontFamily: font.family }}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-medium text-sm">
-                            {font.name}
-                          </h3>
-                          {selectedFont === font.id && (
-                            <div className="bg-primary text-primary-foreground rounded-full p-0.5">
-                              <Check className="h-3 w-3" />
-                            </div>
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground mb-3">
-                          {font.description}
-                        </p>
-                        <div className="space-y-1">
-                          <div className="text-base font-medium">
-                            Aa Bb Cc 123
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            빠른 여우가 게으른 개를 뛰어넘다
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <Separator />
-
             {/* 미리보기 섹션 */}
             <div>
               <Label className="text-sm font-medium mb-3 block">
@@ -338,7 +250,7 @@ export function ThemeSettings() {
                   관리자 콘솔
                 </h3>
                 <p className="text-xs text-muted-foreground mb-4">
-                  선택한 테마와 폰트가 적용된 미리보기입니다.
+                  선택한 테마가 적용된 미리보기입니다.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <div
