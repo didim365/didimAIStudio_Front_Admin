@@ -1,0 +1,70 @@
+import { describe, it, expect, vi } from "vitest";
+import { renderWithProviders, screen } from "@/test/test-utils";
+import UsersPage from "./UsersPage";
+
+// useGetUsers 훅 mock
+vi.mock("../_hooks/useGetUsers", () => ({
+  useGetUsers: vi.fn(() => ({
+    data: {
+      items: [],
+      total: 0,
+      page: 1,
+      pages: 1,
+    },
+    isLoading: false,
+  })),
+}));
+
+// Next.js navigation mocks
+vi.mock("next/link", () => ({
+  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+  })),
+  usePathname: vi.fn(() => "/users"),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
+}));
+
+// useQueryParam 훅 mock
+vi.mock("@/shared/hooks/useQueryParams", () => ({
+  useQueryParam: vi.fn((key: string, defaultValue: any) => {
+    return [defaultValue, vi.fn()];
+  }),
+}));
+
+describe("UsersPage", () => {
+  it("페이지가 정상적으로 렌더링된다", () => {
+    renderWithProviders(<UsersPage />);
+
+    expect(screen.getByText("회원 관리")).toBeInTheDocument();
+  });
+
+  it("검색 입력창이 표시된다", () => {
+    renderWithProviders(<UsersPage />);
+
+    const searchInput = screen.getByPlaceholderText("회원명을 입력해주세요.");
+    expect(searchInput).toBeInTheDocument();
+  });
+
+  it("회원 추가 버튼이 표시된다", () => {
+    renderWithProviders(<UsersPage />);
+
+    expect(screen.getByText("회원 추가")).toBeInTheDocument();
+  });
+
+  it("전체 회원 수가 표시된다", () => {
+    renderWithProviders(<UsersPage />);
+
+    expect(screen.getByText(/전체 회원/)).toBeInTheDocument();
+  });
+});
