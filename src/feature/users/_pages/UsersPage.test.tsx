@@ -15,23 +15,9 @@ vi.mock("../_hooks/useGetUsers", () => ({
   })),
 }));
 
-// Next.js navigation mocks (추가)
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(() => ({
-    push: vi.fn(),
-    replace: vi.fn(),
-    prefetch: vi.fn(),
-    back: vi.fn(),
-    forward: vi.fn(),
-    refresh: vi.fn(),
-  })),
-  usePathname: vi.fn(() => "/users"),
-  useSearchParams: vi.fn(() => new URLSearchParams()),
-}));
-
 // useQueryParam 훅 mock
 vi.mock("@/shared/hooks/useQueryParams", () => ({
-  useQueryParam: vi.fn((key: string, defaultValue: any) => {
+  useQueryParam: vi.fn((_key: string, defaultValue: any) => {
     return [defaultValue, vi.fn()];
   }),
 }));
