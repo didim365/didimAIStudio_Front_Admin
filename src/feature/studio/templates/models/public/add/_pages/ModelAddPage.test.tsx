@@ -2,9 +2,9 @@ import { describe, it, expect, vi } from "vitest";
 import { renderWithProviders, screen } from "@/test/test-utils";
 import ModelAddPage from "./ModelAddPage";
 
-// usePostModel 훅 mock
-vi.mock("../../../_hooks/usePostModel", () => ({
-  usePostModel: vi.fn(() => ({
+// usePostCatalog 훅 mock
+vi.mock("../_hooks/usePostCatalog", () => ({
+  usePostCatalog: vi.fn(() => ({
     mutate: vi.fn(),
     isPending: false,
   })),
@@ -21,12 +21,12 @@ describe("ModelAddPage (templates - public)", () => {
     renderWithProviders(<ModelAddPage />);
 
     expect(screen.getByText("기본 정보")).toBeInTheDocument();
-    expect(screen.getByLabelText(/모델 이름/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/모델명/)).toBeInTheDocument();
   });
 
   it("모델 추가 버튼이 표시된다", () => {
     renderWithProviders(<ModelAddPage />);
 
-    expect(screen.getByText("모델 추가")).toBeInTheDocument();
+    expect(screen.getByText("모델 생성")).toBeInTheDocument();
   });
 });

@@ -26,8 +26,8 @@ describe("ModelPage", () => {
     renderWithProviders(<ModelPage config={mockConfig} />);
 
     expect(screen.getByText("기본 정보")).toBeInTheDocument();
-    expect(screen.getByText("테스트 모델")).toBeInTheDocument();
-    expect(screen.getByText("OpenAI")).toBeInTheDocument();
+    expect(screen.getAllByText("테스트 모델")).toHaveLength(2); // 기본 정보 + JSON 뷰
+    expect(screen.getAllByText("OpenAI")).toHaveLength(2); // 기본 정보 + JSON 뷰
   });
 
   it("모델 상태 배지가 표시된다", () => {

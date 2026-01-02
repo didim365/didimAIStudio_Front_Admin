@@ -29,11 +29,10 @@ describe("ToolsPage (templates)", () => {
     expect(screen.getByText("도구 템플릿 관리")).toBeInTheDocument();
   });
 
-  it("검색 입력창이 표시된다", () => {
+  it("상태 필터가 표시된다", () => {
     renderWithProviders(<ToolsPage />);
 
-    const searchInput = screen.getByPlaceholderText("도구 이름 검색");
-    expect(searchInput).toBeInTheDocument();
+    expect(screen.getByText("전체 상태")).toBeInTheDocument();
   });
 
   it("도구 추가 버튼이 표시된다", () => {

@@ -14,7 +14,7 @@ describe("ToolAddPage (templates)", () => {
   it("페이지가 정상적으로 렌더링된다", () => {
     renderWithProviders(<ToolAddPage />);
 
-    expect(screen.getByText("새 도구 추가")).toBeInTheDocument();
+    expect(screen.getByText("새 MCP 도구 추가")).toBeInTheDocument();
   });
 
   it("기본 정보 입력 필드가 표시된다", () => {
@@ -27,6 +27,6 @@ describe("ToolAddPage (templates)", () => {
   it("도구 추가 버튼이 표시된다", () => {
     renderWithProviders(<ToolAddPage />);
 
-    expect(screen.getByText("도구 추가")).toBeInTheDocument();
+    expect(screen.getByText("도구 등록")).toBeInTheDocument();
   });
 });

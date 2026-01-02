@@ -10,3 +10,10 @@ afterEach(() => {
 
 // Next.js 환경 변수 mock
 process.env.NEXT_PUBLIC_API_URL = "http://localhost:3000";
+
+// ResizeObserver mock
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};

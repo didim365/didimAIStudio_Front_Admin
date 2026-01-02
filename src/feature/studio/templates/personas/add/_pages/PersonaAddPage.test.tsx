@@ -10,23 +10,29 @@ vi.mock("../../_hooks/usePostPersona", () => ({
   })),
 }));
 
+const mockMyInfo = {
+  id: 1,
+  username: "testuser",
+  email: "test@example.com",
+};
+
 describe("PersonaAddPage (templates)", () => {
   it("페이지가 정상적으로 렌더링된다", () => {
-    renderWithProviders(<PersonaAddPage />);
+    renderWithProviders(<PersonaAddPage myInfo={mockMyInfo} />);
 
     expect(screen.getByText("새 페르소나 추가")).toBeInTheDocument();
   });
 
   it("기본 정보 입력 필드가 표시된다", () => {
-    renderWithProviders(<PersonaAddPage />);
+    renderWithProviders(<PersonaAddPage myInfo={mockMyInfo} />);
 
     expect(screen.getByText("기본 정보")).toBeInTheDocument();
     expect(screen.getByLabelText(/페르소나 이름/)).toBeInTheDocument();
   });
 
   it("페르소나 추가 버튼이 표시된다", () => {
-    renderWithProviders(<PersonaAddPage />);
+    renderWithProviders(<PersonaAddPage myInfo={mockMyInfo} />);
 
-    expect(screen.getByText("페르소나 추가")).toBeInTheDocument();
+    expect(screen.getByText("페르소나 생성")).toBeInTheDocument();
   });
 });

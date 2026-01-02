@@ -33,14 +33,14 @@ describe("AgentAddPage", () => {
     expect(screen.getByText("기본 정보")).toBeInTheDocument();
     expect(screen.getByLabelText(/카테고리/)).toBeInTheDocument();
     expect(screen.getByLabelText(/에이전트 이름/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/설명/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^설명 \*/)).toBeInTheDocument();
   });
 
   it("모델 설정 입력 필드가 표시된다", () => {
     renderWithProviders(<AgentAddPage />);
 
     expect(screen.getByText("모델 설정")).toBeInTheDocument();
-    expect(screen.getByLabelText(/모델 ID/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^모델 ID \*/)).toBeInTheDocument();
     expect(screen.getByLabelText(/폴백 모델 ID/)).toBeInTheDocument();
   });
 

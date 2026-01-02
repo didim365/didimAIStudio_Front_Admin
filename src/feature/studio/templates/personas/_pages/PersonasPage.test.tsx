@@ -4,7 +4,7 @@ import PersonasPage from "./PersonasPage";
 
 // useGetPersonas 훅 mock
 vi.mock("../_hooks/useGetPersonas", () => ({
-  useGetPersonas: vi.fn(() => ({
+  default: vi.fn(() => ({
     data: {
       items: [],
       total: 0,
@@ -33,14 +33,14 @@ describe("PersonasPage (templates)", () => {
   it("검색 입력창이 표시된다", () => {
     renderWithProviders(<PersonasPage />);
 
-    const searchInput = screen.getByPlaceholderText("페르소나 이름 검색");
+    const searchInput = screen.getByPlaceholderText("이름 검색");
     expect(searchInput).toBeInTheDocument();
   });
 
   it("페르소나 추가 버튼이 표시된다", () => {
     renderWithProviders(<PersonasPage />);
 
-    expect(screen.getByText("페르소나 추가")).toBeInTheDocument();
+    expect(screen.getByText("페르소나 생성")).toBeInTheDocument();
   });
 
   it("새로고침 버튼이 표시된다", () => {
