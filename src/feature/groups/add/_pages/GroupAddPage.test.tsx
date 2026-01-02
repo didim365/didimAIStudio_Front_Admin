@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderWithProviders, screen } from "@/test/test-utils";
+import { renderWithProviders, screen } from "@/test/unit/test-utils";
 import GroupAddPage from "./GroupAddPage";
 
 // Mock 데이터

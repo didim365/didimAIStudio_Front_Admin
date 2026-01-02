@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { renderWithProviders, screen } from "@/test/test-utils";
+import { renderWithProviders, screen } from "@/test/unit/test-utils";
 import PersonaPage from "./PersonaPage";
 
 // useDeletePersona 훅 mock

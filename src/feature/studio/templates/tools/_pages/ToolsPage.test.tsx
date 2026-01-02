@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { renderWithProviders, screen } from "@/test/test-utils";
+import { renderWithProviders, screen } from "@/test/unit/test-utils";
 import ToolsPage from "./ToolsPage";
 
 // useGetTools 훅 mock
