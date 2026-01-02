@@ -150,7 +150,7 @@ function PersonaEditPage({ myPersona }: PersonaEditPageProps) {
                   {/* Description */}
                   <div className="space-y-2">
                     <Label
-                      htmlFor="user_persona_description"
+                      htmlFor="description"
                       className="flex items-center gap-2"
                     >
                       <FileText className="h-4 w-4" />
