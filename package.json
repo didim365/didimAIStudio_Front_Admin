@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "prebuild": "npm run test:run",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
