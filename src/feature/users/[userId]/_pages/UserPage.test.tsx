@@ -2,13 +2,6 @@ import { describe, it, expect, vi } from "vitest";
 import { renderWithProviders, screen } from "@/test/test-utils";
 import { UserPage } from "./UserPage";
 
-// Next.js navigation mocks
-vi.mock("next/link", () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
-}));
-
 // @uiw/react-json-view mock
 vi.mock("@uiw/react-json-view", () => ({
   default: ({ value }: { value: unknown }) => (

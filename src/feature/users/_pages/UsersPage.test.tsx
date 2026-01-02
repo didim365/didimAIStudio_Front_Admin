@@ -15,13 +15,7 @@ vi.mock("../_hooks/useGetUsers", () => ({
   })),
 }));
 
-// Next.js navigation mocks
-vi.mock("next/link", () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
-}));
-
+// Next.js navigation mocks (추가)
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn(),
