@@ -5,24 +5,23 @@ import { useQueryClient } from "@tanstack/react-query";
 import { usePutTool } from "../_hooks/usePutTool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Separator } from "@/shared/ui/separator";
 import {
-  Wrench,
   ArrowLeft,
   Save,
+  Tag,
+  Key,
+  Database,
+  FileCode,
+  Settings,
+  Wrench,
   Hash,
   Package,
   Server,
-  Container,
   GitBranch,
   Code2,
-  FileCode,
-  Tag,
-  Key,
-  Settings,
-  Layers,
   Link2,
-  Database,
+  Container,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -35,21 +34,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { GetToolResponse } from "../../_api/getTool";
+import Link from "next/link";
+import { JsonEditorCard } from "../_components/JsonEditorCard";
+import { ChipInput } from "../_components/ChipInput";
+import { FormField } from "../_components/FormField";
 import {
   statusConfig,
   providerConfig,
   deploymentTypeConfig,
 } from "../../../_constants/toolConfigs";
-import Link from "next/link";
 
 export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data")
-    ? "/studio/data"
-    : "/studio/templates";
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
@@ -68,107 +66,22 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
     metadata: tool.metadata || null,
   });
 
-  const [tagsInput, setTagsInput] = useState(formData.tags.join(", "));
-  const [keywordsInput, setKeywordsInput] = useState(
-    formData.keywords.join(", ")
-  );
-  const [envVarsText, setEnvVarsText] = useState(
-    JSON.stringify(formData.environment_variables, null, 2)
-  );
-  const [dockerComposeText, setDockerComposeText] = useState(
-    formData.docker_compose_config
-      ? JSON.stringify(formData.docker_compose_config, null, 2)
-      : ""
-  );
-  const [resourceReqText, setResourceReqText] = useState(
-    formData.resource_requirements
-      ? JSON.stringify(formData.resource_requirements, null, 2)
-      : ""
-  );
-  const [metadataText, setMetadataText] = useState(
-    formData.metadata ? JSON.stringify(formData.metadata, null, 2) : ""
-  );
-
   const { mutate: updateTool, isPending: isUpdating } = usePutTool({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["mcp-tools"],
       });
 
-      router.push(`${basePath}/tools/${tool.id}`);
+      router.push(`/studio/templates/tools/${tool.id}`);
     },
   });
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Parse JSON fields
-    let envVars = {};
-    let dockerCompose = null;
-    let resourceReq = null;
-    let metadata = null;
-
-    try {
-      if (envVarsText.trim()) {
-        envVars = JSON.parse(envVarsText);
-      }
-    } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "환경 변수 JSON 형식이 올바르지 않습니다."
-      );
-      return;
-    }
-
-    try {
-      if (dockerComposeText.trim()) {
-        dockerCompose = JSON.parse(dockerComposeText);
-      }
-    } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Docker Compose 설정 JSON 형식이 올바르지 않습니다."
-      );
-      return;
-    }
-
-    try {
-      if (resourceReqText.trim()) {
-        resourceReq = JSON.parse(resourceReqText);
-      }
-    } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "리소스 요구사항 JSON 형식이 올바르지 않습니다."
-      );
-      return;
-    }
-
-    try {
-      if (metadataText.trim()) {
-        metadata = JSON.parse(metadataText);
-      }
-    } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "메타데이터 JSON 형식이 올바르지 않습니다."
-      );
-      return;
-    }
-
-    // Parse tags and keywords
-    const tags = tagsInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
-    const keywords = keywordsInput
-      .split(",")
-      .map((k) => k.trim())
-      .filter((k) => k.length > 0);
+    // Tags and keywords are already arrays in formData
+    const tags = formData.tags.filter((t) => t.length > 0);
+    const keywords = formData.keywords.filter((k) => k.length > 0);
 
     updateTool({
       params: { tool_id: tool.id },
@@ -182,10 +95,14 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         container_image: formData.container_image || null,
         tags: tags.length > 0 ? tags : null,
         keywords: keywords.length > 0 ? keywords : null,
-        environment_variables: Object.keys(envVars).length > 0 ? envVars : null,
-        docker_compose_config: dockerCompose,
-        resource_requirements: resourceReq,
-        metadata: metadata,
+        environment_variables:
+          formData.environment_variables &&
+          Object.keys(formData.environment_variables).length > 0
+            ? (formData.environment_variables as Record<string, string>)
+            : null,
+        docker_compose_config: formData.docker_compose_config || null,
+        resource_requirements: formData.resource_requirements || null,
+        metadata: formData.metadata || null,
       },
     });
   };
@@ -199,7 +116,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link href={`${basePath}/tools/${tool.id}`}>
+            <Link href={`/studio/templates/tools/${tool.id}`}>
               <Button
                 type="button"
                 variant="ghost"
@@ -261,63 +178,43 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
 
                 {/* Form Grid */}
                 <div className="flex-1 grid gap-4 md:grid-cols-2">
-                  {/* Tool ID (Read-only) */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="tool_id"
-                      className="flex items-center gap-2"
-                    >
-                      <Hash className="h-4 w-4" />
-                      <span>도구 ID</span>
-                    </Label>
+                  <FormField icon={Hash} label="도구 ID" htmlFor="tool_id">
                     <Input
                       id="tool_id"
                       value={tool.id}
                       disabled
                       className="bg-muted"
                     />
-                  </div>
+                  </FormField>
 
-                  {/* Tool Name (Read-only) */}
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="flex items-center gap-2">
-                      <Wrench className="h-4 w-4" />
-                      <span>도구 이름</span>
-                    </Label>
+                  <FormField icon={Wrench} label="도구 이름" htmlFor="name">
                     <Input
                       id="name"
                       value={tool.name}
                       disabled
                       className="bg-muted"
                     />
-                  </div>
+                  </FormField>
 
-                  {/* Definition Name (Read-only) */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="definition_name"
-                      className="flex items-center gap-2"
-                    >
-                      <Code2 className="h-4 w-4" />
-                      <span>시스템 내부 식별자</span>
-                    </Label>
+                  <FormField
+                    icon={Code2}
+                    label="시스템 내부 식별자"
+                    htmlFor="definition_name"
+                  >
                     <Input
                       id="definition_name"
                       value={tool.definition_name || "-"}
                       disabled
                       className="bg-muted font-mono"
                     />
-                  </div>
+                  </FormField>
 
-                  {/* Version */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="version"
-                      className="flex items-center gap-2"
-                    >
-                      <GitBranch className="h-4 w-4" />
-                      <span>버전 *</span>
-                    </Label>
+                  <FormField
+                    icon={GitBranch}
+                    label="버전"
+                    htmlFor="version"
+                    required
+                  >
                     <Input
                       id="version"
                       value={formData.version}
@@ -328,31 +225,18 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                       className="font-mono"
                       required
                     />
-                  </div>
+                  </FormField>
 
-                  {/* Category (Read-only) */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="category"
-                      className="flex items-center gap-2"
-                    >
-                      <Package className="h-4 w-4" />
-                      <span>카테고리</span>
-                    </Label>
+                  <FormField icon={Package} label="카테고리" htmlFor="category">
                     <Input
                       id="category"
                       value={tool.category}
                       disabled
                       className="bg-muted"
                     />
-                  </div>
+                  </FormField>
 
-                  {/* Status */}
-                  <div className="space-y-2">
-                    <Label htmlFor="status" className="flex items-center gap-2">
-                      <Settings className="h-4 w-4" />
-                      <span>상태 *</span>
-                    </Label>
+                  <FormField icon={Settings} label="상태" htmlFor="status" required>
                     <Select
                       value={formData.status}
                       onValueChange={(
@@ -370,17 +254,13 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                         <SelectItem value="ERROR">오류</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                  </FormField>
 
-                  {/* Provider (Read-only) */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="provider"
-                      className="flex items-center gap-2"
-                    >
-                      <Package className="h-4 w-4" />
-                      <span>프로바이더</span>
-                    </Label>
+                  <FormField
+                    icon={Package}
+                    label="프로바이더"
+                    htmlFor="provider"
+                  >
                     <Input
                       id="provider"
                       value={
@@ -389,17 +269,13 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                       disabled
                       className="bg-muted"
                     />
-                  </div>
+                  </FormField>
 
-                  {/* Deployment Type (Read-only) */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="deployment_type"
-                      className="flex items-center gap-2"
-                    >
-                      <Server className="h-4 w-4" />
-                      <span>배포 타입</span>
-                    </Label>
+                  <FormField
+                    icon={Server}
+                    label="배포 타입"
+                    htmlFor="deployment_type"
+                  >
                     <Input
                       id="deployment_type"
                       value={
@@ -409,31 +285,25 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                       disabled
                       className="bg-muted"
                     />
-                  </div>
+                  </FormField>
 
-                  {/* Description */}
-                  <div className="space-y-2 md:col-span-2">
-                    <Label
-                      htmlFor="description"
-                      className="flex items-center gap-2"
-                    >
-                      <FileCode className="h-4 w-4" />
-                      <span>설명</span>
-                    </Label>
+                  <FormField
+                    icon={FileCode}
+                    label="설명"
+                    htmlFor="description"
+                    className="md:col-span-2"
+                  >
                     <Textarea
                       id="description"
                       value={formData.description}
                       onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
+                        setFormData({ ...formData, description: e.target.value })
                       }
                       placeholder="도구에 대한 설명을 입력하세요"
                       rows={3}
                       className="resize-none"
                     />
-                  </div>
+                  </FormField>
                 </div>
               </div>
             </CardContent>
@@ -448,12 +318,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Icon URL */}
-              <div className="space-y-2">
-                <Label htmlFor="icon_url" className="flex items-center gap-2">
-                  <Link2 className="h-4 w-4" />
-                  <span>아이콘 URL</span>
-                </Label>
+              <FormField icon={Link2} label="아이콘 URL" htmlFor="icon_url">
                 <Input
                   id="icon_url"
                   value={formData.icon_url}
@@ -463,14 +328,9 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                   placeholder="https://example.com/icon.png"
                   type="url"
                 />
-              </div>
+              </FormField>
 
-              {/* Repo URL */}
-              <div className="space-y-2">
-                <Label htmlFor="repo_url" className="flex items-center gap-2">
-                  <GitBranch className="h-4 w-4" />
-                  <span>저장소 URL</span>
-                </Label>
+              <FormField icon={GitBranch} label="저장소 URL" htmlFor="repo_url">
                 <Input
                   id="repo_url"
                   value={formData.repo_url}
@@ -480,14 +340,9 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                   placeholder="https://github.com/user/repo"
                   type="url"
                 />
-              </div>
+              </FormField>
 
-              {/* Server URL */}
-              <div className="space-y-2">
-                <Label htmlFor="server_url" className="flex items-center gap-2">
-                  <Server className="h-4 w-4" />
-                  <span>서버 URL</span>
-                </Label>
+              <FormField icon={Server} label="서버 URL" htmlFor="server_url">
                 <Input
                   id="server_url"
                   value={formData.server_url}
@@ -497,7 +352,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                   placeholder="https://server.example.com"
                   type="url"
                 />
-              </div>
+              </FormField>
             </CardContent>
           </Card>
 
@@ -510,15 +365,11 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Container Image */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="container_image"
-                  className="flex items-center gap-2"
-                >
-                  <Container className="h-4 w-4" />
-                  <span>컨테이너 이미지</span>
-                </Label>
+              <FormField
+                icon={Container}
+                label="컨테이너 이미지"
+                htmlFor="container_image"
+              >
                 <Input
                   id="container_image"
                   value={formData.container_image}
@@ -531,38 +382,25 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                   placeholder="docker.io/library/image:tag"
                   className="font-mono"
                 />
-              </div>
+              </FormField>
 
-              {/* Transport (Read-only) */}
-              <div className="space-y-2">
-                <Label htmlFor="transport" className="flex items-center gap-2">
-                  <Layers className="h-4 w-4" />
-                  <span>전송 방식</span>
-                </Label>
+              <FormField icon={Layers} label="전송 방식" htmlFor="transport">
                 <Input
                   id="transport"
                   value={tool.transport || "-"}
                   disabled
                   className="bg-muted"
                 />
-              </div>
+              </FormField>
 
-              {/* Server Type (Read-only) */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="server_type"
-                  className="flex items-center gap-2"
-                >
-                  <Server className="h-4 w-4" />
-                  <span>서버 타입</span>
-                </Label>
+              <FormField icon={Server} label="서버 타입" htmlFor="server_type">
                 <Input
                   id="server_type"
                   value={tool.server_type || "-"}
                   disabled
                   className="bg-muted"
                 />
-              </div>
+              </FormField>
             </CardContent>
           </Card>
 
@@ -574,145 +412,107 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                 태그 및 키워드
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                {/* Tags */}
-                <div className="space-y-2">
-                  <Label htmlFor="tags" className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    <span>태그</span>
-                  </Label>
-                  <Input
-                    id="tags"
-                    value={tagsInput}
-                    onChange={(e) => setTagsInput(e.target.value)}
-                    placeholder="tag1, tag2, tag3"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    쉼표로 구분하여 입력하세요
-                  </p>
-                </div>
-
-                {/* Keywords */}
-                <div className="space-y-2">
-                  <Label htmlFor="keywords" className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    <span>키워드</span>
-                  </Label>
-                  <Input
-                    id="keywords"
-                    value={keywordsInput}
-                    onChange={(e) => setKeywordsInput(e.target.value)}
-                    placeholder="keyword1, keyword2, keyword3"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    쉼표로 구분하여 입력하세요
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Environment Variables Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Key className="h-5 w-5" />
-                환경 변수
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
+              {/* Tags */}
               <div className="space-y-2">
-                <Label
-                  htmlFor="environment_variables"
-                  className="flex items-center gap-2"
-                >
-                  <Key className="h-4 w-4" />
-                  <span>환경 변수 (JSON)</span>
+                <Label htmlFor="tags" className="flex items-center gap-2">
+                  <Tag className="h-4 w-4" />
+                  <span>태그</span>
                 </Label>
-                <Textarea
-                  id="environment_variables"
-                  value={envVarsText}
-                  onChange={(e) => setEnvVarsText(e.target.value)}
-                  placeholder='{"KEY": "value", "API_KEY": "secret"}'
-                  rows={6}
-                  className="font-mono text-sm"
+                <ChipInput
+                  id="tags"
+                  chips={formData.tags}
+                  onChipsChange={(tags) => setFormData({ ...formData, tags })}
+                  placeholder="태그 입력..."
+                  chipClassName="bg-primary/10 text-primary border-primary/20"
                 />
                 <p className="text-xs text-muted-foreground">
-                  JSON 형식으로 입력하세요
+                  Enter, 쉼표 또는 스페이스로 추가
+                </p>
+              </div>
+
+              {/* Keywords */}
+              <div className="space-y-2">
+                <Label htmlFor="keywords" className="flex items-center gap-2">
+                  <Key className="h-4 w-4" />
+                  <span>키워드</span>
+                </Label>
+                <ChipInput
+                  id="keywords"
+                  chips={formData.keywords}
+                  onChipsChange={(keywords) => setFormData({ ...formData, keywords })}
+                  placeholder="키워드 입력..."
+                  chipClassName="bg-secondary/30 text-foreground border-border"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Enter, 쉼표 또는 스페이스로 추가
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Advanced Configuration Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                고급 설정
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Docker Compose Config */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="docker_compose_config"
-                  className="flex items-center gap-2"
-                >
-                  <Settings className="h-4 w-4" />
-                  <span>Docker Compose 설정 (JSON)</span>
-                </Label>
-                <Textarea
-                  id="docker_compose_config"
-                  value={dockerComposeText}
-                  onChange={(e) => setDockerComposeText(e.target.value)}
-                  placeholder='{"version": "3", "services": {...}}'
-                  rows={6}
-                  className="font-mono text-sm"
-                />
-              </div>
+          {/* Environment Variables Card */}
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="환경 변수"
+            icon={Key}
+            label="환경 변수 (JSON)"
+            value={formData.environment_variables as Record<string, unknown> | null}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                environment_variables: (value as Record<string, string>) || {},
+              })
+            }
+            placeholder='{ "KEY": "value", "API_KEY": "secret" }'
+            errorMessage="환경 변수 JSON 형식이 올바르지 않습니다."
+            htmlId="environment_variables"
+          />
 
-              <Separator />
+          {/* Docker Compose Configuration Card */}
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="Docker Compose 설정"
+            icon={Settings}
+            label="Docker Compose 설정 (JSON)"
+            value={formData.docker_compose_config}
+            onChange={(value) =>
+              setFormData({ ...formData, docker_compose_config: value })
+            }
+            placeholder='{ "version": "3", "services": {...} }'
+            errorMessage="Docker Compose 설정 JSON 형식이 올바르지 않습니다."
+            htmlId="docker_compose_config"
+          />
 
-              {/* Resource Requirements */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="resource_requirements"
-                  className="flex items-center gap-2"
-                >
-                  <Database className="h-4 w-4" />
-                  <span>리소스 요구사항 (JSON)</span>
-                </Label>
-                <Textarea
-                  id="resource_requirements"
-                  value={resourceReqText}
-                  onChange={(e) => setResourceReqText(e.target.value)}
-                  placeholder='{"cpu": "1", "memory": "512Mi"}'
-                  rows={6}
-                  className="font-mono text-sm"
-                />
-              </div>
+          {/* Resource Requirements Card */}
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="리소스 요구사항"
+            icon={Database}
+            label="리소스 요구사항 (JSON)"
+            value={formData.resource_requirements}
+            onChange={(value) =>
+              setFormData({ ...formData, resource_requirements: value })
+            }
+            placeholder='{ "cpu": "1", "memory": "512Mi" }'
+            errorMessage="리소스 요구사항 JSON 형식이 올바르지 않습니다."
+            htmlId="resource_requirements"
+          />
 
-              <Separator />
-
-              {/* Metadata */}
-              <div className="space-y-2">
-                <Label htmlFor="metadata" className="flex items-center gap-2">
-                  <FileCode className="h-4 w-4" />
-                  <span>메타데이터 (JSON)</span>
-                </Label>
-                <Textarea
-                  id="metadata"
-                  value={metadataText}
-                  onChange={(e) => setMetadataText(e.target.value)}
-                  placeholder='{"author": "name", "license": "MIT"}'
-                  rows={6}
-                  className="font-mono text-sm"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          {/* Metadata Card */}
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="메타데이터"
+            icon={FileCode}
+            label="메타데이터 (JSON)"
+            value={formData.metadata}
+            onChange={(value) =>
+              setFormData({ ...formData, metadata: value })
+            }
+            placeholder='{ "author": "name", "license": "MIT" }'
+            errorMessage="메타데이터 JSON 형식이 올바르지 않습니다."
+            htmlId="metadata"
+          />
         </div>
       </div>
     </form>
