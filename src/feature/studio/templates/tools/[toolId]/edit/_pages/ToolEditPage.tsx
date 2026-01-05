@@ -5,7 +5,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { usePutTool } from "../_hooks/usePutTool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Separator } from "@/shared/ui/separator";
 import {
   Wrench,
   ArrowLeft,
@@ -43,10 +42,7 @@ import {
   deploymentTypeConfig,
 } from "../../../_constants/toolConfigs";
 import Link from "next/link";
-import CodeMirror from "@uiw/react-codemirror";
-import { json } from "@codemirror/lang-json";
-import { oneDark } from "@codemirror/theme-one-dark";
-import { useTheme } from "next-themes";
+import { JsonEditorCard } from "../_components/JsonEditorCard";
 
 export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
   const router = useRouter();
@@ -55,7 +51,6 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
     ? "/studio/data"
     : "/studio/templates";
   const queryClient = useQueryClient();
-  const { theme } = useTheme();
 
   const [formData, setFormData] = useState({
     description: tool.description || "",
@@ -619,161 +614,52 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
           </Card>
 
           {/* Environment Variables Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Key className="h-5 w-5" />
-                환경 변수
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="environment_variables"
-                  className="flex items-center gap-2"
-                >
-                  <Key className="h-4 w-4" />
-                  <span>환경 변수 (JSON)</span>
-                </Label>
-                <div className="border rounded-lg overflow-hidden">
-                  <CodeMirror
-                    value={envVarsText}
-                    onChange={(value) => setEnvVarsText(value)}
-                    extensions={[json()]}
-                    theme={theme === "dark" ? oneDark : undefined}
-                    basicSetup={{
-                      lineNumbers: true,
-                      foldGutter: true,
-                      dropCursor: false,
-                      allowMultipleSelections: false,
-                      indentOnInput: true,
-                      bracketMatching: true,
-                      closeBrackets: true,
-                      autocompletion: true,
-                      highlightSelectionMatches: false,
-                    }}
-                    placeholder='{\n  "KEY": "value",\n  "API_KEY": "secret"\n}'
-                    minHeight="200px"
-                    maxHeight="400px"
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  JSON 형식으로 입력하세요
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="환경 변수"
+            icon={Key}
+            label="환경 변수 (JSON)"
+            value={envVarsText}
+            onChange={setEnvVarsText}
+            placeholder='{\n  "KEY": "value",\n  "API_KEY": "secret"\n}'
+            htmlId="environment_variables"
+          />
 
-          {/* Advanced Configuration Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                고급 설정
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Docker Compose Config */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="docker_compose_config"
-                  className="flex items-center gap-2"
-                >
-                  <Settings className="h-4 w-4" />
-                  <span>Docker Compose 설정 (JSON)</span>
-                </Label>
-                <div className="border rounded-lg overflow-hidden">
-                  <CodeMirror
-                    value={dockerComposeText}
-                    onChange={(value) => setDockerComposeText(value)}
-                    extensions={[json()]}
-                    theme={theme === "dark" ? oneDark : undefined}
-                    basicSetup={{
-                      lineNumbers: true,
-                      foldGutter: true,
-                      dropCursor: false,
-                      allowMultipleSelections: false,
-                      indentOnInput: true,
-                      bracketMatching: true,
-                      closeBrackets: true,
-                      autocompletion: true,
-                      highlightSelectionMatches: false,
-                    }}
-                    placeholder='{\n  "version": "3",\n  "services": {...}\n}'
-                    minHeight="200px"
-                    maxHeight="400px"
-                  />
-                </div>
-              </div>
+          {/* Docker Compose Configuration Card */}
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="Docker Compose 설정"
+            icon={Settings}
+            label="Docker Compose 설정 (JSON)"
+            value={dockerComposeText}
+            onChange={setDockerComposeText}
+            placeholder='{\n  "version": "3",\n  "services": {...}\n}'
+            htmlId="docker_compose_config"
+          />
 
-              <Separator />
+          {/* Resource Requirements Card */}
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="리소스 요구사항"
+            icon={Database}
+            label="리소스 요구사항 (JSON)"
+            value={resourceReqText}
+            onChange={setResourceReqText}
+            placeholder='{\n  "cpu": "1",\n  "memory": "512Mi"\n}'
+            htmlId="resource_requirements"
+          />
 
-              {/* Resource Requirements */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="resource_requirements"
-                  className="flex items-center gap-2"
-                >
-                  <Database className="h-4 w-4" />
-                  <span>리소스 요구사항 (JSON)</span>
-                </Label>
-                <div className="border rounded-lg overflow-hidden">
-                  <CodeMirror
-                    value={resourceReqText}
-                    onChange={(value) => setResourceReqText(value)}
-                    extensions={[json()]}
-                    theme={theme === "dark" ? oneDark : undefined}
-                    basicSetup={{
-                      lineNumbers: true,
-                      foldGutter: true,
-                      dropCursor: false,
-                      allowMultipleSelections: false,
-                      indentOnInput: true,
-                      bracketMatching: true,
-                      closeBrackets: true,
-                      autocompletion: true,
-                      highlightSelectionMatches: false,
-                    }}
-                    placeholder='{\n  "cpu": "1",\n  "memory": "512Mi"\n}'
-                    minHeight="200px"
-                    maxHeight="400px"
-                  />
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Metadata */}
-              <div className="space-y-2">
-                <Label htmlFor="metadata" className="flex items-center gap-2">
-                  <FileCode className="h-4 w-4" />
-                  <span>메타데이터 (JSON)</span>
-                </Label>
-                <div className="border rounded-lg overflow-hidden">
-                  <CodeMirror
-                    value={metadataText}
-                    onChange={(value) => setMetadataText(value)}
-                    extensions={[json()]}
-                    theme={theme === "dark" ? oneDark : undefined}
-                    basicSetup={{
-                      lineNumbers: true,
-                      foldGutter: true,
-                      dropCursor: false,
-                      allowMultipleSelections: false,
-                      indentOnInput: true,
-                      bracketMatching: true,
-                      closeBrackets: true,
-                      autocompletion: true,
-                      highlightSelectionMatches: false,
-                    }}
-                    placeholder='{\n  "author": "name",\n  "license": "MIT"\n}'
-                    minHeight="200px"
-                    maxHeight="400px"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Metadata Card */}
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="메타데이터"
+            icon={FileCode}
+            label="메타데이터 (JSON)"
+            value={metadataText}
+            onChange={setMetadataText}
+            placeholder='{\n  "author": "name",\n  "license": "MIT"\n}'
+            htmlId="metadata"
+          />
         </div>
       </div>
     </form>
