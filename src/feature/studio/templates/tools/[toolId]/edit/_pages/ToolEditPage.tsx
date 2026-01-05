@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { usePutTool } from "../_hooks/usePutTool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -34,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { GetToolResponse } from "../../_api/getTool";
 import {
   statusConfig,
@@ -46,10 +47,6 @@ import { JsonEditorCard } from "../_components/JsonEditorCard";
 
 export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data")
-    ? "/studio/data"
-    : "/studio/templates";
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
@@ -95,7 +92,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         queryKey: ["mcp-tools"],
       });
 
-      router.push(`${basePath}/tools/${tool.id}`);
+      router.push(`/studio/templates/tools/${tool.id}`);
     },
   });
 
@@ -113,11 +110,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         envVars = JSON.parse(envVarsText);
       }
     } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "환경 변수 JSON 형식이 올바르지 않습니다."
-      );
+      toast.error("환경 변수 JSON 형식이 올바르지 않습니다.");
       return;
     }
 
@@ -126,11 +119,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         dockerCompose = JSON.parse(dockerComposeText);
       }
     } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Docker Compose 설정 JSON 형식이 올바르지 않습니다."
-      );
+      toast.error("Docker Compose 설정 JSON 형식이 올바르지 않습니다.");
       return;
     }
 
@@ -139,11 +128,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         resourceReq = JSON.parse(resourceReqText);
       }
     } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "리소스 요구사항 JSON 형식이 올바르지 않습니다."
-      );
+      toast.error("리소스 요구사항 JSON 형식이 올바르지 않습니다.");
       return;
     }
 
@@ -152,11 +137,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         metadata = JSON.parse(metadataText);
       }
     } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "메타데이터 JSON 형식이 올바르지 않습니다."
-      );
+      toast.error("메타데이터 JSON 형식이 올바르지 않습니다.");
       return;
     }
 
@@ -199,7 +180,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link href={`${basePath}/tools/${tool.id}`}>
+            <Link href={`/studio/templates/tools/${tool.id}`}>
               <Button
                 type="button"
                 variant="ghost"
@@ -621,7 +602,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
             label="환경 변수 (JSON)"
             value={envVarsText}
             onChange={setEnvVarsText}
-            placeholder='{\n  "KEY": "value",\n  "API_KEY": "secret"\n}'
+            placeholder='{ "KEY": "value", "API_KEY": "secret" }'
             htmlId="environment_variables"
           />
 
@@ -633,7 +614,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
             label="Docker Compose 설정 (JSON)"
             value={dockerComposeText}
             onChange={setDockerComposeText}
-            placeholder='{\n  "version": "3",\n  "services": {...}\n}'
+            placeholder='{ "version": "3", "services": {...} }'
             htmlId="docker_compose_config"
           />
 
@@ -645,7 +626,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
             label="리소스 요구사항 (JSON)"
             value={resourceReqText}
             onChange={setResourceReqText}
-            placeholder='{\n  "cpu": "1",\n  "memory": "512Mi"\n}'
+            placeholder='{ "cpu": "1", "memory": "512Mi" }'
             htmlId="resource_requirements"
           />
 
@@ -657,7 +638,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
             label="메타데이터 (JSON)"
             value={metadataText}
             onChange={setMetadataText}
-            placeholder='{\n  "author": "name",\n  "license": "MIT"\n}'
+            placeholder='{ "author": "name", "license": "MIT" }'
             htmlId="metadata"
           />
         </div>
