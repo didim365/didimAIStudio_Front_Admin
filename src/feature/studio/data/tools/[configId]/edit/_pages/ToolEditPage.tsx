@@ -75,9 +75,15 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
     let server_config: Record<string, unknown> | null = null;
     try {
       const trimmedText = formData.server_configText.trim();
-      const parsed = JSON.parse(trimmedText);
-      if (typeof parsed === "object" && parsed !== null) {
-        server_config = parsed as Record<string, unknown>;
+      if (trimmedText) {
+        const parsed = JSON.parse(trimmedText);
+        if (typeof parsed === "object" && parsed !== null) {
+          const configObj = parsed as Record<string, unknown>;
+          // 빈 객체가 아닌 경우만 할당
+          if (Object.keys(configObj).length > 0) {
+            server_config = configObj;
+          }
+        }
       }
     } catch (error) {
       console.error(error);
@@ -88,9 +94,15 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
     let secrets: Record<string, unknown> | null = null;
     try {
       const trimmedText = formData.secretsText.trim();
-      const parsed = JSON.parse(trimmedText);
-      if (typeof parsed === "object" && parsed !== null) {
-        secrets = parsed as Record<string, unknown>;
+      if (trimmedText) {
+        const parsed = JSON.parse(trimmedText);
+        if (typeof parsed === "object" && parsed !== null) {
+          const secretsObj = parsed as Record<string, unknown>;
+          // 빈 객체가 아닌 경우만 할당
+          if (Object.keys(secretsObj).length > 0) {
+            secrets = secretsObj;
+          }
+        }
       }
     } catch (error) {
       console.error(error);
@@ -103,8 +115,8 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
       data: {
         config_name: formData.config_name || null,
         is_active: formData.is_active,
-        server_config: server_config || {},
-        secrets: secrets && Object.keys(secrets).length > 0 ? secrets : null,
+        server_config,
+        secrets,
       },
     });
   };
@@ -158,7 +170,7 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
                     className="flex items-center gap-2"
                   >
                     <Wrench className="h-4 w-4" />
-                    <span>설정 이름 *</span>
+                    <span>설정 이름</span>
                   </Label>
                   <Input
                     id="config_name"
@@ -171,7 +183,6 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
                     }
                     placeholder="설정 이름을 입력하세요"
                     className="pl-6"
-                    required
                   />
                 </div>
 
@@ -182,7 +193,7 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
                     className="flex items-center gap-2"
                   >
                     <Activity className="h-4 w-4" />
-                    <span>활성 상태 *</span>
+                    <span>활성 상태</span>
                   </Label>
                   <Select
                     value={formData.is_active ? "true" : "false"}
@@ -192,7 +203,6 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
                         is_active: value === "true",
                       })
                     }
-                    required
                   >
                     <SelectTrigger id="is_active" className="w-full pl-6">
                       <SelectValue />
@@ -260,7 +270,8 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
                     />
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
-                    JSON 형식으로 입력하세요. 탭 키로 들여쓰기가 가능합니다.
+                    JSON 형식으로 입력하세요. 빈 객체 {} 또는 빈 값으로 두면
+                    서버 설정이 제거됩니다.
                   </p>
                 </div>
               </div>
@@ -310,8 +321,8 @@ export function ToolEditPage({ config }: ToolEditPageProps) {
                     />
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
-                    JSON 형식으로 입력하세요. 빈 객체 {}로 두면 민감정보가
-                    제거됩니다.
+                    JSON 형식으로 입력하세요. 빈 객체 {} 또는 빈 값으로 두면
+                    민감정보가 제거됩니다.
                   </p>
                 </div>
               </div>
