@@ -4,18 +4,48 @@ import { useState, FormEvent, KeyboardEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePutTool } from "../_hooks/usePutTool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { ArrowLeft, Save, Tag, Key, Database, FileCode, Settings } from "lucide-react";
+import { Badge } from "@/shared/ui/badge";
+import {
+  ArrowLeft,
+  Save,
+  Tag,
+  Key,
+  Database,
+  FileCode,
+  Settings,
+  Wrench,
+  Hash,
+  Package,
+  Server,
+  GitBranch,
+  Code2,
+  Link2,
+  Container,
+  Layers,
+} from "lucide-react";
 import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
+import { Textarea } from "@/shared/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
 import { GetToolResponse } from "../../_api/getTool";
 import Link from "next/link";
 import { JsonEditorCard } from "../_components/JsonEditorCard";
-import { BasicInfoSection } from "../_components/BasicInfoSection";
-import { UrlInfoSection } from "../_components/UrlInfoSection";
-import { ContainerConfigSection } from "../_components/ContainerConfigSection";
 import { ChipInput } from "../_components/ChipInput";
+import { FormField } from "../_components/FormField";
 import { parseJsonFields } from "../_utils/parseJsonFields";
+import {
+  statusConfig,
+  providerConfig,
+  deploymentTypeConfig,
+} from "../../../_constants/toolConfigs";
 
 export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
   const router = useRouter();
@@ -156,6 +186,9 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
     });
   };
 
+  const DeploymentIcon =
+    deploymentTypeConfig[tool.deployment_type]?.icon || Server;
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-6">
@@ -190,40 +223,265 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         {/* Main Content Grid */}
         <div className="grid gap-6 md:grid-cols-2">
           {/* Basic Info Card */}
-          <BasicInfoSection
-            tool={tool}
-            formData={{
-              description: formData.description,
-              version: formData.version,
-              status: formData.status,
-            }}
-            onFormChange={(updates) =>
-              setFormData({ ...formData, ...updates })
-            }
-          />
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Wrench className="h-5 w-5" />
+                기본 정보
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col md:flex-row gap-6">
+                {/* Icon Preview */}
+                <div className="flex flex-col items-center gap-4">
+                  <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <DeploymentIcon className="h-16 w-16 text-primary" />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Badge
+                      className={`${
+                        statusConfig[formData.status].color
+                      } border justify-center`}
+                    >
+                      {statusConfig[formData.status].label}
+                    </Badge>
+                    <Badge
+                      className={`${
+                        providerConfig[tool.provider].color
+                      } border justify-center`}
+                    >
+                      {providerConfig[tool.provider].label}
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Form Grid */}
+                <div className="flex-1 grid gap-4 md:grid-cols-2">
+                  <FormField icon={Hash} label="도구 ID" htmlFor="tool_id">
+                    <Input
+                      id="tool_id"
+                      value={tool.id}
+                      disabled
+                      className="bg-muted"
+                    />
+                  </FormField>
+
+                  <FormField icon={Wrench} label="도구 이름" htmlFor="name">
+                    <Input
+                      id="name"
+                      value={tool.name}
+                      disabled
+                      className="bg-muted"
+                    />
+                  </FormField>
+
+                  <FormField
+                    icon={Code2}
+                    label="시스템 내부 식별자"
+                    htmlFor="definition_name"
+                  >
+                    <Input
+                      id="definition_name"
+                      value={tool.definition_name || "-"}
+                      disabled
+                      className="bg-muted font-mono"
+                    />
+                  </FormField>
+
+                  <FormField
+                    icon={GitBranch}
+                    label="버전"
+                    htmlFor="version"
+                    required
+                  >
+                    <Input
+                      id="version"
+                      value={formData.version}
+                      onChange={(e) =>
+                        setFormData({ ...formData, version: e.target.value })
+                      }
+                      placeholder="1.0.0"
+                      className="font-mono"
+                      required
+                    />
+                  </FormField>
+
+                  <FormField icon={Package} label="카테고리" htmlFor="category">
+                    <Input
+                      id="category"
+                      value={tool.category}
+                      disabled
+                      className="bg-muted"
+                    />
+                  </FormField>
+
+                  <FormField icon={Settings} label="상태" htmlFor="status" required>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(
+                        value: "ACTIVE" | "INACTIVE" | "PENDING" | "ERROR"
+                      ) => setFormData({ ...formData, status: value })}
+                      required
+                    >
+                      <SelectTrigger id="status" className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ACTIVE">활성</SelectItem>
+                        <SelectItem value="INACTIVE">비활성</SelectItem>
+                        <SelectItem value="PENDING">대기 중</SelectItem>
+                        <SelectItem value="ERROR">오류</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormField>
+
+                  <FormField
+                    icon={Package}
+                    label="프로바이더"
+                    htmlFor="provider"
+                  >
+                    <Input
+                      id="provider"
+                      value={
+                        providerConfig[tool.provider]?.label || tool.provider
+                      }
+                      disabled
+                      className="bg-muted"
+                    />
+                  </FormField>
+
+                  <FormField
+                    icon={Server}
+                    label="배포 타입"
+                    htmlFor="deployment_type"
+                  >
+                    <Input
+                      id="deployment_type"
+                      value={
+                        deploymentTypeConfig[tool.deployment_type]?.label ||
+                        tool.deployment_type
+                      }
+                      disabled
+                      className="bg-muted"
+                    />
+                  </FormField>
+
+                  <FormField
+                    icon={FileCode}
+                    label="설명"
+                    htmlFor="description"
+                    className="md:col-span-2"
+                  >
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({ ...formData, description: e.target.value })
+                      }
+                      placeholder="도구에 대한 설명을 입력하세요"
+                      rows={3}
+                      className="resize-none"
+                    />
+                  </FormField>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* URLs Card */}
-          <UrlInfoSection
-            formData={{
-              icon_url: formData.icon_url,
-              repo_url: formData.repo_url,
-              server_url: formData.server_url,
-            }}
-            onFormChange={(updates) =>
-              setFormData({ ...formData, ...updates })
-            }
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Link2 className="h-5 w-5" />
+                URL 정보
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormField icon={Link2} label="아이콘 URL" htmlFor="icon_url">
+                <Input
+                  id="icon_url"
+                  value={formData.icon_url}
+                  onChange={(e) =>
+                    setFormData({ ...formData, icon_url: e.target.value })
+                  }
+                  placeholder="https://example.com/icon.png"
+                  type="url"
+                />
+              </FormField>
+
+              <FormField icon={GitBranch} label="저장소 URL" htmlFor="repo_url">
+                <Input
+                  id="repo_url"
+                  value={formData.repo_url}
+                  onChange={(e) =>
+                    setFormData({ ...formData, repo_url: e.target.value })
+                  }
+                  placeholder="https://github.com/user/repo"
+                  type="url"
+                />
+              </FormField>
+
+              <FormField icon={Server} label="서버 URL" htmlFor="server_url">
+                <Input
+                  id="server_url"
+                  value={formData.server_url}
+                  onChange={(e) =>
+                    setFormData({ ...formData, server_url: e.target.value })
+                  }
+                  placeholder="https://server.example.com"
+                  type="url"
+                />
+              </FormField>
+            </CardContent>
+          </Card>
 
           {/* Container Configuration Card */}
-          <ContainerConfigSection
-            tool={tool}
-            formData={{
-              container_image: formData.container_image,
-            }}
-            onFormChange={(updates) =>
-              setFormData({ ...formData, ...updates })
-            }
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Container className="h-5 w-5" />
+                컨테이너 설정
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormField
+                icon={Container}
+                label="컨테이너 이미지"
+                htmlFor="container_image"
+              >
+                <Input
+                  id="container_image"
+                  value={formData.container_image}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      container_image: e.target.value,
+                    })
+                  }
+                  placeholder="docker.io/library/image:tag"
+                  className="font-mono"
+                />
+              </FormField>
+
+              <FormField icon={Layers} label="전송 방식" htmlFor="transport">
+                <Input
+                  id="transport"
+                  value={tool.transport || "-"}
+                  disabled
+                  className="bg-muted"
+                />
+              </FormField>
+
+              <FormField icon={Server} label="서버 타입" htmlFor="server_type">
+                <Input
+                  id="server_type"
+                  value={tool.server_type || "-"}
+                  disabled
+                  className="bg-muted"
+                />
+              </FormField>
+            </CardContent>
+          </Card>
 
           {/* Tags and Keywords Card */}
           <Card className="md:col-span-2">
