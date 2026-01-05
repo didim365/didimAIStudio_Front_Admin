@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, KeyboardEvent } from "react";
+import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePutTool } from "../_hooks/usePutTool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -67,8 +67,6 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
     metadata: tool.metadata || null,
   });
 
-  const [tagInput, setTagInput] = useState("");
-  const [keywordInput, setKeywordInput] = useState("");
   const [envVarsText, setEnvVarsText] = useState(
     JSON.stringify(formData.environment_variables, null, 2)
   );
@@ -131,58 +129,6 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         resource_requirements: resourceReq as Record<string, unknown> | null,
         metadata: metadata as Record<string, unknown> | null,
       },
-    });
-  };
-
-  // Tag handlers
-  const handleAddTag = () => {
-    const trimmed = tagInput.trim();
-    if (trimmed && !formData.tags.includes(trimmed)) {
-      setFormData({ ...formData, tags: [...formData.tags, trimmed] });
-      setTagInput("");
-    }
-  };
-
-  const handleTagKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddTag();
-    } else if (e.key === "," || e.key === " ") {
-      e.preventDefault();
-      handleAddTag();
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter((tag) => tag !== tagToRemove),
-    });
-  };
-
-  // Keyword handlers
-  const handleAddKeyword = () => {
-    const trimmed = keywordInput.trim();
-    if (trimmed && !formData.keywords.includes(trimmed)) {
-      setFormData({ ...formData, keywords: [...formData.keywords, trimmed] });
-      setKeywordInput("");
-    }
-  };
-
-  const handleKeywordKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddKeyword();
-    } else if (e.key === "," || e.key === " ") {
-      e.preventDefault();
-      handleAddKeyword();
-    }
-  };
-
-  const handleRemoveKeyword = (keywordToRemove: string) => {
-    setFormData({
-      ...formData,
-      keywords: formData.keywords.filter((keyword) => keyword !== keywordToRemove),
     });
   };
 
@@ -500,12 +446,8 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                 </Label>
                 <ChipInput
                   id="tags"
-                  value={tagInput}
                   chips={formData.tags}
-                  onChange={setTagInput}
-                  onAdd={handleAddTag}
-                  onRemove={handleRemoveTag}
-                  onKeyDown={handleTagKeyDown}
+                  onChipsChange={(tags) => setFormData({ ...formData, tags })}
                   placeholder="태그 입력..."
                   chipClassName="bg-primary/10 text-primary border-primary/20"
                 />
@@ -522,12 +464,8 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                 </Label>
                 <ChipInput
                   id="keywords"
-                  value={keywordInput}
                   chips={formData.keywords}
-                  onChange={setKeywordInput}
-                  onAdd={handleAddKeyword}
-                  onRemove={handleRemoveKeyword}
-                  onKeyDown={handleKeywordKeyDown}
+                  onChipsChange={(keywords) => setFormData({ ...formData, keywords })}
                   placeholder="키워드 입력..."
                   chipClassName="bg-secondary/30 text-foreground border-border"
                 />
