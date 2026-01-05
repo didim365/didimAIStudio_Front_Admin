@@ -1452,7 +1452,7 @@ export interface paths {
         get: operations["get_user_config_v1_admin_user_configs__config_id__get"];
         /**
          * 사용자 설정 수정
-         * @description 관리자 권한으로 사용자 설정을 수정합니다.
+         * @description 관리자 권한으로 사용자 설정을 수정합니다. 지원 필드: config_name, is_active, server_config, secrets
          */
         put: operations["update_user_config_v1_admin_user_configs__config_id__put"];
         post?: never;
@@ -1510,6 +1510,48 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AdminUserConfigUpdateDTO
+         * @description 관리자용 사용자 설정 수정 요청 DTO
+         * @example {
+         *       "config_name": "my-config",
+         *       "is_active": true,
+         *       "secrets": {
+         *         "API_KEY": "secret_value"
+         *       },
+         *       "server_config": {
+         *         "env": {
+         *           "KEY": "value"
+         *         }
+         *       }
+         *     }
+         */
+        AdminUserConfigUpdateDTO: {
+            /**
+             * Config Name
+             * @description 설정 이름
+             */
+            config_name?: string | null;
+            /**
+             * Is Active
+             * @description 활성화 여부
+             */
+            is_active?: boolean | null;
+            /**
+             * Server Config
+             * @description 서버 설정
+             */
+            server_config?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Secrets
+             * @description 민감 정보 (암호화 저장)
+             */
+            secrets?: {
+                [key: string]: unknown;
+            } | null;
+        };
         /**
          * BatchDeploymentRequestDTO
          * @description 배치 배포 요청 DTO
@@ -3295,6 +3337,11 @@ export interface components {
              * @description 컨테이너 이미지
              */
             container_image?: string | null;
+            /**
+             * Image
+             * @description Docker 이미지 (container_image와 동일)
+             */
+            image?: string | null;
             /**
              * Docker Compose Config
              * @description Docker Compose 설정
@@ -8449,9 +8496,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": {
-                    [key: string]: unknown;
-                };
+                "application/json": components["schemas"]["AdminUserConfigUpdateDTO"];
             };
         };
         responses: {
