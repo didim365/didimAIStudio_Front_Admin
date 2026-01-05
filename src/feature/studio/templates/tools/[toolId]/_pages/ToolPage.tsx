@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -52,8 +52,6 @@ function ToolPage({
   config: GetToolConfigResponse;
 }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data") ? "/studio/data" : "/studio/templates";
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDeployDialog, setShowDeployDialog] = useState(false);
@@ -66,7 +64,7 @@ function ToolPage({
       queryClient.invalidateQueries({
         queryKey: ["mcp-tools"],
       });
-      router.push(`${basePath}/tools`);
+      router.push("/studio/templates/tools");
     },
     meta: {
       successMessage: "도구가 성공적으로 삭제되었습니다.",
@@ -196,7 +194,7 @@ function ToolPage({
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href={`${basePath}/tools`}>
+          <Link href="/studio/templates/tools">
             <Button
               variant="ghost"
               size="icon"
@@ -241,7 +239,7 @@ function ToolPage({
             loadingLabel="중지 중..."
             className="from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800"
           />
-          <Link href={`${basePath}/tools/${tool.id}/edit`}>
+          <Link href={`/studio/templates/tools/${tool.id}/edit`}>
             <Button className="cursor-pointer" disabled={isActionDisabled}>
               <Pencil className="h-4 w-4 mr-2" />
               수정
