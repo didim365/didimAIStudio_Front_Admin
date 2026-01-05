@@ -40,7 +40,6 @@ import Link from "next/link";
 import { JsonEditorCard } from "../_components/JsonEditorCard";
 import { ChipInput } from "../_components/ChipInput";
 import { FormField } from "../_components/FormField";
-import { parseJsonFields } from "../_utils/parseJsonFields";
 import {
   statusConfig,
   providerConfig,
@@ -67,23 +66,6 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
     metadata: tool.metadata || null,
   });
 
-  const [envVarsText, setEnvVarsText] = useState(
-    JSON.stringify(formData.environment_variables, null, 2)
-  );
-  const [dockerComposeText, setDockerComposeText] = useState(
-    formData.docker_compose_config
-      ? JSON.stringify(formData.docker_compose_config, null, 2)
-      : ""
-  );
-  const [resourceReqText, setResourceReqText] = useState(
-    formData.resource_requirements
-      ? JSON.stringify(formData.resource_requirements, null, 2)
-      : ""
-  );
-  const [metadataText, setMetadataText] = useState(
-    formData.metadata ? JSON.stringify(formData.metadata, null, 2) : ""
-  );
-
   const { mutate: updateTool, isPending: isUpdating } = usePutTool({
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -96,17 +78,6 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // Parse JSON fields
-    const { envVars, dockerCompose, resourceReq, metadata, hasError } =
-      parseJsonFields({
-        envVarsText,
-        dockerComposeText,
-        resourceReqText,
-        metadataText,
-      });
-
-    if (hasError) return;
 
     // Tags and keywords are already arrays in formData
     const tags = formData.tags.filter((t) => t.length > 0);
@@ -124,10 +95,14 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         container_image: formData.container_image || null,
         tags: tags.length > 0 ? tags : null,
         keywords: keywords.length > 0 ? keywords : null,
-        environment_variables: Object.keys(envVars).length > 0 ? (envVars as Record<string, string>) : null,
-        docker_compose_config: dockerCompose as Record<string, unknown> | null,
-        resource_requirements: resourceReq as Record<string, unknown> | null,
-        metadata: metadata as Record<string, unknown> | null,
+        environment_variables:
+          formData.environment_variables &&
+          Object.keys(formData.environment_variables).length > 0
+            ? (formData.environment_variables as Record<string, string>)
+            : null,
+        docker_compose_config: formData.docker_compose_config || null,
+        resource_requirements: formData.resource_requirements || null,
+        metadata: formData.metadata || null,
       },
     });
   };
@@ -482,9 +457,15 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
             title="환경 변수"
             icon={Key}
             label="환경 변수 (JSON)"
-            value={envVarsText}
-            onChange={setEnvVarsText}
+            value={formData.environment_variables as Record<string, unknown> | null}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                environment_variables: (value as Record<string, string>) || {},
+              })
+            }
             placeholder='{ "KEY": "value", "API_KEY": "secret" }'
+            errorMessage="환경 변수 JSON 형식이 올바르지 않습니다."
             htmlId="environment_variables"
           />
 
@@ -494,9 +475,12 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
             title="Docker Compose 설정"
             icon={Settings}
             label="Docker Compose 설정 (JSON)"
-            value={dockerComposeText}
-            onChange={setDockerComposeText}
+            value={formData.docker_compose_config}
+            onChange={(value) =>
+              setFormData({ ...formData, docker_compose_config: value })
+            }
             placeholder='{ "version": "3", "services": {...} }'
+            errorMessage="Docker Compose 설정 JSON 형식이 올바르지 않습니다."
             htmlId="docker_compose_config"
           />
 
@@ -506,9 +490,12 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
             title="리소스 요구사항"
             icon={Database}
             label="리소스 요구사항 (JSON)"
-            value={resourceReqText}
-            onChange={setResourceReqText}
+            value={formData.resource_requirements}
+            onChange={(value) =>
+              setFormData({ ...formData, resource_requirements: value })
+            }
             placeholder='{ "cpu": "1", "memory": "512Mi" }'
+            errorMessage="리소스 요구사항 JSON 형식이 올바르지 않습니다."
             htmlId="resource_requirements"
           />
 
@@ -518,9 +505,12 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
             title="메타데이터"
             icon={FileCode}
             label="메타데이터 (JSON)"
-            value={metadataText}
-            onChange={setMetadataText}
+            value={formData.metadata}
+            onChange={(value) =>
+              setFormData({ ...formData, metadata: value })
+            }
             placeholder='{ "author": "name", "license": "MIT" }'
+            errorMessage="메타데이터 JSON 형식이 올바르지 않습니다."
             htmlId="metadata"
           />
         </div>
