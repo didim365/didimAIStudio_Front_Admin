@@ -484,25 +484,23 @@ function ToolPage({
                   태그 및 키워드
                 </h3>
                 <div className="space-y-3">
-                  {tool.tags && tool.tags.length > 0 && (
-                    <div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                        <Tag className="h-3.5 w-3.5" />
-                        <span>태그</span>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {tool.tags.map((tag, index) => (
-                          <Badge
-                            key={index}
-                            variant="outline"
-                            className="bg-blue-50 text-blue-700 border-blue-200 text-xs"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
+                  <div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                      <Tag className="h-3.5 w-3.5" />
+                      <span>태그</span>
                     </div>
-                  )}
+                    <div className="flex flex-wrap gap-1.5">
+                      {tool.tags?.map((tag, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="bg-blue-50 text-blue-700 border-blue-200 text-xs"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
 
                   {tool.keywords && tool.keywords.length > 0 && (
                     <div>

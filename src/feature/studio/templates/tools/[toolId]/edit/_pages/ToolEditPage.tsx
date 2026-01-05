@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, KeyboardEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePutTool } from "../_hooks/usePutTool";
@@ -23,6 +23,7 @@ import {
   Layers,
   Link2,
   Database,
+  X,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -65,10 +66,8 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
     metadata: tool.metadata || null,
   });
 
-  const [tagsInput, setTagsInput] = useState(formData.tags.join(", "));
-  const [keywordsInput, setKeywordsInput] = useState(
-    formData.keywords.join(", ")
-  );
+  const [tagInput, setTagInput] = useState("");
+  const [keywordInput, setKeywordInput] = useState("");
   const [envVarsText, setEnvVarsText] = useState(
     JSON.stringify(formData.environment_variables, null, 2)
   );
@@ -141,15 +140,9 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
       return;
     }
 
-    // Parse tags and keywords
-    const tags = tagsInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
-    const keywords = keywordsInput
-      .split(",")
-      .map((k) => k.trim())
-      .filter((k) => k.length > 0);
+    // Tags and keywords are already arrays in formData
+    const tags = formData.tags.filter((t) => t.length > 0);
+    const keywords = formData.keywords.filter((k) => k.length > 0);
 
     updateTool({
       params: { tool_id: tool.id },
@@ -173,6 +166,58 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
 
   const DeploymentIcon =
     deploymentTypeConfig[tool.deployment_type]?.icon || Server;
+
+  // Tag handlers
+  const handleAddTag = () => {
+    const trimmed = tagInput.trim();
+    if (trimmed && !formData.tags.includes(trimmed)) {
+      setFormData({ ...formData, tags: [...formData.tags, trimmed] });
+      setTagInput("");
+    }
+  };
+
+  const handleTagKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddTag();
+    } else if (e.key === "," || e.key === " ") {
+      e.preventDefault();
+      handleAddTag();
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setFormData({
+      ...formData,
+      tags: formData.tags.filter((tag) => tag !== tagToRemove),
+    });
+  };
+
+  // Keyword handlers
+  const handleAddKeyword = () => {
+    const trimmed = keywordInput.trim();
+    if (trimmed && !formData.keywords.includes(trimmed)) {
+      setFormData({ ...formData, keywords: [...formData.keywords, trimmed] });
+      setKeywordInput("");
+    }
+  };
+
+  const handleKeywordKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddKeyword();
+    } else if (e.key === "," || e.key === " ") {
+      e.preventDefault();
+      handleAddKeyword();
+    }
+  };
+
+  const handleRemoveKeyword = (keywordToRemove: string) => {
+    setFormData({
+      ...formData,
+      keywords: formData.keywords.filter((keyword) => keyword !== keywordToRemove),
+    });
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -555,41 +600,85 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                 태그 및 키워드
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                {/* Tags */}
-                <div className="space-y-2">
-                  <Label htmlFor="tags" className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    <span>태그</span>
-                  </Label>
-                  <Input
-                    id="tags"
-                    value={tagsInput}
-                    onChange={(e) => setTagsInput(e.target.value)}
-                    placeholder="tag1, tag2, tag3"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    쉼표로 구분하여 입력하세요
-                  </p>
+            <CardContent className="space-y-6">
+              {/* Tags */}
+              <div className="space-y-2">
+                <Label htmlFor="tags" className="flex items-center gap-2">
+                  <Tag className="h-4 w-4" />
+                  <span>태그</span>
+                </Label>
+                <div className="min-h-[42px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    {formData.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-sm font-medium border border-primary/20"
+                      >
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveTag(tag)}
+                          className="hover:bg-primary/20 rounded-sm transition-colors"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                    <input
+                      id="tags"
+                      type="text"
+                      value={tagInput}
+                      onChange={(e) => setTagInput(e.target.value)}
+                      onKeyDown={handleTagKeyDown}
+                      onBlur={handleAddTag}
+                      placeholder={formData.tags.length === 0 ? "태그 입력..." : ""}
+                      className="flex-1 min-w-[120px] outline-none bg-transparent placeholder:text-muted-foreground"
+                    />
+                  </div>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Enter, 쉼표 또는 스페이스로 추가
+                </p>
+              </div>
 
-                {/* Keywords */}
-                <div className="space-y-2">
-                  <Label htmlFor="keywords" className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    <span>키워드</span>
-                  </Label>
-                  <Input
-                    id="keywords"
-                    value={keywordsInput}
-                    onChange={(e) => setKeywordsInput(e.target.value)}
-                    placeholder="keyword1, keyword2, keyword3"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    쉼표로 구분하여 입력하세요
-                  </p>
+              {/* Keywords */}
+              <div className="space-y-2">
+                <Label htmlFor="keywords" className="flex items-center gap-2">
+                  <Key className="h-4 w-4" />
+                  <span>키워드</span>
+                </Label>
+                <div className="min-h-[42px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    {formData.keywords.map((keyword) => (
+                      <span
+                        key={keyword}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-secondary/30 text-foreground text-sm font-medium border border-border"
+                      >
+                        {keyword}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveKeyword(keyword)}
+                          className="hover:bg-secondary/50 rounded-sm transition-colors"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                    <input
+                      id="keywords"
+                      type="text"
+                      value={keywordInput}
+                      onChange={(e) => setKeywordInput(e.target.value)}
+                      onKeyDown={handleKeywordKeyDown}
+                      onBlur={handleAddKeyword}
+                      placeholder={formData.keywords.length === 0 ? "키워드 입력..." : ""}
+                      className="flex-1 min-w-[120px] outline-none bg-transparent placeholder:text-muted-foreground"
+                    />
+                  </div>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Enter, 쉼표 또는 스페이스로 추가
+                </p>
               </div>
             </CardContent>
           </Card>
