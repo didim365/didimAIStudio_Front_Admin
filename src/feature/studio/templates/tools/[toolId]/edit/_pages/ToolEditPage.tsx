@@ -43,6 +43,10 @@ import {
   deploymentTypeConfig,
 } from "../../../_constants/toolConfigs";
 import Link from "next/link";
+import CodeMirror from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { useTheme } from "next-themes";
 
 export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
   const router = useRouter();
@@ -51,6 +55,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
     ? "/studio/data"
     : "/studio/templates";
   const queryClient = useQueryClient();
+  const { theme } = useTheme();
 
   const [formData, setFormData] = useState({
     description: tool.description || "",
@@ -630,14 +635,28 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                   <Key className="h-4 w-4" />
                   <span>환경 변수 (JSON)</span>
                 </Label>
-                <Textarea
-                  id="environment_variables"
-                  value={envVarsText}
-                  onChange={(e) => setEnvVarsText(e.target.value)}
-                  placeholder='{"KEY": "value", "API_KEY": "secret"}'
-                  rows={6}
-                  className="font-mono text-sm"
-                />
+                <div className="border rounded-lg overflow-hidden">
+                  <CodeMirror
+                    value={envVarsText}
+                    onChange={(value) => setEnvVarsText(value)}
+                    extensions={[json()]}
+                    theme={theme === "dark" ? oneDark : undefined}
+                    basicSetup={{
+                      lineNumbers: true,
+                      foldGutter: true,
+                      dropCursor: false,
+                      allowMultipleSelections: false,
+                      indentOnInput: true,
+                      bracketMatching: true,
+                      closeBrackets: true,
+                      autocompletion: true,
+                      highlightSelectionMatches: false,
+                    }}
+                    placeholder='{\n  "KEY": "value",\n  "API_KEY": "secret"\n}'
+                    minHeight="200px"
+                    maxHeight="400px"
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground">
                   JSON 형식으로 입력하세요
                 </p>
@@ -663,14 +682,28 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                   <Settings className="h-4 w-4" />
                   <span>Docker Compose 설정 (JSON)</span>
                 </Label>
-                <Textarea
-                  id="docker_compose_config"
-                  value={dockerComposeText}
-                  onChange={(e) => setDockerComposeText(e.target.value)}
-                  placeholder='{"version": "3", "services": {...}}'
-                  rows={6}
-                  className="font-mono text-sm"
-                />
+                <div className="border rounded-lg overflow-hidden">
+                  <CodeMirror
+                    value={dockerComposeText}
+                    onChange={(value) => setDockerComposeText(value)}
+                    extensions={[json()]}
+                    theme={theme === "dark" ? oneDark : undefined}
+                    basicSetup={{
+                      lineNumbers: true,
+                      foldGutter: true,
+                      dropCursor: false,
+                      allowMultipleSelections: false,
+                      indentOnInput: true,
+                      bracketMatching: true,
+                      closeBrackets: true,
+                      autocompletion: true,
+                      highlightSelectionMatches: false,
+                    }}
+                    placeholder='{\n  "version": "3",\n  "services": {...}\n}'
+                    minHeight="200px"
+                    maxHeight="400px"
+                  />
+                </div>
               </div>
 
               <Separator />
@@ -684,14 +717,28 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                   <Database className="h-4 w-4" />
                   <span>리소스 요구사항 (JSON)</span>
                 </Label>
-                <Textarea
-                  id="resource_requirements"
-                  value={resourceReqText}
-                  onChange={(e) => setResourceReqText(e.target.value)}
-                  placeholder='{"cpu": "1", "memory": "512Mi"}'
-                  rows={6}
-                  className="font-mono text-sm"
-                />
+                <div className="border rounded-lg overflow-hidden">
+                  <CodeMirror
+                    value={resourceReqText}
+                    onChange={(value) => setResourceReqText(value)}
+                    extensions={[json()]}
+                    theme={theme === "dark" ? oneDark : undefined}
+                    basicSetup={{
+                      lineNumbers: true,
+                      foldGutter: true,
+                      dropCursor: false,
+                      allowMultipleSelections: false,
+                      indentOnInput: true,
+                      bracketMatching: true,
+                      closeBrackets: true,
+                      autocompletion: true,
+                      highlightSelectionMatches: false,
+                    }}
+                    placeholder='{\n  "cpu": "1",\n  "memory": "512Mi"\n}'
+                    minHeight="200px"
+                    maxHeight="400px"
+                  />
+                </div>
               </div>
 
               <Separator />
@@ -702,14 +749,28 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                   <FileCode className="h-4 w-4" />
                   <span>메타데이터 (JSON)</span>
                 </Label>
-                <Textarea
-                  id="metadata"
-                  value={metadataText}
-                  onChange={(e) => setMetadataText(e.target.value)}
-                  placeholder='{"author": "name", "license": "MIT"}'
-                  rows={6}
-                  className="font-mono text-sm"
-                />
+                <div className="border rounded-lg overflow-hidden">
+                  <CodeMirror
+                    value={metadataText}
+                    onChange={(value) => setMetadataText(value)}
+                    extensions={[json()]}
+                    theme={theme === "dark" ? oneDark : undefined}
+                    basicSetup={{
+                      lineNumbers: true,
+                      foldGutter: true,
+                      dropCursor: false,
+                      allowMultipleSelections: false,
+                      indentOnInput: true,
+                      bracketMatching: true,
+                      closeBrackets: true,
+                      autocompletion: true,
+                      highlightSelectionMatches: false,
+                    }}
+                    placeholder='{\n  "author": "name",\n  "license": "MIT"\n}'
+                    minHeight="200px"
+                    maxHeight="400px"
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
