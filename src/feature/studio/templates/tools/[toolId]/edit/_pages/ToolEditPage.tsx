@@ -2,10 +2,10 @@
 
 import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { usePutTool } from "../_hooks/usePutTool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Separator } from "@/shared/ui/separator";
 import {
   Wrench,
   ArrowLeft,
@@ -35,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { GetToolResponse } from "../../_api/getTool";
 import {
   statusConfig,
@@ -43,13 +43,10 @@ import {
   deploymentTypeConfig,
 } from "../../../_constants/toolConfigs";
 import Link from "next/link";
+import { JsonEditorCard } from "../_components/JsonEditorCard";
 
 export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const basePath = pathname?.startsWith("/studio/data")
-    ? "/studio/data"
-    : "/studio/templates";
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
@@ -95,7 +92,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         queryKey: ["mcp-tools"],
       });
 
-      router.push(`${basePath}/tools/${tool.id}`);
+      router.push(`/studio/templates/tools/${tool.id}`);
     },
   });
 
@@ -113,11 +110,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         envVars = JSON.parse(envVarsText);
       }
     } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "환경 변수 JSON 형식이 올바르지 않습니다."
-      );
+      toast.error("환경 변수 JSON 형식이 올바르지 않습니다.");
       return;
     }
 
@@ -126,11 +119,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         dockerCompose = JSON.parse(dockerComposeText);
       }
     } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Docker Compose 설정 JSON 형식이 올바르지 않습니다."
-      );
+      toast.error("Docker Compose 설정 JSON 형식이 올바르지 않습니다.");
       return;
     }
 
@@ -139,11 +128,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         resourceReq = JSON.parse(resourceReqText);
       }
     } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "리소스 요구사항 JSON 형식이 올바르지 않습니다."
-      );
+      toast.error("리소스 요구사항 JSON 형식이 올바르지 않습니다.");
       return;
     }
 
@@ -152,11 +137,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         metadata = JSON.parse(metadataText);
       }
     } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "메타데이터 JSON 형식이 올바르지 않습니다."
-      );
+      toast.error("메타데이터 JSON 형식이 올바르지 않습니다.");
       return;
     }
 
@@ -199,7 +180,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link href={`${basePath}/tools/${tool.id}`}>
+            <Link href={`/studio/templates/tools/${tool.id}`}>
               <Button
                 type="button"
                 variant="ghost"
@@ -614,105 +595,52 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
           </Card>
 
           {/* Environment Variables Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Key className="h-5 w-5" />
-                환경 변수
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="environment_variables"
-                  className="flex items-center gap-2"
-                >
-                  <Key className="h-4 w-4" />
-                  <span>환경 변수 (JSON)</span>
-                </Label>
-                <Textarea
-                  id="environment_variables"
-                  value={envVarsText}
-                  onChange={(e) => setEnvVarsText(e.target.value)}
-                  placeholder='{"KEY": "value", "API_KEY": "secret"}'
-                  rows={6}
-                  className="font-mono text-sm"
-                />
-                <p className="text-xs text-muted-foreground">
-                  JSON 형식으로 입력하세요
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="환경 변수"
+            icon={Key}
+            label="환경 변수 (JSON)"
+            value={envVarsText}
+            onChange={setEnvVarsText}
+            placeholder='{ "KEY": "value", "API_KEY": "secret" }'
+            htmlId="environment_variables"
+          />
 
-          {/* Advanced Configuration Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                고급 설정
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Docker Compose Config */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="docker_compose_config"
-                  className="flex items-center gap-2"
-                >
-                  <Settings className="h-4 w-4" />
-                  <span>Docker Compose 설정 (JSON)</span>
-                </Label>
-                <Textarea
-                  id="docker_compose_config"
-                  value={dockerComposeText}
-                  onChange={(e) => setDockerComposeText(e.target.value)}
-                  placeholder='{"version": "3", "services": {...}}'
-                  rows={6}
-                  className="font-mono text-sm"
-                />
-              </div>
+          {/* Docker Compose Configuration Card */}
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="Docker Compose 설정"
+            icon={Settings}
+            label="Docker Compose 설정 (JSON)"
+            value={dockerComposeText}
+            onChange={setDockerComposeText}
+            placeholder='{ "version": "3", "services": {...} }'
+            htmlId="docker_compose_config"
+          />
 
-              <Separator />
+          {/* Resource Requirements Card */}
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="리소스 요구사항"
+            icon={Database}
+            label="리소스 요구사항 (JSON)"
+            value={resourceReqText}
+            onChange={setResourceReqText}
+            placeholder='{ "cpu": "1", "memory": "512Mi" }'
+            htmlId="resource_requirements"
+          />
 
-              {/* Resource Requirements */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="resource_requirements"
-                  className="flex items-center gap-2"
-                >
-                  <Database className="h-4 w-4" />
-                  <span>리소스 요구사항 (JSON)</span>
-                </Label>
-                <Textarea
-                  id="resource_requirements"
-                  value={resourceReqText}
-                  onChange={(e) => setResourceReqText(e.target.value)}
-                  placeholder='{"cpu": "1", "memory": "512Mi"}'
-                  rows={6}
-                  className="font-mono text-sm"
-                />
-              </div>
-
-              <Separator />
-
-              {/* Metadata */}
-              <div className="space-y-2">
-                <Label htmlFor="metadata" className="flex items-center gap-2">
-                  <FileCode className="h-4 w-4" />
-                  <span>메타데이터 (JSON)</span>
-                </Label>
-                <Textarea
-                  id="metadata"
-                  value={metadataText}
-                  onChange={(e) => setMetadataText(e.target.value)}
-                  placeholder='{"author": "name", "license": "MIT"}'
-                  rows={6}
-                  className="font-mono text-sm"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          {/* Metadata Card */}
+          <JsonEditorCard
+            className="md:col-span-2"
+            title="메타데이터"
+            icon={FileCode}
+            label="메타데이터 (JSON)"
+            value={metadataText}
+            onChange={setMetadataText}
+            placeholder='{ "author": "name", "license": "MIT" }'
+            htmlId="metadata"
+          />
         </div>
       </div>
     </form>
