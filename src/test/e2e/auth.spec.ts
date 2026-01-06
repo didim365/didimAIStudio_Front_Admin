@@ -22,11 +22,16 @@ test.describe("인증 테스트", () => {
     await expect(page).toHaveURL(/users/);
   });
 
-  test.skip("잘못된 자격증명으로 로그인 실패", async ({ page }) => {
-    // TODO: 실제 로그인 플로우 구현
-    // await page.fill('input[name="email"]', 'wrong@example.com');
-    // await page.fill('input[name="password"]', 'wrongpassword');
-    // await page.click('button[type="submit"]');
-    // await expect(page.getByText(/잘못된 이메일 또는 비밀번호/i)).toBeVisible();
+  test("잘못된 자격증명으로 로그인 실패", async ({ page }) => {
+    await page.fill('input#email', 'wrong@example.com');
+    await page.fill('input#password', 'wrongpassword');
+    await page.click('button[type="submit"]');
+
+    // toast 에러 메시지가 표시되는지 확인
+    const toast = page.locator('[data-sonner-toast]');
+    await expect(toast).toBeVisible({ timeout: 5000 });
+
+    // 에러 toast인지 확인 (data-type="error" 속성)
+    await expect(toast).toHaveAttribute('data-type', 'error');
   });
 });
