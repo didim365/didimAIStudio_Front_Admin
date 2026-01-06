@@ -99,15 +99,15 @@ export function GroupsPage() {
           </div>
 
           {/* 필터 그리드 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             {/* 그룹 타입 필터 */}
             <div className="space-y-2">
-              <label className="text-sm font-medium flex items-center gap-2">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 h-5">
                 <Filter className="h-4 w-4" />
                 그룹 타입
               </label>
               <Select value={groupType} onValueChange={handleGroupTypeChange}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="전체" />
                 </SelectTrigger>
                 <SelectContent>
@@ -122,7 +122,9 @@ export function GroupsPage() {
 
             {/* 표시 개수 */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">표시 개수</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block h-5 leading-5">
+                표시 개수
+              </label>
               <Select
                 value={pageSize.toString()}
                 onValueChange={(value) => {
@@ -130,7 +132,7 @@ export function GroupsPage() {
                   setPage(1);
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -144,12 +146,12 @@ export function GroupsPage() {
 
             {/* 정렬 기준 */}
             <div className="space-y-2">
-              <label className="text-sm font-medium flex items-center gap-2">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 h-5">
                 <ArrowUpDown className="h-4 w-4" />
                 정렬 기준
               </label>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -163,9 +165,11 @@ export function GroupsPage() {
 
             {/* 정렬 순서 */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">정렬 순서</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block h-5 leading-5">
+                정렬 순서
+              </label>
               <Select value={sortOrder} onValueChange={setSortOrder}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
