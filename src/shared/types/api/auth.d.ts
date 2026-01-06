@@ -2168,13 +2168,44 @@ export interface components {
              */
             items: components["schemas"]["GroupWithMembersResponse"][];
         };
+        /**
+         * PaginatedResponse
+         * @description 페이징된 응답
+         */
+        PaginatedResponse: {
+            /**
+             * Total
+             * @description 전체 항목 수
+             */
+            total: number;
+            /**
+             * Page
+             * @description 현재 페이지 번호
+             */
+            page: number;
+            /**
+             * Size
+             * @description 페이지당 항목 수
+             */
+            size: number;
+            /**
+             * Total Pages
+             * @description 전체 페이지 수
+             */
+            total_pages: number;
+            /**
+             * Items
+             * @description 그룹 목록
+             */
+            items: components["schemas"]["GroupResponse"][];
+        };
         /** PaginatedResponse[GroupMemberResponse] */
         PaginatedResponse_GroupMemberResponse_: {
             /**
              * Items
              * @description 항목 리스트
              */
-            items?: unknown[];
+            items?: components["schemas"]["GroupMemberResponse"][];
             /**
              * Total
              * @description 전체 항목 수
@@ -2206,7 +2237,7 @@ export interface components {
              * Items
              * @description 항목 리스트
              */
-            items?: unknown[];
+            items?: components["schemas"]["GroupResponse"][];
             /**
              * Total
              * @description 전체 항목 수
@@ -2238,7 +2269,7 @@ export interface components {
              * Items
              * @description 항목 리스트
              */
-            items?: unknown[];
+            items?: components["schemas"]["PrivilegeResponse"][];
             /**
              * Total
              * @description 전체 항목 수
@@ -2270,7 +2301,39 @@ export interface components {
              * Items
              * @description 항목 리스트
              */
-            items?: unknown[];
+            items?: components["schemas"]["RoleResponse"][];
+            /**
+             * Total
+             * @description 전체 항목 수
+             * @default 0
+             */
+            total: number;
+            /**
+             * Page
+             * @description 현재 페이지
+             * @default 1
+             */
+            page: number;
+            /**
+             * Page Size
+             * @description 페이지당 항목 수
+             * @default 20
+             */
+            page_size: number;
+            /**
+             * Total Pages
+             * @description 전체 페이지 수
+             * @default 0
+             */
+            total_pages: number;
+        };
+        /** PaginatedResponse[UserResponse] */
+        PaginatedResponse_UserResponse_: {
+            /**
+             * Items
+             * @description 항목 리스트
+             */
+            items?: components["schemas"]["UserResponse"][];
             /**
              * Total
              * @description 전체 항목 수
@@ -3180,85 +3243,6 @@ export interface components {
             /** Error Type */
             type: string;
         };
-        /**
-         * PaginatedResponse
-         * @description 페이징된 응답
-         */
-        app__dto__group_dto__PaginatedResponse: {
-            /**
-             * Total
-             * @description 전체 항목 수
-             */
-            total: number;
-            /**
-             * Page
-             * @description 현재 페이지 번호
-             */
-            page: number;
-            /**
-             * Size
-             * @description 페이지당 항목 수
-             */
-            size: number;
-            /**
-             * Total Pages
-             * @description 전체 페이지 수
-             */
-            total_pages: number;
-            /**
-             * Items
-             * @description 그룹 목록
-             */
-            items: components["schemas"]["GroupResponse"][];
-        };
-        /**
-         * PaginatedResponse
-         * @description 페이지네이션 응답 스키마
-         *
-         *     제네릭 타입으로 다양한 아이템 타입 지원
-         *
-         *     Example:
-         *         from app.dto.user_dto import UserResponse
-         *
-         *         # 타입 힌트 사용
-         *         response: PaginatedResponse[UserResponse] = PaginatedResponse.create(
-         *             items=users,
-         *             total=total_count,
-         *             page=1,
-         *             page_size=20
-         *         )
-         */
-        app__dto__pagination_dto__PaginatedResponse: {
-            /**
-             * Items
-             * @description 항목 리스트
-             */
-            items?: unknown[];
-            /**
-             * Total
-             * @description 전체 항목 수
-             * @default 0
-             */
-            total: number;
-            /**
-             * Page
-             * @description 현재 페이지
-             * @default 1
-             */
-            page: number;
-            /**
-             * Page Size
-             * @description 페이지당 항목 수
-             * @default 20
-             */
-            page_size: number;
-            /**
-             * Total Pages
-             * @description 전체 페이지 수
-             * @default 0
-             */
-            total_pages: number;
-        };
     };
     responses: never;
     parameters: never;
@@ -4137,7 +4121,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__dto__group_dto__PaginatedResponse"];
+                    "application/json": components["schemas"]["PaginatedResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4408,7 +4392,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__dto__group_dto__PaginatedResponse"];
+                    "application/json": components["schemas"]["PaginatedResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -6995,7 +6979,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__dto__pagination_dto__PaginatedResponse"];
+                    "application/json": components["schemas"]["PaginatedResponse_UserResponse_"];
                 };
             };
             /** @description Unauthorized */
