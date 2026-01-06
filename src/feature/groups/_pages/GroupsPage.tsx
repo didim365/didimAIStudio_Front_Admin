@@ -38,7 +38,7 @@ export function GroupsPage() {
   const [q, setQ] = useQueryParam<string>("q", "");
   const [groupType, setGroupType] = useQueryParam<GroupTypeEnum>(
     "group_type",
-    ""
+    "ALL"
   );
   const [pageSize, setPageSize] = useQueryParam<number>("page_size", 20);
   const [sortBy, setSortBy] = useQueryParam<string>("sort_by", "created_at");
@@ -48,7 +48,7 @@ export function GroupsPage() {
   const { data } = useGetGroups({
     page,
     q: q || undefined,
-    group_type: groupType || undefined,
+    group_type: groupType === "ALL" ? undefined : groupType,
     page_size: pageSize,
     sort_by: sortBy,
     sort_order: sortOrder,
@@ -111,7 +111,7 @@ export function GroupsPage() {
                   <SelectValue placeholder="전체" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">전체</SelectItem>
+                  <SelectItem value="ALL">전체</SelectItem>
                   <SelectItem value="COMPANY">회사</SelectItem>
                   <SelectItem value="DEPARTMENT">부서</SelectItem>
                   <SelectItem value="TEAM">팀</SelectItem>

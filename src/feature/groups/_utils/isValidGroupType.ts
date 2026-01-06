@@ -7,7 +7,7 @@ import { GroupTypeEnum } from "../_types/groupType";
  */
 export const isValidGroupType = (value: string): value is GroupTypeEnum => {
   return (
-    value === "" ||
+    value === "ALL" ||
     value === "COMPANY" ||
     value === "DEPARTMENT" ||
     value === "TEAM" ||
