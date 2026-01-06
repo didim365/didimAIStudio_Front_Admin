@@ -267,7 +267,7 @@ export interface paths {
          *
          *     ## 사용 예시 - 1회성 예약
          *     ```bash
-         *     curl -X POST "http://localhost:1047/api/v1/schedules" \
+         *     curl -X POST "http://localhost:8002/api/v1/schedules" \
          *       -H "Authorization: Bearer {token}" \
          *       -H "Content-Type: application/json" \
          *       -d '{
@@ -281,7 +281,7 @@ export interface paths {
          *
          *     ## 사용 예시 - 반복 스케줄
          *     ```bash
-         *     curl -X POST "http://localhost:1047/api/v1/schedules" \
+         *     curl -X POST "http://localhost:8002/api/v1/schedules" \
          *       -H "Authorization: Bearer {token}" \
          *       -H "Content-Type: application/json" \
          *       -d '{
@@ -324,7 +324,7 @@ export interface paths {
          *
          *     ## 사용 예시 - 단일 삭제
          *     ```bash
-         *     curl -X DELETE "http://localhost:1047/api/v1/schedules" \
+         *     curl -X DELETE "http://localhost:8002/api/v1/schedules" \
          *       -H "Authorization: Bearer {token}" \
          *       -H "Content-Type: application/json" \
          *       -d '{
@@ -334,7 +334,7 @@ export interface paths {
          *
          *     ## 사용 예시 - 다중 삭제
          *     ```bash
-         *     curl -X DELETE "http://localhost:1047/api/v1/schedules" \
+         *     curl -X DELETE "http://localhost:8002/api/v1/schedules" \
          *       -H "Authorization: Bearer {token}" \
          *       -H "Content-Type: application/json" \
          *       -d '{
@@ -565,9 +565,9 @@ export interface paths {
          *     이미 등록된 문서(status=registered)에 대해 임베딩을 생성합니다.
          *     여러 문서를 한 번에 요청할 수 있으며, 모두 Celery 큐에 등록되어 가용한 worker가 병렬로 처리합니다.
          *
-         *     ## 사용 예시 - 단일 문서 (선택 필드 포함)
+         *     ## 사용 예시 - 단일 문서 (기본 파서, 선택 필드 포함)
          *     ```bash
-         *     curl -X POST "http://localhost:1047/api/v1/embeddings/generate" \
+         *     curl -X POST "http://localhost:8002/api/v1/embeddings/generate" \
          *       -H "Authorization: Bearer {token}" \
          *       -H "Content-Type: application/json" \
          *       -d '{
@@ -584,7 +584,7 @@ export interface paths {
          *
          *     ## 사용 예시 - 배치 처리 (여러 문서, 최소 필수 필드)
          *     ```bash
-         *     curl -X POST "http://localhost:1047/api/v1/embeddings/generate" \
+         *     curl -X POST "http://localhost:8002/api/v1/embeddings/generate" \
          *       -H "Authorization: Bearer {token}" \
          *       -H "Content-Type: application/json" \
          *       -d '{
@@ -592,6 +592,20 @@ export interface paths {
          *         "chunk_size": 500,
          *         "chunk_overlap": 50,
          *         "enable_pii_anonymization": false
+         *       }'
+         *     ```
+         *
+         *     ## 사용 예시 - KT Cloud Document Parse (고급 문서 파싱)
+         *     ```bash
+         *     curl -X POST "http://localhost:8002/api/v1/embeddings/generate" \
+         *       -H "Authorization: Bearer {token}" \
+         *       -H "Content-Type: application/json" \
+         *       -d '{
+         *         "hash_sha256_list": ["abc123..."],
+         *         "chunk_size": 500,
+         *         "chunk_overlap": 50,
+         *         "enable_pii_anonymization": false,
+         *         "document_parser": "ktc_parser"
          *       }'
          *     ```
          *
@@ -615,6 +629,10 @@ export interface paths {
          *     - **병렬 처리**: 가용한 모든 worker가 동시에 처리
          *     - **권한 검증**: group_id, user_id, role_ids 기반 접근 제어
          *     - **부분 성공 지원**: 일부 문서만 실패해도 나머지는 처리
+         *     - **고급 문서 파싱**: `document_parser="ktc_parser"` 옵션으로 KT Cloud Document Parse API 사용
+         *       - 복잡한 표, 차트, 다단 레이아웃 정확 파싱
+         *       - 이미지 문서 자동 OCR 처리
+         *       - Markdown 포맷으로 구조 유지
          *     - **Graph RAG 자동 구축**: 문서 임베딩 생성 시 엔티티 추출 및 그래프 관계 자동 구축 (검색 시 활용)
          */
         post: operations["generate_embedding_v1_embeddings_generate_post"];
@@ -1016,58 +1034,6 @@ export interface paths {
          */
         post: operations["search_dual_level_v1_graph_search_dual_level_post"];
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/graph/search/entities": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 엔티티 검색
-         * @description **엔티티 검색**
-         *
-         *     저장된 엔티티 중에서 쿼리와 유사한 엔티티를 검색합니다.
-         *     벡터 유사도 기반 검색을 수행합니다.
-         */
-        post: operations["search_entities_api_v1_graph_search_entities_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/graph/entities/by-document/{hash_sha256}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 문서별 엔티티 조회
-         * @description **문서별 엔티티 조회**
-         *
-         *     특정 문서에서 추출된 엔티티 목록을 조회합니다.
-         */
-        get: operations["get_entities_by_document_v1_graph_entities_by_document__hash_sha256__get"];
-        put?: never;
-        post?: never;
-        /**
-         * 문서별 엔티티 삭제
-         * @description **문서별 엔티티 삭제**
-         *
-         *     특정 문서에서 추출된 모든 엔티티를 삭제합니다.
-         *     문서 삭제 시 연동하여 호출됩니다.
-         */
-        delete: operations["delete_entities_by_document_v1_graph_entities_by_document__hash_sha256__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1479,6 +1445,101 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/parser-config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 파서 설정 목록 조회 (관리자 전용)
+         * @description 📋 **파서 설정 목록 조회 (관리자 전용)**
+         *
+         *     활성화된 외부 문서 파서 설정 목록을 조회합니다.
+         *
+         *     ## 반환 정보
+         *     - 파서 식별자 (parser_name)
+         *     - 표시 이름 (display_name)
+         *     - API 엔드포인트
+         *     - 활성화 여부
+         *     - 타임아웃 설정
+         *     - 추가 설정
+         */
+        get: operations["get_parser_configs_v1_parser_config_get"];
+        put?: never;
+        /**
+         * 파서 설정 생성 (관리자 전용)
+         * @description ➕ **파서 설정 생성 (관리자 전용)**
+         *
+         *     새로운 외부 문서 파서 설정을 등록합니다.
+         *
+         *     ## 필수 정보
+         *     - parser_name: 파서 식별자 (영문, 숫자, 언더스코어만 허용)
+         *     - display_name: 표시 이름
+         *     - api_endpoint: API 엔드포인트 URL
+         *     - api_key: API 인증 키
+         *
+         *     ## 선택 정보
+         *     - is_active: 활성화 여부 (기본: true)
+         *     - timeout_seconds: 타임아웃 (기본: 300초)
+         *     - max_retries: 최대 재시도 횟수 (기본: 3)
+         *     - extra_config: 추가 설정 (JSON)
+         */
+        post: operations["create_parser_config_v1_parser_config_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/parser-config/{parser_name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 파서 설정 상세 조회 (관리자 전용)
+         * @description 🔍 **파서 설정 상세 조회 (관리자 전용)**
+         *
+         *     특정 파서의 상세 설정 정보를 조회합니다.
+         */
+        get: operations["get_parser_config_v1_parser_config__parser_name__get"];
+        /**
+         * 파서 설정 수정 (관리자 전용)
+         * @description ✏️ **파서 설정 수정 (관리자 전용)**
+         *
+         *     기존 파서 설정을 수정합니다. 수정할 필드만 요청에 포함합니다.
+         *
+         *     ## 수정 가능 항목
+         *     - display_name: 표시 이름
+         *     - api_endpoint: API 엔드포인트 URL
+         *     - api_key: API 인증 키
+         *     - is_active: 활성화 여부
+         *     - timeout_seconds: 타임아웃
+         *     - max_retries: 최대 재시도 횟수
+         *     - extra_config: 추가 설정
+         */
+        put: operations["update_parser_config_v1_parser_config__parser_name__put"];
+        post?: never;
+        /**
+         * 파서 설정 삭제 (관리자 전용)
+         * @description 🗑️ **파서 설정 삭제 (관리자 전용)**
+         *
+         *     파서 설정을 삭제합니다.
+         *
+         *     ## 주의사항
+         *     - 삭제 후 복구할 수 없습니다.
+         *     - 해당 파서를 사용 중인 문서가 있는 경우 처리에 영향을 줄 수 있습니다.
+         */
+        delete: operations["delete_parser_config_v1_parser_config__parser_name__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1486,6 +1547,44 @@ export interface components {
         /**
          * ActionLogListResponseDTO
          * @description 액션 로그 목록 응답 DTO
+         * @example {
+         *       "filters": {
+         *         "end_date": "2024-01-15T23:59:59Z",
+         *         "start_date": "2024-01-15T00:00:00Z",
+         *         "success_only": true,
+         *         "user_id": 1
+         *       },
+         *       "logs": [
+         *         {
+         *           "action_type": "SEARCH",
+         *           "created_at": "2024-01-15T10:30:00Z",
+         *           "endpoint": "/api/v1/embeddings/retrieval",
+         *           "http_method": "POST",
+         *           "id": 12345,
+         *           "processing_time_ms": 235,
+         *           "status_code": 200,
+         *           "success": "SUCCESS",
+         *           "user_id": 1
+         *         },
+         *         {
+         *           "action_type": "UPLOAD",
+         *           "created_at": "2024-01-15T10:25:00Z",
+         *           "endpoint": "/api/v1/embeddings/upload",
+         *           "http_method": "POST",
+         *           "id": 12344,
+         *           "processing_time_ms": 1523,
+         *           "status_code": 200,
+         *           "success": "SUCCESS",
+         *           "user_id": 1
+         *         }
+         *       ],
+         *       "pagination": {
+         *         "page": 1,
+         *         "page_size": 50,
+         *         "total_count": 125,
+         *         "total_pages": 3
+         *       }
+         *     }
          */
         ActionLogListResponseDTO: {
             /**
@@ -1511,6 +1610,38 @@ export interface components {
         /**
          * ActionLogResponseDTO
          * @description 액션 로그 응답 DTO
+         * @example {
+         *       "action_details": {
+         *         "filters_applied": false,
+         *         "query_length": 45
+         *       },
+         *       "action_type": "SEARCH",
+         *       "cost_incurred": 0.002,
+         *       "created_at": "2024-01-15T10:30:00Z",
+         *       "endpoint": "/api/v1/embeddings/retrieval",
+         *       "group_id": 1,
+         *       "http_method": "POST",
+         *       "id": 12345,
+         *       "ip_address": "192.168.1.100",
+         *       "processing_time_ms": 235,
+         *       "request_end_time": "2024-01-15T10:30:00.000Z",
+         *       "request_id": "req_xyz789",
+         *       "request_params": {
+         *         "rerank_top_k": 5,
+         *         "use_reranker": true
+         *       },
+         *       "request_start_time": "2024-01-15T10:29:59.765Z",
+         *       "role_id": 2,
+         *       "search_query": "디딤365에서 야근으로 인정받는 시간은?",
+         *       "search_results_count": 5,
+         *       "session_id": "sess_abc123",
+         *       "status_code": 200,
+         *       "success": "SUCCESS",
+         *       "tokens_used": 150,
+         *       "use_reranker": true,
+         *       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+         *       "user_id": 1
+         *     }
          */
         ActionLogResponseDTO: {
             /**
@@ -1702,6 +1833,37 @@ export interface components {
         /**
          * CostStatisticsResponseDTO
          * @description 비용 및 저장소 통계 응답 DTO
+         * @example {
+         *       "data": [
+         *         {
+         *           "date": "2024-01-01",
+         *           "document_count": 3,
+         *           "total_cost": 125.5,
+         *           "total_storage": 15728640
+         *         },
+         *         {
+         *           "date": "2024-01-02",
+         *           "document_count": 2,
+         *           "total_cost": 89.75,
+         *           "total_storage": 8388608
+         *         },
+         *         {
+         *           "date": "2024-01-03",
+         *           "document_count": 0,
+         *           "total_cost": 0,
+         *           "total_storage": 0
+         *         }
+         *       ],
+         *       "summary": {
+         *         "avg_daily_cost": 125.01,
+         *         "avg_daily_documents": 3,
+         *         "avg_daily_storage": 15735302,
+         *         "total_cost": 3875.25,
+         *         "total_days": 31,
+         *         "total_documents": 93,
+         *         "total_storage": 487784320
+         *       }
+         *     }
          */
         CostStatisticsResponseDTO: {
             /**
@@ -1723,6 +1885,70 @@ export interface components {
              *     }
              */
             summary: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * CreateParserConfigRequestDTO
+         * @description 파서 설정 생성 요청 DTO
+         *
+         *     관리자가 새로운 외부 문서 파서 설정을 등록합니다.
+         */
+        CreateParserConfigRequestDTO: {
+            /**
+             * Parser Name
+             * @description 파서 식별자 (영문, 숫자, 언더스코어만 허용)
+             * @example ktc_parser
+             */
+            parser_name: string;
+            /**
+             * Display Name
+             * @description 표시 이름
+             * @example KT Cloud Document Parser
+             */
+            display_name: string;
+            /**
+             * Api Endpoint
+             * @description API 엔드포인트 URL
+             * @example https://api.ktcloud.com/document-parse
+             */
+            api_endpoint: string;
+            /**
+             * Api Key
+             * @description API 인증 키
+             * @example your-api-key-here
+             */
+            api_key: string;
+            /**
+             * Is Active
+             * @description 활성화 여부
+             * @default true
+             * @example true
+             */
+            is_active: boolean;
+            /**
+             * Timeout Seconds
+             * @description API 호출 타임아웃 (초)
+             * @default 300
+             * @example 300
+             */
+            timeout_seconds: number;
+            /**
+             * Max Retries
+             * @description 실패 시 최대 재시도 횟수
+             * @default 3
+             * @example 3
+             */
+            max_retries: number;
+            /**
+             * Extra Config
+             * @description 파서별 추가 설정 (JSON)
+             * @example {
+             *       "ocr": "auto",
+             *       "output_format": "html"
+             *     }
+             */
+            extra_config?: {
                 [key: string]: unknown;
             };
         };
@@ -1842,6 +2068,12 @@ export interface components {
         /**
          * DailyCostStatisticsDTO
          * @description 일별 비용 및 저장소 통계 DTO
+         * @example {
+         *       "date": "2024-01-15",
+         *       "document_count": 3,
+         *       "total_cost": 125.5,
+         *       "total_storage": 15728640
+         *     }
          */
         DailyCostStatisticsDTO: {
             /**
@@ -1968,6 +2200,13 @@ export interface components {
         /**
          * DocumentAnalysisResponseDTO
          * @description 문서 분석 결과 DTO
+         * @example {
+         *       "cost": 0.125,
+         *       "input_cost_per_token": 0.0001,
+         *       "model_name": "text-embedding-ada-002",
+         *       "provider": "openai",
+         *       "tokens": 1250
+         *     }
          */
         DocumentAnalysisResponseDTO: {
             /**
@@ -1999,6 +2238,14 @@ export interface components {
         /**
          * DocumentCategoryResponseDTO
          * @description 문서 카테고리 응답 DTO
+         * @example {
+         *       "category_id": 1,
+         *       "category_name": "계약서",
+         *       "description": "각종 계약 관련 문서",
+         *       "document_count": 15,
+         *       "retention_period": 365,
+         *       "total_size": 52428800
+         *     }
          */
         DocumentCategoryResponseDTO: {
             /**
@@ -2035,6 +2282,34 @@ export interface components {
         /**
          * DocumentExpiringResponseDTO
          * @description 만료 임박 문서 응답 DTO
+         * @example {
+         *       "anonymization_strategy": "none",
+         *       "category": "계약서",
+         *       "chunk_count": 8,
+         *       "cost": 0.018,
+         *       "download_url": "https://storage.example.com/contracts/2024/temp_contract.pdf",
+         *       "end_date": 1705276800,
+         *       "expiration_date": 1735689600,
+         *       "file_path": "contracts/2024/temporary/temp_contract.pdf",
+         *       "file_size": 524288,
+         *       "file_type": "pdf",
+         *       "filename": "임시계약서_2024.pdf",
+         *       "group_id": 101,
+         *       "hash_sha256": "def456abc789...",
+         *       "id": 123,
+         *       "persona_id": 1,
+         *       "role_ids": [
+         *         3
+         *       ],
+         *       "start_date": 1705276200,
+         *       "status": "completed",
+         *       "summary": "2024년도 임시직 계약 조건을 명시한 문서입니다...",
+         *       "summary_cost": 0.003,
+         *       "summary_token": 300,
+         *       "title": "2024년 임시 계약서",
+         *       "token": 1800,
+         *       "user_id": 2001
+         *     }
          */
         DocumentExpiringResponseDTO: {
             /**
@@ -2161,6 +2436,35 @@ export interface components {
         /**
          * DocumentMetaResponseDTO
          * @description 문서 메타데이터 응답 DTO
+         * @example {
+         *       "anonymization_strategy": "none",
+         *       "category": "계약서",
+         *       "chunk_count": 15,
+         *       "cost": 0.035,
+         *       "download_url": "https://storage.example.com/contracts/2024/kim_chulsoo.pdf",
+         *       "end_date": 1705276800,
+         *       "expiration_date": 1736812800,
+         *       "file_path": "contracts/2024/employment/kim_chulsoo.pdf",
+         *       "file_size": 1048576,
+         *       "file_type": "pdf",
+         *       "filename": "근로계약서_2024_김철수.pdf",
+         *       "group_id": 101,
+         *       "hash_sha256": "abc123def456789...",
+         *       "id": 123,
+         *       "persona_id": 1,
+         *       "role_ids": [
+         *         3
+         *       ],
+         *       "start_date": 1705276200,
+         *       "status": "completed",
+         *       "summary": "본 계약서는 2024년도 정규직 근로자의 고용 조건을 명시합니다...",
+         *       "summary_cost": 0.005,
+         *       "summary_token": 500,
+         *       "title": "2024년 근로계약서",
+         *       "token": 3500,
+         *       "user_full_name": "김철수",
+         *       "user_id": 2001
+         *     }
          */
         DocumentMetaResponseDTO: {
             /**
@@ -2350,6 +2654,10 @@ export interface components {
         /**
          * DocumentResponseDTO
          * @description 문서 응답 DTO
+         * @example {
+         *       "code": 200,
+         *       "message": "Documents updated successfully."
+         *     }
          */
         DocumentResponseDTO: {
             /**
@@ -2366,6 +2674,21 @@ export interface components {
         /**
          * DocumentVectorResponseDTO
          * @description 문서 벡터 데이터 응답 DTO
+         * @example {
+         *       "category": "참조 자료",
+         *       "chunk_index": 0,
+         *       "cost": 0.0000618,
+         *       "date": 1753852125,
+         *       "filename": "didimsaasmaker_data.pdf",
+         *       "group_id": 1,
+         *       "hash_sha256": "f81ab298d5cb5b30cb7d584c4875f466d83e36b9f28c175578bb403fcab6165f",
+         *       "id": 459761794349220800,
+         *       "page_number": 1,
+         *       "parsed_text": "SaaS 기업들이 기다려온 맞춤 서비스!\\nDidimSaaSMaker...",
+         *       "title": "DidimSaasMaker 소개자료",
+         *       "token": 618,
+         *       "user_id": 1
+         *     }
          */
         DocumentVectorResponseDTO: {
             /**
@@ -2492,6 +2815,24 @@ export interface components {
         /**
          * EmbeddingModelDTO
          * @description 임베딩 모델 정보 DTO
+         * @example {
+         *       "category": "embeddings",
+         *       "created_at": "2024-01-01T00:00:00Z",
+         *       "input_cost_per_token": 0.0001,
+         *       "litellm_provider": "text-embedding-ada-002",
+         *       "logo": "https://example.com/openai-logo.png",
+         *       "max_input_tokens": 8191,
+         *       "max_tokens": 8191,
+         *       "mode": "embedding",
+         *       "model_name": "text-embedding-ada-002",
+         *       "provider": "openai",
+         *       "source": "openai",
+         *       "status": "active",
+         *       "successful_runs": 1520,
+         *       "total_usage_count": 1523,
+         *       "updated_at": "2024-01-15T10:30:00Z",
+         *       "version": "2"
+         *     }
          */
         EmbeddingModelDTO: {
             /**
@@ -2579,28 +2920,6 @@ export interface components {
              * @description 소스
              */
             source?: string | null;
-        };
-        /**
-         * EntitySearchRequestDTO
-         * @description 엔티티 검색 요청
-         */
-        EntitySearchRequestDTO: {
-            /**
-             * Query
-             * @description 검색 쿼리
-             */
-            query: string;
-            /**
-             * Entity Type
-             * @description 엔티티 타입 필터
-             */
-            entity_type?: string | null;
-            /**
-             * Limit
-             * @description 결과 수 제한
-             * @default 20
-             */
-            limit: number;
         };
         /**
          * EntityTypeCreateRequestDTO
@@ -2711,6 +3030,15 @@ export interface components {
          * @description 임베딩 생성 요청 DTO
          *
          *     등록된 문서(status=registered)에 대해 임베딩을 생성하는 요청 정보입니다.
+         * @example {
+         *       "chunk_overlap": 50,
+         *       "chunk_size": 500,
+         *       "enable_pii_anonymization": false,
+         *       "hash_sha256_list": [
+         *         "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+         *         "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592"
+         *       ]
+         *     }
          */
         GenerateEmbeddingRequestDTO: {
             /**
@@ -2758,12 +3086,30 @@ export interface components {
              * @description 필터링 점수
              */
             filter_score?: number | null;
+            /**
+             * Document Parser
+             * @description 사용할 문서 파서. None: 기본 파서, 'ktc_parser': KT Cloud Document Parse API
+             */
+            document_parser?: string | null;
         };
         /**
          * GenerateEmbeddingResponseDTO
          * @description 임베딩 생성 응답 DTO
          *
          *     임베딩 생성 요청 결과를 반환합니다.
+         * @example {
+         *       "failed_count": 0,
+         *       "message": "5개 문서가 큐에 등록되었습니다. 가용한 worker가 병렬로 처리합니다.",
+         *       "result": true,
+         *       "success_count": 5,
+         *       "task_ids": [
+         *         "550e8400-e29b-41d4-a716-446655440000",
+         *         "550e8400-e29b-41d4-a716-446655440001",
+         *         "550e8400-e29b-41d4-a716-446655440002",
+         *         "550e8400-e29b-41d4-a716-446655440003",
+         *         "550e8400-e29b-41d4-a716-446655440004"
+         *       ]
+         *     }
          */
         GenerateEmbeddingResponseDTO: {
             /**
@@ -2850,6 +3196,11 @@ export interface components {
         /**
          * LogCleanupResponseDTO
          * @description 로그 정리 응답 DTO
+         * @example {
+         *       "cleanup_date": "2024-01-15T03:00:00Z",
+         *       "days_kept": 90,
+         *       "deleted_count": 1523
+         *     }
          */
         LogCleanupResponseDTO: {
             /**
@@ -2934,6 +3285,29 @@ export interface components {
         /**
          * RetrievalReponseDTO
          * @description 결과 DTO
+         * @example {
+         *       "chunk_index": 2,
+         *       "dense_score": 0.86,
+         *       "filename": "디딤365_여비규정.pdf",
+         *       "graph_info": {
+         *         "hop": 1,
+         *         "matched_entity": {
+         *           "name": "김철수",
+         *           "type": "person"
+         *         },
+         *         "relation_path": [
+         *           "김철수",
+         *           "담당함",
+         *           "프로젝트X"
+         *         ]
+         *       },
+         *       "group_id": 101,
+         *       "hash_sha256": "abc123def456789...",
+         *       "page_number": 3,
+         *       "parsed_text": "제5조(국내출장) ① 국내출장은 공무로 소속기관의 장이 명한 경우에 한하며, 출장기간은 당해 공무수행에 필요한 최소한의 기간으로 한다.",
+         *       "score": 0.692,
+         *       "sparse_score": 0.3
+         *     }
          */
         RetrievalReponseDTO: {
             /**
@@ -3102,6 +3476,43 @@ export interface components {
         /**
          * RetrievalResponseWithStatsDTO
          * @description 검색 결과 및 통계 DTO
+         * @example {
+         *       "results": [
+         *         {
+         *           "chunk_index": 2,
+         *           "filename": "디딤365_여비규정.pdf",
+         *           "group_id": 101,
+         *           "hash_sha256": "abc123...",
+         *           "page_number": 3,
+         *           "parsed_text": "제5조(국내출장)...",
+         *           "score": 0.92
+         *         }
+         *       ],
+         *       "statistics": {
+         *         "average_score": 0.847,
+         *         "document_distribution": {
+         *           "디딤365_여비규정.pdf": 8,
+         *           "출장경비_지침.pdf": 2
+         *         },
+         *         "documents_found": 2,
+         *         "max_score": 0.95,
+         *         "min_score": 0.76,
+         *         "search_time_ms": 1234,
+         *         "similarity_distribution": {
+         *           "디딤365_여비규정.pdf": {
+         *             "high": 4,
+         *             "low": 2,
+         *             "medium": 2
+         *           },
+         *           "출장경비_지침.pdf": {
+         *             "high": 1,
+         *             "low": 0,
+         *             "medium": 1
+         *           }
+         *         },
+         *         "total_results": 10
+         *       }
+         *     }
          */
         RetrievalResponseWithStatsDTO: {
             /**
@@ -3478,6 +3889,30 @@ export interface components {
         /**
          * SearchStatisticsDTO
          * @description 검색 통계 DTO
+         * @example {
+         *       "average_score": 0.847,
+         *       "document_distribution": {
+         *         "디딤365_여비규정.pdf": 8,
+         *         "출장경비_지침.pdf": 2
+         *       },
+         *       "documents_found": 2,
+         *       "max_score": 0.95,
+         *       "min_score": 0.76,
+         *       "search_time_ms": 1234,
+         *       "similarity_distribution": {
+         *         "디딤365_여비규정.pdf": {
+         *           "high": 4,
+         *           "low": 2,
+         *           "medium": 2
+         *         },
+         *         "출장경비_지침.pdf": {
+         *           "high": 1,
+         *           "low": 0,
+         *           "medium": 1
+         *         }
+         *       },
+         *       "total_results": 10
+         *     }
          */
         SearchStatisticsDTO: {
             /**
@@ -3582,6 +4017,60 @@ export interface components {
             update_data: {
                 [key: string]: unknown;
             };
+        };
+        /**
+         * UpdateParserConfigRequestDTO
+         * @description 파서 설정 수정 요청 DTO
+         *
+         *     수정할 필드만 포함하여 요청합니다.
+         */
+        UpdateParserConfigRequestDTO: {
+            /**
+             * Display Name
+             * @description 표시 이름
+             * @example Updated Parser Name
+             */
+            display_name?: string | null;
+            /**
+             * Api Endpoint
+             * @description API 엔드포인트 URL
+             * @example https://api.updated.com/parse
+             */
+            api_endpoint?: string | null;
+            /**
+             * Api Key
+             * @description API 인증 키
+             * @example new-api-key
+             */
+            api_key?: string | null;
+            /**
+             * Is Active
+             * @description 활성화 여부
+             * @example true
+             */
+            is_active?: boolean | null;
+            /**
+             * Timeout Seconds
+             * @description API 호출 타임아웃 (초)
+             * @example 300
+             */
+            timeout_seconds?: number | null;
+            /**
+             * Max Retries
+             * @description 실패 시 최대 재시도 횟수
+             * @example 3
+             */
+            max_retries?: number | null;
+            /**
+             * Extra Config
+             * @description 파서별 추가 설정 (JSON)
+             * @example {
+             *       "ocr": "force"
+             *     }
+             */
+            extra_config?: {
+                [key: string]: unknown;
+            } | null;
         };
         /**
          * UpdateScheduleRequestDTO
@@ -5661,212 +6150,6 @@ export interface operations {
             };
         };
     };
-    search_entities_api_v1_graph_search_entities_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["EntitySearchRequestDTO"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 요청된 작업에 대한 권한이 없습니다. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    get_entities_by_document_v1_graph_entities_by_document__hash_sha256__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hash_sha256: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 요청된 작업에 대한 권한이 없습니다. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    delete_entities_by_document_v1_graph_entities_by_document__hash_sha256__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hash_sha256: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 요청된 작업에 대한 권한이 없습니다. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     get_relations_by_document_v1_graph_relations_by_document__hash_sha256__get: {
         parameters: {
             query?: never;
@@ -6772,6 +7055,341 @@ export interface operations {
                 content?: never;
             };
             /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_parser_configs_v1_parser_config_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 파서 설정 목록이 성공적으로 반환되었습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 파서 설정이 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    create_parser_config_v1_parser_config_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateParserConfigRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description 파서 설정이 성공적으로 생성되었습니다. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description 잘못된 요청 - 이미 존재하는 파서명이거나 필수 필드가 누락되었습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 파서 설정이 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_parser_config_v1_parser_config__parser_name__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parser_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 파서 설정 정보가 성공적으로 반환되었습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 파서 설정을 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_parser_config_v1_parser_config__parser_name__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parser_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateParserConfigRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description 파서 설정이 성공적으로 수정되었습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 파서 설정을 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_parser_config_v1_parser_config__parser_name__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                parser_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 파서 설정이 성공적으로 삭제되었습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 파서 설정을 찾을 수 없습니다. */
             404: {
                 headers: {
                     [name: string]: unknown;
