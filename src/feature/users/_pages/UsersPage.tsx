@@ -17,9 +17,9 @@ export default function UsersPage() {
   const [page, setPage] = useQueryParam<number>("page", 1);
 
   const { data: usersData, isLoading } = useGetUsers({
-    search: searchQuery || undefined,
+    q: searchQuery || undefined,
     page,
-    size: 20,
+    page_size: 20,
   });
 
   return (
@@ -68,11 +68,11 @@ export default function UsersPage() {
       </Card>
 
       {/* 페이지네이션 */}
-      {usersData && usersData.pages > 1 && (
+      {usersData && usersData.total_pages > 1 && (
         <div className="mt-6">
           <Pagination
             currentPage={usersData.page}
-            totalPages={usersData.pages}
+            totalPages={usersData.total_pages}
             onPageChange={(newPage) => setPage(newPage)}
             isLoading={isLoading}
           />

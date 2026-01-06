@@ -18,7 +18,7 @@ export const useGetUsers = (
   >
 ) => {
   return useQuery<GetUsersResponse, Error>({
-    queryKey: ["users", "admin", "users", params],
+    queryKey: ["admin", "users", params],
     queryFn: () => getUsers(params),
     ...options,
   });
