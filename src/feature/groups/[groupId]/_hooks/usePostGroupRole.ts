@@ -5,10 +5,10 @@ import { paths } from "@/shared/types/api/auth";
 import postGroupRole from "../_api/postGroupRole";
 
 type PostGroupRoleParams =
-  paths["/api/v1/roles/assign_role_to_group"]["post"]["parameters"]["query"];
+  paths["/api/v1/admin/groups/{group_id}/roles/{role_id}"]["post"]["parameters"]["path"];
 
 type PostGroupRoleResponse =
-  paths["/api/v1/roles/assign_role_to_group"]["post"]["responses"]["200"]["content"]["application/json"];
+  paths["/api/v1/admin/groups/{group_id}/roles/{role_id}"]["post"]["responses"]["201"]["content"]["application/json"];
 
 export const usePostGroupRole = (
   options?: Omit<

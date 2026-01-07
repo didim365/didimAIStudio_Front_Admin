@@ -3,13 +3,13 @@ import axiosInstance from "@/shared/utils/axiosInstance";
 
 // API 타입 추출
 type PostGroupsResponse =
-  paths["/api/v1/groups"]["post"]["responses"]["201"]["content"]["application/json"];
+  paths["/api/v1/admin/groups/"]["post"]["responses"]["201"]["content"]["application/json"];
 
 type PostGroupsRequest =
-  paths["/api/v1/groups"]["post"]["requestBody"]["content"]["application/json"];
+  paths["/api/v1/admin/groups/"]["post"]["requestBody"]["content"]["application/json"];
 
 /**
- * 그룹 생성 API
+ * 그룹 생성 API (Admin 전용)
  * @param data - 그룹 생성 요청 데이터
  */
 const postGroups = async (
@@ -17,7 +17,7 @@ const postGroups = async (
 ): Promise<PostGroupsResponse> => {
   try {
     const response = await axiosInstance.auth.post<PostGroupsResponse>(
-      "/groups",
+      "/admin/groups",
       data
     );
     return response.data;

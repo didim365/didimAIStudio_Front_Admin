@@ -52,7 +52,7 @@ export function GroupEditPage({
   // 현재 그룹의 하위 그룹을 가져오기 위한 쿼리
   const { data: groupsData } = useGetGroups({
     page: 1,
-    size: 100,
+    page_size: 100,
   });
 
   const [formData, setFormData] = useState({

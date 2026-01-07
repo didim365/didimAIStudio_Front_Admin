@@ -4,7 +4,8 @@ const path = require("path");
 const nextConfig: NextConfig = {
   reactCompiler: true,
   reactStrictMode: false,
-  output: "standalone",
+  // CI 환경에서는 standalone 빌드를 사용하지 않음 (next start와 호환성 문제)
+  output: process.env.CI ? undefined : "standalone",
   sassOptions: {
     includePaths: [path.join(__dirname, "src/assets/styles")],
     prependData: "@import '@/assets/styles/main.scss';",
@@ -32,15 +33,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
-  // CORS 문제 해결을 위한 프록시 설정 추가
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://auth:8000/api/:path*",
-      },
-    ];
-  },
+  // API 프록시는 src/app/api/[...path]/route.ts에서 처리
 };
 
 export default nextConfig;

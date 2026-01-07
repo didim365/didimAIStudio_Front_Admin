@@ -22,8 +22,8 @@ export default function ManagerSelect({ value, onChange }: ManagerSelectProps) {
   // 사용자 목록 조회
   const { data: users, isLoading: isLoadingUsers } = useGetUsers({
     page: userPage,
-    size: 10,
-    search: searchQuery ?? undefined,
+    page_size: 10,
+    q: searchQuery ?? undefined,
   });
 
   // 검색어 변경 시 첫 페이지로 리셋
@@ -77,7 +77,7 @@ export default function ManagerSelect({ value, onChange }: ManagerSelectProps) {
           </Button>
 
           {/* 사용자 리스트 */}
-          {users?.items.map((user) => {
+          {users?.items?.map((user) => {
             const isSelected = value === user.id;
             return (
               <Button
@@ -116,11 +116,11 @@ export default function ManagerSelect({ value, onChange }: ManagerSelectProps) {
       )}
 
       {/* 페이지네이션 */}
-      {users && users.pages > 1 && (
+      {users && users.total_pages > 1 && (
         <div className="flex justify-center pt-2">
           <Pagination
             currentPage={userPage}
-            totalPages={users.pages ?? 1}
+            totalPages={users.total_pages ?? 1}
             onPageChange={setUserPage}
             isLoading={isLoadingUsers}
           />

@@ -147,7 +147,7 @@ export function Sidebar() {
         <Button
           variant="outline"
           size="sm"
-          className="w-full justify-start gap-2"
+          className="w-full justify-start gap-2 cursor-pointer"
           onClick={handleLogout}
         >
           <LogOut className="h-4 w-4" />

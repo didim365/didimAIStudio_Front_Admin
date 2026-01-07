@@ -44,16 +44,16 @@ describe("GroupsPage", () => {
   it("테이블 헤더가 올바르게 표시된다", () => {
     renderWithProviders(<GroupsPage />);
 
-    expect(screen.getByText("ID")).toBeInTheDocument();
-    expect(screen.getByText("그룹명")).toBeInTheDocument();
-    expect(screen.getByText("설명")).toBeInTheDocument();
-    expect(screen.getByText("그룹 타입")).toBeInTheDocument();
-    expect(screen.getByText("상위 그룹")).toBeInTheDocument();
-    expect(screen.getByText("관리자")).toBeInTheDocument();
-    expect(screen.getByText("생성자")).toBeInTheDocument();
-    expect(screen.getByText("역할")).toBeInTheDocument();
-    expect(screen.getByText("회원 수")).toBeInTheDocument();
-    expect(screen.getByText("생성일")).toBeInTheDocument();
-    expect(screen.getByText("수정일")).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "ID" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "그룹명" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "설명" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "그룹 타입" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "상위 그룹" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "관리자" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "생성자" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "역할" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "회원 수" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "생성일" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "수정일" })).toBeInTheDocument();
   });
 });

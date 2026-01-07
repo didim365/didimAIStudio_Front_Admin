@@ -40,7 +40,7 @@ export default function AddGroupRoleDialog({
     onSuccess: () => {
       // 그룹 정보 및 그룹 역할 새로고침
       queryClient.invalidateQueries({
-        queryKey: ["groups", groupId, "roles"],
+        queryKey: ["admin", "groups", groupId, "roles"],
       });
       // 다이얼로그 닫기 및 초기화
       setOpen(false);

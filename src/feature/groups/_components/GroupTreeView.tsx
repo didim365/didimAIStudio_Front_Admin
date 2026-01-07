@@ -40,7 +40,7 @@ export default function GroupTreeView({
   // Fetch all groups (large size to get all)
   const { data: groupsData, isLoading } = useGetGroups({
     page: 1,
-    size: 100,
+    page_size: 100,
   });
 
   const [expandedIds, setExpandedIds] = useState<number[]>([]);
@@ -51,7 +51,7 @@ export default function GroupTreeView({
   const roots: GroupTreeNode[] = [];
 
   // First pass: create ALL nodes
-  groupsData?.items.forEach((group) => {
+  groupsData?.items?.forEach((group) => {
     nodes[group.id] = {
       ...group,
       children: [],
@@ -60,7 +60,7 @@ export default function GroupTreeView({
   });
 
   // Second pass: build hierarchy
-  groupsData?.items.forEach((group) => {
+  groupsData?.items?.forEach((group) => {
     const node = nodes[group.id];
     if (node.parent_group_id && nodes[node.parent_group_id]) {
       nodes[node.parent_group_id].children.push(node);

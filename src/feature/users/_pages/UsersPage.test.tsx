@@ -32,7 +32,7 @@ describe("UsersPage", () => {
   it("검색 입력창이 표시된다", () => {
     renderWithProviders(<UsersPage />);
 
-    const searchInput = screen.getByPlaceholderText("회원명을 입력해주세요.");
+    const searchInput = screen.getByPlaceholderText("이메일 또는 이름으로 검색");
     expect(searchInput).toBeInTheDocument();
   });
 

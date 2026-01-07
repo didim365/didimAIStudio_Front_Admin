@@ -5,10 +5,10 @@ import { paths } from "@/shared/types/api/auth";
 import getUser from "../_api/getUser";
 
 type GetUserResponse =
-  paths["/api/v1/users/account/{user_id}"]["get"]["responses"]["200"]["content"]["application/json"];
+  paths["/api/v1/admin/users/{user_id}"]["get"]["responses"]["200"]["content"]["application/json"];
 
 type GetUserParams =
-  paths["/api/v1/users/account/{user_id}"]["get"]["parameters"]["path"];
+  paths["/api/v1/admin/users/{user_id}"]["get"]["parameters"]["path"];
 
 export const useGetUser = (
   params: GetUserParams,
@@ -18,7 +18,7 @@ export const useGetUser = (
   >
 ) => {
   return useQuery<GetUserResponse, Error>({
-    queryKey: ["users", "account", params.user_id],
+    queryKey: ["admin", "users", params.user_id],
     queryFn: () => getUser(params),
     ...options,
   });
