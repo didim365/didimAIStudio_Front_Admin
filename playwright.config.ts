@@ -30,8 +30,8 @@ export default defineConfig({
     : [['list']],
 
   use: {
-    // 기본 URL (환경변수로 설정 가능, 로컬은 4000, CI는 3000)
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+    // 기본 URL (API 프록시가 환경을 자동 감지)
+    baseURL: 'http://localhost:3000',
 
     // 스크린샷 설정 (실패 시에만)
     screenshot: 'only-on-failure',
@@ -69,7 +69,7 @@ export default defineConfig({
 
   // 로컬 개발 서버 실행 설정
   // CI 환경에서만 자동으로 서버 시작
-  // 로컬에서는 Docker compose 사용 (PLAYWRIGHT_BASE_URL=http://localhost:4000 설정)
+  // 로컬에서는 Docker Compose로 서버 수동 실행 (localhost:3000)
   webServer: process.env.CI ? {
     command: 'NODE_TLS_REJECT_UNAUTHORIZED=0 PLAYWRIGHT_TEST=true npm run build && NODE_TLS_REJECT_UNAUTHORIZED=0 PLAYWRIGHT_TEST=true npm run start',
     url: 'http://localhost:3000',
