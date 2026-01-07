@@ -71,7 +71,7 @@ export default defineConfig({
   // CI 환경에서만 자동으로 서버 시작
   // 로컬에서는 Docker compose 사용 (PLAYWRIGHT_BASE_URL=http://localhost:4000 설정)
   webServer: process.env.CI ? {
-    command: 'PLAYWRIGHT_TEST=true npm run build && PLAYWRIGHT_TEST=true npm run start',
+    command: 'NODE_TLS_REJECT_UNAUTHORIZED=0 PLAYWRIGHT_TEST=true npm run build && NODE_TLS_REJECT_UNAUTHORIZED=0 PLAYWRIGHT_TEST=true npm run start',
     url: 'http://localhost:3000',
     reuseExistingServer: false,
     timeout: 120 * 1000,
