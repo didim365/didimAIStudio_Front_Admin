@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
@@ -34,6 +36,7 @@ import { formatDate } from "@/shared/utils/formatDate";
 import { getInitials } from "@/feature/users/_utils/getInitials";
 import { formatUserStatus } from "@/feature/users/_utils/formatUserStatus";
 import type { GetUserResponse } from "../_api/getUser";
+import { useDeleteUser } from "../_hooks/useDeleteUser";
 import JsonView from "@uiw/react-json-view";
 
 interface UserPageProps {
@@ -42,11 +45,22 @@ interface UserPageProps {
 
 export function UserPage({ user }: UserPageProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const deleteUserMutation = useDeleteUser({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      router.push("/users");
+    },
+    meta: {
+      successMessage: "사용자가 성공적으로 삭제되었습니다.",
+    },
+  });
 
   const handleDelete = () => {
-    // TODO: 사용자 삭제 API 호출
+    deleteUserMutation.mutate({ user_id: user.id });
     setShowDeleteDialog(false);
-    // TODO: 삭제 후 사용자 목록 페이지로 이동하거나 리프레시
   };
   return (
     <div className="space-y-6">
@@ -238,4 +252,3 @@ export function UserPage({ user }: UserPageProps) {
     </div>
   );
 }
-

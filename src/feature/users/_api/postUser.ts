@@ -2,15 +2,15 @@ import { paths } from "@/shared/types/api/auth";
 import axiosInstance from "@/shared/utils/axiosInstance";
 
 type PostUserResponse =
-  paths["/api/v1/users/admin/user"]["post"]["responses"]["201"]["content"]["application/json"];
+  paths["/api/v1/admin/users"]["post"]["responses"]["201"]["content"]["application/json"];
 
 type PostUserRequest =
-  paths["/api/v1/users/admin/user"]["post"]["requestBody"]["content"]["application/json"];
+  paths["/api/v1/admin/users"]["post"]["requestBody"]["content"]["application/json"];
 
 const postUser = async (data: PostUserRequest): Promise<PostUserResponse> => {
   try {
     const response = await axiosInstance.auth.post<PostUserResponse>(
-      "/users/admin/user",
+      "/admin/users",
       data
     );
     return response.data;

@@ -5,13 +5,13 @@ import { paths } from "@/shared/types/api/auth";
 import getGroup from "../_api/getGroup";
 
 type GetGroupResponse =
-  paths["/api/v1/groups/{group_id}"]["get"]["responses"]["200"]["content"]["application/json"];
+  paths["/api/v1/admin/groups/{group_id}"]["get"]["responses"]["200"]["content"]["application/json"];
 
 type GetGroupParams =
-  paths["/api/v1/groups/{group_id}"]["get"]["parameters"]["path"];
+  paths["/api/v1/admin/groups/{group_id}"]["get"]["parameters"]["path"];
 
 /**
- * 그룹 조회 훅
+ * 그룹 조회 훅 (Admin 전용)
  * @param params - 그룹 조회 파라미터 (group_id 포함)
  * @param options - 추가 쿼리 옵션
  */
@@ -23,7 +23,7 @@ export const useGetGroup = (
   >
 ) => {
   return useQuery<GetGroupResponse, Error>({
-    queryKey: ["groups", params.group_id],
+    queryKey: ["admin", "groups", params.group_id],
     queryFn: () => getGroup(params),
     ...options,
   });

@@ -63,7 +63,7 @@ function GroupPage({ group }: GroupPageProps) {
   // 하위 그룹 조회
   const { data: groupsData } = useGetGroups({
     page: 1,
-    size: 100,
+    page_size: 100,
   });
 
   // 현재 그룹의 하위 그룹 필터링

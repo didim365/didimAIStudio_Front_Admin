@@ -26,7 +26,7 @@ export default function GroupSelect({
   // 그룹 이름을 가져오기 위해 동일한 쿼리 사용 (캐시 공유)
   const { data: groups } = useGetGroups({
     page: 1,
-    size: 100,
+    page_size: 100,
   });
 
   const selectedIds = multiSelect
@@ -45,7 +45,7 @@ export default function GroupSelect({
   };
 
   const getGroupName = (id: number) => {
-    return groups?.items.find((g) => g.id === id)?.group_name || `Group ${id}`;
+    return groups?.items?.find((g) => g.id === id)?.group_name || `Group ${id}`;
   };
 
   const handleTreeSelect = (ids: number[]) => {

@@ -5,10 +5,10 @@ import { paths } from "@/shared/types/api/auth";
 import patchUser from "../_api/patchUser";
 
 type PatchUserRequest =
-  paths["/api/v1/users/admin/user"]["patch"]["requestBody"]["content"]["application/json"];
+  paths["/api/v1/admin/users/{user_id}"]["patch"]["requestBody"]["content"]["application/json"];
 
 type PatchUserResponse =
-  paths["/api/v1/users/admin/user"]["patch"]["responses"]["200"]["content"]["application/json"];
+  paths["/api/v1/admin/users/{user_id}"]["patch"]["responses"]["200"]["content"]["application/json"];
 
 export const usePatchUser = (
   options?: Omit<

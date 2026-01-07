@@ -30,8 +30,8 @@ export default defineConfig({
     : [['list']],
 
   use: {
-    // 기본 URL (로컬 개발 서버)
-    baseURL: 'http://localhost:3000',
+    // 기본 URL (Docker compose nginx 포트)
+    baseURL: 'http://localhost:4000',
 
     // 스크린샷 설정 (실패 시에만)
     screenshot: 'only-on-failure',
@@ -68,10 +68,11 @@ export default defineConfig({
   ],
 
   // 로컬 개발 서버 실행 설정
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
+  // Docker compose를 사용하는 경우 주석 처리
+  // webServer: {
+  //   command: 'npm run dev',
+  //   url: 'http://localhost:3000',
+  //   reuseExistingServer: !process.env.CI,
+  //   timeout: 120 * 1000,
+  // },
 });

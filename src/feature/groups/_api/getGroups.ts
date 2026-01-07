@@ -3,12 +3,13 @@ import axiosInstance from "@/shared/utils/axiosInstance";
 
 // API 타입 추출
 type GetGroupsResponse =
-  paths["/api/v1/groups"]["get"]["responses"]["200"]["content"]["application/json"];
+  paths["/api/v1/admin/groups/"]["get"]["responses"]["200"]["content"]["application/json"];
 
-type GetGroupsParams = paths["/api/v1/groups"]["get"]["parameters"]["query"];
+type GetGroupsParams =
+  paths["/api/v1/admin/groups/"]["get"]["parameters"]["query"];
 
 /**
- * 그룹 목록 조회 API
+ * 그룹 목록 조회 API (Admin 전용)
  * @param params - 페이지네이션 및 옵션 파라미터
  */
 const getGroups = async (
@@ -16,7 +17,7 @@ const getGroups = async (
 ): Promise<GetGroupsResponse> => {
   try {
     const response = await axiosInstance.auth.get<GetGroupsResponse>(
-      "/groups",
+      "/admin/groups/",
       {
         params,
       }

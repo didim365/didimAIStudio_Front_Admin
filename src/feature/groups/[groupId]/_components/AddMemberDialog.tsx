@@ -46,12 +46,12 @@ export default function AddMemberDialog({ group }: AddMemberDialogProps) {
   // 사용자 목록 조회
   const { data: users, isLoading: isLoadingUsers } = useGetUsers({
     page: userPage,
-    size: 10,
-    search: searchQuery || undefined,
+    page_size: 10,
+    q: searchQuery || undefined,
   });
   const joinedUserIds = group.members?.map((member) => member.user_id);
   const setUserIds = new Set(joinedUserIds);
-  const filteredUsers = users?.items.filter((user) => !setUserIds.has(user.id));
+  const filteredUsers = users?.items?.filter((user) => !setUserIds.has(user.id));
 
   // 그룹 역할 조회
   const { data: groupRoles } = useGetGroupRoles({ group_id: group.id });
@@ -61,7 +61,7 @@ export default function AddMemberDialog({ group }: AddMemberDialogProps) {
     onSuccess: () => {
       // 그룹 정보 새로고침
       queryClient.invalidateQueries({
-        queryKey: ["groups", group.id],
+        queryKey: ["admin", "groups", group.id],
       });
       // 다이얼로그 닫기 및 초기화
       setOpen(false);
@@ -82,10 +82,13 @@ export default function AddMemberDialog({ group }: AddMemberDialogProps) {
     if (!selectedUserId || !selectedRoleId) return;
 
     addGroupUser({
-      group_id: group.id,
-      user_id: selectedUserId,
-      status: "ACTIVE",
-      role_id: selectedRoleId,
+      params: { group_id: group.id },
+      data: {
+        user_id: selectedUserId,
+        status: "ACTIVE",
+        role_id: selectedRoleId,
+        group_id: group.id,
+      },
     });
   };
 
@@ -190,11 +193,11 @@ export default function AddMemberDialog({ group }: AddMemberDialogProps) {
             </div>
 
             {/* 페이지네이션 */}
-            {users && users.pages > 1 && (
+            {users && users.total_pages > 1 && (
               <div className="flex justify-center pt-2">
                 <Pagination
                   currentPage={userPage}
-                  totalPages={users.pages ?? 1}
+                  totalPages={users.total_pages ?? 1}
                   onPageChange={setUserPage}
                   isLoading={isLoadingUsers}
                 />
