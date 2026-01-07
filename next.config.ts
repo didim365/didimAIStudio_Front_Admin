@@ -4,7 +4,8 @@ const path = require("path");
 const nextConfig: NextConfig = {
   reactCompiler: true,
   reactStrictMode: false,
-  output: "standalone",
+  // CI 환경에서는 standalone 빌드를 사용하지 않음 (next start와 호환성 문제)
+  output: process.env.CI ? undefined : "standalone",
   sassOptions: {
     includePaths: [path.join(__dirname, "src/assets/styles")],
     prependData: "@import '@/assets/styles/main.scss';",
