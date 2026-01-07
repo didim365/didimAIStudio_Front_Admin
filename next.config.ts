@@ -33,21 +33,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
-  // CORS 문제 해결을 위한 프록시 설정 추가
-  async rewrites() {
-    // CI 환경 또는 Playwright 테스트 환경에서는 실제 개발 서버로 프록시
-    // Docker Compose 환경에서는 auth 컨테이너로 프록시
-    const apiDestination = process.env.CI || process.env.PLAYWRIGHT_TEST
-      ? "https://aistudio-dev-admin.didim365.com/api/:path*"
-      : "http://auth:8000/api/:path*";
-
-    return [
-      {
-        source: "/api/:path*",
-        destination: apiDestination,
-      },
-    ];
-  },
+  // API 프록시는 src/app/api/[...path]/route.ts에서 처리
 };
 
 export default nextConfig;
