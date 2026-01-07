@@ -9,9 +9,15 @@ test.describe("인증 테스트", () => {
       }
     });
 
-    page.on('response', response => {
+    page.on('response', async response => {
       if (response.url().includes('/api/')) {
         console.log('<<<', response.status(), response.url());
+        try {
+          const body = await response.text();
+          console.log('Response body:', body.substring(0, 200));
+        } catch (e) {
+          console.log('Could not read response body');
+        }
       }
     });
 
