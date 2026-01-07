@@ -30,8 +30,8 @@ export default defineConfig({
     : [['list']],
 
   use: {
-    // 기본 URL (Docker compose nginx 포트)
-    baseURL: 'http://localhost:4000',
+    // 기본 URL (환경변수로 설정 가능, 로컬은 4000, CI는 3000)
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
 
     // 스크린샷 설정 (실패 시에만)
     screenshot: 'only-on-failure',
@@ -68,11 +68,12 @@ export default defineConfig({
   ],
 
   // 로컬 개발 서버 실행 설정
-  // Docker compose를 사용하는 경우 주석 처리
-  // webServer: {
-  //   command: 'npm run dev',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  //   timeout: 120 * 1000,
-  // },
+  // CI 환경에서만 자동으로 서버 시작
+  // 로컬에서는 Docker compose 사용 (PLAYWRIGHT_BASE_URL=http://localhost:4000 설정)
+  webServer: process.env.CI ? {
+    command: 'npm run build && npm run start',
+    url: 'http://localhost:3000',
+    reuseExistingServer: false,
+    timeout: 120 * 1000,
+  } : undefined,
 });
