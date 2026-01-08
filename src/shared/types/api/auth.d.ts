@@ -1108,6 +1108,7 @@ export interface paths {
         /**
          * [Admin] 그룹 상세 조회
          * @description 관리자용 그룹 상세 정보를 조회합니다.
+         *     멤버 정보와 하위 그룹 정보를 포함합니다.
          */
         get: operations["get_admin_group_api_v1_admin_groups__group_id__get"];
         put?: never;
@@ -1836,6 +1837,53 @@ export interface components {
             file: string;
         };
         /**
+         * ChildGroupResponse
+         * @description 하위 그룹 정보 응답 모델
+         */
+        ChildGroupResponse: {
+            /**
+             * Id
+             * @description 그룹 ID
+             */
+            id: number;
+            /**
+             * Group Name
+             * @description 그룹명
+             */
+            group_name: string;
+            /**
+             * Group Type
+             * @description 그룹 타입
+             */
+            group_type?: string | null;
+            /**
+             * Parent Group Id
+             * @description 상위 그룹 ID
+             */
+            parent_group_id?: number | null;
+            /**
+             * Manager
+             * @description 관리자 ID
+             */
+            manager?: number | null;
+            /**
+             * Created At
+             * @description 생성일
+             */
+            created_at?: string | null;
+            /**
+             * Updated At
+             * @description 수정일
+             */
+            updated_at?: string | null;
+            /**
+             * Member Count
+             * @description 총 회원 수
+             * @default 0
+             */
+            member_count: number;
+        };
+        /**
          * GlobalRoleSchema
          * @description 글로벌 역할 스키마
          */
@@ -1966,6 +2014,17 @@ export interface components {
              * @default 0
              */
             member_count: number;
+            /**
+             * Child Groups
+             * @description 하위 그룹 목록
+             */
+            child_groups?: components["schemas"]["ChildGroupResponse"][];
+            /**
+             * Child Group Count
+             * @description 하위 그룹 수
+             * @default 0
+             */
+            child_group_count: number;
         };
         /** GroupRoleResponse */
         GroupRoleResponse: {

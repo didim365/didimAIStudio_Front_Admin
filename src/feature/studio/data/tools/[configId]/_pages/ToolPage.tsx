@@ -29,6 +29,9 @@ import {
   Activity,
   User,
   Wrench,
+  Code,
+  Shield,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
@@ -354,6 +357,106 @@ function ToolPage({ config }: ToolPageProps) {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Additional Information Grid */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Environment Keys Card */}
+        {config.env_keys && config.env_keys.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Code className="h-5 w-5" />
+                환경 변수 키
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground mb-3">
+                  이 설정에서 사용되는 환경 변수 키 목록입니다.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {config.env_keys.map((key, index) => (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="font-mono text-xs"
+                    >
+                      {key}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Capabilities Card */}
+        {config.capabilities && config.capabilities.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Layers className="h-5 w-5" />
+                지원 기능
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground mb-3">
+                  이 도구가 지원하는 기능 목록입니다.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {config.capabilities.map((capability, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="flex items-center gap-1"
+                    >
+                      <CheckCircle2 className="h-3 w-3" />
+                      {capability}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Masked Secrets Card */}
+        {config.masked_secrets &&
+          Object.keys(config.masked_secrets).length > 0 && (
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  민감 정보 (마스킹)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Key className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">
+                      보안을 위해 마스킹 처리된 민감 정보입니다.
+                    </span>
+                  </div>
+                  <div className="p-3 bg-muted rounded-lg border border-border overflow-x-auto">
+                    <JsonView
+                      value={config.masked_secrets}
+                      style={{
+                        backgroundColor: "transparent",
+                        fontSize: "0.875rem",
+                      }}
+                      displayDataTypes={false}
+                      displayObjectSize={false}
+                      enableClipboard={false}
+                      collapsed={false}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
       </div>
     </div>
   );

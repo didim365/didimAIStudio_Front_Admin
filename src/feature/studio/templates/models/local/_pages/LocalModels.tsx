@@ -1,7 +1,6 @@
 "use client";
 
-import { useGetPrivateModels } from "../_hooks/useGetPrivateModels";
-import { DeploymentStatusBadge } from "../_components/DeploymentStatusBadge";
+import { useGetLocalModels } from "../_hooks/useGetLocalModels";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import {
@@ -20,15 +19,14 @@ import {
   CheckCircle2,
   Plus,
 } from "lucide-react";
-import { formatDate } from "@/shared/utils/formatDate";
 import Link from "next/link";
 import { cn } from "@/shared/lib/utils";
 
-function PrivateModels() {
-  const { data, isLoading, refetch } = useGetPrivateModels();
+function LocalModels() {
+  const { data, isLoading, refetch } = useGetLocalModels();
 
-  const models = data?.models || [];
-  const totalCount = data?.total_count || 0;
+  const models = data?.items || [];
+  const totalCount = data?.total || 0;
 
   return (
     <div>
@@ -64,7 +62,7 @@ function PrivateModels() {
                 />
                 새로고침
               </Button>
-              <Link href="/studio/templates/models/private/add">
+              <Link href="/studio/templates/models/local/add">
                 <Button className="gap-2 cursor-pointer">
                   <Plus className="h-4 w-4" />
                   로컬 LLM 템플릿 생성
@@ -102,76 +100,76 @@ function PrivateModels() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-left">모델 ID</TableHead>
+                    <TableHead className="text-left">GPUStack 모델 ID</TableHead>
                     <TableHead className="text-left">모델 이름</TableHead>
-                    <TableHead className="text-center">상태</TableHead>
-                    <TableHead className="text-center">사용 가능</TableHead>
-                    <TableHead className="text-left">백엔드</TableHead>
-                    <TableHead className="text-center">생성일</TableHead>
+                    <TableHead className="text-center">배포 상태</TableHead>
+                    <TableHead className="text-center">로컬 여부</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {models.map((model) => (
                     <TableRow
-                      key={model.id || `model-${Math.random()}`}
+                      key={model.model_id}
                       className="group hover:bg-slate-50 transition-colors"
                     >
                       <TableCell className="text-left font-mono text-sm">
                         <div className="flex items-center gap-2">
                           <code className="text-xs bg-muted px-2 py-1 rounded">
-                            {model.id || "N/A"}
+                            {model.model_id}
+                          </code>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-left font-mono text-sm">
+                        <div className="flex items-center gap-2">
+                          <code className="text-xs bg-muted px-2 py-1 rounded">
+                            {model.gpustack_model_id || "N/A"}
                           </code>
                         </div>
                       </TableCell>
                       <TableCell className="text-left">
                         <div className="flex flex-col">
                           <span className="font-medium">
-                            {model.name || "이름 없음"}
+                            {model.model_name || "이름 없음"}
                           </span>
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex justify-center">
-                          <DeploymentStatusBadge
-                            status={model.status || "unknown"}
-                          />
+                          <Badge
+                            variant={
+                              model.deployment_status === "running"
+                                ? "default"
+                                : "secondary"
+                            }
+                            className={
+                              model.deployment_status === "running"
+                                ? "bg-green-500 hover:bg-green-600"
+                                : ""
+                            }
+                          >
+                            {model.deployment_status || "unknown"}
+                          </Badge>
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex justify-center">
-                          {model.ready ? (
+                          {model.is_local ? (
                             <Badge
                               variant="default"
-                              className="flex items-center gap-1 w-fit bg-green-500 hover:bg-green-600"
+                              className="flex items-center gap-1 w-fit bg-blue-500 hover:bg-blue-600"
                             >
                               <CheckCircle2 className="h-3 w-3" />
-                              사용 가능
+                              로컬
                             </Badge>
                           ) : (
                             <Badge
                               variant="secondary"
                               className="flex items-center gap-1 w-fit"
                             >
-                              사용 불가
+                              원격
                             </Badge>
                           )}
                         </div>
-                      </TableCell>
-                      <TableCell className="text-left">
-                        {model.backend ? (
-                          <Badge
-                            variant="outline"
-                            className="font-mono text-xs"
-                          >
-                            {model.backend}
-                          </Badge>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">
-                            정보 없음
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center text-sm text-muted-foreground">
-                        {formatDate(model.created_at || null)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -185,4 +183,4 @@ function PrivateModels() {
   );
 }
 
-export default PrivateModels;
+export default LocalModels;

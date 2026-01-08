@@ -81,13 +81,13 @@ const MENU: MenuItem[] = [
             icon: Cpu,
             children: [
               {
-                name: "서비스형 API 관리",
+                name: "퍼블릭 API 관리",
                 href: "/studio/templates/models/public",
                 icon: Cloud,
               },
               {
                 name: "로컬 LLM 관리",
-                href: "/studio/templates/models/private",
+                href: "/studio/templates/models/local",
                 icon: Server,
               },
             ],
