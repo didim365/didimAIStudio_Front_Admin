@@ -372,6 +372,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/settings/local/{user_model_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 로컬 LLM 설정 상세 조회
+         * @description user_model_id로 로컬 LLM 설정의 상세 정보를 조회합니다. (DID-1244)
+         */
+        get: operations["get_local_llm_detail_v1_settings_local__user_model_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/current/user": {
         parameters: {
             query?: never;
@@ -560,7 +580,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/models/deploy-local": {
+    "/v1/admin/models/deploy-local": {
         parameters: {
             query?: never;
             header?: never;
@@ -573,14 +593,14 @@ export interface paths {
          * Deploy local model
          * @description Deploy a local model file to GPUStack
          */
-        post: operations["deploy_local_model_admin_models_deploy_local_post"];
+        post: operations["deploy_local_model_v1_admin_models_deploy_local_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/admin/models/{model_id}/stop": {
+    "/v1/admin/models/{model_id}/stop": {
         parameters: {
             query?: never;
             header?: never;
@@ -593,14 +613,14 @@ export interface paths {
          * Stop model
          * @description Stop a running model
          */
-        post: operations["stop_model_admin_models__model_id__stop_post"];
+        post: operations["stop_model_v1_admin_models__model_id__stop_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/admin/models/local": {
+    "/v1/admin/models/local": {
         parameters: {
             query?: never;
             header?: never;
@@ -611,7 +631,7 @@ export interface paths {
          * List local models
          * @description Get list of locally deployed models
          */
-        get: operations["list_local_models_admin_models_local_get"];
+        get: operations["list_local_models_v1_admin_models_local_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -620,7 +640,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/models/{model_id}": {
+    "/v1/admin/models/local/{model_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get local model detail
+         * @description Get detailed information of a locally deployed model (DID-1244)
+         */
+        get: operations["get_local_model_detail_v1_admin_models_local__model_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/models/{model_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -634,13 +674,13 @@ export interface paths {
          * Delete model
          * @description Delete a model from GPUStack and database
          */
-        delete: operations["delete_model_admin_models__model_id__delete"];
+        delete: operations["delete_model_v1_admin_models__model_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/admin/models/gpustack/deployed": {
+    "/v1/admin/models/gpustack/deployed": {
         parameters: {
             query?: never;
             header?: never;
@@ -651,7 +691,7 @@ export interface paths {
          * List GPUStack deployed models
          * @description Get list of all models deployed on GPUStack (runtime status)
          */
-        get: operations["get_gpustack_deployed_models_admin_models_gpustack_deployed_get"];
+        get: operations["get_gpustack_deployed_models_v1_admin_models_gpustack_deployed_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -660,7 +700,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/models/gpustack/resources": {
+    "/v1/admin/models/gpustack/resources": {
         parameters: {
             query?: never;
             header?: never;
@@ -671,7 +711,7 @@ export interface paths {
          * Get GPUStack system resources
          * @description Get GPUStack system resources including GPU and worker status
          */
-        get: operations["get_gpustack_resources_admin_models_gpustack_resources_get"];
+        get: operations["get_gpustack_resources_v1_admin_models_gpustack_resources_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -680,7 +720,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/models/gpustack/health": {
+    "/v1/admin/models/gpustack/health": {
         parameters: {
             query?: never;
             header?: never;
@@ -691,7 +731,7 @@ export interface paths {
          * Check GPUStack health
          * @description Check GPUStack service health status
          */
-        get: operations["check_gpustack_health_admin_models_gpustack_health_get"];
+        get: operations["check_gpustack_health_v1_admin_models_gpustack_health_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1216,6 +1256,104 @@ export interface components {
              * @description 상태 메시지
              */
             message: string;
+        };
+        /**
+         * LocalLLMDetailResponseDTO
+         * @description 로컬 LLM 상세 조회 응답 DTO (DID-1244).
+         *
+         *     관리자 및 사용자 API에서 로컬 LLM 모델의 상세 정보를 조회할 때 사용.
+         *     데이터 출처: GenAIModel 테이블 및 UserLLMConfig 테이블 (DB만 조회, GPUStack API 호출 없음)
+         *
+         *     Note: api_endpoint, model_path, quantization, backend 필드는 DB에 저장된 값이 있을 때만 반환됩니다.
+         * @example {
+         *       "api_endpoint": "http://localhost:8080/v1",
+         *       "backend": "llama.cpp",
+         *       "created_at": "2024-03-20T00:00:00",
+         *       "deployment_status": "RUNNING",
+         *       "deployment_type": "PRIVATE_VLLM",
+         *       "gpustack_model_id": "gpustack-12345",
+         *       "is_local": true,
+         *       "model_id": 1,
+         *       "model_name": "Llama-3.2-3B-Instruct",
+         *       "model_path": "/models/Llama-3.2-3B-Instruct-Q4_K_M.gguf",
+         *       "provider": "LOCAL",
+         *       "quantization": "Q4_K_M",
+         *       "settings": {
+         *         "temperature": 0.7,
+         *         "top_p": 0.95
+         *       },
+         *       "updated_at": "2024-03-20T00:00:00"
+         *     }
+         */
+        LocalLLMDetailResponseDTO: {
+            /**
+             * Model Id
+             * @description 모델 ID
+             */
+            model_id: number;
+            /**
+             * Model Name
+             * @description 모델 이름
+             */
+            model_name: string;
+            /**
+             * Provider
+             * @description 제공자 (예: LOCAL)
+             */
+            provider?: string | null;
+            /** @description 배포 타입 (PRIVATE_VLLM) */
+            deployment_type: components["schemas"]["DeploymentType"];
+            /**
+             * Is Local
+             * @description 로컬 배포 여부
+             * @default true
+             */
+            is_local: boolean;
+            /**
+             * Gpustack Model Id
+             * @description GPUStack 모델 ID
+             */
+            gpustack_model_id?: string | null;
+            /**
+             * Deployment Status
+             * @description 배포 상태 (DEPLOYING, RUNNING, STOPPED, FAILED)
+             */
+            deployment_status?: string | null;
+            /**
+             * Api Endpoint
+             * @description API 엔드포인트 URL
+             */
+            api_endpoint?: string | null;
+            /**
+             * Model Path
+             * @description 모델 파일 경로
+             */
+            model_path?: string | null;
+            /**
+             * Quantization
+             * @description 양자화 방식
+             */
+            quantization?: string | null;
+            /**
+             * Backend
+             * @description 추론 백엔드 (llama.cpp, vllm 등)
+             */
+            backend?: string | null;
+            /**
+             * Settings
+             * @description 사용자 설정 (temperature, top_p 등)
+             */
+            settings?: Record<string, never>;
+            /**
+             * Created At
+             * @description 생성일시
+             */
+            created_at?: string | null;
+            /**
+             * Updated At
+             * @description 수정일시
+             */
+            updated_at?: string | null;
         };
         /**
          * LocalModelDeployResponseDTO
@@ -1823,7 +1961,7 @@ export interface components {
             user_llm_title?: string | null;
             /**
              * Api Key
-             * @description API 키 (마스킹 처리됨)
+             * @description API 키 (GET 조회 시 마스킹 처리됨)
              */
             api_key?: string | null;
             /**
@@ -3437,6 +3575,73 @@ export interface operations {
             };
         };
     };
+    get_local_llm_detail_v1_settings_local__user_model_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description 사용자 모델 설정 ID */
+                user_model_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalLLMDetailResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 필요 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 설정을 찾을 수 없음 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 내부 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_current_user_v1_current_user_get: {
         parameters: {
             query?: never;
@@ -4040,7 +4245,7 @@ export interface operations {
             };
         };
     };
-    deploy_local_model_admin_models_deploy_local_post: {
+    deploy_local_model_v1_admin_models_deploy_local_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -4073,7 +4278,7 @@ export interface operations {
             };
         };
     };
-    stop_model_admin_models__model_id__stop_post: {
+    stop_model_v1_admin_models__model_id__stop_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -4104,7 +4309,7 @@ export interface operations {
             };
         };
     };
-    list_local_models_admin_models_local_get: {
+    list_local_models_v1_admin_models_local_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -4124,7 +4329,38 @@ export interface operations {
             };
         };
     };
-    delete_model_admin_models__model_id__delete: {
+    get_local_model_detail_v1_admin_models_local__model_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocalLLMDetailResponseDTO"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_model_v1_admin_models__model_id__delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -4155,7 +4391,7 @@ export interface operations {
             };
         };
     };
-    get_gpustack_deployed_models_admin_models_gpustack_deployed_get: {
+    get_gpustack_deployed_models_v1_admin_models_gpustack_deployed_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -4175,7 +4411,7 @@ export interface operations {
             };
         };
     };
-    get_gpustack_resources_admin_models_gpustack_resources_get: {
+    get_gpustack_resources_v1_admin_models_gpustack_resources_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -4195,7 +4431,7 @@ export interface operations {
             };
         };
     };
-    check_gpustack_health_admin_models_gpustack_health_get: {
+    check_gpustack_health_v1_admin_models_gpustack_health_get: {
         parameters: {
             query?: never;
             header?: never;
