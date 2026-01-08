@@ -3946,6 +3946,13 @@ export interface components {
              */
             has_secrets: boolean;
             /**
+             * Masked Secrets
+             * @description 마스킹된 민감 정보 (관리자용, 중첩 구조 지원)
+             */
+            masked_secrets?: {
+                [key: string]: unknown;
+            } | null;
+            /**
              * Config Schema Version
              * @description 스키마 버전
              * @default v1
