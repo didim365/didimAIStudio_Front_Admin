@@ -81,7 +81,7 @@ const MENU: MenuItem[] = [
             icon: Cpu,
             children: [
               {
-                name: "서비스형 API 관리",
+                name: "퍼블릭 API 관리",
                 href: "/studio/templates/models/public",
                 icon: Cloud,
               },

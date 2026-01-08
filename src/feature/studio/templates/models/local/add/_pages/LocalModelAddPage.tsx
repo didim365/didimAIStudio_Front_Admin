@@ -37,6 +37,7 @@ import {
   DEPLOYMENT_TYPE_OPTIONS,
   BACKEND_OPTIONS,
 } from "../_constants/gpuStackOptions";
+import { cn } from "@/shared/lib/utils";
 
 type GPUStackSourceType = components["schemas"]["GPUStackSourceType"];
 type GPUStackDeploymentType = components["schemas"]["GPUStackDeploymentType"];
@@ -86,18 +87,62 @@ function LocalModelAddPage() {
   };
 
   return (
-    <div className="py-8 px-4">
-      <form onSubmit={handleSubmit}>
-        <div className="space-y-6">
+    <div className="py-8 px-4 relative">
+      {/* 배포 중 오버레이 */}
+      {isDeploying && (
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="deploy-modal-title"
+          aria-describedby="deploy-modal-description"
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center"
+        >
+          <Card className="w-[90%] max-w-md mx-4">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center space-y-4">
+                <Loader2
+                  className="h-12 w-12 animate-spin text-primary"
+                  aria-hidden="true"
+                />
+                <div className="space-y-2 text-center">
+                  <h3 id="deploy-modal-title" className="text-lg font-semibold">
+                    모델 배포 중
+                  </h3>
+                  <p
+                    id="deploy-modal-description"
+                    className="text-sm text-muted-foreground"
+                  >
+                    로컬 모델을 배포하고 있습니다...
+                  </p>
+                  <p
+                    className="text-xs text-muted-foreground"
+                    aria-live="polite"
+                  >
+                    잠시만 기다려주세요
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} aria-busy={true}>
+        <div className="space-y-6" aria-hidden={true ? "true" : undefined}>
           {/* Header */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <Link href="/studio/templates/models/local">
+              <Link
+                href="/studio/templates/models/local"
+                className={cn(isDeploying && "pointer-events-none")}
+                aria-disabled={isDeploying}
+              >
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   className="shrink-0 cursor-pointer"
+                  disabled={isDeploying}
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
@@ -215,10 +260,12 @@ function LocalModelAddPage() {
                         setFormData({ ...formData, deployment_type: value })
                       }
                       required
+                      disabled={isDeploying}
                     >
                       <SelectTrigger
                         id="deployment_type"
                         className="pl-6 w-full"
+                        disabled={isDeploying}
                       >
                         <SelectValue />
                       </SelectTrigger>
@@ -249,8 +296,13 @@ function LocalModelAddPage() {
                           backend: value === "none" ? undefined : value,
                         })
                       }
+                      disabled={isDeploying}
                     >
-                      <SelectTrigger id="backend" className="pl-6 w-full">
+                      <SelectTrigger
+                        id="backend"
+                        className="pl-6 w-full"
+                        disabled={isDeploying}
+                      >
                         <SelectValue placeholder="자동 선택" />
                       </SelectTrigger>
                       <SelectContent>
@@ -289,6 +341,7 @@ function LocalModelAddPage() {
                       placeholder="예: 1"
                       className="pl-6"
                       min="1"
+                      disabled={isDeploying}
                     />
                     <p className="text-xs text-muted-foreground">
                       모델 인스턴스 복제본 수 (GPUStack 2.0)
@@ -316,6 +369,7 @@ function LocalModelAddPage() {
                       placeholder="모델에 대한 상세 설명을 입력하세요"
                       className="min-h-[100px]"
                       rows={4}
+                      disabled={isDeploying}
                     />
                   </div>
                 </div>
@@ -355,6 +409,7 @@ function LocalModelAddPage() {
                           placeholder="예: unsloth/Qwen3-0.6B-GGUF"
                           className="pl-6"
                           required
+                          disabled={isDeploying}
                         />
                       </div>
                       <div className="space-y-2">
@@ -376,6 +431,7 @@ function LocalModelAddPage() {
                           }
                           placeholder="예: Qwen3-0.6B-Q4_K_M.gguf"
                           className="pl-6"
+                          disabled={isDeploying}
                         />
                         <p className="text-xs text-muted-foreground">
                           GGUF 파일명 (선택사항)
@@ -407,6 +463,7 @@ function LocalModelAddPage() {
                           placeholder="예: model-scope/model-id"
                           className="pl-6"
                           required
+                          disabled={isDeploying}
                         />
                       </div>
                       <div className="space-y-2">
@@ -428,6 +485,7 @@ function LocalModelAddPage() {
                           }
                           placeholder="예: /path/to/model/file"
                           className="pl-6"
+                          disabled={isDeploying}
                         />
                         <p className="text-xs text-muted-foreground">
                           Model Scope 파일 경로 (선택사항)
@@ -458,6 +516,7 @@ function LocalModelAddPage() {
                         placeholder="예: llama2:7b"
                         className="pl-6"
                         required
+                        disabled={isDeploying}
                       />
                       <Alert>
                         <Info className="h-4 w-4" />
@@ -492,6 +551,7 @@ function LocalModelAddPage() {
                         placeholder="예: /path/to/model"
                         className="pl-6"
                         required
+                        disabled={isDeploying}
                       />
                       <p className="text-xs text-muted-foreground">
                         로컬 파일 시스템의 모델 경로를 입력하세요
