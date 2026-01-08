@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetPrivateModels } from "../_hooks/useGetPrivateModels";
+import { useGetLocalModels } from "../_hooks/useGetLocalModels";
 import { DeploymentStatusBadge } from "../_components/DeploymentStatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
@@ -24,8 +24,8 @@ import { formatDate } from "@/shared/utils/formatDate";
 import Link from "next/link";
 import { cn } from "@/shared/lib/utils";
 
-function PrivateModels() {
-  const { data, isLoading, refetch } = useGetPrivateModels();
+function LocalModels() {
+  const { data, isLoading, refetch } = useGetLocalModels();
 
   const models = data?.models || [];
   const totalCount = data?.total_count || 0;
@@ -64,7 +64,7 @@ function PrivateModels() {
                 />
                 새로고침
               </Button>
-              <Link href="/studio/templates/models/private/add">
+              <Link href="/studio/templates/models/local/add">
                 <Button className="gap-2 cursor-pointer">
                   <Plus className="h-4 w-4" />
                   로컬 LLM 템플릿 생성
@@ -185,4 +185,4 @@ function PrivateModels() {
   );
 }
 
-export default PrivateModels;
+export default LocalModels;

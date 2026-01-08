@@ -41,7 +41,7 @@ type GPUStackSourceType = components["schemas"]["GPUStackSourceType"];
 type GPUStackDeploymentType = components["schemas"]["GPUStackDeploymentType"];
 type GPUStackBackend = components["schemas"]["GPUStackBackend"];
 
-function PrivateModelAddPage() {
+function LocalModelAddPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -68,10 +68,10 @@ function PrivateModelAddPage() {
   const { mutate: deployModel, isPending: isDeploying } = usePostDeploy({
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["private-models"],
+        queryKey: ["local-models"],
       });
       // 배포된 모델 목록 페이지로 이동
-      router.push("/studio/templates/models/private");
+      router.push("/studio/templates/models/local");
     },
     meta: {
       successMessage: "모델 배포가 성공적으로 시작되었습니다.",
@@ -91,7 +91,7 @@ function PrivateModelAddPage() {
           {/* Header */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <Link href="/studio/templates/models/private">
+              <Link href="/studio/templates/models/local">
                 <Button
                   type="button"
                   variant="ghost"
@@ -498,4 +498,4 @@ function PrivateModelAddPage() {
   );
 }
 
-export default PrivateModelAddPage;
+export default LocalModelAddPage;

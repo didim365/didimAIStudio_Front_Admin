@@ -87,7 +87,7 @@ const MENU: MenuItem[] = [
               },
               {
                 name: "로컬 LLM 관리",
-                href: "/studio/templates/models/private",
+                href: "/studio/templates/models/local",
                 icon: Server,
               },
             ],
