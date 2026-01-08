@@ -17,7 +17,7 @@ const getGroups = async (
 ): Promise<GetGroupsResponse> => {
   try {
     const response = await axiosInstance.auth.get<GetGroupsResponse>(
-      "/admin/groups/",
+      "/admin/groups",
       {
         params,
       }

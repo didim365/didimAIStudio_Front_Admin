@@ -43,7 +43,6 @@ import {
 import { getInitials } from "@/feature/users/_utils/getInitials";
 import AddMemberDialog from "../_components/AddMemberDialog";
 import GroupRolesCard from "../_components/GroupRolesCard";
-import { useGetGroups } from "../../_hooks/useGetGroups";
 
 import type { GetGroupResponse } from "../_api/getGroup";
 
@@ -59,16 +58,6 @@ function GroupPage({ group }: GroupPageProps) {
     id: number;
     name: string;
   } | null>(null);
-
-  // 하위 그룹 조회
-  const { data: groupsData } = useGetGroups({
-    page: 1,
-    page_size: 100,
-  });
-
-  // 현재 그룹의 하위 그룹 필터링
-  const childGroups =
-    groupsData?.items?.filter((g) => g.parent_group_id === group.id) || [];
 
   // 그룹 삭제 mutation
   const { mutate: deleteGroup, isPending: isDeleting } = useDeleteGroup({
@@ -240,11 +229,19 @@ function GroupPage({ group }: GroupPageProps) {
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Network className="h-4 w-4" />
                     <span className="font-medium">하위 그룹</span>
+                    {group.child_group_count > 0 && (
+                      <Badge
+                        variant="outline"
+                        className="ml-1 px-1.5 py-0 text-xs font-semibold"
+                      >
+                        {group.child_group_count}
+                      </Badge>
+                    )}
                   </div>
                   <div className="pl-6">
-                    {childGroups.length > 0 ? (
+                    {group.child_groups && group.child_groups.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
-                        {childGroups.map((childGroup) => (
+                        {group.child_groups.map((childGroup) => (
                           <Link
                             key={childGroup.id}
                             href={`/groups/${childGroup.id}`}

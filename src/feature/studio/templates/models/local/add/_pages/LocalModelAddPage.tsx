@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePostDeploy } from "../_hooks/usePostDeploy";
+import { usePostDeployLocal } from "../_hooks/usePostDeploy";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -29,6 +29,7 @@ import {
   HardDrive,
   Cloud,
   Info,
+  Loader2,
 } from "lucide-react";
 import { components } from "@/shared/types/api/models";
 import {
@@ -36,12 +37,13 @@ import {
   DEPLOYMENT_TYPE_OPTIONS,
   BACKEND_OPTIONS,
 } from "../_constants/gpuStackOptions";
+import { cn } from "@/shared/lib/utils";
 
 type GPUStackSourceType = components["schemas"]["GPUStackSourceType"];
 type GPUStackDeploymentType = components["schemas"]["GPUStackDeploymentType"];
 type GPUStackBackend = components["schemas"]["GPUStackBackend"];
 
-function PrivateModelAddPage() {
+function LocalModelAddPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -64,17 +66,17 @@ function PrivateModelAddPage() {
     local_path: "",
   });
 
-  // 모델 배포 mutation
-  const { mutate: deployModel, isPending: isDeploying } = usePostDeploy({
+  // 로컬 모델 배포 mutation
+  const { mutate: deployModel, isPending: isDeploying } = usePostDeployLocal({
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["private-models"],
+        queryKey: ["local-models"],
       });
       // 배포된 모델 목록 페이지로 이동
-      router.push("/studio/templates/models/private");
+      router.push("/studio/templates/models/local");
     },
     meta: {
-      successMessage: "모델 배포가 성공적으로 시작되었습니다.",
+      successMessage: "로컬 모델 배포가 성공적으로 시작되었습니다.",
     },
   });
 
@@ -85,18 +87,62 @@ function PrivateModelAddPage() {
   };
 
   return (
-    <div className="py-8 px-4">
-      <form onSubmit={handleSubmit}>
-        <div className="space-y-6">
+    <div className="py-8 px-4 relative">
+      {/* 배포 중 오버레이 */}
+      {isDeploying && (
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="deploy-modal-title"
+          aria-describedby="deploy-modal-description"
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center"
+        >
+          <Card className="w-[90%] max-w-md mx-4">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center space-y-4">
+                <Loader2
+                  className="h-12 w-12 animate-spin text-primary"
+                  aria-hidden="true"
+                />
+                <div className="space-y-2 text-center">
+                  <h3 id="deploy-modal-title" className="text-lg font-semibold">
+                    모델 배포 중
+                  </h3>
+                  <p
+                    id="deploy-modal-description"
+                    className="text-sm text-muted-foreground"
+                  >
+                    로컬 모델을 배포하고 있습니다...
+                  </p>
+                  <p
+                    className="text-xs text-muted-foreground"
+                    aria-live="polite"
+                  >
+                    잠시만 기다려주세요
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} aria-busy={true}>
+        <div className="space-y-6" aria-hidden={true ? "true" : undefined}>
           {/* Header */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <Link href="/studio/templates/models/private">
+              <Link
+                href="/studio/templates/models/local"
+                className={cn(isDeploying && "pointer-events-none")}
+                aria-disabled={isDeploying}
+              >
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   className="shrink-0 cursor-pointer"
+                  disabled={isDeploying}
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
@@ -111,9 +157,23 @@ function PrivateModelAddPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button type="submit" className="shrink-0" disabled={isDeploying}>
-                <Rocket className="h-4 w-4 mr-2" />
-                {isDeploying ? "배포 중..." : "모델 배포"}
+              <Button
+                type="submit"
+                className="shrink-0"
+                disabled={isDeploying}
+                size="default"
+              >
+                {isDeploying ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    배포 중...
+                  </>
+                ) : (
+                  <>
+                    <Rocket className="h-4 w-4 mr-2" />
+                    모델 배포
+                  </>
+                )}
               </Button>
             </div>
           </div>
@@ -151,6 +211,7 @@ function PrivateModelAddPage() {
                       placeholder="예: qwen3-0.6b-q4km"
                       className="pl-6"
                       required
+                      disabled={isDeploying}
                     />
                   </div>
 
@@ -165,8 +226,13 @@ function PrivateModelAddPage() {
                         setFormData({ ...formData, source: value })
                       }
                       required
+                      disabled={isDeploying}
                     >
-                      <SelectTrigger id="source" className="pl-6 w-full">
+                      <SelectTrigger
+                        id="source"
+                        className="pl-6 w-full"
+                        disabled={isDeploying}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -194,10 +260,12 @@ function PrivateModelAddPage() {
                         setFormData({ ...formData, deployment_type: value })
                       }
                       required
+                      disabled={isDeploying}
                     >
                       <SelectTrigger
                         id="deployment_type"
                         className="pl-6 w-full"
+                        disabled={isDeploying}
                       >
                         <SelectValue />
                       </SelectTrigger>
@@ -228,8 +296,13 @@ function PrivateModelAddPage() {
                           backend: value === "none" ? undefined : value,
                         })
                       }
+                      disabled={isDeploying}
                     >
-                      <SelectTrigger id="backend" className="pl-6 w-full">
+                      <SelectTrigger
+                        id="backend"
+                        className="pl-6 w-full"
+                        disabled={isDeploying}
+                      >
                         <SelectValue placeholder="자동 선택" />
                       </SelectTrigger>
                       <SelectContent>
@@ -268,6 +341,7 @@ function PrivateModelAddPage() {
                       placeholder="예: 1"
                       className="pl-6"
                       min="1"
+                      disabled={isDeploying}
                     />
                     <p className="text-xs text-muted-foreground">
                       모델 인스턴스 복제본 수 (GPUStack 2.0)
@@ -295,6 +369,7 @@ function PrivateModelAddPage() {
                       placeholder="모델에 대한 상세 설명을 입력하세요"
                       className="min-h-[100px]"
                       rows={4}
+                      disabled={isDeploying}
                     />
                   </div>
                 </div>
@@ -334,6 +409,7 @@ function PrivateModelAddPage() {
                           placeholder="예: unsloth/Qwen3-0.6B-GGUF"
                           className="pl-6"
                           required
+                          disabled={isDeploying}
                         />
                       </div>
                       <div className="space-y-2">
@@ -355,6 +431,7 @@ function PrivateModelAddPage() {
                           }
                           placeholder="예: Qwen3-0.6B-Q4_K_M.gguf"
                           className="pl-6"
+                          disabled={isDeploying}
                         />
                         <p className="text-xs text-muted-foreground">
                           GGUF 파일명 (선택사항)
@@ -386,6 +463,7 @@ function PrivateModelAddPage() {
                           placeholder="예: model-scope/model-id"
                           className="pl-6"
                           required
+                          disabled={isDeploying}
                         />
                       </div>
                       <div className="space-y-2">
@@ -407,6 +485,7 @@ function PrivateModelAddPage() {
                           }
                           placeholder="예: /path/to/model/file"
                           className="pl-6"
+                          disabled={isDeploying}
                         />
                         <p className="text-xs text-muted-foreground">
                           Model Scope 파일 경로 (선택사항)
@@ -437,6 +516,7 @@ function PrivateModelAddPage() {
                         placeholder="예: llama2:7b"
                         className="pl-6"
                         required
+                        disabled={isDeploying}
                       />
                       <Alert>
                         <Info className="h-4 w-4" />
@@ -471,6 +551,7 @@ function PrivateModelAddPage() {
                         placeholder="예: /path/to/model"
                         className="pl-6"
                         required
+                        disabled={isDeploying}
                       />
                       <p className="text-xs text-muted-foreground">
                         로컬 파일 시스템의 모델 경로를 입력하세요
@@ -498,4 +579,4 @@ function PrivateModelAddPage() {
   );
 }
 
-export default PrivateModelAddPage;
+export default LocalModelAddPage;
