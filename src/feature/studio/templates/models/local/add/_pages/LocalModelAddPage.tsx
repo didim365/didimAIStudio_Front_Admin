@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePostDeploy } from "../_hooks/usePostDeploy";
+import { usePostDeployLocal } from "../_hooks/usePostDeploy";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -29,6 +29,7 @@ import {
   HardDrive,
   Cloud,
   Info,
+  Loader2,
 } from "lucide-react";
 import { components } from "@/shared/types/api/models";
 import {
@@ -64,8 +65,8 @@ function LocalModelAddPage() {
     local_path: "",
   });
 
-  // 모델 배포 mutation
-  const { mutate: deployModel, isPending: isDeploying } = usePostDeploy({
+  // 로컬 모델 배포 mutation
+  const { mutate: deployModel, isPending: isDeploying } = usePostDeployLocal({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["local-models"],
@@ -74,7 +75,7 @@ function LocalModelAddPage() {
       router.push("/studio/templates/models/local");
     },
     meta: {
-      successMessage: "모델 배포가 성공적으로 시작되었습니다.",
+      successMessage: "로컬 모델 배포가 성공적으로 시작되었습니다.",
     },
   });
 
@@ -111,9 +112,23 @@ function LocalModelAddPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button type="submit" className="shrink-0" disabled={isDeploying}>
-                <Rocket className="h-4 w-4 mr-2" />
-                {isDeploying ? "배포 중..." : "모델 배포"}
+              <Button
+                type="submit"
+                className="shrink-0"
+                disabled={isDeploying}
+                size="default"
+              >
+                {isDeploying ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    배포 중...
+                  </>
+                ) : (
+                  <>
+                    <Rocket className="h-4 w-4 mr-2" />
+                    모델 배포
+                  </>
+                )}
               </Button>
             </div>
           </div>
@@ -151,6 +166,7 @@ function LocalModelAddPage() {
                       placeholder="예: qwen3-0.6b-q4km"
                       className="pl-6"
                       required
+                      disabled={isDeploying}
                     />
                   </div>
 
@@ -165,8 +181,13 @@ function LocalModelAddPage() {
                         setFormData({ ...formData, source: value })
                       }
                       required
+                      disabled={isDeploying}
                     >
-                      <SelectTrigger id="source" className="pl-6 w-full">
+                      <SelectTrigger
+                        id="source"
+                        className="pl-6 w-full"
+                        disabled={isDeploying}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
