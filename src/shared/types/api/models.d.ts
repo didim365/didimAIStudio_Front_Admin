@@ -740,6 +740,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/models/inference-backends": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get inference backends
+         * @description Get available inference backends and their versions from GPUStack
+         */
+        get: operations["get_inference_backends_v1_admin_models_inference_backends_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/models/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sync GPUStack deployments
+         * @description Synchronize GPUStack deployed models with local database
+         */
+        post: operations["sync_gpustack_deployments_v1_admin_models_sync_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1574,6 +1614,16 @@ export interface components {
             /** @description 사용할 백엔드 (자동 선택 시 None) */
             backend?: components["schemas"]["GPUStackBackend"] | null;
             /**
+             * Backend Version
+             * @description 백엔드 버전 (예: '0.6.6.post1')
+             */
+            backend_version?: string | null;
+            /**
+             * Backend Parameters
+             * @description 백엔드 추가 파라미터 (예: ['--gpu-memory-utilization=0.1'])
+             */
+            backend_parameters?: string[] | null;
+            /**
              * @description [Deprecated] 배포 타입 (GPUStack 2.0에서 제거됨)
              * @default local_gpu
              */
@@ -1781,6 +1831,108 @@ export interface components {
          * @enum {string}
          */
         SortOrderEnum: "ASC" | "DESC";
+        /**
+         * SyncChangeDTO
+         * @description 동기화 변경 항목 DTO
+         *
+         *     Note: gpustack_model_id는 str로 유지 (GPUStack ID가 non-numeric일 수 있음)
+         * @example {
+         *       "action": "created",
+         *       "gpustack_model_id": "94",
+         *       "model_name": "opt-125m"
+         *     }
+         */
+        SyncChangeDTO: {
+            /**
+             * Action
+             * @description 변경 액션 (created/updated/deleted)
+             */
+            action: string;
+            /**
+             * Gpustack Model Id
+             * @description GPUStack 모델 ID (문자열)
+             */
+            gpustack_model_id: string;
+            /**
+             * Model Name
+             * @description 모델 이름
+             */
+            model_name?: string | null;
+            /**
+             * Updated Fields
+             * @description 업데이트된 필드 목록 (action=updated일 때)
+             */
+            updated_fields?: string[] | null;
+        };
+        /**
+         * SyncRequestDTO
+         * @description GPUStack 동기화 요청 DTO
+         * @example {
+         *       "dry_run": true,
+         *       "force": false
+         *     }
+         */
+        SyncRequestDTO: {
+            /**
+             * Dry Run
+             * @description 실제 저장 없이 변경 예정 내용만 반환
+             * @default false
+             */
+            dry_run: boolean;
+            /**
+             * Force
+             * @description 모든 레코드 강제 업데이트 (updated_at 비교 무시)
+             * @default false
+             */
+            force: boolean;
+        };
+        /**
+         * SyncResponseDTO
+         * @description GPUStack 동기화 응답 DTO
+         * @example {
+         *       "changes": [
+         *         {
+         *           "action": "created",
+         *           "gpustack_model_id": "95",
+         *           "model_name": "new-model"
+         *         }
+         *       ],
+         *       "success": true,
+         *       "summary": {
+         *         "created": 1,
+         *         "deleted": 0,
+         *         "total_db_models": 3,
+         *         "total_gpustack_models": 4,
+         *         "unchanged": 1,
+         *         "updated": 2
+         *       },
+         *       "synced_at": "2026-01-09T10:50:00+00:00"
+         *     }
+         */
+        SyncResponseDTO: {
+            /**
+             * Success
+             * @description 동기화 성공 여부
+             */
+            success: boolean;
+            /**
+             * Synced At
+             * @description 동기화 시각 (ISO format with timezone)
+             */
+            synced_at: string;
+            /**
+             * Summary
+             * @description 동기화 요약 (total_gpustack_models, created, updated, deleted, unchanged)
+             */
+            summary: {
+                [key: string]: number;
+            };
+            /**
+             * Changes
+             * @description 변경 항목 목록
+             */
+            changes?: components["schemas"]["SyncChangeDTO"][];
+        };
         /**
          * SystemResourcesDTO
          * @description System resources DTO
@@ -4447,6 +4599,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthCheckResponseDTO"];
+                };
+            };
+        };
+    };
+    get_inference_backends_v1_admin_models_inference_backends_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    sync_gpustack_deployments_v1_admin_models_sync_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SyncResponseDTO"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
