@@ -12,12 +12,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import {
-  RefreshCw,
-  AlertCircle,
-  Server,
-  Plus,
-} from "lucide-react";
+import { RefreshCw, AlertCircle, Server, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/shared/lib/utils";
@@ -68,12 +63,6 @@ function LocalModels() {
                 />
                 새로고침
               </Button>
-              <Link href="/studio/templates/models/local/add">
-                <Button className="gap-2 cursor-pointer">
-                  <Plus className="h-4 w-4" />
-                  로컬 LLM 템플릿 생성
-                </Button>
-              </Link>
             </div>
           </div>
         </CardContent>
@@ -106,7 +95,9 @@ function LocalModels() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-center">모델 ID</TableHead>
-                    <TableHead className="text-center">GPUStack 모델 ID</TableHead>
+                    <TableHead className="text-center">
+                      GPUStack 모델 ID
+                    </TableHead>
                     <TableHead className="text-center">모델 이름</TableHead>
                     <TableHead className="text-center">배포 상태</TableHead>
                   </TableRow>
