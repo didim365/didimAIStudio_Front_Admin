@@ -19,14 +19,20 @@ import {
   Plus,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { cn } from "@/shared/lib/utils";
 import { getDeploymentStatusLabel } from "../_utils/deploymentStatus";
 
 function LocalModels() {
+  const router = useRouter();
   const { data, isLoading, refetch } = useGetLocalModels();
 
   const models = data?.items || [];
   const totalCount = data?.total || 0;
+
+  const handleRowClick = (modelId: number) => {
+    router.push(`/studio/templates/models/local/${modelId}`);
+  };
 
   return (
     <div>
@@ -109,7 +115,8 @@ function LocalModels() {
                   {models.map((model) => (
                     <TableRow
                       key={model.model_id}
-                      className="group hover:bg-slate-50 transition-colors"
+                      className="group hover:bg-slate-50 transition-colors cursor-pointer"
+                      onClick={() => handleRowClick(model.model_id)}
                     >
                       <TableCell className="text-center font-mono text-sm">
                         <div className="flex items-center justify-center gap-2">
