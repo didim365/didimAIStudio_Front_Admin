@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetLocalModels } from "../_hooks/useGetLocalModels";
+import { useSyncGPUStack } from "../_hooks/useSyncGPUStack";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import {
@@ -12,28 +13,48 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { RefreshCw, AlertCircle, Server, Plus } from "lucide-react";
-import Link from "next/link";
+import { RefreshCw, AlertCircle, Server, Database, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/shared/lib/utils";
 import { getDeploymentStatusLabel } from "../_utils/deploymentStatus";
+import Link from "next/link";
 
 function LocalModels() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data, isLoading, refetch } = useGetLocalModels();
 
   const models = data?.items || [];
   const totalCount = data?.total || 0;
 
+  // GPUStack 동기화 mutation
+  const syncMutation = useSyncGPUStack({
+    onSuccess: () => {
+      // 동기화 성공 시 캐시 무효화하여 새 데이터 로드
+      queryClient.invalidateQueries({ queryKey: ["admin", "models", "local"] });
+    },
+    meta: {
+      successMessage: "GPUStack 모델 동기화가 완료되었습니다",
+    },
+  });
+
   const handleRowClick = (modelId: number) => {
     router.push(`/studio/templates/models/local/${modelId}`);
+  };
+
+  const handleSync = () => {
+    syncMutation.mutate({
+      dry_run: false,
+      force: false,
+    });
   };
 
   return (
     <div>
       {/* 헤더 */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">로컬 LLM 관리</h1>
+      <div className="mb-8 p-6 rounded-lg">
+        <h1 className="text-3xl font-bold text-slate-800">로컬 LLM 관리</h1>
         <p className="mt-2 text-slate-600">
           GPUStack에 배포된 모델을 조회하고 관리하세요
         </p>
@@ -52,6 +73,26 @@ function LocalModels() {
               </div>
             </div>
             <div className="flex gap-2">
+              <Button
+                variant="default"
+                className="gap-2 cursor-pointer"
+                onClick={handleSync}
+                disabled={syncMutation.isPending}
+              >
+                <Database
+                  className={cn(
+                    "h-4 w-4",
+                    syncMutation.isPending && "animate-pulse"
+                  )}
+                />
+                GPUStack 동기화
+              </Button>
+              <Link href="/studio/templates/models/local/add">
+                <Button className="gap-2 cursor-pointer">
+                  <Plus className="h-4 w-4" />
+                  로컬 LLM 템플릿 생성
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 className="gap-2"
