@@ -1,5 +1,5 @@
 import LocalModel from "@/feature/studio/templates/models/local/[modelId]/_pages/LocalModel";
-import getLocalModel from "@/feature/studio/templates/models/local/_api/getLocalModel";
+import getLocalModel from "@/feature/studio/templates/models/local/[modelId]/_api/getLocalModel";
 
 interface PageProps {
   params: Promise<{
