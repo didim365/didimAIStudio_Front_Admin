@@ -3,16 +3,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
-import { Label } from "@/shared/ui/label";
+import { Separator } from "@/shared/ui/separator";
 import {
   ArrowLeft,
   Server,
   Hash,
   FileText,
   Cpu,
-  Clock,
   Calendar,
   Link as LinkIcon,
+  ExternalLink,
+  Package,
+  Database,
+  Settings,
+  Zap,
+  Layers,
 } from "lucide-react";
 import Link from "next/link";
 import { paths } from "@/shared/types/api/models";
@@ -28,13 +33,12 @@ interface LocalModelDetailPageProps {
 
 function LocalModelPage({ model }: LocalModelDetailPageProps) {
   return (
-    <div className="py-8 px-4">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 mb-8">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link href="/studio/templates/models/local">
             <Button
-              type="button"
               variant="ghost"
               size="icon"
               className="shrink-0 cursor-pointer"
@@ -43,216 +47,297 @@ function LocalModelPage({ model }: LocalModelDetailPageProps) {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              로컬 LLM 상세
+            <h1 className="text-3xl font-bold tracking-tight">
+              로컬 모델 상세 정보
             </h1>
-            <p className="text-muted-foreground mt-1">
-              로컬에 배포된 모델의 상세 정보를 확인하세요
-            </p>
+            <p className="text-muted-foreground">모델 ID: {model.model_id}</p>
           </div>
         </div>
+        {model.api_endpoint && (
+          <Button
+            type="button"
+            variant="default"
+            className="gap-2 shrink-0"
+            asChild
+          >
+            <a
+              href={model.api_endpoint}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ExternalLink className="h-4 w-4" />
+              API 엔드포인트 열기
+            </a>
+          </Button>
+        )}
       </div>
 
-      {/* Main Content */}
-      <div className="grid gap-6">
-        {/* 기본 정보 Card */}
-        <Card>
+      {/* Main Content Grid */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Model Information Card */}
+        <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Server className="h-5 w-5" />
-              기본 정보
+              <Database className="h-5 w-5" />
+              모델 정보
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-6 md:grid-cols-2">
-              {/* 모델 ID */}
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <Hash className="h-4 w-4" />
-                  모델 ID
-                </Label>
-                <div className="flex items-center gap-2">
-                  <code className="text-sm bg-muted px-3 py-2 rounded">
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Icon and Status */}
+              <div className="flex flex-col items-center gap-4">
+                <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                  <Server className="h-16 w-16 text-primary" />
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  {model.deployment_status && (
+                    <DeploymentStatusBadge
+                      status={
+                        model.deployment_status as
+                          | "pending"
+                          | "running"
+                          | "stopped"
+                          | "failed"
+                          | "unknown"
+                      }
+                    />
+                  )}
+                  <Badge variant="secondary" className="gap-1.5">
+                    <Package className="h-3 w-3" />
+                    {model.deployment_type}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Model Info Grid */}
+              <div className="flex-1 grid gap-4 md:grid-cols-2">
+                {/* Model Name */}
+                <div className="space-y-2 md:col-span-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <FileText className="h-4 w-4" />
+                    <span className="font-medium">모델명</span>
+                  </div>
+                  <p className="text-lg font-semibold pl-6">{model.model_name}</p>
+                </div>
+
+                {/* Model ID */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Hash className="h-4 w-4" />
+                    <span className="font-medium">모델 ID</span>
+                  </div>
+                  <code className="text-sm font-mono pl-6 block">
                     {model.model_id}
                   </code>
                 </div>
-              </div>
 
-              {/* GPUStack 모델 ID */}
-              {model.gpustack_model_id && (
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <Server className="h-4 w-4" />
-                    GPUStack 모델 ID
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <code className="text-sm bg-muted px-3 py-2 rounded">
+                {/* GPUStack Model ID */}
+                {model.gpustack_model_id && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Server className="h-4 w-4" />
+                      <span className="font-medium">GPUStack 모델 ID</span>
+                    </div>
+                    <code className="text-sm font-mono pl-6 block">
                       {model.gpustack_model_id}
                     </code>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* 모델명 */}
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <FileText className="h-4 w-4" />
-                  모델명
-                </Label>
-                <p className="text-base font-medium">{model.model_name}</p>
+                {/* Provider */}
+                {model.provider && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Server className="h-4 w-4" />
+                      <span className="font-medium">제공자</span>
+                    </div>
+                    <p className="text-lg font-semibold pl-6">{model.provider}</p>
+                  </div>
+                )}
+
+                {/* Backend */}
+                {model.backend && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Cpu className="h-4 w-4" />
+                      <span className="font-medium">백엔드</span>
+                    </div>
+                    <div className="pl-6">
+                      <Badge variant="outline" className="gap-1.5">
+                        <Cpu className="h-3 w-3" />
+                        {model.backend}
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+
+                {/* Quantization */}
+                {model.quantization && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Zap className="h-4 w-4" />
+                      <span className="font-medium">양자화</span>
+                    </div>
+                    <div className="pl-6">
+                      <Badge variant="outline" className="gap-1.5">
+                        <Zap className="h-3 w-3" />
+                        {model.quantization}
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+
+                {/* API Endpoint */}
+                {model.api_endpoint && (
+                  <div className="space-y-2 md:col-span-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <LinkIcon className="h-4 w-4" />
+                      <span className="font-medium">API 엔드포인트</span>
+                    </div>
+                    <code className="text-xs bg-muted px-3 py-2 rounded font-mono break-all block ml-6">
+                      {model.api_endpoint}
+                    </code>
+                  </div>
+                )}
+
+                {/* Model Path */}
+                {model.model_path && (
+                  <div className="space-y-2 md:col-span-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <FileText className="h-4 w-4" />
+                      <span className="font-medium">모델 경로</span>
+                    </div>
+                    <code className="text-xs bg-muted px-3 py-2 rounded font-mono break-all block ml-6">
+                      {model.model_path}
+                    </code>
+                  </div>
+                )}
               </div>
-
-              {/* 배포 상태 */}
-              {model.deployment_status && (
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <Server className="h-4 w-4" />
-                    배포 상태
-                  </Label>
-                  <DeploymentStatusBadge
-                    status={
-                      model.deployment_status as
-                        | "pending"
-                        | "running"
-                        | "stopped"
-                        | "failed"
-                        | "unknown"
-                    }
-                  />
-                </div>
-              )}
-
-              {/* 제공자 */}
-              {model.provider && (
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <Server className="h-4 w-4" />
-                    제공자
-                  </Label>
-                  <Badge variant="outline" className="w-fit">
-                    {model.provider}
-                  </Badge>
-                </div>
-              )}
-
-              {/* 배포 타입 */}
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <Server className="h-4 w-4" />
-                  배포 타입
-                </Label>
-                <Badge variant="outline" className="w-fit">
-                  {model.deployment_type}
-                </Badge>
-              </div>
-
-              {/* 백엔드 */}
-              {model.backend && (
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <Cpu className="h-4 w-4" />
-                    백엔드
-                  </Label>
-                  <p className="text-base">{model.backend}</p>
-                </div>
-              )}
-
-              {/* 양자화 */}
-              {model.quantization && (
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <Cpu className="h-4 w-4" />
-                    양자화
-                  </Label>
-                  <Badge variant="outline" className="w-fit">
-                    {model.quantization}
-                  </Badge>
-                </div>
-              )}
-
-              {/* API 엔드포인트 */}
-              {model.api_endpoint && (
-                <div className="space-y-2 md:col-span-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <LinkIcon className="h-4 w-4" />
-                    API 엔드포인트
-                  </Label>
-                  <code className="text-sm bg-muted px-3 py-2 rounded block">
-                    {model.api_endpoint}
-                  </code>
-                </div>
-              )}
-
-              {/* 모델 경로 */}
-              {model.model_path && (
-                <div className="space-y-2 md:col-span-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <FileText className="h-4 w-4" />
-                    모델 경로
-                  </Label>
-                  <code className="text-sm bg-muted px-3 py-2 rounded block break-all">
-                    {model.model_path}
-                  </code>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
 
-        {/* 설정 정보 Card */}
+        {/* Activity Timeline Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              활동 정보
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Created At */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <span>생성일</span>
+              </div>
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                <p className="text-sm font-mono">
+                  {formatDate(model.created_at)}
+                </p>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Updated At */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <span>마지막 업데이트</span>
+              </div>
+              <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                <p className="text-sm font-mono">
+                  {formatDate(model.updated_at)}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Deployment Configuration Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              배포 구성
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Deployment Type */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Package className="h-4 w-4 text-muted-foreground" />
+                <span>배포 타입</span>
+              </div>
+              <div className="ml-6">
+                <Badge variant="secondary" className="gap-1.5">
+                  <Package className="h-3 w-3" />
+                  {model.deployment_type}
+                </Badge>
+              </div>
+            </div>
+
+            {model.backend && (
+              <>
+                <Separator />
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Cpu className="h-4 w-4 text-muted-foreground" />
+                    <span>백엔드</span>
+                  </div>
+                  <p className="ml-6 text-base font-semibold">{model.backend}</p>
+                </div>
+              </>
+            )}
+
+            {model.quantization && (
+              <>
+                <Separator />
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Zap className="h-4 w-4 text-muted-foreground" />
+                    <span>양자화</span>
+                  </div>
+                  <div className="ml-6">
+                    <Badge variant="outline" className="gap-1.5">
+                      <Zap className="h-3 w-3" />
+                      {model.quantization}
+                    </Badge>
+                  </div>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* User Settings Card */}
         {model.settings && Object.keys(model.settings).length > 0 && (
-          <Card>
+          <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Server className="h-5 w-5" />
+                <Layers className="h-5 w-5" />
                 사용자 설정
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid md:grid-cols-2 gap-6">
                 {Object.entries(model.settings).map(([key, value]) => (
                   <div key={key} className="space-y-2">
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {key}
-                    </Label>
-                    <p className="text-base">{String(value)}</p>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Settings className="h-4 w-4" />
+                      <span className="font-medium">{key}</span>
+                    </div>
+                    <p className="text-base font-semibold pl-6">
+                      {String(value)}
+                    </p>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
         )}
-
-        {/* 메타 정보 Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              메타 정보
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-6 md:grid-cols-2">
-              {/* 생성 시간 */}
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  생성 시간
-                </Label>
-                <p className="text-base">{formatDate(model.created_at)}</p>
-              </div>
-
-              {/* 수정 시간 */}
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  수정 시간
-                </Label>
-                <p className="text-base">{formatDate(model.updated_at)}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
