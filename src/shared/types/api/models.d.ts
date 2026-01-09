@@ -1018,7 +1018,7 @@ export interface components {
          * @description LLM 모델 배포 타입
          * @enum {string}
          */
-        DeploymentType: "public_api" | "private_vllm";
+        DeploymentType: "PUBLIC_API" | "PRIVATE_VLLM";
         /**
          * GPUStackBackend
          * @description GPUStack backend types
