@@ -5,6 +5,17 @@ import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/shared/ui/alert-dialog";
+import {
   ArrowLeft,
   Server,
   Hash,
@@ -18,11 +29,16 @@ import {
   Settings,
   Zap,
   Layers,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { paths } from "@/shared/types/api/models";
 import { DeploymentStatusBadge } from "../_components/DeploymentStatusBadge";
 import { formatDate } from "@/shared/utils/formatDate";
+import { useDeleteModel } from "../_hooks/useDeleteModel";
+import { useState } from "react";
 
 type LocalModelType =
   paths["/v1/admin/models/local/{model_id}"]["get"]["responses"]["200"]["content"]["application/json"];
@@ -32,6 +48,22 @@ interface LocalModelDetailPageProps {
 }
 
 function LocalModelPage({ model }: LocalModelDetailPageProps) {
+  const router = useRouter();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const { mutate: deleteModel, isPending: isDeleting } = useDeleteModel({
+    onSuccess: () => {
+      router.push("/studio/templates/models/local");
+    },
+    meta: {
+      successMessage: "모델이 성공적으로 삭제되었습니다.",
+    },
+  });
+
+  const handleDelete = () => {
+    deleteModel({ model_id: model.model_id });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -53,23 +85,78 @@ function LocalModelPage({ model }: LocalModelDetailPageProps) {
             <p className="text-muted-foreground">모델 ID: {model.model_id}</p>
           </div>
         </div>
-        {model.api_endpoint && (
-          <Button
-            type="button"
-            variant="default"
-            className="gap-2 shrink-0"
-            asChild
-          >
-            <a
-              href={model.api_endpoint}
-              target="_blank"
-              rel="noopener noreferrer"
+        <div className="flex items-center gap-2">
+          {model.api_endpoint && (
+            <Button
+              type="button"
+              variant="default"
+              className="gap-2 shrink-0"
+              asChild
             >
-              <ExternalLink className="h-4 w-4" />
-              API 엔드포인트 열기
-            </a>
-          </Button>
-        )}
+              <a
+                href={model.api_endpoint}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ExternalLink className="h-4 w-4" />
+                API 엔드포인트 열기
+              </a>
+            </Button>
+          )}
+          <AlertDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+          >
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                className="gap-2 shrink-0"
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    삭제 중...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4" />
+                    모델 삭제
+                  </>
+                )}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>모델을 삭제하시겠습니까?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  이 작업은 되돌릴 수 없습니다. 모델 &quot;{model.model_name}
+                  &quot;이(가) GPUStack과 데이터베이스에서 영구적으로
+                  삭제됩니다.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting}>
+                  취소
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="bg-destructive hover:bg-destructive/90"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      삭제 중...
+                    </>
+                  ) : (
+                    "삭제"
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </div>
 
       {/* Main Content Grid */}
@@ -117,7 +204,9 @@ function LocalModelPage({ model }: LocalModelDetailPageProps) {
                     <FileText className="h-4 w-4" />
                     <span className="font-medium">모델명</span>
                   </div>
-                  <p className="text-lg font-semibold pl-6">{model.model_name}</p>
+                  <p className="text-lg font-semibold pl-6">
+                    {model.model_name}
+                  </p>
                 </div>
 
                 {/* Model ID */}
@@ -151,7 +240,9 @@ function LocalModelPage({ model }: LocalModelDetailPageProps) {
                       <Server className="h-4 w-4" />
                       <span className="font-medium">제공자</span>
                     </div>
-                    <p className="text-lg font-semibold pl-6">{model.provider}</p>
+                    <p className="text-lg font-semibold pl-6">
+                      {model.provider}
+                    </p>
                   </div>
                 )}
 
@@ -287,7 +378,9 @@ function LocalModelPage({ model }: LocalModelDetailPageProps) {
                     <Cpu className="h-4 w-4 text-muted-foreground" />
                     <span>백엔드</span>
                   </div>
-                  <p className="ml-6 text-base font-semibold">{model.backend}</p>
+                  <p className="ml-6 text-base font-semibold">
+                    {model.backend}
+                  </p>
                 </div>
               </>
             )}
