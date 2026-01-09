@@ -4,20 +4,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Label } from "@/shared/ui/label";
-import { ArrowLeft, Server, Hash, FileText, Cpu, Clock, Calendar, Link as LinkIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  Server,
+  Hash,
+  FileText,
+  Cpu,
+  Clock,
+  Calendar,
+  Link as LinkIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { paths } from "@/shared/types/api/models";
 import { DeploymentStatusBadge } from "../_components/DeploymentStatusBadge";
 import { formatDate } from "@/shared/utils/formatDate";
 
-type LocalModelDetail =
+type LocalModelType =
   paths["/v1/admin/models/local/{model_id}"]["get"]["responses"]["200"]["content"]["application/json"];
 
 interface LocalModelDetailPageProps {
-  model: LocalModelDetail;
+  model: LocalModelType;
 }
 
-function LocalModelDetail({ model }: LocalModelDetailPageProps) {
+function LocalModelPage({ model }: LocalModelDetailPageProps) {
   return (
     <div className="py-8 px-4">
       {/* Header */}
@@ -101,7 +110,14 @@ function LocalModelDetail({ model }: LocalModelDetailPageProps) {
                     배포 상태
                   </Label>
                   <DeploymentStatusBadge
-                    status={model.deployment_status as "pending" | "running" | "stopped" | "failed" | "unknown"}
+                    status={
+                      model.deployment_status as
+                        | "pending"
+                        | "running"
+                        | "stopped"
+                        | "failed"
+                        | "unknown"
+                    }
                   />
                 </div>
               )}
@@ -242,4 +258,4 @@ function LocalModelDetail({ model }: LocalModelDetailPageProps) {
   );
 }
 
-export default LocalModelDetail;
+export default LocalModelPage;
