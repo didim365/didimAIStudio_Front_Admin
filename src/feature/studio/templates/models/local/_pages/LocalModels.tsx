@@ -16,11 +16,11 @@ import {
   RefreshCw,
   AlertCircle,
   Server,
-  CheckCircle2,
   Plus,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/shared/lib/utils";
+import { getDeploymentStatusLabel } from "../_utils/deploymentStatus";
 
 function LocalModels() {
   const { data, isLoading, refetch } = useGetLocalModels();
@@ -99,11 +99,10 @@ function LocalModels() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-left">모델 ID</TableHead>
-                    <TableHead className="text-left">GPUStack 모델 ID</TableHead>
-                    <TableHead className="text-left">모델 이름</TableHead>
+                    <TableHead className="text-center">모델 ID</TableHead>
+                    <TableHead className="text-center">GPUStack 모델 ID</TableHead>
+                    <TableHead className="text-center">모델 이름</TableHead>
                     <TableHead className="text-center">배포 상태</TableHead>
-                    <TableHead className="text-center">로컬 여부</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -112,22 +111,22 @@ function LocalModels() {
                       key={model.model_id}
                       className="group hover:bg-slate-50 transition-colors"
                     >
-                      <TableCell className="text-left font-mono text-sm">
-                        <div className="flex items-center gap-2">
+                      <TableCell className="text-center font-mono text-sm">
+                        <div className="flex items-center justify-center gap-2">
                           <code className="text-xs bg-muted px-2 py-1 rounded">
                             {model.model_id}
                           </code>
                         </div>
                       </TableCell>
-                      <TableCell className="text-left font-mono text-sm">
-                        <div className="flex items-center gap-2">
+                      <TableCell className="text-center font-mono text-sm">
+                        <div className="flex items-center justify-center gap-2">
                           <code className="text-xs bg-muted px-2 py-1 rounded">
                             {model.gpustack_model_id || "N/A"}
                           </code>
                         </div>
                       </TableCell>
-                      <TableCell className="text-left">
-                        <div className="flex flex-col">
+                      <TableCell className="text-center">
+                        <div className="flex flex-col items-center">
                           <span className="font-medium">
                             {model.model_name || "이름 없음"}
                           </span>
@@ -147,28 +146,8 @@ function LocalModels() {
                                 : ""
                             }
                           >
-                            {model.deployment_status || "unknown"}
+                            {getDeploymentStatusLabel(model.deployment_status)}
                           </Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <div className="flex justify-center">
-                          {model.is_local ? (
-                            <Badge
-                              variant="default"
-                              className="flex items-center gap-1 w-fit bg-blue-500 hover:bg-blue-600"
-                            >
-                              <CheckCircle2 className="h-3 w-3" />
-                              로컬
-                            </Badge>
-                          ) : (
-                            <Badge
-                              variant="secondary"
-                              className="flex items-center gap-1 w-fit"
-                            >
-                              원격
-                            </Badge>
-                          )}
                         </div>
                       </TableCell>
                     </TableRow>
