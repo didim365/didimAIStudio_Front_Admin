@@ -46,23 +46,20 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 문서 카테고리 목록 조회
-         * @description 📂 **문서 카테고리 목록 및 사용량 통계**
+         * 문서 카테고리 목록 조회 (통합)
+         * @description **문서 카테고리 목록 조회 (시스템 + 사용자 통합)**
          *
-         *     사용자의 그룹 및 역할 권한에 따라 접근 가능한 문서 카테고리 목록을 조회하고,
+         *     시스템 기본 카테고리와 사용자 정의 카테고리를 함께 조회합니다.
          *     각 카테고리별 저장된 문서 수와 총 용량 정보를 함께 제공합니다.
+         *
+         *     ## 응답 구조
+         *     - **system_categories**: 시스템 기본 카테고리 목록
+         *     - **user_categories**: 사용자 정의 카테고리 목록
          *
          *     ## 권한 체계
          *     - **user_id**: 개인 문서만 조회
          *     - **group_id**: 같은 그룹 문서 조회
          *     - **role_id**: 역할에 따른 접근 범위 결정
-         *
-         *     ## 응답 정보
-         *     각 카테고리별로 다음 정보를 제공:
-         *     - 카테고리 기본 정보 (ID, 이름, 설명)
-         *     - 보관 기간 설정
-         *     - 해당 카테고리 문서 수
-         *     - 총 저장 용량 (바이트)
          */
         get: operations["get_document_categories_list_v1_documents_categories_get"];
         put?: never;
@@ -234,6 +231,157 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/categories/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 시스템 템플릿 카테고리 조회
+         * @description **시스템 기본 카테고리 템플릿 목록**
+         *
+         *     시스템에서 제공하는 기본 카테고리 템플릿 목록을 조회합니다.
+         *     사용자는 이 템플릿을 참고하여 자신만의 카테고리를 생성할 수 있습니다.
+         *
+         *     ## 용도
+         *     - 사용자 카테고리 생성 시 참고용 템플릿
+         *     - 기본 보관 기간 확인
+         */
+        get: operations["get_system_templates_v1_categories_templates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/categories/user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 내 카테고리 목록 조회
+         * @description **내 카테고리 목록 조회**
+         *
+         *     로그인한 사용자가 생성한 커스텀 카테고리 목록을 조회합니다.
+         *     각 카테고리별 문서 수도 함께 제공됩니다.
+         *
+         *     ## 특징
+         *     - 사용자별 독립적인 카테고리 체계
+         *     - 계층 구조 지원 (무제한 깊이)
+         *     - 각 카테고리별 문서 수 제공
+         */
+        get: operations["get_user_categories_v1_categories_user_get"];
+        put?: never;
+        /**
+         * 카테고리 생성
+         * @description **새 카테고리 생성**
+         *
+         *     사용자 정의 카테고리를 생성합니다.
+         *
+         *     ## 규칙
+         *     - 같은 부모 아래에 동일한 이름의 카테고리 생성 불가
+         *     - 부모 카테고리 지정 시, 본인 소유 카테고리여야 함
+         *     - 깊이 제한 없음 (파일탐색기 스타일)
+         *
+         *     ## 필드
+         *     - **name**: 카테고리 이름 (필수, 최대 100자)
+         *     - **description**: 카테고리 설명 (선택)
+         *     - **default_retention_period**: 만료기간 추천값 (기본 3년)
+         *     - **parent_id**: 부모 카테고리 ID (NULL이면 루트)
+         */
+        post: operations["create_user_category_v1_categories_user_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/categories/user/{category_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 카테고리 상세 조회
+         * @description **카테고리 상세 조회**
+         *
+         *     특정 카테고리의 상세 정보를 조회합니다.
+         */
+        get: operations["get_user_category_by_id_v1_categories_user__category_id__get"];
+        /**
+         * 카테고리 수정
+         * @description **카테고리 수정**
+         *
+         *     기존 카테고리의 정보를 수정합니다.
+         *
+         *     ## 수정 가능한 필드
+         *     - **name**: 카테고리 이름
+         *     - **description**: 카테고리 설명
+         *     - **default_retention_period**: 만료기간 추천값
+         *
+         *     ## 제한사항
+         *     - 본인 소유 카테고리만 수정 가능
+         *     - 같은 부모 아래 동일 이름으로 변경 불가
+         */
+        put: operations["update_user_category_v1_categories_user__category_id__put"];
+        post?: never;
+        /**
+         * 카테고리 삭제
+         * @description **카테고리 삭제**
+         *
+         *     빈 카테고리를 삭제합니다.
+         *
+         *     ## 삭제 조건
+         *     | 조건 | 결과 |
+         *     |------|------|
+         *     | 타 사용자 카테고리 | 권한 없음 |
+         *     | 하위 카테고리 존재 | 하위 먼저 삭제 필요 |
+         *     | 문서 존재 | 문서 먼저 이동/삭제 필요 |
+         *     | 빈 카테고리 | 삭제 가능 |
+         */
+        delete: operations["delete_user_category_v1_categories_user__category_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/categories/user/tree": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 카테고리 트리 조회
+         * @description **카테고리 트리 구조 조회**
+         *
+         *     사용자의 카테고리를 계층적 트리 구조로 조회합니다.
+         *     UI에서 폴더 구조 표시용으로 사용됩니다.
+         *
+         *     ## 응답 구조
+         *     - 루트 카테고리 목록을 반환
+         *     - 각 노드는 `children` 필드에 하위 카테고리 포함
+         *     - 무제한 깊이 지원
+         */
+        get: operations["get_user_category_tree_v1_categories_user_tree_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/schedules": {
         parameters: {
             query?: never;
@@ -265,7 +413,14 @@ export interface paths {
          *
          *     사용자가 선택한 문서들을 특정 시간에 자동으로 임베딩 처리하도록 예약합니다.
          *
-         *     ## 사용 예시 - 1회성 예약
+         *     ## 청킹 전략 (chunking)
+         *
+         *     | 전략 | 설명 | 주요 파라미터 |
+         *     |------|------|--------------|
+         *     | `fixed` | 고정 크기 분할 (기본) | `chunk_size`, `chunk_overlap` |
+         *     | `semantic` | 의미 기반 분할 | `similarity_threshold`, `max_chunk_size` |
+         *
+         *     ## 사용 예시 - 1회성 예약 (Semantic Chunking)
          *     ```bash
          *     curl -X POST "http://localhost:8002/api/v1/schedules" \
          *       -H "Authorization: Bearer {token}" \
@@ -273,13 +428,16 @@ export interface paths {
          *       -d '{
          *         "document_hashes": ["abc123...", "def456..."],
          *         "scheduled_at": "2025-10-31T14:00:00",
-         *         "chunk_size": 500,
-         *         "chunk_overlap": 50,
+         *         "chunking": {
+         *           "strategy": "semantic",
+         *           "similarity_threshold": 0.5,
+         *           "max_chunk_size": 1500
+         *         },
          *         "enable_pii_anonymization": false
          *       }'
          *     ```
          *
-         *     ## 사용 예시 - 반복 스케줄
+         *     ## 사용 예시 - 반복 스케줄 (Fixed Chunking)
          *     ```bash
          *     curl -X POST "http://localhost:8002/api/v1/schedules" \
          *       -H "Authorization: Bearer {token}" \
@@ -289,10 +447,22 @@ export interface paths {
          *         "document_hashes": ["abc123...", "def456..."],
          *         "scheduled_at": "2025-11-01T02:00:00",
          *         "cron_expression": "0 2 * * *",
-         *         "chunk_size": 500,
-         *         "chunk_overlap": 50,
+         *         "chunking": {
+         *           "strategy": "fixed",
+         *           "chunk_size": 500,
+         *           "chunk_overlap": 50
+         *         },
          *         "enable_pii_anonymization": false
          *       }'
+         *     ```
+         *
+         *     ## 하위 호환 (Legacy)
+         *     기존 방식도 지원하지만, 새로운 `chunking` 객체 사용을 권장합니다.
+         *     ```json
+         *     {
+         *       "chunk_size": 500,
+         *       "chunk_overlap": 50
+         *     }
          *     ```
          *
          *     ## 처리 흐름
@@ -439,11 +609,23 @@ export interface paths {
          *     - 문서 목록
          *     - 예약 시간
          *     - Cron 표현식
-         *     - 임베딩 옵션
+         *     - 청킹 설정 (`chunking` 객체)
          *     - 활성화 여부
+         *
+         *     ## 청킹 설정 수정 예시
+         *     ```json
+         *     {
+         *       "chunking": {
+         *         "strategy": "semantic",
+         *         "similarity_threshold": 0.6,
+         *         "max_chunk_size": 2000
+         *       }
+         *     }
+         *     ```
          *
          *     ## 주의사항
          *     - 수정하지 않을 항목은 요청에서 생략하면 됩니다 (부분 업데이트)
+         *     - `chunking` 설정 시 기존 `chunk_size`/`chunk_overlap` 값은 무시됩니다
          *     - 이미 실행된 이력은 영향받지 않습니다
          */
         put: operations["update_schedule_v1_schedules__schedule_id__put"];
@@ -565,37 +747,69 @@ export interface paths {
          *     이미 등록된 문서(status=registered)에 대해 임베딩을 생성합니다.
          *     여러 문서를 한 번에 요청할 수 있으며, 모두 Celery 큐에 등록되어 가용한 worker가 병렬로 처리합니다.
          *
-         *     ## 사용 예시 - 단일 문서 (기본 파서, 선택 필드 포함)
+         *     ## 청킹 전략 (Chunking Strategy)
+         *
+         *     | 전략 | 설명 | 파라미터 |
+         *     |------|------|----------|
+         *     | `fixed` | 고정 크기 분할 (기본) | chunk_size, chunk_overlap |
+         *     | `semantic` | 의미 기반 분할 (권장) | similarity_threshold, max_chunk_size, min_chunk_size |
+         *
+         *     ## 사용 예시 - Fixed Chunking (고정 크기 청킹)
+         *     ```bash
+         *     curl -X POST "http://localhost:8002/api/v1/embeddings/generate" \
+         *       -H "Authorization: Bearer {token}" \
+         *       -H "Content-Type: application/json" \
+         *       -d '{
+         *         "hash_sha256_list": ["abc123...", "def456..."],
+         *         "chunking": {
+         *           "strategy": "fixed",
+         *           "chunk_size": 500,
+         *           "chunk_overlap": 50
+         *         },
+         *         "enable_pii_anonymization": false
+         *       }'
+         *     ```
+         *
+         *     ## 사용 예시 - Semantic Chunking (의미 기반 청킹, 권장)
          *     ```bash
          *     curl -X POST "http://localhost:8002/api/v1/embeddings/generate" \
          *       -H "Authorization: Bearer {token}" \
          *       -H "Content-Type: application/json" \
          *       -d '{
          *         "hash_sha256_list": ["abc123..."],
-         *         "chunk_size": 500,
-         *         "chunk_overlap": 50,
+         *         "chunking": {
+         *           "strategy": "semantic",
+         *           "similarity_threshold": 0.5,
+         *           "max_chunk_size": 1500,
+         *           "min_chunk_size": 100
+         *         },
+         *         "enable_pii_anonymization": false
+         *       }'
+         *     ```
+         *
+         *     ## 사용 예시 - 전체 옵션 (PII + KTC Parser + Semantic)
+         *     ```bash
+         *     curl -X POST "http://localhost:8002/api/v1/embeddings/generate" \
+         *       -H "Authorization: Bearer {token}" \
+         *       -H "Content-Type: application/json" \
+         *       -d '{
+         *         "hash_sha256_list": ["abc123..."],
+         *         "chunking": {
+         *           "strategy": "semantic",
+         *           "similarity_threshold": 0.5,
+         *           "max_chunk_size": 1500
+         *         },
          *         "enable_pii_anonymization": true,
          *         "pii_strategy": "masking",
          *         "pii_types": ["이름", "전화번호"],
+         *         "document_parser": "ktc_parser",
          *         "persona_id": 123,
          *         "filter_score": 0.7
          *       }'
          *     ```
          *
-         *     ## 사용 예시 - 배치 처리 (여러 문서, 최소 필수 필드)
-         *     ```bash
-         *     curl -X POST "http://localhost:8002/api/v1/embeddings/generate" \
-         *       -H "Authorization: Bearer {token}" \
-         *       -H "Content-Type: application/json" \
-         *       -d '{
-         *         "hash_sha256_list": ["abc123...", "def456...", "ghi789..."],
-         *         "chunk_size": 500,
-         *         "chunk_overlap": 50,
-         *         "enable_pii_anonymization": false
-         *       }'
-         *     ```
-         *
-         *     ## 사용 예시 - KT Cloud Document Parse (고급 문서 파싱)
+         *     ## 하위 호환 - 레거시 방식 (chunk_size/chunk_overlap 직접 사용)
+         *     > ⚠️ 이 방식은 하위 호환을 위해 유지됩니다. 새로운 `chunking` 객체 사용을 권장합니다.
          *     ```bash
          *     curl -X POST "http://localhost:8002/api/v1/embeddings/generate" \
          *       -H "Authorization: Bearer {token}" \
@@ -604,8 +818,7 @@ export interface paths {
          *         "hash_sha256_list": ["abc123..."],
          *         "chunk_size": 500,
          *         "chunk_overlap": 50,
-         *         "enable_pii_anonymization": false,
-         *         "document_parser": "ktc_parser"
+         *         "enable_pii_anonymization": false
          *       }'
          *     ```
          *
@@ -629,6 +842,10 @@ export interface paths {
          *     - **병렬 처리**: 가용한 모든 worker가 동시에 처리
          *     - **권한 검증**: group_id, user_id, role_ids 기반 접근 제어
          *     - **부분 성공 지원**: 일부 문서만 실패해도 나머지는 처리
+         *     - **Semantic Chunking**: `chunking.strategy="semantic"` 옵션으로 의미 기반 텍스트 분할
+         *       - 문장 간 의미적 유사도 기반 분할 (kiwipiepy + OpenAI Embedding)
+         *       - 의미적으로 연결된 내용을 하나의 청크로 유지
+         *       - RAG 검색 품질 향상
          *     - **고급 문서 파싱**: `document_parser="ktc_parser"` 옵션으로 KT Cloud Document Parse API 사용
          *       - 복잡한 표, 차트, 다단 레이아웃 정확 파싱
          *       - 이미지 문서 자동 OCR 처리
@@ -1540,6 +1757,133 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/collections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 컬렉션 목록 조회 (관리자 전용)
+         * @description 📋 **컬렉션 목록 조회 (관리자 전용)**
+         *
+         *     모든 Milvus 컬렉션 목록을 조회합니다.
+         *
+         *     ## 반환 정보
+         *     - 컬렉션 이름
+         *     - 컬렉션 타입 (meta/vector)
+         *     - 그룹 ID
+         *     - 레코드 수
+         */
+        get: operations["get_collections_v1_admin_collections_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/collections/{collection_name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 컬렉션 상세 조회 (관리자 전용)
+         * @description 🔍 **컬렉션 상세 조회 (관리자 전용)**
+         *
+         *     특정 컬렉션의 상세 정보를 조회합니다.
+         *
+         *     ## 반환 정보
+         *     - 컬렉션 이름
+         *     - 컬렉션 타입 (meta/vector)
+         *     - 레코드 수
+         *     - 스키마 필드 목록
+         *     - 인덱스 정보
+         */
+        get: operations["get_collection_detail_endpoint_v1_admin_collections__collection_name__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/collections/{collection_name}/data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 컬렉션 데이터 조회 (관리자 전용)
+         * @description 📊 **컬렉션 데이터 조회 (관리자 전용)**
+         *
+         *     컬렉션의 데이터를 페이지네이션하여 조회합니다.
+         *
+         *     ## 파라미터
+         *     - page: 페이지 번호 (기본값: 1)
+         *     - page_size: 페이지 크기 (기본값: 50, 최대: 1000)
+         *     - filter_expr: Milvus 필터 표현식 (선택)
+         */
+        get: operations["get_collection_data_v1_admin_collections__collection_name__data_get"];
+        /**
+         * 컬렉션 데이터 수정/삽입 (관리자 전용)
+         * @description 📝 **컬렉션 데이터 수정/삽입 (관리자 전용)**
+         *
+         *     컬렉션에 데이터를 수정하거나 새로 삽입합니다.
+         *
+         *     ## 동작 방식
+         *     - 기존 데이터가 있으면 수정 (update)
+         *     - 없으면 새로 삽입 (insert)
+         *
+         *     ## 주의사항
+         *     - 데이터 구조가 컬렉션 스키마와 일치해야 합니다.
+         */
+        put: operations["upsert_collection_data_endpoint_v1_admin_collections__collection_name__data_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/collections/data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * 컬렉션 데이터 삭제 (관리자 전용)
+         * @description 🗑️ **컬렉션 데이터 삭제 (관리자 전용)**
+         *
+         *     필터 조건에 맞는 데이터를 삭제합니다.
+         *
+         *     ## 미리보기 모드
+         *     - preview=True (기본값): 삭제될 데이터만 조회
+         *     - preview=False: 실제 삭제 수행
+         *
+         *     ## 주의사항
+         *     - 삭제된 데이터는 복구할 수 없습니다.
+         *     - 반드시 미리보기로 확인 후 삭제하세요.
+         */
+        delete: operations["delete_collection_data_endpoint_v1_admin_collections_data_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1831,6 +2175,206 @@ export interface components {
             file: string;
         };
         /**
+         * CategoryDeleteResponseDTO
+         * @description 카테고리 삭제 응답 DTO
+         * @example {
+         *       "deleted_id": 103,
+         *       "message": "카테고리가 성공적으로 삭제되었습니다."
+         *     }
+         */
+        CategoryDeleteResponseDTO: {
+            /**
+             * Message
+             * @description 처리 결과 메시지
+             */
+            message: string;
+            /**
+             * Deleted Id
+             * @description 삭제된 카테고리 ID
+             */
+            deleted_id: number;
+        };
+        /**
+         * CollectionDataResponseDTO
+         * @description 컬렉션 데이터 응답 DTO
+         *
+         *     페이지네이션된 데이터를 반환합니다.
+         */
+        CollectionDataResponseDTO: {
+            /**
+             * Items
+             * @description 데이터 목록
+             */
+            items: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Total
+             * @description 전체 레코드 수
+             * @example 100
+             */
+            total: number;
+            /**
+             * Page
+             * @description 현재 페이지
+             * @example 1
+             */
+            page: number;
+            /**
+             * Page Size
+             * @description 페이지 크기
+             * @example 50
+             */
+            page_size: number;
+        };
+        /**
+         * CollectionDetailResponseDTO
+         * @description 컬렉션 상세 응답 DTO
+         *
+         *     컬렉션의 스키마, 인덱스, 통계 정보를 포함합니다.
+         */
+        CollectionDetailResponseDTO: {
+            /**
+             * Collection Name
+             * @description 컬렉션 이름
+             * @example TB_1_meta
+             */
+            collection_name: string;
+            /**
+             * Db Type
+             * @description 컬렉션 타입
+             * @example meta
+             */
+            db_type: string;
+            /**
+             * Row Count
+             * @description 레코드 수
+             * @example 100
+             */
+            row_count: number;
+            /**
+             * Schema Fields
+             * @description 스키마 필드 목록
+             * @example [
+             *       "id",
+             *       "title",
+             *       "hash_sha256"
+             *     ]
+             */
+            schema_fields: string[];
+            /**
+             * Indexes
+             * @description 인덱스 정보
+             */
+            indexes?: {
+                [key: string]: unknown;
+            }[] | null;
+        };
+        /**
+         * CollectionInfoDTO
+         * @description 컬렉션 정보 DTO
+         *
+         *     컬렉션 목록 조회 시 각 컬렉션의 기본 정보입니다.
+         */
+        CollectionInfoDTO: {
+            /**
+             * Collection Name
+             * @description 컬렉션 이름
+             * @example TB_1_meta
+             */
+            collection_name: string;
+            /**
+             * Db Type
+             * @description 컬렉션 타입 (meta/vector)
+             * @example meta
+             */
+            db_type: string;
+            /**
+             * Row Count
+             * @description 레코드 수
+             * @example 100
+             */
+            row_count: number;
+            /**
+             * Group Id
+             * @description 그룹 ID (컬렉션 이름에서 추출)
+             * @example 1
+             */
+            group_id?: number | null;
+        };
+        /**
+         * CollectionListResponseDTO
+         * @description 컬렉션 목록 응답 DTO
+         *
+         *     페이지네이션 정보와 함께 컬렉션 목록을 반환합니다.
+         */
+        CollectionListResponseDTO: {
+            /**
+             * Items
+             * @description 컬렉션 목록
+             */
+            items: components["schemas"]["CollectionInfoDTO"][];
+            /**
+             * Total
+             * @description 전체 컬렉션 수
+             * @example 10
+             */
+            total: number;
+            /**
+             * Page
+             * @description 현재 페이지
+             * @example 1
+             */
+            page: number;
+            /**
+             * Page Size
+             * @description 페이지 크기
+             * @example 50
+             */
+            page_size: number;
+        };
+        /**
+         * CombinedCategoryResponseDTO
+         * @description 통합 카테고리 응답 DTO (시스템 + 사용자 카테고리)
+         * @example {
+         *       "system_categories": [
+         *         {
+         *           "description": "각종 계약 관련 문서",
+         *           "id": 1,
+         *           "name": "계약서",
+         *           "retention_period": 10
+         *         }
+         *       ],
+         *       "user_categories": [
+         *         {
+         *           "created_at": "2026-01-13T09:00:00Z",
+         *           "default_retention_period": 10,
+         *           "depth": 1,
+         *           "description": "비밀유지계약서",
+         *           "document_count": 5,
+         *           "group_id": 1,
+         *           "id": 103,
+         *           "name": "NDA",
+         *           "path": "103",
+         *           "updated_at": "2026-01-13T09:00:00Z",
+         *           "user_id": 100
+         *         }
+         *       ]
+         *     }
+         */
+        CombinedCategoryResponseDTO: {
+            /**
+             * System Categories
+             * @description 시스템 기본 카테고리 목록
+             */
+            system_categories: components["schemas"]["SystemCategoryResponseDTO"][];
+            /**
+             * User Categories
+             * @description 사용자 정의 카테고리 목록
+             */
+            user_categories: components["schemas"]["UserCategoryResponseDTO"][];
+        };
+        /**
          * CostStatisticsResponseDTO
          * @description 비용 및 저장소 통계 응답 DTO
          * @example {
@@ -1958,8 +2502,11 @@ export interface components {
          *
          *     사용자가 선택한 문서들을 특정 시간에 자동으로 임베딩 처리하도록 예약합니다.
          * @example {
-         *       "chunk_overlap": 50,
-         *       "chunk_size": 500,
+         *       "chunking": {
+         *         "max_chunk_size": 1500,
+         *         "similarity_threshold": 0.5,
+         *         "strategy": "semantic"
+         *       },
          *       "cron_expression": "0 20 * * 0",
          *       "description": "매주 일요일 저녁에 주간 보고서를 자동으로 임베딩 처리",
          *       "document_hashes": [
@@ -2015,19 +2562,29 @@ export interface components {
              */
             timezone: string;
             /**
+             * Chunking
+             * @description 청킹 설정. strategy='fixed' 또는 'semantic' 선택
+             * @example {
+             *       "max_chunk_size": 1500,
+             *       "similarity_threshold": 0.5,
+             *       "strategy": "semantic"
+             *     }
+             */
+            chunking?: {
+                [key: string]: unknown;
+            } | null;
+            /**
              * Chunk Size
-             * @description 청크 크기
-             * @default 500
+             * @description [하위 호환] 청크 크기 (chunking 미사용 시)
              * @example 500
              */
-            chunk_size: number;
+            chunk_size?: number | null;
             /**
              * Chunk Overlap
-             * @description 청크 오버랩 크기
-             * @default 50
+             * @description [하위 호환] 청크 오버랩 크기 (chunking 미사용 시)
              * @example 50
              */
-            chunk_overlap: number;
+            chunk_overlap?: number | null;
             /**
              * Enable Pii Anonymization
              * @description 개인정보 비식별화 활성화 여부
@@ -2100,6 +2657,81 @@ export interface components {
              * @example 3
              */
             document_count: number;
+        };
+        /**
+         * DataDeleteRequestDTO
+         * @description 데이터 삭제 요청 DTO
+         *
+         *     컬렉션 내 데이터를 필터 조건으로 삭제합니다.
+         *     preview=True 시 삭제 대상만 확인하고 실제 삭제하지 않습니다.
+         */
+        DataDeleteRequestDTO: {
+            /**
+             * Collection Name
+             * @description 컬렉션 이름
+             * @example TB_1_vector
+             */
+            collection_name: string;
+            /**
+             * Filter Expr
+             * @description Milvus 필터 표현식 (삭제 대상 조건)
+             * @example hash_sha256 == 'abc123'
+             */
+            filter_expr: string;
+            /**
+             * Preview
+             * @description 미리보기 모드 (True: 미리보기만, False: 실제 삭제)
+             * @default true
+             * @example true
+             */
+            preview: boolean;
+        };
+        /**
+         * DataUpsertRequestDTO
+         * @description 데이터 수정/삽입 요청 DTO
+         *
+         *     컬렉션에 데이터를 삽입하거나 기존 데이터를 수정합니다.
+         */
+        DataUpsertRequestDTO: {
+            /**
+             * Data
+             * @description 삽입/수정할 데이터 목록
+             * @example [
+             *       {
+             *         "id": 1,
+             *         "title": "Test Document"
+             *       }
+             *     ]
+             */
+            data: {
+                [key: string]: unknown;
+            }[];
+        };
+        /**
+         * DataUpsertResponseDTO
+         * @description 데이터 수정/삽입 응답 DTO
+         *
+         *     upsert 작업 결과를 반환합니다.
+         */
+        DataUpsertResponseDTO: {
+            /**
+             * Collection Name
+             * @description 컬렉션 이름
+             * @example TB_1_meta
+             */
+            collection_name: string;
+            /**
+             * Upserted Count
+             * @description 수정/삽입된 레코드 수
+             * @example 10
+             */
+            upserted_count: number;
+            /**
+             * Message
+             * @description 처리 결과 메시지
+             * @example 10개 레코드가 수정/삽입되었습니다.
+             */
+            message: string;
         };
         /**
          * DeleteDocumentsRequestDTO
@@ -2234,50 +2866,6 @@ export interface components {
              * @description 예상 비용
              */
             cost?: number | null;
-        };
-        /**
-         * DocumentCategoryResponseDTO
-         * @description 문서 카테고리 응답 DTO
-         * @example {
-         *       "category_id": 1,
-         *       "category_name": "계약서",
-         *       "description": "각종 계약 관련 문서",
-         *       "document_count": 15,
-         *       "retention_period": 365,
-         *       "total_size": 52428800
-         *     }
-         */
-        DocumentCategoryResponseDTO: {
-            /**
-             * Category Id
-             * @description 카테고리 ID
-             */
-            category_id: number;
-            /**
-             * Category Name
-             * @description 카테고리 이름
-             */
-            category_name: string;
-            /**
-             * Retention Period
-             * @description 보관 기간 (일)
-             */
-            retention_period: number;
-            /**
-             * Description
-             * @description 카테고리 설명
-             */
-            description: string;
-            /**
-             * Total Size
-             * @description 총 용량 (바이트)
-             */
-            total_size: number;
-            /**
-             * Document Count
-             * @description 문서 개수
-             */
-            document_count: number;
         };
         /**
          * DocumentExpiringResponseDTO
@@ -3030,6 +3618,10 @@ export interface components {
          * @description 임베딩 생성 요청 DTO
          *
          *     등록된 문서(status=registered)에 대해 임베딩을 생성하는 요청 정보입니다.
+         *
+         *     청킹 설정 방법:
+         *     1. chunking 객체 사용 (권장): strategy에 따라 fixed/semantic 청킹 선택
+         *     2. chunk_size/chunk_overlap 사용 (하위 호환): 기존 방식, fixed 청킹만 지원
          * @example {
          *       "chunk_overlap": 50,
          *       "chunk_size": 500,
@@ -3044,22 +3636,25 @@ export interface components {
             /**
              * Hash Sha256 List
              * @description 임베딩을 생성할 문서의 SHA256 해시값 리스트 (개수 제한 없음)
-             * @example [
-             *       "abc123def456...",
-             *       "xyz789uvw012..."
-             *     ]
              */
             hash_sha256_list: string[];
             /**
-             * Chunk Size
-             * @description 청크 크기
+             * Chunking
+             * @description 청킹 설정. strategy='fixed' 또는 'semantic' 선택
              */
-            chunk_size: number;
+            chunking?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Chunk Size
+             * @description [하위 호환] 청크 크기 (chunking 미사용 시)
+             */
+            chunk_size?: number | null;
             /**
              * Chunk Overlap
-             * @description 청크 오버랩 크기
+             * @description [하위 호환] 청크 오버랩 크기 (chunking 미사용 시)
              */
-            chunk_overlap: number;
+            chunk_overlap?: number | null;
             /**
              * Enable Pii Anonymization
              * @description 개인정보 비식별화 활성화 여부
@@ -3736,8 +4331,11 @@ export interface components {
          *         "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
          *       ],
          *       "embedding_config": {
-         *         "chunk_overlap": 50,
-         *         "chunk_size": 500,
+         *         "chunking": {
+         *           "max_chunk_size": 1500,
+         *           "similarity_threshold": 0.5,
+         *           "strategy": "semantic"
+         *         },
          *         "enable_pii_anonymization": false
          *       },
          *       "failed_executions": 0,
@@ -3835,10 +4433,13 @@ export interface components {
             is_active: boolean;
             /**
              * Embedding Config
-             * @description 임베딩 설정
+             * @description 임베딩 설정 (chunking 객체 또는 chunk_size/chunk_overlap)
              * @example {
-             *       "chunk_overlap": 50,
-             *       "chunk_size": 500,
+             *       "chunking": {
+             *         "max_chunk_size": 1500,
+             *         "similarity_threshold": 0.5,
+             *         "strategy": "semantic"
+             *       },
              *       "enable_pii_anonymization": false
              *     }
              */
@@ -3963,6 +4564,52 @@ export interface components {
             search_time_ms: number;
         };
         /**
+         * SystemCategoryResponseDTO
+         * @description 시스템 템플릿 카테고리 응답 DTO
+         * @example {
+         *       "description": "각종 계약 관련 문서",
+         *       "document_count": 15,
+         *       "id": 1,
+         *       "name": "계약서",
+         *       "retention_period": 10,
+         *       "total_size": 52428800
+         *     }
+         */
+        SystemCategoryResponseDTO: {
+            /**
+             * Id
+             * @description 카테고리 ID
+             */
+            id: number;
+            /**
+             * Name
+             * @description 카테고리 이름
+             */
+            name: string;
+            /**
+             * Retention Period
+             * @description 권장 보관 기간 (년)
+             */
+            retention_period: number;
+            /**
+             * Description
+             * @description 카테고리 설명
+             */
+            description?: string | null;
+            /**
+             * Total Size
+             * @description 총 용량 (바이트)
+             * @default 0
+             */
+            total_size: number;
+            /**
+             * Document Count
+             * @description 해당 카테고리의 문서 수
+             * @default 0
+             */
+            document_count: number;
+        };
+        /**
          * UpdateIndexRequestDTO
          * @description 인덱스 업데이트 DTO
          */
@@ -4078,7 +4725,11 @@ export interface components {
          *
          *     기존 스케줄의 예약 시간, 임베딩 옵션, 문서 목록 등을 수정합니다.
          * @example {
-         *       "chunk_size": 600,
+         *       "chunking": {
+         *         "chunk_overlap": 60,
+         *         "chunk_size": 600,
+         *         "strategy": "fixed"
+         *       },
          *       "is_active": true,
          *       "scheduled_at": "2025-11-01T15:00:00"
          *     }
@@ -4118,13 +4769,20 @@ export interface components {
              */
             timezone?: string | null;
             /**
+             * Chunking
+             * @description 청킹 설정. strategy='fixed' 또는 'semantic' 선택
+             */
+            chunking?: {
+                [key: string]: unknown;
+            } | null;
+            /**
              * Chunk Size
-             * @description 청크 크기
+             * @description [하위 호환] 청크 크기
              */
             chunk_size?: number | null;
             /**
              * Chunk Overlap
-             * @description 청크 오버랩 크기
+             * @description [하위 호환] 청크 오버랩 크기
              */
             chunk_overlap?: number | null;
             /**
@@ -4137,6 +4795,222 @@ export interface components {
              * @description 활성화 여부
              */
             is_active?: boolean | null;
+        };
+        /**
+         * UserCategoryCreateDTO
+         * @description 카테고리 생성 요청 DTO
+         * @example {
+         *       "default_retention_period": 10,
+         *       "description": "비밀유지계약서",
+         *       "name": "NDA",
+         *       "parent_id": 101
+         *     }
+         */
+        UserCategoryCreateDTO: {
+            /**
+             * Name
+             * @description 카테고리 이름 (최대 100자)
+             * @example NDA
+             */
+            name: string;
+            /**
+             * Description
+             * @description 카테고리 설명
+             * @example 비밀유지계약서
+             */
+            description?: string | null;
+            /**
+             * Default Retention Period
+             * @description 만료기간 추천값 (년 단위, 1-100)
+             * @default 3
+             * @example 10
+             */
+            default_retention_period: number;
+            /**
+             * Parent Id
+             * @description 부모 카테고리 ID (NULL이면 루트 카테고리)
+             * @example 101
+             */
+            parent_id?: number | null;
+        };
+        /**
+         * UserCategoryResponseDTO
+         * @description 카테고리 응답 DTO
+         * @example {
+         *       "created_at": "2026-01-13T09:00:00Z",
+         *       "default_retention_period": 10,
+         *       "depth": 2,
+         *       "description": "비밀유지계약서",
+         *       "document_count": 5,
+         *       "group_id": 1,
+         *       "id": 103,
+         *       "name": "NDA",
+         *       "parent_id": 101,
+         *       "path": "101/103",
+         *       "updated_at": "2026-01-13T09:00:00Z",
+         *       "user_id": 100
+         *     }
+         */
+        UserCategoryResponseDTO: {
+            /**
+             * Id
+             * @description 카테고리 ID
+             */
+            id: number;
+            /**
+             * User Id
+             * @description 소유자 사용자 ID
+             */
+            user_id: number;
+            /**
+             * Group Id
+             * @description 소속 그룹 ID
+             */
+            group_id: number;
+            /**
+             * Name
+             * @description 카테고리 이름
+             */
+            name: string;
+            /**
+             * Description
+             * @description 카테고리 설명
+             */
+            description?: string | null;
+            /**
+             * Default Retention Period
+             * @description 만료기간 추천값 (년)
+             */
+            default_retention_period: number;
+            /**
+             * Parent Id
+             * @description 부모 카테고리 ID
+             */
+            parent_id?: number | null;
+            /**
+             * Depth
+             * @description 계층 깊이
+             */
+            depth: number;
+            /**
+             * Path
+             * @description 경로 문자열
+             */
+            path?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             * @description 생성 시각
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             * @description 수정 시각
+             */
+            updated_at: string;
+            /**
+             * Document Count
+             * @description 해당 카테고리의 문서 수
+             * @default 0
+             */
+            document_count: number;
+        };
+        /**
+         * UserCategoryTreeNodeDTO
+         * @description 카테고리 트리 노드 DTO (재귀 구조)
+         * @example {
+         *       "children": [
+         *         {
+         *           "children": [],
+         *           "default_retention_period": 10,
+         *           "depth": 2,
+         *           "description": "비밀유지계약서",
+         *           "document_count": 3,
+         *           "id": 102,
+         *           "name": "NDA"
+         *         },
+         *         {
+         *           "children": [],
+         *           "default_retention_period": 5,
+         *           "depth": 2,
+         *           "description": "라이선스 계약서",
+         *           "document_count": 2,
+         *           "id": 103,
+         *           "name": "라이선스"
+         *         }
+         *       ],
+         *       "default_retention_period": 10,
+         *       "depth": 1,
+         *       "description": "각종 계약 관련 문서",
+         *       "document_count": 10,
+         *       "id": 101,
+         *       "name": "계약서"
+         *     }
+         */
+        UserCategoryTreeNodeDTO: {
+            /**
+             * Id
+             * @description 카테고리 ID
+             */
+            id: number;
+            /**
+             * Name
+             * @description 카테고리 이름
+             */
+            name: string;
+            /**
+             * Description
+             * @description 카테고리 설명
+             */
+            description?: string | null;
+            /**
+             * Depth
+             * @description 계층 깊이
+             */
+            depth: number;
+            /**
+             * Default Retention Period
+             * @description 만료기간 추천값 (년)
+             */
+            default_retention_period: number;
+            /**
+             * Document Count
+             * @description 해당 카테고리의 문서 수
+             * @default 0
+             */
+            document_count: number;
+            /**
+             * Children
+             * @description 하위 카테고리 목록
+             */
+            children?: components["schemas"]["UserCategoryTreeNodeDTO"][];
+        };
+        /**
+         * UserCategoryUpdateDTO
+         * @description 카테고리 수정 요청 DTO
+         * @example {
+         *       "default_retention_period": 5,
+         *       "description": "소프트웨어 라이선스 관련 계약서",
+         *       "name": "라이선스 계약서"
+         *     }
+         */
+        UserCategoryUpdateDTO: {
+            /**
+             * Name
+             * @description 카테고리 이름 (최대 100자)
+             */
+            name?: string | null;
+            /**
+             * Description
+             * @description 카테고리 설명
+             */
+            description?: string | null;
+            /**
+             * Default Retention Period
+             * @description 만료기간 추천값 (년 단위, 1-100)
+             */
+            default_retention_period?: number | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -4212,18 +5086,35 @@ export interface operations {
                 };
                 content: {
                     /**
-                     * @example [
-                     *       {
-                     *         "category_id": 1,
-                     *         "category_name": "계약서",
-                     *         "retention_period": 365,
-                     *         "description": "각종 계약 관련 문서",
-                     *         "total_size": 52428800,
-                     *         "document_count": 15
-                     *       }
-                     *     ]
+                     * @example {
+                     *       "system_categories": [
+                     *         {
+                     *           "id": 1,
+                     *           "name": "계약서",
+                     *           "retention_period": 10,
+                     *           "description": "각종 계약 관련 문서",
+                     *           "total_size": 52428800,
+                     *           "document_count": 15
+                     *         }
+                     *       ],
+                     *       "user_categories": [
+                     *         {
+                     *           "id": 103,
+                     *           "user_id": 100,
+                     *           "group_id": 1,
+                     *           "name": "NDA",
+                     *           "description": "비밀유지계약서",
+                     *           "default_retention_period": 10,
+                     *           "depth": 1,
+                     *           "path": "103",
+                     *           "created_at": "2026-01-13T09:00:00Z",
+                     *           "updated_at": "2026-01-13T09:00:00Z",
+                     *           "document_count": 5
+                     *         }
+                     *       ]
+                     *     }
                      */
-                    "application/json": components["schemas"]["DocumentCategoryResponseDTO"][];
+                    "application/json": components["schemas"]["CombinedCategoryResponseDTO"];
                 };
             };
             /** @description bad request */
@@ -4714,6 +5605,462 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+            /** @description internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_system_templates_v1_categories_templates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 성공적으로 시스템 템플릿을 조회했습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example [
+                     *       {
+                     *         "id": 1,
+                     *         "name": "계약서",
+                     *         "retention_period": 10,
+                     *         "description": "각종 계약 관련 문서"
+                     *       }
+                     *     ]
+                     */
+                    "application/json": components["schemas"]["SystemCategoryResponseDTO"][];
+                };
+            };
+            /** @description bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_user_categories_v1_categories_user_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 성공적으로 카테고리 목록을 조회했습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example [
+                     *       {
+                     *         "id": 103,
+                     *         "user_id": 100,
+                     *         "group_id": 1,
+                     *         "name": "NDA",
+                     *         "description": "비밀유지계약서",
+                     *         "default_retention_period": 10,
+                     *         "parent_id": 101,
+                     *         "depth": 2,
+                     *         "path": "101/103",
+                     *         "created_at": "2026-01-13T09:00:00Z",
+                     *         "updated_at": "2026-01-13T09:00:00Z",
+                     *         "document_count": 5
+                     *       }
+                     *     ]
+                     */
+                    "application/json": components["schemas"]["UserCategoryResponseDTO"][];
+                };
+            };
+            /** @description bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    create_user_category_v1_categories_user_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserCategoryCreateDTO"];
+            };
+        };
+        responses: {
+            /** @description 성공적으로 카테고리를 생성했습니다. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": 103,
+                     *       "user_id": 100,
+                     *       "group_id": 1,
+                     *       "name": "NDA",
+                     *       "description": "비밀유지계약서",
+                     *       "default_retention_period": 10,
+                     *       "parent_id": 101,
+                     *       "depth": 2,
+                     *       "path": "101/103",
+                     *       "created_at": "2026-01-13T09:00:00Z",
+                     *       "updated_at": "2026-01-13T09:00:00Z",
+                     *       "document_count": 0
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UserCategoryResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 (중복 이름, 부모 카테고리 없음 등) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_user_category_by_id_v1_categories_user__category_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description 조회할 카테고리 ID */
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 성공적으로 카테고리를 조회했습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserCategoryResponseDTO"];
+                };
+            };
+            /** @description bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 카테고리를 찾을 수 없음 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_user_category_v1_categories_user__category_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description 수정할 카테고리 ID */
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserCategoryUpdateDTO"];
+            };
+        };
+        responses: {
+            /** @description 성공적으로 카테고리를 수정했습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserCategoryResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 (중복 이름 등) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 카테고리를 찾을 수 없음 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_user_category_v1_categories_user__category_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description 삭제할 카테고리 ID */
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 성공적으로 카테고리를 삭제했습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDeleteResponseDTO"];
+                };
+            };
+            /** @description 삭제 불가 (하위 카테고리 또는 문서 존재) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 카테고리를 찾을 수 없음 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_user_category_tree_v1_categories_user_tree_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 성공적으로 카테고리 트리를 조회했습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example [
+                     *       {
+                     *         "id": 101,
+                     *         "name": "계약서",
+                     *         "description": "각종 계약 관련 문서",
+                     *         "depth": 1,
+                     *         "default_retention_period": 10,
+                     *         "document_count": 10,
+                     *         "children": [
+                     *           {
+                     *             "id": 102,
+                     *             "name": "NDA",
+                     *             "description": "비밀유지계약서",
+                     *             "depth": 2,
+                     *             "default_retention_period": 10,
+                     *             "document_count": 3,
+                     *             "children": []
+                     *           }
+                     *         ]
+                     *       }
+                     *     ]
+                     */
+                    "application/json": components["schemas"]["UserCategoryTreeNodeDTO"][];
+                };
+            };
+            /** @description bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description internal server error */
             500: {
@@ -7390,6 +8737,354 @@ export interface operations {
                 content?: never;
             };
             /** @description 파서 설정을 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_collections_v1_admin_collections_get: {
+        parameters: {
+            query?: {
+                /** @description 페이지 번호 */
+                page?: number;
+                /** @description 페이지 크기 */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionListResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_collection_detail_endpoint_v1_admin_collections__collection_name__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionDetailResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_collection_data_v1_admin_collections__collection_name__data_get: {
+        parameters: {
+            query?: {
+                /** @description 페이지 번호 */
+                page?: number;
+                /** @description 페이지 크기 */
+                page_size?: number;
+                /** @description 필터 표현식 */
+                filter_expr?: string | null;
+            };
+            header?: never;
+            path: {
+                collection_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionDataResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    upsert_collection_data_endpoint_v1_admin_collections__collection_name__data_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DataUpsertRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataUpsertResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_collection_data_endpoint_v1_admin_collections_data_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DataDeleteRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
             404: {
                 headers: {
                     [name: string]: unknown;
