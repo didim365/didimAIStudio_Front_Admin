@@ -106,20 +106,6 @@ function LocalModels() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading && (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />
-              <p className="text-slate-500">로딩 중...</p>
-            </div>
-          )}
-          {!isLoading && models.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <AlertCircle className="h-12 w-12 mb-4" />
-              <p className="text-lg font-medium">로컬 LLM이 없습니다</p>
-              <p className="text-sm">로컬 LLM이 추가되면, 여기에 표시됩니다</p>
-            </div>
-          )}
-          {!isLoading && models.length > 0 && (
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
@@ -168,11 +154,10 @@ function LocalModels() {
                                 ? "default"
                                 : "secondary"
                             }
-                            className={
-                              model.deployment_status === "running"
-                                ? "bg-green-500 hover:bg-green-600"
-                                : ""
-                            }
+                            className={cn(
+                              model.deployment_status === "running" &&
+                                "bg-green-500 hover:bg-green-600"
+                            )}
                           >
                             {getDeploymentStatusLabel(model.deployment_status)}
                           </Badge>
@@ -183,7 +168,6 @@ function LocalModels() {
                 </TableBody>
               </Table>
             </div>
-          )}
         </CardContent>
       </Card>
     </div>
