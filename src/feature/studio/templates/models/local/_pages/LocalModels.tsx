@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { RefreshCw, AlertCircle, Server, Database, Plus } from "lucide-react";
+import { AlertCircle, Server, RefreshCw, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/shared/lib/utils";
@@ -23,7 +23,7 @@ import Link from "next/link";
 function LocalModels() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data, isLoading, refetch } = useGetLocalModels();
+  const { data, isLoading } = useGetLocalModels();
 
   const models = data?.items || [];
   const totalCount = data?.total || 0;
@@ -74,15 +74,15 @@ function LocalModels() {
             </div>
             <div className="flex gap-2">
               <Button
-                variant="default"
+                variant="outline"
                 className="gap-2 cursor-pointer"
                 onClick={handleSync}
                 disabled={syncMutation.isPending}
               >
-                <Database
+                <RefreshCw
                   className={cn(
                     "h-4 w-4",
-                    syncMutation.isPending && "animate-pulse"
+                    syncMutation.isPending && "animate-spin"
                   )}
                 />
                 GPUStack 동기화
@@ -93,17 +93,6 @@ function LocalModels() {
                   로컬 LLM 템플릿 생성
                 </Button>
               </Link>
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={() => refetch()}
-                disabled={isLoading}
-              >
-                <RefreshCw
-                  className={cn("h-4 w-4", isLoading && "animate-spin")}
-                />
-                새로고침
-              </Button>
             </div>
           </div>
         </CardContent>
@@ -117,20 +106,6 @@ function LocalModels() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading && (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />
-              <p className="text-slate-500">로딩 중...</p>
-            </div>
-          )}
-          {!isLoading && models.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <AlertCircle className="h-12 w-12 mb-4" />
-              <p className="text-lg font-medium">로컬 LLM이 없습니다</p>
-              <p className="text-sm">로컬 LLM이 추가되면, 여기에 표시됩니다</p>
-            </div>
-          )}
-          {!isLoading && models.length > 0 && (
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
@@ -179,11 +154,10 @@ function LocalModels() {
                                 ? "default"
                                 : "secondary"
                             }
-                            className={
-                              model.deployment_status === "running"
-                                ? "bg-green-500 hover:bg-green-600"
-                                : ""
-                            }
+                            className={cn(
+                              model.deployment_status === "running" &&
+                                "bg-green-500 hover:bg-green-600"
+                            )}
                           >
                             {getDeploymentStatusLabel(model.deployment_status)}
                           </Badge>
@@ -194,7 +168,6 @@ function LocalModels() {
                 </TableBody>
               </Table>
             </div>
-          )}
         </CardContent>
       </Card>
     </div>
