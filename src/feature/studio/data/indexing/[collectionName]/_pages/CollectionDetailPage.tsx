@@ -1,7 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -29,8 +26,6 @@ interface CollectionDetailPageProps {
 export default function CollectionDetailPage({
   collection,
 }: CollectionDetailPageProps) {
-  const pathname = usePathname();
-
   return (
     <div className="space-y-6">
         {/* Header */}
@@ -62,7 +57,7 @@ export default function CollectionDetailPage({
         </div>
 
         {/* 데이터 조회 CTA */}
-        <Link href={`${pathname}/data`} className="block">
+        <Link href={`/studio/data/indexing/${collection.collection_name}/${collection.db_type}`} className="block">
           <Card className="group cursor-pointer overflow-hidden border-border bg-linear-to-br from-foreground/5 to-foreground/10 transition-all hover:border-foreground/30 hover:shadow-lg dark:from-foreground/5 dark:to-foreground/10">
             <CardContent className="py-6">
               <div className="flex items-center justify-between">
