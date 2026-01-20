@@ -10,16 +10,26 @@ type GetCollectionsResponse =
 type GetCollectionsParams =
   paths["/v1/admin/collections"]["get"]["parameters"]["query"];
 
+type GetCollectionsResponseWithTotalPages = GetCollectionsResponse & {
+  totalPages: number;
+};
+
 export const useGetCollections = (
   params?: GetCollectionsParams,
   options?: Omit<
-    UseQueryOptions<GetCollectionsResponse, Error>,
-    "queryKey" | "queryFn"
+    UseQueryOptions<GetCollectionsResponse, Error, GetCollectionsResponseWithTotalPages>,
+    "queryKey" | "queryFn" | "select"
   >
 ) => {
-  return useQuery<GetCollectionsResponse, Error>({
+  const pageSize = params?.page_size || 20;
+
+  return useQuery<GetCollectionsResponse, Error, GetCollectionsResponseWithTotalPages>({
     queryKey: ["collections", params],
     queryFn: () => getCollections(params),
+    select: (data) => ({
+      ...data,
+      totalPages: Math.ceil(data.total / pageSize),
+    }),
     ...options,
   });
 };
