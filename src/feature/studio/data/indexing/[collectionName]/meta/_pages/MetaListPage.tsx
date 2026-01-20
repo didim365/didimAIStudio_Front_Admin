@@ -35,6 +35,7 @@ import { Pagination } from "@/shared/ui/pagination";
 import { formatNumber } from "@/shared/utils/formatNumber";
 import { formatBytes } from "@/shared/utils/formatBytes";
 import { formatDate } from "@/shared/utils/formatDate";
+import { getStatusBadge } from "../_utils/getStatusBadge";
 import { Button } from "@/shared/ui/button";
 import {
   Tooltip,
@@ -42,20 +43,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
-
-// 상태 뱃지 스타일
-const getStatusBadge = (status: string) => {
-  const statusMap: Record<
-    string,
-    { variant: "default" | "secondary" | "outline" | "destructive"; label: string }
-  > = {
-    completed: { variant: "default", label: "완료" },
-    processing: { variant: "secondary", label: "처리중" },
-    pending: { variant: "outline", label: "대기" },
-    failed: { variant: "destructive", label: "실패" },
-  };
-  return statusMap[status] || { variant: "outline", label: status };
-};
 
 // 파일 타입 아이콘 색상
 const getFileTypeStyle = (fileType: string) => {
@@ -98,7 +85,7 @@ export default function MetaListPage() {
       <div className="space-y-6">
         {/* 필터 */}
         <Card className="border-dashed">
-          <CardContent className="pt-6">
+          <CardContent>
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               {/* 페이지 크기 */}
               <div className="w-full md:w-40">
