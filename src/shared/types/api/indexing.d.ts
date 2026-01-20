@@ -2199,6 +2199,50 @@ export interface components {
          * @description 컬렉션 데이터 응답 DTO
          *
          *     페이지네이션된 데이터를 반환합니다.
+         * @example {
+         *       "items": [
+         *         {
+         *           "category": "계약서",
+         *           "chunk_count": 15,
+         *           "chunk_overlap": 50,
+         *           "chunk_size": 500,
+         *           "cost": 0.035,
+         *           "download_url": "https://storage.example.com/contracts/2024/employment.pdf",
+         *           "embedding_end_date": 1704067500,
+         *           "embedding_start_date": 1704067200,
+         *           "enable_pii_anonymization": 0,
+         *           "end_date": 1735689600,
+         *           "expiration_date": 1767225600,
+         *           "file_path": "contracts/2024/employment.pdf",
+         *           "file_size": 1048576,
+         *           "file_type": "pdf",
+         *           "filename": "근로계약서_2024.pdf",
+         *           "filtered_chunk_count": 15,
+         *           "group_id": 1,
+         *           "hash_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+         *           "id": 1,
+         *           "original_chunk_count": 15,
+         *           "persona_id": 0,
+         *           "ref_count": 0,
+         *           "role_ids": [
+         *             1,
+         *             2,
+         *             3
+         *           ],
+         *           "start_date": 1704067200,
+         *           "status": "completed",
+         *           "summary": "본 계약서는 2024년도 정규직 근로자의 고용 조건을 명시합니다.",
+         *           "summary_cost": 0.005,
+         *           "summary_token": 500,
+         *           "title": "2024년 근로계약서",
+         *           "token": 3500,
+         *           "user_id": 1
+         *         }
+         *       ],
+         *       "page": 1,
+         *       "page_size": 50,
+         *       "total": 1
+         *     }
          */
         CollectionDataResponseDTO: {
             /**
@@ -2232,6 +2276,53 @@ export interface components {
          * @description 컬렉션 상세 응답 DTO
          *
          *     컬렉션의 스키마, 인덱스, 통계 정보를 포함합니다.
+         * @example {
+         *       "collection_name": "TB_1_meta",
+         *       "db_type": "meta",
+         *       "indexes": [
+         *         {
+         *           "field": "embedding_value",
+         *           "index_type": "FLAT"
+         *         }
+         *       ],
+         *       "row_count": 150,
+         *       "schema_fields": [
+         *         "id",
+         *         "category",
+         *         "title",
+         *         "filename",
+         *         "summary",
+         *         "file_type",
+         *         "file_size",
+         *         "status",
+         *         "role_ids",
+         *         "persona_id",
+         *         "file_path",
+         *         "download_url",
+         *         "chunk_count",
+         *         "token",
+         *         "cost",
+         *         "summary_token",
+         *         "summary_cost",
+         *         "group_id",
+         *         "user_id",
+         *         "hash_sha256",
+         *         "start_date",
+         *         "end_date",
+         *         "expiration_date",
+         *         "embedding_value",
+         *         "ref_count",
+         *         "anonymization_strategy",
+         *         "chunk_size",
+         *         "chunk_overlap",
+         *         "enable_pii_anonymization",
+         *         "pii_types",
+         *         "original_chunk_count",
+         *         "filtered_chunk_count",
+         *         "embedding_start_date",
+         *         "embedding_end_date"
+         *       ]
+         *     }
          */
         CollectionDetailResponseDTO: {
             /**
@@ -2275,6 +2366,12 @@ export interface components {
          * @description 컬렉션 정보 DTO
          *
          *     컬렉션 목록 조회 시 각 컬렉션의 기본 정보입니다.
+         * @example {
+         *       "collection_name": "TB_1_meta",
+         *       "db_type": "meta",
+         *       "group_id": 1,
+         *       "row_count": 150
+         *     }
          */
         CollectionInfoDTO: {
             /**
@@ -2307,6 +2404,25 @@ export interface components {
          * @description 컬렉션 목록 응답 DTO
          *
          *     페이지네이션 정보와 함께 컬렉션 목록을 반환합니다.
+         * @example {
+         *       "items": [
+         *         {
+         *           "collection_name": "TB_1_meta",
+         *           "db_type": "meta",
+         *           "group_id": 1,
+         *           "row_count": 150
+         *         },
+         *         {
+         *           "collection_name": "TB_1_vector",
+         *           "db_type": "vector",
+         *           "group_id": 1,
+         *           "row_count": 1200
+         *         }
+         *       ],
+         *       "page": 1,
+         *       "page_size": 50,
+         *       "total": 2
+         *     }
          */
         CollectionListResponseDTO: {
             /**
@@ -2712,6 +2828,11 @@ export interface components {
          * @description 데이터 수정/삽입 응답 DTO
          *
          *     upsert 작업 결과를 반환합니다.
+         * @example {
+         *       "collection_name": "TB_1_meta",
+         *       "message": "10개 레코드가 수정/삽입되었습니다.",
+         *       "upserted_count": 10
+         *     }
          */
         DataUpsertResponseDTO: {
             /**
