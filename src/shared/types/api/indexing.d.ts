@@ -1814,7 +1814,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/admin/collections/{collection_name}/data": {
+    "/v1/admin/collections/{collection_name}/meta-data": {
         parameters: {
             query?: never;
             header?: never;
@@ -1822,17 +1822,60 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 컬렉션 데이터 조회 (관리자 전용)
-         * @description 📊 **컬렉션 데이터 조회 (관리자 전용)**
+         * Meta 컬렉션 데이터 조회 (관리자 전용)
+         * @description 📊 **Meta 컬렉션 데이터 조회 (관리자 전용)**
          *
-         *     컬렉션의 데이터를 페이지네이션하여 조회합니다.
+         *     Meta 컬렉션의 데이터를 페이지네이션하여 조회합니다.
          *
          *     ## 파라미터
          *     - page: 페이지 번호 (기본값: 1)
          *     - page_size: 페이지 크기 (기본값: 50, 최대: 1000)
          *     - filter_expr: Milvus 필터 표현식 (선택)
          */
-        get: operations["get_collection_data_v1_admin_collections__collection_name__data_get"];
+        get: operations["get_meta_collection_data_v1_admin_collections__collection_name__meta_data_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/collections/{collection_name}/vector-data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Vector 컬렉션 데이터 조회 (관리자 전용)
+         * @description 📊 **Vector 컬렉션 데이터 조회 (관리자 전용)**
+         *
+         *     Vector 컬렉션의 데이터를 페이지네이션하여 조회합니다.
+         *
+         *     ## 파라미터
+         *     - page: 페이지 번호 (기본값: 1)
+         *     - page_size: 페이지 크기 (기본값: 50, 최대: 1000)
+         *     - filter_expr: Milvus 필터 표현식 (선택)
+         */
+        get: operations["get_vector_collection_data_v1_admin_collections__collection_name__vector_data_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/collections/{collection_name}/data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
         /**
          * 컬렉션 데이터 수정/삽입 (관리자 전용)
          * @description 📝 **컬렉션 데이터 수정/삽입 (관리자 전용)**
@@ -2166,6 +2209,126 @@ export interface components {
              */
             request_end_time?: string | null;
         };
+        /**
+         * AdminMetaDataItemDTO
+         * @description Meta 컬렉션 데이터 아이템 DTO
+         *
+         *     Milvus meta 컬렉션의 레코드를 표현합니다.
+         *     role_ids를 List[int]로 명시하여 RepeatedScalarContainer 자동 변환.
+         *     embedding_value는 메모리 절약을 위해 제외.
+         */
+        AdminMetaDataItemDTO: {
+            /** Id */
+            id: number;
+            /** Category */
+            category: string;
+            /** Title */
+            title: string;
+            /** Filename */
+            filename: string;
+            /** Summary */
+            summary: string;
+            /** File Type */
+            file_type: string;
+            /** File Size */
+            file_size: number;
+            /** Status */
+            status: string;
+            /** Role Ids */
+            role_ids: number[];
+            /** Persona Id */
+            persona_id: number;
+            /** File Path */
+            file_path: string;
+            /** Download Url */
+            download_url: string;
+            /** Chunk Count */
+            chunk_count: number;
+            /** Token */
+            token: number;
+            /** Cost */
+            cost: number;
+            /** Summary Token */
+            summary_token: number;
+            /** Summary Cost */
+            summary_cost: number;
+            /** Group Id */
+            group_id: number;
+            /** User Id */
+            user_id: number;
+            /** Hash Sha256 */
+            hash_sha256: string;
+            /** Start Date */
+            start_date: number;
+            /** End Date */
+            end_date: number;
+            /** Expiration Date */
+            expiration_date: number;
+            /**
+             * Ref Count
+             * @default 0
+             */
+            ref_count: number;
+            /** Anonymization Strategy */
+            anonymization_strategy?: string | null;
+            /** Chunk Size */
+            chunk_size: number;
+            /** Chunk Overlap */
+            chunk_overlap: number;
+            /**
+             * Enable Pii Anonymization
+             * @default 0
+             */
+            enable_pii_anonymization: number;
+            /** Pii Types */
+            pii_types?: string | null;
+            /** Original Chunk Count */
+            original_chunk_count: number;
+            /** Filtered Chunk Count */
+            filtered_chunk_count: number;
+            /** Embedding Start Date */
+            embedding_start_date: number;
+            /** Embedding End Date */
+            embedding_end_date: number;
+        };
+        /**
+         * AdminVectorDataItemDTO
+         * @description Vector 컬렉션 데이터 아이템 DTO
+         *
+         *     Milvus vector 컬렉션의 레코드를 표현합니다.
+         *     role_ids를 List[int]로 명시하여 RepeatedScalarContainer 자동 변환.
+         *     embedding_value는 메모리 절약을 위해 제외.
+         */
+        AdminVectorDataItemDTO: {
+            /** Id */
+            id: number;
+            /** Category */
+            category: string;
+            /** Title */
+            title: string;
+            /** Filename */
+            filename: string;
+            /** Parsed Text */
+            parsed_text: string;
+            /** Page Number */
+            page_number: number;
+            /** Chunk Index */
+            chunk_index: number;
+            /** Token */
+            token: number;
+            /** Cost */
+            cost: number;
+            /** Group Id */
+            group_id: number;
+            /** User Id */
+            user_id: number;
+            /** Role Ids */
+            role_ids: number[];
+            /** Hash Sha256 */
+            hash_sha256: string;
+            /** Date */
+            date: number;
+        };
         /** Body_calculate_cost_v1_costs_models_post */
         Body_calculate_cost_v1_costs_models_post: {
             /**
@@ -2193,83 +2356,6 @@ export interface components {
              * @description 삭제된 카테고리 ID
              */
             deleted_id: number;
-        };
-        /**
-         * CollectionDataResponseDTO
-         * @description 컬렉션 데이터 응답 DTO
-         *
-         *     페이지네이션된 데이터를 반환합니다.
-         * @example {
-         *       "items": [
-         *         {
-         *           "category": "계약서",
-         *           "chunk_count": 15,
-         *           "chunk_overlap": 50,
-         *           "chunk_size": 500,
-         *           "cost": 0.035,
-         *           "download_url": "https://storage.example.com/contracts/2024/employment.pdf",
-         *           "embedding_end_date": 1704067500,
-         *           "embedding_start_date": 1704067200,
-         *           "enable_pii_anonymization": 0,
-         *           "end_date": 1735689600,
-         *           "expiration_date": 1767225600,
-         *           "file_path": "contracts/2024/employment.pdf",
-         *           "file_size": 1048576,
-         *           "file_type": "pdf",
-         *           "filename": "근로계약서_2024.pdf",
-         *           "filtered_chunk_count": 15,
-         *           "group_id": 1,
-         *           "hash_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-         *           "id": 1,
-         *           "original_chunk_count": 15,
-         *           "persona_id": 0,
-         *           "ref_count": 0,
-         *           "role_ids": [
-         *             1,
-         *             2,
-         *             3
-         *           ],
-         *           "start_date": 1704067200,
-         *           "status": "completed",
-         *           "summary": "본 계약서는 2024년도 정규직 근로자의 고용 조건을 명시합니다.",
-         *           "summary_cost": 0.005,
-         *           "summary_token": 500,
-         *           "title": "2024년 근로계약서",
-         *           "token": 3500,
-         *           "user_id": 1
-         *         }
-         *       ],
-         *       "page": 1,
-         *       "page_size": 50,
-         *       "total": 1
-         *     }
-         */
-        CollectionDataResponseDTO: {
-            /**
-             * Items
-             * @description 데이터 목록
-             */
-            items: {
-                [key: string]: unknown;
-            }[];
-            /**
-             * Total
-             * @description 전체 레코드 수
-             * @example 100
-             */
-            total: number;
-            /**
-             * Page
-             * @description 현재 페이지
-             * @example 1
-             */
-            page: number;
-            /**
-             * Page Size
-             * @description 페이지 크기
-             * @example 50
-             */
-            page_size: number;
         };
         /**
          * CollectionDetailResponseDTO
@@ -3937,6 +4023,81 @@ export interface components {
             cleanup_date: string;
         };
         /**
+         * MetaCollectionDataResponseDTO
+         * @description Meta 컬렉션 데이터 응답 DTO
+         *
+         *     Meta 컬렉션의 페이지네이션된 데이터를 반환합니다.
+         * @example {
+         *       "items": [
+         *         {
+         *           "category": "계약서",
+         *           "chunk_count": 15,
+         *           "chunk_overlap": 50,
+         *           "chunk_size": 500,
+         *           "cost": 0.035,
+         *           "download_url": "https://storage.example.com/contracts/2024/employment.pdf",
+         *           "embedding_end_date": 1704067500,
+         *           "embedding_start_date": 1704067200,
+         *           "enable_pii_anonymization": 0,
+         *           "end_date": 1735689600,
+         *           "expiration_date": 1767225600,
+         *           "file_path": "contracts/2024/employment.pdf",
+         *           "file_size": 1048576,
+         *           "file_type": "pdf",
+         *           "filename": "근로계약서_2024.pdf",
+         *           "filtered_chunk_count": 15,
+         *           "group_id": 1,
+         *           "hash_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+         *           "id": 1,
+         *           "original_chunk_count": 15,
+         *           "persona_id": 0,
+         *           "ref_count": 0,
+         *           "role_ids": [
+         *             1,
+         *             2,
+         *             3
+         *           ],
+         *           "start_date": 1704067200,
+         *           "status": "completed",
+         *           "summary": "본 계약서는 2024년도 정규직 근로자의 고용 조건을 명시합니다.",
+         *           "summary_cost": 0.005,
+         *           "summary_token": 500,
+         *           "title": "2024년 근로계약서",
+         *           "token": 3500,
+         *           "user_id": 1
+         *         }
+         *       ],
+         *       "page": 1,
+         *       "page_size": 50,
+         *       "total": 1
+         *     }
+         */
+        MetaCollectionDataResponseDTO: {
+            /**
+             * Items
+             * @description Meta 컬렉션 데이터 목록
+             */
+            items: components["schemas"]["AdminMetaDataItemDTO"][];
+            /**
+             * Total
+             * @description 전체 레코드 수
+             * @example 100
+             */
+            total: number;
+            /**
+             * Page
+             * @description 현재 페이지
+             * @example 1
+             */
+            page: number;
+            /**
+             * Page Size
+             * @description 페이지 크기
+             * @example 50
+             */
+            page_size: number;
+        };
+        /**
          * ParserConfigListResponseDTO
          * @description 파서 설정 목록 응답 DTO
          * @example {
@@ -5252,6 +5413,64 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /**
+         * VectorCollectionDataResponseDTO
+         * @description Vector 컬렉션 데이터 응답 DTO
+         *
+         *     Vector 컬렉션의 페이지네이션된 데이터를 반환합니다.
+         * @example {
+         *       "items": [
+         *         {
+         *           "category": "계약서",
+         *           "chunk_index": 0,
+         *           "cost": 0.0025,
+         *           "date": 1704067200,
+         *           "filename": "근로계약서_2024.pdf",
+         *           "group_id": 1,
+         *           "hash_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+         *           "id": 1,
+         *           "page_number": 1,
+         *           "parsed_text": "제1조 (목적) 본 계약은 근로자의 고용 조건을...",
+         *           "role_ids": [
+         *             1,
+         *             2,
+         *             3
+         *           ],
+         *           "title": "2024년 근로계약서",
+         *           "token": 250,
+         *           "user_id": 1
+         *         }
+         *       ],
+         *       "page": 1,
+         *       "page_size": 50,
+         *       "total": 1
+         *     }
+         */
+        VectorCollectionDataResponseDTO: {
+            /**
+             * Items
+             * @description Vector 컬렉션 데이터 목록
+             */
+            items: components["schemas"]["AdminVectorDataItemDTO"][];
+            /**
+             * Total
+             * @description 전체 레코드 수
+             * @example 100
+             */
+            total: number;
+            /**
+             * Page
+             * @description 현재 페이지
+             * @example 1
+             */
+            page: number;
+            /**
+             * Page Size
+             * @description 페이지 크기
+             * @example 50
+             */
+            page_size: number;
         };
         /**
          * MessageResponseDTO
@@ -9150,7 +9369,7 @@ export interface operations {
             };
         };
     };
-    get_collection_data_v1_admin_collections__collection_name__data_get: {
+    get_meta_collection_data_v1_admin_collections__collection_name__meta_data_get: {
         parameters: {
             query?: {
                 /** @description 페이지 번호 */
@@ -9174,7 +9393,80 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CollectionDataResponseDTO"];
+                    "application/json": components["schemas"]["MetaCollectionDataResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_vector_collection_data_v1_admin_collections__collection_name__vector_data_get: {
+        parameters: {
+            query?: {
+                /** @description 페이지 번호 */
+                page?: number;
+                /** @description 페이지 크기 */
+                page_size?: number;
+                /** @description 필터 표현식 */
+                filter_expr?: string | null;
+            };
+            header?: never;
+            path: {
+                collection_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VectorCollectionDataResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
