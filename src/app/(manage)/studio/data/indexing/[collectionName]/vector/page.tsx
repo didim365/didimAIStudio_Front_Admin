@@ -1,5 +1,7 @@
+import VectorListPage from "@/feature/studio/data/indexing/[collectionName]/vector/_pages/VectorListPage";
+
 function Page() {
-  return <div>Vector Page</div>;
+  return <VectorListPage />;
 }
 
 export default Page;
