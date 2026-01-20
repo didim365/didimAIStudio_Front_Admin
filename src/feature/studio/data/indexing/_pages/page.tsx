@@ -22,7 +22,7 @@ import { useGetCollections } from "../_hooks/useGetCollections";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
 import { formatNumber } from "@/shared/utils/formatNumber";
-import { getIcon } from "../_utils/getIcon";
+import { getIcon } from "../_components/getIcon";
 import { getBadgeVariant } from "../_utils/getBadgeVariant";
 import { getStyle } from "../_utils/getStyle";
 
