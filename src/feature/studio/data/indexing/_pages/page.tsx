@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import {
   Select,
@@ -27,6 +28,8 @@ import { getBadgeVariant } from "../_utils/getBadgeVariant";
 import { getStyle } from "../_utils/getStyle";
 
 export default function IndexingPage() {
+  const router = useRouter();
+  
   // URL 쿼리 파라미터 관리
   const [page, setPage] = useQueryParam<number>("page", 1);
   const [pageSize, setPageSize] = useQueryParam<number>("pageSize", 20);
@@ -120,6 +123,11 @@ export default function IndexingPage() {
                   <TableRow
                     key={collection.collection_name}
                     className="group cursor-pointer transition-colors hover:bg-muted/50"
+                    onClick={() => {
+                      router.push(
+                        `/studio/data/indexing/${encodeURIComponent(collection.collection_name)}`
+                      );
+                    }}
                   >
                     <TableCell>
                       <div className="flex items-center gap-3">
