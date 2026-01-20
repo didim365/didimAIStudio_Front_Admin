@@ -33,6 +33,8 @@ import { useGetMetaCollections } from "../_hooks/useGetMetaCollections";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
 import { formatNumber } from "@/shared/utils/formatNumber";
+import { formatBytes } from "@/shared/utils/formatBytes";
+import { formatDate } from "@/shared/utils/formatDate";
 import { Button } from "@/shared/ui/button";
 import {
   Tooltip,
@@ -40,26 +42,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
-
-// 파일 크기 포맷팅
-const formatFileSize = (bytes: number) => {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-};
-
-// 날짜 포맷팅 (Unix timestamp to Date)
-const formatDate = (timestamp: number) => {
-  if (!timestamp) return "-";
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-};
 
 // 상태 뱃지 스타일
 const getStatusBadge = (status: string) => {
@@ -264,7 +246,7 @@ export default function MetaListPage() {
                           <TableCell className="text-right">
                             <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
                               <HardDrive className="h-3 w-3" />
-                              {formatFileSize(item.file_size)}
+                              {formatBytes(item.file_size)}
                             </span>
                           </TableCell>
 
