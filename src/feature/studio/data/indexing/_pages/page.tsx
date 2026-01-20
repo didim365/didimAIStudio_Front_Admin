@@ -17,8 +17,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Button } from "@/shared/ui/button";
-import { Database, Layers, RefreshCw } from "lucide-react";
+import { Database, Layers } from "lucide-react";
 import { useGetCollections } from "../_hooks/useGetCollections";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
@@ -36,7 +35,6 @@ export default function IndexingPage() {
   const {
     data: collectionsData,
     isLoading,
-    refetch,
     isFetching,
   } = useGetCollections({
     page,
@@ -46,30 +44,16 @@ export default function IndexingPage() {
   return (
     <div className="space-y-6">
       {/* 헤더 */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">지식 관리</h1>
-          <p className="mt-1 text-muted-foreground">
-            Milvus 컬렉션 목록 조회 및 데이터 관리
-          </p>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => refetch()}
-          disabled={isFetching}
-          className="gap-2 w-fit"
-        >
-          <RefreshCw
-            className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
-          />
-          새로고침
-        </Button>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">지식 관리</h1>
+        <p className="mt-1 text-muted-foreground">
+          Milvus 컬렉션 목록 조회 및 데이터 관리
+        </p>
       </div>
 
       {/* 필터 */}
       <Card>
-        <CardContent className="pt-6">
+        <CardContent>
           <div className="flex flex-col gap-4 md:flex-row md:items-end">
             {/* 페이지 크기 */}
             <div className="w-full md:w-40">
