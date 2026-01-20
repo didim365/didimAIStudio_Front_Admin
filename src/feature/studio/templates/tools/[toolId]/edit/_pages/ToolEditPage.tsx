@@ -83,27 +83,40 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
     const tags = formData.tags.filter((t) => t.length > 0);
     const keywords = formData.keywords.filter((k) => k.length > 0);
 
+    // 초기 environment_variables 값
+    const initialEnvVars = tool.environment_variables || {};
+    const currentEnvVars = formData.environment_variables || {};
+    
+    // environment_variables 변화 여부 확인
+    const envVarsChanged = JSON.stringify(initialEnvVars) !== JSON.stringify(currentEnvVars);
+
+    // 전송할 데이터 객체 생성
+    const updateData: Record<string, unknown> = {
+      description: formData.description || null,
+      version: formData.version || null,
+      status: formData.status || null,
+      icon_url: formData.icon_url || null,
+      repo_url: formData.repo_url || null,
+      server_url: formData.server_url || null,
+      container_image: formData.container_image || null,
+      tags: tags.length > 0 ? tags : null,
+      keywords: keywords.length > 0 ? keywords : null,
+      docker_compose_config: formData.docker_compose_config || null,
+      resource_requirements: formData.resource_requirements || null,
+      metadata: formData.metadata || null,
+    };
+
+    // environment_variables가 변경된 경우에만 포함
+    if (envVarsChanged) {
+      updateData.environment_variables =
+        Object.keys(currentEnvVars).length > 0
+          ? (currentEnvVars as Record<string, string>)
+          : null;
+    }
+
     updateTool({
       params: { tool_id: tool.id },
-      data: {
-        description: formData.description || null,
-        version: formData.version || null,
-        status: formData.status || null,
-        icon_url: formData.icon_url || null,
-        repo_url: formData.repo_url || null,
-        server_url: formData.server_url || null,
-        container_image: formData.container_image || null,
-        tags: tags.length > 0 ? tags : null,
-        keywords: keywords.length > 0 ? keywords : null,
-        environment_variables:
-          formData.environment_variables &&
-          Object.keys(formData.environment_variables).length > 0
-            ? (formData.environment_variables as Record<string, string>)
-            : null,
-        docker_compose_config: formData.docker_compose_config || null,
-        resource_requirements: formData.resource_requirements || null,
-        metadata: formData.metadata || null,
-      },
+      data: updateData,
     });
   };
 
