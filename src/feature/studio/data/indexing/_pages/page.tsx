@@ -17,7 +17,6 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Button } from "@/shared/ui/button";
 import { Database, Layers, RefreshCw } from "lucide-react";
 import { useGetCollections } from "../_hooks/useGetCollections";
@@ -114,92 +113,71 @@ export default function IndexingPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading && (
-            // 로딩 스켈레톤
-            <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <Skeleton className="h-10 w-10 rounded-lg" />
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-4 w-1/3" />
-                    <Skeleton className="h-3 w-1/4" />
-                  </div>
-                  <Skeleton className="h-6 w-16 rounded-full" />
-                  <Skeleton className="h-4 w-20" />
-                </div>
-              ))}
-            </div>
-          )}
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[50%] min-w-[250px]">
-                      컬렉션 이름
-                    </TableHead>
-                    <TableHead className="w-[15%] min-w-[100px] text-center">
-                      타입
-                    </TableHead>
-                    <TableHead className="w-[15%] min-w-[100px] text-center">
-                      그룹 ID
-                    </TableHead>
-                    <TableHead className="w-[20%] min-w-[120px] text-right">
-                      레코드 수
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {collectionsData?.items.map((collection) => (
-                    <TableRow
-                      key={collection.collection_name}
-                      className="group cursor-pointer transition-colors hover:bg-muted/50"
-                    >
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`flex h-9 w-9 items-center justify-center rounded-lg ${getStyle(collection.db_type)}`}
-                          >
-                            {getIcon(collection.db_type)}
-                          </div>
-                          <div>
-                            <p className="font-medium">
-                              {collection.collection_name}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Milvus Collection
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge
-                          variant={getBadgeVariant(collection.db_type)}
-                          className="gap-1"
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[50%] min-w-[250px]">
+                    컬렉션 이름
+                  </TableHead>
+                  <TableHead className="w-[15%] min-w-[100px] text-center">
+                    타입
+                  </TableHead>
+                  <TableHead className="w-[15%] min-w-[100px] text-center">
+                    그룹 ID
+                  </TableHead>
+                  <TableHead className="w-[20%] min-w-[120px] text-right">
+                    레코드 수
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {collectionsData?.items.map((collection) => (
+                  <TableRow
+                    key={collection.collection_name}
+                    className="group cursor-pointer transition-colors hover:bg-muted/50"
+                  >
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`flex h-9 w-9 items-center justify-center rounded-lg ${getStyle(collection.db_type)}`}
                         >
                           {getIcon(collection.db_type)}
-                          {collection.db_type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {collection.group_id !== null &&
-                        collection.group_id !== undefined ? (
-                          <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                            #{collection.group_id}
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <span className="font-mono text-sm">
-                          {formatNumber(collection.row_count)}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                        </div>
+                        <div>
+                          <p className="font-medium">
+                            {collection.collection_name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Milvus Collection
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge
+                        variant={getBadgeVariant(collection.db_type)}
+                        className="gap-1"
+                      >
+                        {getIcon(collection.db_type)}
+                        {collection.db_type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                        #{collection.group_id ?? "-"}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className="font-mono text-sm">
+                        {formatNumber(collection.row_count)}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
