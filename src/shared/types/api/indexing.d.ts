@@ -3937,21 +3937,132 @@ export interface components {
             cleanup_date: string;
         };
         /**
-         * MessageResponseDTO
-         * @description 일반 메시지 응답 DTO
-         *
-         *     단순 성공/실패 메시지를 반환합니다.
+         * ParserConfigListResponseDTO
+         * @description 파서 설정 목록 응답 DTO
          * @example {
-         *       "message": "스케줄이 성공적으로 삭제되었습니다."
+         *       "items": [
+         *         {
+         *           "api_endpoint": "https://api.ktcloud.com/v1/document-ai/document-parse",
+         *           "created_at": "2026-01-05T07:35:45.158651Z",
+         *           "display_name": "KT Cloud Document Parser",
+         *           "extra_config": {
+         *             "coordinates": false,
+         *             "ocr": "auto",
+         *             "output_formats": [
+         *               "markdown"
+         *             ]
+         *           },
+         *           "id": 1,
+         *           "is_active": true,
+         *           "max_retries": 3,
+         *           "parser_name": "ktc_parser",
+         *           "timeout_seconds": 300,
+         *           "updated_at": "2026-01-05T07:35:45.158651Z"
+         *         }
+         *       ],
+         *       "total": 1
          *     }
          */
-        MessageResponseDTO: {
+        ParserConfigListResponseDTO: {
             /**
-             * Message
-             * @description 응답 메시지
-             * @example 스케줄이 성공적으로 삭제되었습니다.
+             * Items
+             * @description 파서 설정 목록
              */
-            message: string;
+            items: components["schemas"]["ParserConfigResponseDTO"][];
+            /**
+             * Total
+             * @description 전체 파서 설정 수
+             * @example 2
+             */
+            total: number;
+        };
+        /**
+         * ParserConfigResponseDTO
+         * @description 파서 설정 응답 DTO
+         * @example {
+         *       "api_endpoint": "https://api.ktcloud.com/v1/document-ai/document-parse",
+         *       "created_at": "2026-01-05T07:35:45.158651Z",
+         *       "display_name": "KT Cloud Document Parser",
+         *       "extra_config": {
+         *         "coordinates": false,
+         *         "ocr": "auto",
+         *         "output_formats": [
+         *           "markdown"
+         *         ]
+         *       },
+         *       "id": 1,
+         *       "is_active": true,
+         *       "max_retries": 3,
+         *       "parser_name": "ktc_parser",
+         *       "timeout_seconds": 300,
+         *       "updated_at": "2026-01-05T07:35:45.158651Z"
+         *     }
+         */
+        ParserConfigResponseDTO: {
+            /**
+             * Id
+             * @description 파서 설정 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * Parser Name
+             * @description 파서 식별자
+             * @example ktc_parser
+             */
+            parser_name: string;
+            /**
+             * Display Name
+             * @description 표시 이름
+             * @example KT Cloud Document Parser
+             */
+            display_name: string;
+            /**
+             * Api Endpoint
+             * @description API 엔드포인트 URL
+             * @example https://api.ktcloud.com/document-parse
+             */
+            api_endpoint: string;
+            /**
+             * Is Active
+             * @description 활성화 여부
+             * @example true
+             */
+            is_active: boolean;
+            /**
+             * Timeout Seconds
+             * @description API 호출 타임아웃 (초)
+             * @example 300
+             */
+            timeout_seconds: number;
+            /**
+             * Max Retries
+             * @description 실패 시 최대 재시도 횟수
+             * @example 3
+             */
+            max_retries: number;
+            /**
+             * Extra Config
+             * @description 파서별 추가 설정 (JSON)
+             * @example {
+             *       "ocr": "auto"
+             *     }
+             */
+            extra_config: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             * @description 생성 시간
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             * @description 수정 시간
+             */
+            updated_at: string;
         };
         /**
          * RetrievalDeployRequestDTO
@@ -5141,6 +5252,38 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /**
+         * MessageResponseDTO
+         * @description 단순 메시지 응답 DTO
+         * @example {
+         *       "message": "파서 설정이 성공적으로 삭제되었습니다: ktc_parser"
+         *     }
+         */
+        app__dto__parser_config_dto__MessageResponseDTO: {
+            /**
+             * Message
+             * @description 응답 메시지
+             * @example 파서 설정이 성공적으로 삭제되었습니다.
+             */
+            message: string;
+        };
+        /**
+         * MessageResponseDTO
+         * @description 일반 메시지 응답 DTO
+         *
+         *     단순 성공/실패 메시지를 반환합니다.
+         * @example {
+         *       "message": "스케줄이 성공적으로 삭제되었습니다."
+         *     }
+         */
+        app__dto__schedule_dto__MessageResponseDTO: {
+            /**
+             * Message
+             * @description 응답 메시지
+             * @example 스케줄이 성공적으로 삭제되었습니다.
+             */
+            message: string;
         };
     };
     responses: never;
@@ -6618,7 +6761,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MessageResponseDTO"];
+                    "application/json": components["schemas"]["app__dto__schedule_dto__MessageResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
@@ -8562,9 +8705,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ParserConfigListResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
@@ -8623,9 +8764,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ParserConfigResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 - 이미 존재하는 파서명이거나 필수 필드가 누락되었습니다. */
@@ -8691,9 +8830,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ParserConfigResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
@@ -8763,9 +8900,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ParserConfigResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
@@ -8831,9 +8966,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["app__dto__parser_config_dto__MessageResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
