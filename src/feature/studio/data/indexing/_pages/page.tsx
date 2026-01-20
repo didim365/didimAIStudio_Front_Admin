@@ -1,260 +1,187 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Button } from "@/shared/ui/button";
-import { Badge } from "@/shared/ui/badge";
-import { Separator } from "@/shared/ui/separator";
 import {
-  RefreshCw,
-  Plus,
-  FileText,
-  Folder,
-  Database,
-  Calendar,
-  FileArchive,
-} from "lucide-react";
-import { paths } from "@/shared/types/api/indexing";
-import { formatBytes } from "@/shared/utils/formatBytes";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/ui/table";
+import { Badge } from "@/shared/ui/badge";
+import { Database, Layers } from "lucide-react";
+import { useGetCollections } from "../_hooks/useGetCollections";
+import { useQueryParam } from "@/shared/hooks/useQueryParams";
+import { Pagination } from "@/shared/ui/pagination";
+import { formatNumber } from "@/shared/utils/formatNumber";
+import { getIcon } from "../_components/getIcon";
+import { getBadgeVariant } from "../_utils/getBadgeVariant";
+import { getStyle } from "../_utils/getStyle";
 
-type GetCategoriesResponse =
-  paths["/v1/documents/categories"]["get"]["responses"]["200"]["content"]["application/json"];
+export default function IndexingPage() {
+  // URL 쿼리 파라미터 관리
+  const [page, setPage] = useQueryParam<number>("page", 1);
+  const [pageSize, setPageSize] = useQueryParam<number>("pageSize", 20);
 
-interface IndexingPageProps {
-  categories: GetCategoriesResponse;
-}
-
-export default function IndexingPage({ categories }: IndexingPageProps) {
-  // TODO: API 호출 훅 구현 필요
-  const isLoading = false;
-  const documents: any[] = [];
-
-  const handleRefresh = () => {
-    // TODO: refetch 구현 필요
-  };
-
-  // Categories 통계 계산
-  const totalCategories = categories.length;
-  const totalDocuments =
-    categories?.reduce((sum, cat) => sum + (cat.document_count || 0), 0) || 0;
-  const totalSize =
-    categories?.reduce((sum, cat) => sum + (cat.total_size || 0), 0) || 0;
-  const avgRetentionPeriod =
-    categories?.length > 0
-      ? Math.round(
-          categories.reduce(
-            (sum, cat) => sum + (cat.retention_period || 0),
-            0
-          ) / categories.length
-        )
-      : 0;
+  // API 호출
+  const {
+    data: collectionsData,
+    isLoading,
+    isFetching,
+  } = useGetCollections({
+    page,
+    page_size: pageSize,
+  });
 
   return (
     <div className="space-y-6">
       {/* 헤더 */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">
-          RAG 문서 데이터 관리
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          등록된 모든 RAG 문서 데이터를 관리합니다
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">지식 관리</h1>
+        <p className="mt-1 text-muted-foreground">
+          Milvus 컬렉션 목록 조회 및 데이터 관리
         </p>
       </div>
 
-      {/* Categories 현황 요약 */}
-      {categories && categories.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                총 카테고리 수
-              </CardTitle>
-              <Folder className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalCategories}</div>
-              <p className="text-xs text-muted-foreground">활성 카테고리</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">총 문서 수</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalDocuments}</div>
-              <p className="text-xs text-muted-foreground">등록된 문서</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                총 저장 용량
-              </CardTitle>
-              <Database className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatBytes(totalSize)}</div>
-              <p className="text-xs text-muted-foreground">전체 데이터 크기</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                평균 보관 기간
-              </CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{avgRetentionPeriod}일</div>
-              <p className="text-xs text-muted-foreground">카테고리별 평균</p>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* 액션 버튼 */}
+      {/* 필터 */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-wrap gap-2">
-            <Button className="gap-2 cursor-pointer">
-              <Plus className="h-4 w-4" />
-              문서 업로드
-            </Button>
-            <Button
-              variant="outline"
-              className="gap-2"
-              onClick={handleRefresh}
-              disabled={isLoading}
-            >
-              <RefreshCw
-                className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-              />
-              새로고침
-            </Button>
+        <CardContent>
+          <div className="flex flex-col gap-4 md:flex-row md:items-end">
+            {/* 페이지 크기 */}
+            <div className="w-full md:w-40">
+              <label className="mb-2 flex items-center gap-2 text-sm font-medium">
+                <Layers className="h-4 w-4" />
+                표시 개수
+              </label>
+              <Select
+                value={pageSize.toString()}
+                onValueChange={(value) => {
+                  setPageSize(Number(value));
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10개</SelectItem>
+                  <SelectItem value="20">20개</SelectItem>
+                  <SelectItem value="50">50개</SelectItem>
+                  <SelectItem value="100">100개</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Categories 목록 */}
+      {/* 컬렉션 테이블 */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Folder className="h-5 w-5" />
-            카테고리 목록 ({categories?.length || 0})
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Database className="h-5 w-5" />
+            컬렉션 목록
+            {!isLoading && collectionsData && (
+              <Badge variant="secondary" className="ml-2">
+                {formatNumber(collectionsData.total)}개
+              </Badge>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {!categories || categories.length === 0 ? (
-            <div className="text-center py-12">
-              <Folder className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">
-                등록된 카테고리가 없습니다
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {categories.map((category) => (
-                <Card
-                  key={category.category_id}
-                  className="hover:shadow-md transition-shadow"
-                >
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg mb-1">
-                          {category.category_name}
-                        </CardTitle>
-                        <Badge variant="secondary" className="mt-1">
-                          ID: {category.category_id}
-                        </Badge>
-                      </div>
-                      <FileArchive className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {/* 설명 */}
-                      {category.description && (
-                        <div className="space-y-1">
-                          <p className="text-sm text-muted-foreground">
-                            {category.description}
-                          </p>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[50%] min-w-[250px]">
+                    컬렉션 이름
+                  </TableHead>
+                  <TableHead className="w-[15%] min-w-[100px] text-center">
+                    타입
+                  </TableHead>
+                  <TableHead className="w-[15%] min-w-[100px] text-center">
+                    그룹 ID
+                  </TableHead>
+                  <TableHead className="w-[20%] min-w-[120px] text-right">
+                    레코드 수
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {collectionsData?.items.map((collection) => (
+                  <TableRow
+                    key={collection.collection_name}
+                    className="group cursor-pointer transition-colors hover:bg-muted/50"
+                  >
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`flex h-9 w-9 items-center justify-center rounded-lg ${getStyle(collection.db_type)}`}
+                        >
+                          {getIcon(collection.db_type)}
                         </div>
-                      )}
-
-                      <Separator />
-
-                      {/* 통계 정보 */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <FileText className="h-3 w-3" />
-                            <span>문서 수</span>
-                          </div>
-                          <p className="text-lg font-semibold">
-                            {category.document_count || 0}
+                        <div>
+                          <p className="font-medium">
+                            {collection.collection_name}
                           </p>
-                        </div>
-
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Database className="h-3 w-3" />
-                            <span>저장 용량</span>
-                          </div>
-                          <p className="text-lg font-semibold">
-                            {formatBytes(category.total_size || 0)}
-                          </p>
-                        </div>
-
-                        <div className="space-y-1 col-span-2">
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Calendar className="h-3 w-3" />
-                            <span>보관 기간</span>
-                          </div>
-                          <p className="text-lg font-semibold">
-                            {category.retention_period || 0}일
+                          <p className="text-xs text-muted-foreground">
+                            Milvus Collection
                           </p>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge
+                        variant={getBadgeVariant(collection.db_type)}
+                        className="gap-1"
+                      >
+                        {getIcon(collection.db_type)}
+                        {collection.db_type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                        #{collection.group_id ?? "-"}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className="font-mono text-sm">
+                        {formatNumber(collection.row_count)}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
-      {/* 문서 테이블 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            문서 목록 ({documents.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading && (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
-              <p className="text-muted-foreground">로딩 중...</p>
-            </div>
-          )}
-          {!isLoading && documents.length === 0 && (
-            <div className="text-center py-12">
-              <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">등록된 문서가 없습니다</p>
-            </div>
-          )}
-          {!isLoading && documents.length > 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">문서 테이블 구현 필요</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* 페이지네이션 */}
+      {collectionsData && collectionsData.totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            전체 {formatNumber(collectionsData.total)}개 중{" "}
+            {formatNumber((page - 1) * pageSize + 1)}-
+            {formatNumber(Math.min(page * pageSize, collectionsData.total))}
+            개 표시
+          </p>
+          <Pagination
+            currentPage={page}
+            totalPages={collectionsData.totalPages}
+            onPageChange={setPage}
+            isLoading={isFetching}
+          />
+        </div>
+      )}
     </div>
   );
 }
