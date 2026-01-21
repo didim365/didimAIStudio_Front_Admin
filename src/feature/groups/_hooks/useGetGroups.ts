@@ -5,9 +5,9 @@ import { paths } from "@/shared/types/api/auth";
 import getGroups from "../_api/getGroups";
 
 type GetGroupsResponse =
-  paths["/api/v1/admin/groups/"]["get"]["responses"]["200"]["content"]["application/json"];
+  paths["/api/v1/admin/groups"]["get"]["responses"]["200"]["content"]["application/json"];
 
-type GetGroupsParams = paths["/api/v1/admin/groups/"]["get"]["parameters"]["query"];
+type GetGroupsParams = paths["/api/v1/admin/groups"]["get"]["parameters"]["query"];
 
 /**
  * 그룹 목록 조회 훅 (Admin 전용)

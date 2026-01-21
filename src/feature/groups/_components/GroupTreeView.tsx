@@ -51,7 +51,7 @@ export default function GroupTreeView({
   const roots: GroupTreeNode[] = [];
 
   // First pass: create ALL nodes
-  groupsData?.items?.forEach((group) => {
+  groupsData?.items?.forEach((group:any) => {
     nodes[group.id] = {
       ...group,
       children: [],
@@ -60,7 +60,7 @@ export default function GroupTreeView({
   });
 
   // Second pass: build hierarchy
-  groupsData?.items?.forEach((group) => {
+  groupsData?.items?.forEach((group:any) => {
     const node = nodes[group.id];
     if (node.parent_group_id && nodes[node.parent_group_id]) {
       nodes[node.parent_group_id].children.push(node);
