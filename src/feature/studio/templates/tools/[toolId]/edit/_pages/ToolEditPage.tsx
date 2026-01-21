@@ -51,6 +51,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
+    name: tool.name || "",
     description: tool.description || "",
     version: tool.version || "",
     status: tool.status as "ACTIVE" | "INACTIVE" | "PENDING" | "ERROR",
@@ -92,6 +93,7 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
 
     // 전송할 데이터 객체 생성
     const updateData: Record<string, unknown> = {
+      name: formData.name || null,
       description: formData.description || null,
       version: formData.version || null,
       status: formData.status || null,
@@ -203,9 +205,11 @@ export function ToolEditPage({ tool }: { tool: GetToolResponse }) {
                   <FormField icon={Wrench} label="도구 이름" htmlFor="name">
                     <Input
                       id="name"
-                      value={tool.name}
-                      disabled
-                      className="bg-muted"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      placeholder="도구 이름을 입력하세요"
                     />
                   </FormField>
 
