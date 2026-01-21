@@ -3306,6 +3306,11 @@ export interface components {
          */
         MCPToolUpdateDTO: {
             /**
+             * Name
+             * @description MCP 도구 이름 (표시 이름)
+             */
+            name?: string | null;
+            /**
              * Description
              * @description 설명
              */

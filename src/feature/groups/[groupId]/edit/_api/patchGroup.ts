@@ -8,7 +8,7 @@ type PatchGroupResponse =
 type PatchGroupParams =
   paths["/api/v1/admin/groups/{group_id}"]["patch"]["parameters"]["path"];
 
-type PatchGroupRequest =
+export type PatchGroupRequest =
   paths["/api/v1/admin/groups/{group_id}"]["patch"]["requestBody"]["content"]["application/json"];
 
 /**
