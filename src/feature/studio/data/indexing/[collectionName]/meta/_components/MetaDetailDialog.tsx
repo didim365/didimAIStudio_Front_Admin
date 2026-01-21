@@ -33,7 +33,7 @@ import type { components } from "@/shared/types/api/indexing";
 type MetaDataItem = components["schemas"]["AdminMetaDataItemDTO"];
 
 interface MetaDetailDialogProps {
-  item: MetaDataItem | null;
+  item: MetaDataItem;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -43,8 +43,6 @@ export default function MetaDetailDialog({
   open,
   onOpenChange,
 }: MetaDetailDialogProps) {
-  if (!item) return null;
-
   const statusBadge = getStatusBadge(item.status);
 
   return (

@@ -276,11 +276,13 @@ export default function MetaListPage() {
         )}
 
         {/* 문서 상세 모달 */}
-        <MetaDetailDialog
-          item={selectedItem}
-          open={isDetailOpen}
-          onOpenChange={setIsDetailOpen}
-        />
+        {selectedItem && (
+          <MetaDetailDialog
+            item={selectedItem}
+            open={isDetailOpen}
+            onOpenChange={setIsDetailOpen}
+          />
+        )}
       </div>
     </TooltipProvider>
   );
