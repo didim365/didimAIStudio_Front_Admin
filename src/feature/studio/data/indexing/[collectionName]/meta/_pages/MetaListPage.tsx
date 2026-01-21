@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import { cn } from "@/shared/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -45,10 +46,33 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
+import MetaDetailDialog from "../_components/MetaDetailDialog";
+import type { components } from "@/shared/types/api/indexing";
+
+type MetaDataItem = components["schemas"]["AdminMetaDataItemDTO"];
 
 export default function MetaListPage() {
   const params = useParams();
   const collectionName = params.collectionName as string;
+
+  // 모달 상태
+  const [selectedItem, setSelectedItem] = useState<MetaDataItem | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+  const handleRowClick = (item: MetaDataItem) => {
+    setSelectedItem(item);
+    setIsDetailOpen(true);
+  };
+
+  const handleRowKeyDown = (
+    e: React.KeyboardEvent<HTMLTableRowElement>,
+    item: MetaDataItem
+  ) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleRowClick(item);
+    }
+  };
 
   // URL 쿼리 파라미터 관리
   const [page, setPage] = useQueryParam<number>("page", 1);
@@ -130,7 +154,12 @@ export default function MetaListPage() {
                     return (
                       <TableRow
                         key={item.id}
-                        className="group transition-colors hover:bg-muted/50"
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`${item.title || item.filename} 상세 정보 보기`}
+                        className="group transition-colors hover:bg-muted/50 hover:cursor-pointer"
+                        onClick={() => handleRowClick(item)}
+                        onKeyDown={(e) => handleRowKeyDown(e, item)}
                       >
                           {/* ID */}
                           <TableCell className="text-center">
@@ -143,21 +172,9 @@ export default function MetaListPage() {
                           {/* 제목 & 파일명 */}
                           <TableCell>
                             <div className="space-y-1">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <p className="line-clamp-1 font-medium">
-                                    {item.title || "-"}
-                                  </p>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-sm">
-                                  <p>{item.title}</p>
-                                  {item.summary && (
-                                    <p className="mt-1 text-xs text-muted-foreground line-clamp-3">
-                                      {item.summary}
-                                    </p>
-                                  )}
-                                </TooltipContent>
-                              </Tooltip>
+                              <p className="line-clamp-1 font-medium">
+                                {item.title || "-"}
+                              </p>
                               <p className="line-clamp-1 text-xs text-muted-foreground">
                                 {item.filename}
                               </p>
@@ -257,6 +274,13 @@ export default function MetaListPage() {
               isLoading={isFetching}
             />
         )}
+
+        {/* 문서 상세 모달 */}
+        <MetaDetailDialog
+          item={selectedItem}
+          open={isDetailOpen}
+          onOpenChange={setIsDetailOpen}
+        />
       </div>
     </TooltipProvider>
   );
