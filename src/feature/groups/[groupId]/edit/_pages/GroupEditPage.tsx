@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePatchGroup } from "../_hooks/usePatchGroup";
 import GroupSelect from "../../../_components/GroupSelect";
@@ -32,7 +32,6 @@ import { GROUP_TYPE_OPTIONS } from "../../../_constants/groupType";
 import { GetGroupResponse } from "../../_api/getGroup";
 import { PatchGroupRequest } from "../_api/patchGroup";
 import { GetRolesResponse } from "@/feature/roles/_api/getRoles";
-import { useGetGroups } from "../../../_hooks/useGetGroups";
 import Link from "next/link";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 
@@ -46,12 +45,6 @@ export function GroupEditPage({
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  // 현재 그룹의 하위 그룹을 가져오기 위한 쿼리
-  const { data: groupsData } = useGetGroups({
-    page: 1,
-    page_size: 100,
-  });
-
   const [formData, setFormData] = useState<
     Omit<PatchGroupRequest, "child_group_ids"> & { child_group_ids: number[] }
   >({
@@ -61,22 +54,8 @@ export function GroupEditPage({
     parent_group_id: group.parent_group_id || null,
     manager: group.manager || null,
     role_id: group.role_id || null,
-    child_group_ids: [],
+    child_group_ids: group.child_groups?.map((g) => g.id) || [],
   });
-
-  // 하위 그룹 초기값 설정
-  useEffect(() => {
-    if (groupsData?.items) {
-      // 현재 그룹의 하위 그룹 ID 목록을 초기값으로 설정
-      const childGroupIds = groupsData.items
-        .filter((g: any) => g.parent_group_id === group.id)
-        .map((g: any) => g.id);
-      setFormData((prev) => ({
-        ...prev,
-        child_group_ids: childGroupIds,
-      }));
-    }
-  }, [groupsData, group.id]);
 
   const { mutate: updateGroup, isPending: isUpdating } = usePatchGroup({
     onSuccess: () => {
