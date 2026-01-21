@@ -30,6 +30,7 @@ import {
 import { useRouter } from "next/navigation";
 import { GROUP_TYPE_OPTIONS } from "../../../_constants/groupType";
 import { GetGroupResponse } from "../../_api/getGroup";
+import { PatchGroupRequest } from "../_api/patchGroup";
 import { GetRolesResponse } from "@/feature/roles/_api/getRoles";
 import { useGetGroups } from "../../../_hooks/useGetGroups";
 import Link from "next/link";
@@ -51,18 +52,16 @@ export function GroupEditPage({
     page_size: 100,
   });
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<
+    Omit<PatchGroupRequest, "child_group_ids"> & { child_group_ids: number[] }
+  >({
     group_name: group.group_name,
-    group_type: group.group_type as
-      | "COMPANY"
-      | "DEPARTMENT"
-      | "TEAM"
-      | "PERSONAL",
+    group_type: group.group_type,
     description: group.description || "",
     parent_group_id: group.parent_group_id || null,
     manager: group.manager || null,
     role_id: group.role_id || null,
-    child_group_ids: [] as number[],
+    child_group_ids: [],
   });
 
   // 하위 그룹 초기값 설정
@@ -171,7 +170,7 @@ export function GroupEditPage({
                     </Label>
                     <Input
                       id="group_name"
-                      value={formData.group_name}
+                      value={formData.group_name ?? ""}
                       onChange={(e) =>
                         setFormData({ ...formData, group_name: e.target.value })
                       }
@@ -190,10 +189,13 @@ export function GroupEditPage({
                       <span>그룹 타입 *</span>
                     </Label>
                     <Select
-                      value={formData.group_type}
-                      onValueChange={(
-                        value: "COMPANY" | "DEPARTMENT" | "TEAM" | "PERSONAL"
-                      ) => setFormData({ ...formData, group_type: value })}
+                      value={formData.group_type ?? undefined}
+                      onValueChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          group_type: value as PatchGroupRequest["group_type"],
+                        })
+                      }
                       required
                     >
                       <SelectTrigger id="group_type" className="w-full">
@@ -265,7 +267,7 @@ export function GroupEditPage({
                   </Label>
                   <Textarea
                     id="description"
-                    value={formData.description}
+                    value={formData.description ?? ""}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
