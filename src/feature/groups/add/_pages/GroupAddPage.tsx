@@ -6,7 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePostGroups } from "../_hooks/usePostGroups";
 import { paths } from "@/shared/types/api/auth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
@@ -27,7 +27,6 @@ import {
   Network,
   UserCog,
   FolderTree,
-  FileText,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import GroupSelect from "../../_components/GroupSelect";
@@ -131,137 +130,127 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* 기본 정보 Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5" />
-                기본 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 md:grid-cols-2">
-                {/* 그룹명 */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="group_name"
-                    className="flex items-center gap-2"
-                  >
-                    <Users className="h-4 w-4" />
-                    <span>그룹명 *</span>
-                  </Label>
-                  <Input
-                    id="group_name"
-                    value={formData.group_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, group_name: e.target.value })
-                    }
-                    placeholder="예: 개발팀"
-                    className="pl-6"
-                    required
-                  />
+        {/* Main Content - 통합 Card */}
+        <Card className="overflow-hidden">
+          <CardContent className="p-0">
+            {/* 기본 정보 섹션 */}
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
+                  <Building2 className="h-5 w-5 text-primary" />
                 </div>
+                <div>
+                  <h3 className="text-lg font-semibold">기본 정보</h3>
+                  <p className="text-sm text-muted-foreground">
+                    그룹의 기본적인 정보를 입력합니다
+                  </p>
+                </div>
+              </div>
 
-                {/* 그룹 타입 */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="group_type"
-                    className="flex items-center gap-2"
-                  >
-                    <Network className="h-4 w-4" />
-                    <span>그룹 타입 *</span>
-                  </Label>
-                  <Select
-                    value={formData.group_type}
-                    onValueChange={(value: GroupType) =>
-                      setFormData({ ...formData, group_type: value })
-                    }
-                    required
-                  >
-                    <SelectTrigger id="group_type" className="pl-6 w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {GROUP_TYPE_OPTIONS.map((option) => {
-                        const Icon = option.icon;
-                        return (
-                          <SelectItem key={option.value} value={option.value}>
-                            <div className="flex items-center gap-2">
-                              <Icon className="h-4 w-4" />
-                              <span>{option.label}</span>
+              <div className="space-y-6">
+                {/* 첫 번째 행: 그룹명, 그룹 타입, 역할 */}
+                <div className="grid gap-4 md:grid-cols-3">
+                  {/* 그룹명 */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="group_name"
+                      className="flex items-center gap-2"
+                    >
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span>그룹명 *</span>
+                    </Label>
+                    <Input
+                      id="group_name"
+                      value={formData.group_name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, group_name: e.target.value })
+                      }
+                      placeholder="예: 개발팀"
+                      required
+                    />
+                  </div>
+
+                  {/* 그룹 타입 */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="group_type"
+                      className="flex items-center gap-2"
+                    >
+                      <Network className="h-4 w-4 text-muted-foreground" />
+                      <span>그룹 타입 *</span>
+                    </Label>
+                    <Select
+                      value={formData.group_type}
+                      onValueChange={(value: GroupType) =>
+                        setFormData({ ...formData, group_type: value })
+                      }
+                      required
+                    >
+                      <SelectTrigger id="group_type" className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GROUP_TYPE_OPTIONS.map((option) => {
+                          const Icon = option.icon;
+                          return (
+                            <SelectItem key={option.value} value={option.value}>
+                              <div className="flex items-center gap-2">
+                                <Icon className="h-4 w-4" />
+                                <span>{option.label}</span>
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* 역할 */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="role_id"
+                      className="flex items-center gap-2"
+                    >
+                      <Shield className="h-4 w-4 text-muted-foreground" />
+                      <span>역할 *</span>
+                    </Label>
+                    <Select
+                      value={formData.role_id?.toString() || ""}
+                      onValueChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          role_id: Number(value),
+                        })
+                      }
+                      required
+                    >
+                      <SelectTrigger id="role_id" className="w-full">
+                        <SelectValue placeholder="역할 선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roles?.map((role) => (
+                          <SelectItem key={role.id} value={role.id.toString()}>
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">
+                                {role.role_name}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {role.description}
+                              </span>
                             </div>
                           </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
-                {/* 생성자 (자동) */}
+                {/* 두 번째 행: 설명 */}
                 <div className="space-y-2">
-                  <Label htmlFor="creator" className="flex items-center gap-2">
-                    <UserCog className="h-4 w-4" />
-                    <span>생성자 *</span>
-                  </Label>
-                  <Input
-                    id="creator"
-                    value={myInfo.full_name || myInfo.email || ""}
-                    disabled
-                    className="pl-6 bg-muted"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    현재 로그인한 사용자가 자동으로 설정됩니다
-                  </p>
-                </div>
-
-                {/* 역할 */}
-                <div className="space-y-2">
-                  <Label htmlFor="role_id" className="flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    <span>역할 *</span>
-                  </Label>
-                  <Select
-                    value={formData.role_id?.toString() || ""}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        role_id: Number(value),
-                      })
-                    }
-                    required
-                  >
-                    <SelectTrigger id="role_id" className="pl-6 w-full">
-                      <SelectValue placeholder="역할 선택" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {roles?.map((role) => (
-                        <SelectItem key={role.id} value={role.id.toString()}>
-                          <div className="flex flex-col items-start">
-                            <span className="font-medium">
-                              {role.role_name}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {role.description}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    그룹에 할당할 역할을 선택하세요
-                  </p>
-                </div>
-
-                {/* 설명 */}
-                <div className="space-y-2 md:col-span-2">
                   <Label
                     htmlFor="description"
                     className="flex items-center gap-2"
                   >
-                    <FileText className="h-4 w-4" />
                     <span>설명</span>
                   </Label>
                   <Textarea
@@ -274,40 +263,67 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                       })
                     }
                     placeholder="그룹에 대한 설명을 입력하세요"
-                    rows={4}
+                    rows={3}
                     className="resize-none"
                   />
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* 계층 Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FolderTree className="h-5 w-5" />
-                그룹 계층 구조
-              </CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                그룹 간의 상하위 관계를 설정합니다
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-8 md:grid-cols-2">
+            {/* 구분선 */}
+            <div className="border-t border-border" />
+
+            {/* 관리자 섹션 */}
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-500/10">
+                  <UserCog className="h-5 w-5 text-amber-500" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">관리자 설정</h3>
+                  <p className="text-sm text-muted-foreground">
+                    그룹을 관리할 담당자를 지정합니다
+                  </p>
+                </div>
+              </div>
+
+              <ManagerSelect
+                value={formData.manager}
+                onChange={(value) =>
+                  setFormData({ ...formData, manager: value })
+                }
+              />
+            </div>
+
+            {/* 구분선 */}
+            <div className="border-t border-border" />
+
+            {/* 그룹 계층 구조 섹션 */}
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-500/10">
+                  <FolderTree className="h-5 w-5 text-blue-500" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">그룹 계층 구조</h3>
+                  <p className="text-sm text-muted-foreground">
+                    그룹 간의 상하위 관계를 설정합니다
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
                 {/* 상위 그룹 */}
                 <div className="space-y-3">
-                  <div className="space-y-1.5">
-                    <Label className="flex items-center gap-2 text-base font-semibold">
-                      <FolderTree className="h-4 w-4 text-primary" />
-                      상위 그룹
-                    </Label>
-                    <p className="text-xs text-muted-foreground pl-6">
-                      이 그룹이 속할 상위 그룹을 선택하세요. 선택하지 않으면
-                      최상위 그룹으로 생성됩니다.
-                    </p>
+                  <div className="flex items-center gap-2">
+                    <FolderTree className="h-4 w-4 text-muted-foreground" />
+                    <Label className="font-medium">상위 그룹</Label>
                   </div>
-                  <div className="border rounded-lg p-4 bg-muted/30">
+                  <p className="text-xs text-muted-foreground">
+                    이 그룹이 속할 상위 그룹을 선택하세요. 선택하지 않으면
+                    최상위 그룹으로 생성됩니다.
+                  </p>
+                  <div className="border rounded-lg p-4 bg-muted/20">
                     <GroupSelect
                       value={formData.parent_group_id}
                       onChange={(value) =>
@@ -324,16 +340,14 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
 
                 {/* 하위 그룹 */}
                 <div className="space-y-3">
-                  <div className="space-y-1.5">
-                    <Label className="flex items-center gap-2 text-base font-semibold">
-                      <Network className="h-4 w-4 text-primary" />
-                      하위 그룹
-                    </Label>
-                    <p className="text-xs text-muted-foreground pl-6">
-                      이 그룹의 하위 그룹으로 포함할 그룹을 다중 선택하세요.
-                    </p>
+                  <div className="flex items-center gap-2">
+                    <Network className="h-4 w-4 text-muted-foreground" />
+                    <Label className="font-medium">하위 그룹</Label>
                   </div>
-                  <div className="border rounded-lg p-4 bg-muted/30">
+                  <p className="text-xs text-muted-foreground">
+                    이 그룹의 하위 그룹으로 포함할 그룹을 다중 선택하세요.
+                  </p>
+                  <div className="border rounded-lg p-4 bg-muted/20">
                     <GroupSelect
                       value={formData.child_group_ids}
                       onChange={(value) =>
@@ -349,30 +363,9 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* 관리 정보 Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                관리자
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* 관리자 */}
-                <ManagerSelect
-                  value={formData.manager}
-                  onChange={(value) =>
-                    setFormData({ ...formData, manager: value })
-                  }
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Info Alert */}
         <Alert>

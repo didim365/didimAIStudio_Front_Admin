@@ -126,6 +126,7 @@ export function Pagination({
       {/* 첫 페이지 버튼 */}
       {showFirstLast && (
         <Button
+          type="button"
           variant="outline"
           size="icon"
           onClick={() => handlePageChange(1)}
@@ -138,6 +139,7 @@ export function Pagination({
 
       {/* 이전 페이지 버튼 */}
       <Button
+        type="button"
         variant="outline"
         size="icon"
         onClick={() => handlePageChange(currentPage - 1)}
@@ -166,6 +168,7 @@ export function Pagination({
 
           return (
             <Button
+              type="button"
               key={pageNum}
               variant={isActive ? "default" : "outline"}
               size="sm"
@@ -183,6 +186,7 @@ export function Pagination({
 
       {/* 다음 페이지 버튼 */}
       <Button
+        type="button"
         variant="outline"
         size="icon"
         onClick={() => handlePageChange(currentPage + 1)}
@@ -195,6 +199,7 @@ export function Pagination({
       {/* 마지막 페이지 버튼 */}
       {showFirstLast && (
         <Button
+          type="button"
           variant="outline"
           size="icon"
           onClick={() => handlePageChange(totalPages)}
