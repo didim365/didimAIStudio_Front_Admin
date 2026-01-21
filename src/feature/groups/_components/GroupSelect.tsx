@@ -45,7 +45,7 @@ export default function GroupSelect({
   };
 
   const getGroupName = (id: number) => {
-    return groups?.items?.find((g) => g.id === id)?.group_name || `Group ${id}`;
+    return groups?.items?.find((g:any) => g.id === id)?.group_name || `Group ${id}`;
   };
 
   const handleTreeSelect = (ids: number[]) => {

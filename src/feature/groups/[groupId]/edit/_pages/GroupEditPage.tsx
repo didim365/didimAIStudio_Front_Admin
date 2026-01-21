@@ -74,8 +74,8 @@ export function GroupEditPage({
     if (groupsData?.items) {
       // 현재 그룹의 하위 그룹 ID 목록을 초기값으로 설정
       const childGroupIds = groupsData.items
-        .filter((g) => g.parent_group_id === group.id)
-        .map((g) => g.id);
+        .filter((g:any) => g.parent_group_id === group.id)
+        .map((g:any) => g.id);
       setFormData((prev) => ({
         ...prev,
         child_group_ids: childGroupIds,
