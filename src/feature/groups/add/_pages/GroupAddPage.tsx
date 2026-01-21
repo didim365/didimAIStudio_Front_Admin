@@ -273,46 +273,40 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
             {/* 구분선 */}
             <div className="border-t border-border" />
 
-            {/* 관리자 섹션 */}
-            <div className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-500/10">
-                  <UserCog className="h-5 w-5 text-amber-500" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold">관리자 설정</h3>
-                  <p className="text-sm text-muted-foreground">
-                    그룹을 관리할 담당자를 지정합니다
-                  </p>
-                </div>
-              </div>
-
-              <ManagerSelect
-                value={formData.manager}
-                onChange={(value) =>
-                  setFormData({ ...formData, manager: value })
-                }
-              />
-            </div>
-
-            {/* 구분선 */}
-            <div className="border-t border-border" />
-
-            {/* 그룹 계층 구조 섹션 */}
+            {/* 관리자 및 그룹 계층 구조 섹션 */}
             <div className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-500/10">
                   <FolderTree className="h-5 w-5 text-blue-500" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold">그룹 계층 구조</h3>
+                  <h3 className="text-lg font-semibold">관리자 및 그룹 계층 구조</h3>
                   <p className="text-sm text-muted-foreground">
-                    그룹 간의 상하위 관계를 설정합니다
+                    그룹 관리자와 상하위 관계를 설정합니다
                   </p>
                 </div>
               </div>
 
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-6 md:grid-cols-3">
+                {/* 관리자 */}
+                <div className="space-y-3 flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <UserCog className="h-4 w-4 text-muted-foreground" />
+                    <Label className="font-medium">관리자</Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    그룹을 관리할 담당자를 지정합니다.
+                  </p>
+                  <div className="border rounded-lg p-4 bg-muted/20 flex-1">
+                    <ManagerSelect
+                      value={formData.manager}
+                      onChange={(value) =>
+                        setFormData({ ...formData, manager: value })
+                      }
+                    />
+                  </div>
+                </div>
+
                 {/* 상위 그룹 */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
