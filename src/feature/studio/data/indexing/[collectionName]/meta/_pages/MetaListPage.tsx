@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { cn } from "@/shared/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import {
   Select,
@@ -36,6 +37,7 @@ import { formatNumber } from "@/shared/utils/formatNumber";
 import { formatBytes } from "@/shared/utils/formatBytes";
 import { formatDate } from "@/shared/utils/formatDate";
 import { getStatusBadge } from "../_utils/getStatusBadge";
+import { getFileTypeStyle } from "../_utils/getFileTypeStyle";
 import { Button } from "@/shared/ui/button";
 import {
   Tooltip,
@@ -43,24 +45,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
-
-// 파일 타입 아이콘 색상
-const getFileTypeStyle = (fileType: string) => {
-  const styleMap: Record<string, string> = {
-    pdf: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-    docx: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-    doc: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-    xlsx: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-    xls: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-    pptx: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-    ppt: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-    txt: "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400",
-    csv: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-    json: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-    md: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-  };
-  return styleMap[fileType?.toLowerCase()] || "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
-};
 
 export default function MetaListPage() {
   const params = useParams();
@@ -71,11 +55,7 @@ export default function MetaListPage() {
   const [pageSize, setPageSize] = useQueryParam<number>("pageSize", 20);
 
   // API 호출
-  const {
-    data: metaData,
-    isLoading,
-    isFetching,
-  } = useGetMetaCollections(
+  const { data: metaData, isFetching } = useGetMetaCollections(
     { collection_name: collectionName },
     { page, page_size: pageSize }
   );
@@ -121,7 +101,7 @@ export default function MetaListPage() {
             <CardTitle className="flex items-center gap-2 text-lg">
               <FileText className="h-5 w-5" />
               메타 데이터 목록
-              {!isLoading && metaData && (
+              {metaData && (
                 <Badge variant="secondary" className="ml-2">
                   {formatNumber(metaData.total)}개
                 </Badge>
@@ -133,46 +113,25 @@ export default function MetaListPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
-                    <TableHead className="w-[60px] text-center">ID</TableHead>
-                    <TableHead className="min-w-[200px]">제목</TableHead>
-                    <TableHead className="w-[100px] text-center">파일 타입</TableHead>
-                    <TableHead className="w-[100px] text-center">상태</TableHead>
-                    <TableHead className="w-[100px] text-right">파일 크기</TableHead>
-                    <TableHead className="w-[80px] text-right">청크</TableHead>
-                    <TableHead className="w-[80px] text-right">토큰</TableHead>
-                    <TableHead className="w-[100px] text-center">만료일</TableHead>
-                    <TableHead className="w-[60px] text-center">다운로드</TableHead>
+                    <TableHead className="w-[5%] text-center">ID</TableHead>
+                    <TableHead>제목</TableHead>
+                    <TableHead className="w-[10%] text-center">파일 타입</TableHead>
+                    <TableHead className="w-[10%] text-center">상태</TableHead>
+                    <TableHead className="w-[10%] text-right">파일 크기</TableHead>
+                    <TableHead className="w-[8%] text-right">청크</TableHead>
+                    <TableHead className="w-[8%] text-right">토큰</TableHead>
+                    <TableHead className="w-[10%] text-center">만료일</TableHead>
+                    <TableHead className="w-[6%] text-center">다운로드</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {isLoading ? (
-                    // 로딩 스켈레톤
-                    Array.from({ length: 5 }).map((_, idx) => (
-                      <TableRow key={idx}>
-                        {Array.from({ length: 9 }).map((_, cellIdx) => (
-                          <TableCell key={cellIdx}>
-                            <div className="h-4 animate-pulse rounded bg-muted" />
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  ) : metaData?.items.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={9} className="h-32 text-center">
-                        <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
-                          <FileText className="h-10 w-10 opacity-40" />
-                          <p>데이터가 없습니다</p>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    metaData?.items.map((item) => {
-                      const statusBadge = getStatusBadge(item.status);
-                      return (
-                        <TableRow
-                          key={item.id}
-                          className="group transition-colors hover:bg-muted/50"
-                        >
+                  {metaData?.items.map((item) => {
+                    const statusBadge = getStatusBadge(item.status);
+                    return (
+                      <TableRow
+                        key={item.id}
+                        className="group transition-colors hover:bg-muted/50"
+                      >
                           {/* ID */}
                           <TableCell className="text-center">
                             <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 font-mono text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
@@ -209,7 +168,7 @@ export default function MetaListPage() {
                           <TableCell className="text-center">
                             <Badge
                               variant="outline"
-                              className={`gap-1 uppercase ${getFileTypeStyle(item.file_type)}`}
+                              className={cn("gap-1 uppercase", getFileTypeStyle(item.file_type))}
                             >
                               <FileType className="h-3 w-3" />
                               {item.file_type}
@@ -261,7 +220,7 @@ export default function MetaListPage() {
 
                           {/* 다운로드 */}
                           <TableCell className="text-center">
-                            {item.download_url ? (
+                            {item.download_url && (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
@@ -278,14 +237,11 @@ export default function MetaListPage() {
                                 </TooltipTrigger>
                                 <TooltipContent>파일 다운로드</TooltipContent>
                               </Tooltip>
-                            ) : (
-                              <span className="text-muted-foreground">-</span>
                             )}
                           </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
@@ -294,20 +250,12 @@ export default function MetaListPage() {
 
         {/* 페이지네이션 */}
         {metaData && metaData.totalPages > 1 && (
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              전체 {formatNumber(metaData.total)}개 중{" "}
-              {formatNumber((page - 1) * pageSize + 1)}-
-              {formatNumber(Math.min(page * pageSize, metaData.total))}
-              개 표시
-            </p>
             <Pagination
               currentPage={page}
               totalPages={metaData.totalPages}
               onPageChange={setPage}
               isLoading={isFetching}
             />
-          </div>
         )}
       </div>
     </TooltipProvider>
