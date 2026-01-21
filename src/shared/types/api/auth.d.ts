@@ -1074,7 +1074,7 @@ export interface paths {
         patch: operations["update_admin_user_api_v1_admin_users__user_id__patch"];
         trace?: never;
     };
-    "/api/v1/admin/groups/": {
+    "/api/v1/admin/groups": {
         parameters: {
             query?: never;
             header?: never;
@@ -1084,14 +1084,26 @@ export interface paths {
         /**
          * [Admin] 그룹 목록 조회 (페이징, 검색)
          * @description 관리자용 그룹 목록을 페이지네이션 및 검색 기능으로 조회합니다.
+         *
+         *     ### ⚠️ 필수 마이그레이션 항목 (Frontend)
+         *     - **페이지네이션 필드 변경**: 응답 명세가 `size` -> `page_size`로 변경되었습니다.
+         *     - **member_count 의미 변경**: 이제 `REMOVED` 상태를 제외한 **유효 회원만** 카운트합니다.
+         *
+         *     ### ✨ 선택적 마이그레이션 항목
+         *     - **삭제된 그룹 조회**: `include_deleted=true` 파라미터를 통해 삭제된 그룹을 포함할 수 있습니다.
+         *     - **상세 카운트 필드**: `total_member_count`, `removed_member_count` 필드가 추가되었습니다.
+         *
+         *     명세 v2.1 Line 224-228:
+         *     - include_deleted=false (기본값): deleted_at IS NULL 조건 적용 (삭제된 그룹 제외)
+         *     - include_deleted=true: 전체 조회 (삭제된 그룹 포함, 감사 목적)
          */
-        get: operations["get_admin_groups_api_v1_admin_groups__get"];
+        get: operations["get_admin_groups_api_v1_admin_groups_get"];
         put?: never;
         /**
          * [Admin] 그룹 생성
          * @description 관리자용 새 그룹을 생성합니다.
          */
-        post: operations["create_admin_group_api_v1_admin_groups__post"];
+        post: operations["create_admin_group_api_v1_admin_groups_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1109,13 +1121,36 @@ export interface paths {
          * [Admin] 그룹 상세 조회
          * @description 관리자용 그룹 상세 정보를 조회합니다.
          *     멤버 정보와 하위 그룹 정보를 포함합니다.
+         *
+         *     ### ⚠️ 필수 마이그레이션 항목 (Frontend)
+         *     - **member_count 의미 변경**: 이제 `REMOVED` 상태를 제외한 **유효 회원만** 카운트합니다.
+         *
+         *     ### ✨ 선택적 마이그레이션 항목
+         *     - **상세 카운트 필드**: `total_member_count`, `removed_member_count` 필드가 추가되었습니다.
+         *     - **삭제 정보**: `deleted_at`, `deleted_by` 필드가 추가되어 삭제 여부를 확인할 수 있습니다.
          */
         get: operations["get_admin_group_api_v1_admin_groups__group_id__get"];
         put?: never;
         post?: never;
         /**
          * [Admin] 그룹 삭제
-         * @description 관리자용 그룹을 삭제합니다.
+         * @description 관리자용 그룹을 소프트 삭제합니다 (TDD Spec v2.1).
+         *
+         *     ### ⚠️ 필수 마이그레이션 항목 (Frontend)
+         *     - **삭제 제약 조건**: 하위 그룹이 있거나 **책임자 외 일반 멤버**가 남아있는 경우 삭제가 거부(`400 Error`)됩니다.
+         *
+         *     ### ✨ 선택적 마이그레이션 항목
+         *     - **소프트 삭제**: 실제 삭제되지 않고 `deleted_at`이 기록됩니다. 이후 `include_deleted=true`로 조회가 가능합니다.
+         *
+         *     **삭제 가능 조건:**
+         *     1. 그룹이 존재하고 삭제되지 않은 상태여야 함 (deleted_at IS NULL)
+         *     2. 하위 그룹이 없어야 함
+         *     3. 멤버가 없거나 책임자(creator/manager)만 있어야 함
+         *
+         *     **검증 순서 (Fail Fast):**
+         *     - 그룹 존재 확인 (404)
+         *     - 하위 그룹 확인 (400)
+         *     - 멤버 수 확인 (400)
          */
         delete: operations["delete_admin_group_api_v1_admin_groups__group_id__delete"];
         options?: never;
@@ -1137,6 +1172,14 @@ export interface paths {
         /**
          * [Admin] 그룹 멤버 조회 (페이징)
          * @description 관리자용 그룹 멤버 목록을 페이지네이션하여 조회합니다.
+         *     명세 Section 4.7 준수: 삭제된 그룹의 멤버도 조회 가능.
+         *
+         *     ### ⚠️ 필수 마이그레이션 항목 (Frontend)
+         *     - **페이지네이션 필드 변경**: 응답 명세가 `size` -> `page_size`로 변경되었습니다.
+         *
+         *     ### ✨ 선택적 마이그레이션 항목
+         *     - **검색 기능**: `q` 파라미터를 통해 이름 또는 이메일로 검색이 가능합니다.
+         *     - **기본 정렬**: 가입일(`joined_at`) 내림차순이 기본값으로 적용됩니다.
          */
         get: operations["get_admin_group_members_api_v1_admin_groups__group_id__members_get"];
         put?: never;
@@ -1164,6 +1207,7 @@ export interface paths {
         /**
          * [Admin] 그룹 멤버 제거
          * @description 관리자용 그룹에서 멤버를 제거합니다.
+         *     (실제 삭제가 아닌 status를 REMOVED로 변경합니다.)
          */
         delete: operations["remove_admin_group_member_api_v1_admin_groups__group_id__members__user_id__delete"];
         options?: never;
@@ -1215,7 +1259,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/roles/": {
+    "/api/v1/admin/roles": {
         parameters: {
             query?: never;
             header?: never;
@@ -1226,13 +1270,13 @@ export interface paths {
          * [Admin] 역할 목록 조회 (페이징, 검색)
          * @description 관리자용 역할 목록을 페이지네이션 및 검색 기능으로 조회합니다.
          */
-        get: operations["get_admin_roles_api_v1_admin_roles__get"];
+        get: operations["get_admin_roles_api_v1_admin_roles_get"];
         put?: never;
         /**
          * [Admin] 역할 생성
          * @description 관리자용 새 역할을 생성합니다.
          */
-        post: operations["create_admin_role_api_v1_admin_roles__post"];
+        post: operations["create_admin_role_api_v1_admin_roles_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1311,7 +1355,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/privileges/": {
+    "/api/v1/admin/privileges": {
         parameters: {
             query?: never;
             header?: never;
@@ -1322,13 +1366,13 @@ export interface paths {
          * [Admin] 권한 목록 조회 (페이징, 검색)
          * @description 관리자용 권한 목록을 페이지네이션 및 검색 기능으로 조회합니다.
          */
-        get: operations["get_admin_privileges_api_v1_admin_privileges__get"];
+        get: operations["get_admin_privileges_api_v1_admin_privileges_get"];
         put?: never;
         /**
          * [Admin] 권한 생성
          * @description 관리자용 새 권한을 생성합니다.
          */
-        post: operations["create_admin_privilege_api_v1_admin_privileges__post"];
+        post: operations["create_admin_privilege_api_v1_admin_privileges_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2010,10 +2054,22 @@ export interface components {
             members?: components["schemas"]["GroupMemberResponse"][];
             /**
              * Member Count
-             * @description 총 회원 수
+             * @description 유효 회원 수 (ACTIVE + INACTIVE)
              * @default 0
              */
             member_count: number;
+            /**
+             * Removed Member Count
+             * @description 제거된 회원 수 (REMOVED)
+             * @default 0
+             */
+            removed_member_count: number;
+            /**
+             * Total Member Count
+             * @description 전체 회원 수
+             * @default 0
+             */
+            total_member_count: number;
             /**
              * Child Groups
              * @description 하위 그룹 목록
@@ -2025,6 +2081,16 @@ export interface components {
              * @default 0
              */
             child_group_count: number;
+            /**
+             * Deleted At
+             * @description 삭제일시
+             */
+            deleted_at?: string | null;
+            /**
+             * Deleted By
+             * @description 삭제자 ID
+             */
+            deleted_by?: number | null;
         };
         /** GroupRoleResponse */
         GroupRoleResponse: {
@@ -3035,7 +3101,7 @@ export interface components {
             /** User Id */
             user_id: number;
             /** Group Id */
-            group_id: number;
+            group_id?: number | null;
             /** Role Id */
             role_id?: number | null;
             /** @default ACTIVE */
@@ -7322,13 +7388,15 @@ export interface operations {
             };
         };
     };
-    get_admin_groups_api_v1_admin_groups__get: {
+    get_admin_groups_api_v1_admin_groups_get: {
         parameters: {
             query?: {
                 /** @description 그룹명 또는 설명으로 검색 */
                 q?: string | null;
                 /** @description 그룹 타입 필터 (COMPANY, DEPARTMENT, TEAM, PERSONAL) */
                 group_type?: components["schemas"]["GroupTypeEnum"] | null;
+                /** @description 삭제된 그룹 포함 여부 (Admin 전용, 기본값: false) */
+                include_deleted?: boolean;
                 page?: number;
                 page_size?: number;
                 sort_by?: string;
@@ -7381,7 +7449,7 @@ export interface operations {
             };
         };
     };
-    create_admin_group_api_v1_admin_groups__post: {
+    create_admin_group_api_v1_admin_groups_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -7440,6 +7508,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description 그룹 ID (양의 정수) */
                 group_id: number;
             };
             cookie?: never;
@@ -7492,6 +7561,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description 그룹 ID (양의 정수) */
                 group_id: number;
             };
             cookie?: never;
@@ -7544,6 +7614,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description 그룹 ID (양의 정수) */
                 group_id: number;
             };
             cookie?: never;
@@ -7607,6 +7678,7 @@ export interface operations {
             };
             header?: never;
             path: {
+                /** @description 그룹 ID (양의 정수) */
                 group_id: number;
             };
             cookie?: never;
@@ -7659,6 +7731,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description 그룹 ID (양의 정수) */
                 group_id: number;
             };
             cookie?: never;
@@ -7715,7 +7788,9 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description 그룹 ID (양의 정수) */
                 group_id: number;
+                /** @description 사용자 ID (양의 정수) */
                 user_id: number;
             };
             cookie?: never;
@@ -7768,6 +7843,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description 그룹 ID (양의 정수) */
                 group_id: number;
             };
             cookie?: never;
@@ -7820,7 +7896,9 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description 그룹 ID (양의 정수) */
                 group_id: number;
+                /** @description 역할 ID (양의 정수) */
                 role_id: number;
             };
             cookie?: never;
@@ -7873,7 +7951,9 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description 그룹 ID (양의 정수) */
                 group_id: number;
+                /** @description 역할 ID (양의 정수) */
                 role_id: number;
             };
             cookie?: never;
@@ -7921,7 +8001,7 @@ export interface operations {
             };
         };
     };
-    get_admin_roles_api_v1_admin_roles__get: {
+    get_admin_roles_api_v1_admin_roles_get: {
         parameters: {
             query?: {
                 /** @description 역할명 또는 설명으로 검색 */
@@ -7978,7 +8058,7 @@ export interface operations {
             };
         };
     };
-    create_admin_role_api_v1_admin_roles__post: {
+    create_admin_role_api_v1_admin_roles_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -8350,7 +8430,7 @@ export interface operations {
             };
         };
     };
-    get_admin_privileges_api_v1_admin_privileges__get: {
+    get_admin_privileges_api_v1_admin_privileges_get: {
         parameters: {
             query?: {
                 /** @description 권한명 또는 설명으로 검색 */
@@ -8411,7 +8491,7 @@ export interface operations {
             };
         };
     };
-    create_admin_privilege_api_v1_admin_privileges__post: {
+    create_admin_privilege_api_v1_admin_privileges_post: {
         parameters: {
             query?: never;
             header?: never;
