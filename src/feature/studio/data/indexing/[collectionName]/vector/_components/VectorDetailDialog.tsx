@@ -92,7 +92,7 @@ export default function VectorDetailDialog({
               <h3 className="text-sm font-semibold text-muted-foreground">
                 청크 텍스트
               </h3>
-              <div className="h-[200px] rounded-md border bg-muted/30 p-3 overflow-y-auto">
+              <div className="rounded-md border bg-muted/30 p-3 overflow-y-auto">
                 <p className="text-sm whitespace-pre-wrap leading-relaxed">
                   {item.parsed_text}
                 </p>
