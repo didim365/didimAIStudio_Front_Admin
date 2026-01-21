@@ -38,9 +38,9 @@ export default function ManagerSelect({
   return (
     <div className={cn("flex flex-col gap-2 h-full", className)}>
       {/* 사용자 목록 */}
-      <div className="border rounded-md py-2 overflow-hidden flex-1 flex flex-col">
+      <div className="border rounded-md overflow-hidden flex-1 flex flex-col">
         {/* 검색 */}
-        <div className="relative px-2 pb-2 border-b shrink-0">
+        <div className="relative px-2 py-2 border-b shrink-0 flex items-center">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="이름 또는 이메일 검색..."
