@@ -15,6 +15,10 @@ const mockGroup = {
   created_at: "2024-01-01T00:00:00Z",
   updated_at: "2024-01-01T00:00:00Z",
   member_count: 5,
+  removed_member_count: 0,
+  total_member_count: 5,
+  child_group_count: 0,
+  child_groups: [],
 };
 
 const mockRoles = [
@@ -39,22 +43,6 @@ vi.mock("../_hooks/usePatchGroup", () => ({
   usePatchGroup: vi.fn(() => ({
     mutate: vi.fn(),
     isPending: false,
-  })),
-}));
-
-// Mock 데이터를 컴포넌트 외부에 정의하여 안정적으로 유지
-const mockGroupsData = {
-  items: [],
-  total: 0,
-  page: 1,
-  total_pages: 1,
-};
-
-// useGetGroups 훅 mock
-vi.mock("../../../_hooks/useGetGroups", () => ({
-  useGetGroups: vi.fn(() => ({
-    data: mockGroupsData,
-    isLoading: false,
   })),
 }));
 
@@ -90,31 +78,16 @@ describe("GroupEditPage", () => {
     expect(screen.getByText("그룹 정보 수정")).toBeInTheDocument();
   });
 
-  it("그룹 ID가 표시된다", () => {
-    renderWithProviders(<GroupEditPage group={mockGroup} roles={mockRoles} />);
-
-    expect(screen.getByText(/그룹 ID: 1/)).toBeInTheDocument();
-  });
-
   it("저장 버튼이 표시된다", () => {
     renderWithProviders(<GroupEditPage group={mockGroup} roles={mockRoles} />);
 
     expect(screen.getByText("저장")).toBeInTheDocument();
   });
 
-  it("그룹 정보 섹션이 표시된다", () => {
+  it("기본 정보 섹션이 표시된다", () => {
     renderWithProviders(<GroupEditPage group={mockGroup} roles={mockRoles} />);
 
-    expect(screen.getByText("그룹 정보")).toBeInTheDocument();
-  });
-
-  it("그룹 ID 입력 필드가 비활성화되어 표시된다", () => {
-    renderWithProviders(<GroupEditPage group={mockGroup} roles={mockRoles} />);
-
-    const groupIdInput = screen.getByLabelText(/그룹 ID/);
-    expect(groupIdInput).toBeInTheDocument();
-    expect(groupIdInput).toBeDisabled();
-    expect(groupIdInput).toHaveValue("1");
+    expect(screen.getByText("기본 정보")).toBeInTheDocument();
   });
 
   it("그룹명 입력 필드가 기본값으로 표시된다", () => {
@@ -134,7 +107,7 @@ describe("GroupEditPage", () => {
   it("역할 선택 필드가 표시된다", () => {
     renderWithProviders(<GroupEditPage group={mockGroup} roles={mockRoles} />);
 
-    expect(screen.getByText(/역할/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/역할/)).toBeInTheDocument();
   });
 
   it("설명 입력 필드가 기본값으로 표시된다", () => {
@@ -145,10 +118,10 @@ describe("GroupEditPage", () => {
     expect(descriptionInput).toHaveValue("소프트웨어 개발팀");
   });
 
-  it("그룹 계층 구조 섹션이 표시된다", () => {
+  it("관리자 및 그룹 계층 구조 섹션이 표시된다", () => {
     renderWithProviders(<GroupEditPage group={mockGroup} roles={mockRoles} />);
 
-    expect(screen.getByText("그룹 계층 구조")).toBeInTheDocument();
+    expect(screen.getByText("관리자 및 그룹 계층 구조")).toBeInTheDocument();
     expect(screen.getByText("상위 그룹")).toBeInTheDocument();
     expect(screen.getByText("하위 그룹")).toBeInTheDocument();
   });
@@ -182,6 +155,7 @@ describe("GroupEditPage", () => {
       parent_group_id: null,
       manager: null,
       role_id: null,
+      child_groups: undefined,
     };
 
     renderWithProviders(

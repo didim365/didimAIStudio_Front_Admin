@@ -1,20 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
-import { Check, Search } from "lucide-react";
-import { Skeleton } from "@/shared/ui/skeleton";
-import { Pagination } from "@/shared/ui/pagination";
+import { Check, Search, User, ChevronLeft, ChevronRight } from "lucide-react";
 import { useGetUsers } from "@/feature/users/_hooks/useGetUsers";
 import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/ui/button";
 
 interface ManagerSelectProps {
   value?: number;
   onChange: (value: number | undefined) => void;
+  className?: string;
 }
 
-export default function ManagerSelect({ value, onChange }: ManagerSelectProps) {
+export default function ManagerSelect({
+  value,
+  onChange,
+  className,
+}: ManagerSelectProps) {
   // 검색 및 페이지네이션 상태
   const [searchQuery, setSearchQuery] = useState("");
   const [userPage, setUserPage] = useState(1);
@@ -33,103 +36,87 @@ export default function ManagerSelect({ value, onChange }: ManagerSelectProps) {
   };
 
   return (
-    <div className="space-y-2">
-      {/* 검색 입력 */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="이름 또는 이메일로 검색..."
-          value={searchQuery}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          className="pl-9"
-        />
-      </div>
-
-      {isLoadingUsers && (
-        <div className="space-y-2">
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-16 w-full" />
+    <div className={cn("flex flex-col gap-2 h-full", className)}>
+      {/* 사용자 목록 */}
+      <div className="border rounded-md overflow-hidden flex-1 flex flex-col">
+        {/* 검색 */}
+        <div className="relative px-2 py-2 border-b shrink-0 flex items-center">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="이름 또는 이메일 검색..."
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="pl-8 h-8 text-sm"
+          />
         </div>
-      )}
 
-      {!isLoadingUsers && (
-        <div className="space-y-2">
-          {/* 관리자 없음 옵션 */}
-          <Button
-            type="button"
-            variant="outline"
-            className={cn(
-              "w-full justify-start h-auto py-3 px-4",
-              !value && "border-primary bg-primary/5"
-            )}
-            onClick={() => onChange(undefined)}
-          >
-            <div className="flex items-center justify-between w-full">
-              <div className="flex flex-col items-start">
-                <span className="font-medium">관리자 없음</span>
-                <span className="text-xs text-muted-foreground">
-                  관리자를 지정하지 않습니다
-                </span>
-              </div>
-              {!value && <Check className="h-5 w-5 text-primary" />}
-            </div>
-          </Button>
-
-          {/* 사용자 리스트 */}
+        <div className="flex-1 overflow-y-auto">
           {users?.items?.map((user) => {
             const isSelected = value === user.id;
             return (
-              <Button
+              <div
                 key={user.id}
-                type="button"
-                variant="outline"
                 className={cn(
-                  "w-full justify-start h-auto py-3 px-4",
-                  isSelected && "border-primary bg-primary/5"
+                  "flex items-center py-1.5 px-2 rounded-md cursor-pointer hover:bg-accent/50 transition-colors mx-1",
+                  isSelected && "bg-accent"
                 )}
-                onClick={() => onChange(user.id)}
+                onClick={() => onChange(isSelected ? undefined : user.id)}
               >
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex flex-col items-start">
-                    <span className="font-medium">
-                      {user.full_name ?? user.email}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {user.email}
-                    </span>
-                  </div>
-                  {isSelected && <Check className="h-5 w-5 text-primary" />}
+                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted shrink-0 mr-2">
+                  <User className="h-3.5 w-3.5 text-muted-foreground" />
                 </div>
-              </Button>
+                <span
+                  className={cn(
+                    "flex-1 text-sm truncate select-none",
+                    isSelected && "font-medium"
+                  )}
+                >
+                  {user.full_name ?? user.email}
+                </span>
+                {isSelected && (
+                  <Check className="h-4 w-4 text-primary ml-2 shrink-0" />
+                )}
+              </div>
             );
           })}
-          {!isLoadingUsers && (!users?.items || users.items.length === 0) && (
-            <div className="text-center py-8 text-muted-foreground">
-              <p className="text-sm">
-                {searchQuery && "검색 결과가 없습니다"}
-                {!searchQuery && "사용자가 없습니다"}
-              </p>
-            </div>
-          )}
         </div>
-      )}
+      </div>
 
-      {/* 페이지네이션 */}
-      {users && users.total_pages > 1 && (
-        <div className="flex justify-center pt-2">
-          <Pagination
-            currentPage={userPage}
-            totalPages={users.total_pages ?? 1}
-            onPageChange={setUserPage}
-            isLoading={isLoadingUsers}
-          />
-        </div>
-      )}
-
-      <p className="text-xs text-muted-foreground">
-        그룹을 관리할 관리자를 선택하세요 (전체 {users?.total ?? 0}명)
-      </p>
+      {/* 페이지네이션 및 안내 */}
+      <div className="flex items-center justify-between shrink-0">
+        <p className="text-xs text-muted-foreground">
+          * 사용자를 클릭하여 관리자를 선택하세요.
+        </p>
+        {users && users.total_pages > 1 && (
+          <div className="flex items-center gap-0.5">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={() => setUserPage((p) => Math.max(1, p - 1))}
+              disabled={userPage === 1 || isLoadingUsers}
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </Button>
+            <span className="text-xs text-muted-foreground px-1">
+              {userPage}/{users.total_pages}
+            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={() =>
+                setUserPage((p) => Math.min(users.total_pages ?? 1, p + 1))
+              }
+              disabled={userPage === users.total_pages || isLoadingUsers}
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
