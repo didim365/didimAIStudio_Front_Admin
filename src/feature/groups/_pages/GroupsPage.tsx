@@ -196,12 +196,10 @@ export function GroupsPage() {
                 <TableHead className="w-[5%] text-center">ID</TableHead>
                 <TableHead className="w-[25%] text-center">그룹명</TableHead>
                 <TableHead className="w-[20%] text-center">설명</TableHead>
-                <TableHead className="w-[5%] text-center">그룹 타입</TableHead>
-                <TableHead className="w-[5%] text-center">상위 그룹</TableHead>
-                <TableHead className="w-[5%] text-center">관리자</TableHead>
-                <TableHead className="w-[5%] text-center">생성자</TableHead>
-                <TableHead className="w-[5%] text-center">역할</TableHead>
-                <TableHead className="w-[5%] text-center">회원 수</TableHead>
+                <TableHead className="w-[10%] text-center">그룹 타입</TableHead>
+                <TableHead className="w-[10%] text-center">관리자</TableHead>
+                <TableHead className="w-[10%] text-center">생성자</TableHead>
+                <TableHead className="w-[10%] text-center">회원 수</TableHead>
                 <TableHead className="w-[10%] text-center">생성일</TableHead>
                 <TableHead className="w-[10%] text-center">수정일</TableHead>
               </TableRow>
@@ -231,15 +229,10 @@ export function GroupsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    {group.parent_group_id ?? "-"}
+                    {group.manager?.user_name ?? "-"}
                   </TableCell>
                   <TableCell className="text-center">
-                    {group.manager ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-center">{group.creator}</TableCell>
-                  <TableCell className="text-center">
-                    {group.role_id && `#${group.role_id}`}
-                    {!group.role_id && "-"}
+                    {group.creator.user_name}
                   </TableCell>
                   <TableCell className="text-center">
                     <Badge variant="outline" className="mx-auto">

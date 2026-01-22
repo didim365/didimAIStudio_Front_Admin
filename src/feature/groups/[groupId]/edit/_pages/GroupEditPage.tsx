@@ -52,7 +52,7 @@ export function GroupEditPage({
     group_type: group.group_type,
     description: group.description || "",
     parent_group_id: group.parent_group_id || null,
-    manager: group.manager || null,
+    manager: group.manager?.user_id ?? null,
     role_id: group.role_id || null,
     child_group_ids: group.child_groups?.map((g) => g.id) || [],
   });

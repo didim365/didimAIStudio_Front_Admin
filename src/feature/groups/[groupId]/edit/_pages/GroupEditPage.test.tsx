@@ -9,9 +9,9 @@ const mockGroup = {
   group_type: "TEAM" as const,
   description: "소프트웨어 개발팀",
   parent_group_id: null,
-  manager: 1,
+  manager: { user_id: 1, user_name: "관리자" },
   role_id: 1,
-  creator: 1,
+  creator: { user_id: 1, user_name: "생성자" },
   created_at: "2024-01-01T00:00:00Z",
   updated_at: "2024-01-01T00:00:00Z",
   member_count: 5,
@@ -156,6 +156,7 @@ describe("GroupEditPage", () => {
       manager: null,
       role_id: null,
       child_groups: undefined,
+      creator: { user_id: 1, user_name: "생성자" },
     };
 
     renderWithProviders(
