@@ -327,7 +327,6 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                         })
                       }
                       multiSelect={false}
-                      showSelectedBadges={false}
                     />
                   </div>
                 </div>
@@ -351,8 +350,6 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
                         }))
                       }
                       multiSelect={true}
-                      showSelectedBadges={true}
-                      selectedLabel={`선택된 하위 그룹 (${formData.child_group_ids.length}개)`}
                     />
                   </div>
                 </div>
