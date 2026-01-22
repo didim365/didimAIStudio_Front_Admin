@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
@@ -18,7 +19,6 @@ import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { UserPlus, Search, Check, Loader2, Shield } from "lucide-react";
 import { useGetUsers } from "@/feature/users/_hooks/useGetUsers";
 import { usePostGroupUser } from "../_hooks/usePostGroupUser";
-import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/shared/lib/utils";
 import { getInitials } from "@/feature/users/_utils/getInitials";
 import {
@@ -36,7 +36,7 @@ interface AddMemberDialogProps {
 }
 
 export default function AddMemberDialog({ group }: AddMemberDialogProps) {
-  const queryClient = useQueryClient();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [userPage, setUserPage] = useState(1);
@@ -59,16 +59,13 @@ export default function AddMemberDialog({ group }: AddMemberDialogProps) {
   // 그룹 멤버 추가 mutation
   const { mutate: addGroupUser, isPending: isAddingMember } = usePostGroupUser({
     onSuccess: () => {
-      // 그룹 정보 새로고침
-      queryClient.invalidateQueries({
-        queryKey: ["admin", "groups", group.id],
-      });
       // 다이얼로그 닫기 및 초기화
       setOpen(false);
       setSelectedUserId(undefined);
       setSelectedRoleId(undefined);
       setSearchQuery("");
       setUserPage(1);
+      router.refresh();
     },
   });
 
