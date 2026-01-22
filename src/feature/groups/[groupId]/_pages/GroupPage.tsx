@@ -64,7 +64,7 @@ function GroupPage({ group }: GroupPageProps) {
     onSuccess: () => {
       // 그룹 목록 쿼리 무효화
       queryClient.invalidateQueries({
-        queryKey: ["groups"],
+        queryKey: ["admin", "groups"],
       });
       router.push("/groups");
     },

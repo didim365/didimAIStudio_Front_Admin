@@ -60,7 +60,7 @@ export function GroupEditPage({
   const { mutate: updateGroup, isPending: isUpdating } = usePatchGroup({
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["groups"],
+        queryKey: ["admin", "groups"],
       });
 
       router.push(`/groups/${group.id}`);

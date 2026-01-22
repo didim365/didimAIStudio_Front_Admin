@@ -31,7 +31,6 @@ export default function GroupSelect({
     page,
     page_size: 10,
     q: searchQuery || undefined,
-    group_type: "TEAM"
   });
 
   const selectedIds = multiSelect

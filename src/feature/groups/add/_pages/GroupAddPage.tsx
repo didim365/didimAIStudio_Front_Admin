@@ -66,7 +66,7 @@ export default function GroupAddPage({ myInfo, roles }: GroupAddPageProps) {
   const { mutate: createGroup, isPending: isCreating } = usePostGroups({
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ["groups"],
+        queryKey: ["admin", "groups"],
       });
       router.push(`/groups/${data.id}`);
     },
