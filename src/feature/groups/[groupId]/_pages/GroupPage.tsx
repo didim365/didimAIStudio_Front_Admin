@@ -280,16 +280,12 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">매니저</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {group.manager ? (
                       <Link
-                        href={`/users/${group.manager}`}
+                        href={`/users/${group.manager?.user_id}`}
                         className="text-primary hover:underline cursor-pointer"
                       >
-                        #{group.manager}
+                        {group.manager?.user_name}
                       </Link>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
                   </p>
                 </div>
 
@@ -301,10 +297,10 @@ function GroupPage({ group }: GroupPageProps) {
                   </div>
                   <p className="text-lg font-semibold pl-6">
                     <Link
-                      href={`/users/${group.creator}`}
+                      href={`/users/${group.creator.user_id}`}
                       className="text-primary hover:underline cursor-pointer"
                     >
-                      #{group.creator}
+                      {group.creator.user_name}
                     </Link>
                   </p>
                 </div>
@@ -316,11 +312,7 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">역할</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {group.role_id ? (
-                      <span>#{group.role_id}</span>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
+                    <span>#{group.role_id}</span>
                   </p>
                 </div>
 
@@ -342,7 +334,7 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">마지막 업데이트</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {group.updated_at ? formatDate(group.updated_at) : "-"}
+                    {formatDate(group.updated_at)}
                   </p>
                 </div>
               </div>
@@ -447,11 +439,7 @@ function GroupPage({ group }: GroupPageProps) {
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
-                // TODO: API 구현 후 삭제 로직 추가
-                // deleteMemberMutation.mutate({
-                //   group_id: Number(groupId),
-                //   user_id: memberToDelete.id,
-                // });
+              
                 setMemberToDelete(null);
               }}
               className="bg-destructive hover:bg-destructive/90"
