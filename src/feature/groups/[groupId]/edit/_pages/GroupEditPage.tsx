@@ -304,7 +304,7 @@ export function GroupEditPage({
                 </div>
 
                 {/* 상위 그룹 */}
-                <div className="space-y-3">
+                <div className="space-y-3 flex flex-col">
                   <div className="flex items-center gap-2">
                     <FolderTree className="h-4 w-4 text-muted-foreground" />
                     <Label className="font-medium">상위 그룹</Label>
@@ -313,7 +313,7 @@ export function GroupEditPage({
                     이 그룹이 속할 상위 그룹을 선택하세요. 선택하지 않으면
                     최상위 그룹으로 설정됩니다.
                   </p>
-                  <div className="border rounded-lg p-4 bg-muted/20">
+                  <div className="border rounded-lg p-4 bg-muted/20 flex-1">
                     <GroupSelect
                       value={formData.parent_group_id ?? undefined}
                       onChange={(value) =>
@@ -324,7 +324,6 @@ export function GroupEditPage({
                         })
                       }
                       multiSelect={false}
-                      showSelectedBadges={false}
                       excludeId={group.id}
                     />
                   </div>
@@ -349,9 +348,7 @@ export function GroupEditPage({
                         }))
                       }
                       multiSelect={true}
-                      showSelectedBadges={true}
                       excludeId={group.id}
-                      selectedLabel={`선택된 하위 그룹 (${formData.child_group_ids.length}개)`}
                     />
                   </div>
                 </div>
