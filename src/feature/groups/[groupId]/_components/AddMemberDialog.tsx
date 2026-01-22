@@ -225,18 +225,24 @@ export default function AddMemberDialog({ group }: AddMemberDialogProps) {
                 <SelectValue placeholder="역할을 선택하세요" />
               </SelectTrigger>
               <SelectContent>
-                {groupRoles?.map((role) => (
-                  <SelectItem key={role.id} value={role.id.toString()}>
-                    <div className="flex flex-col items-start">
-                      <span className="font-medium">{role.role_name}</span>
-                      {role.description && (
-                        <span className="text-xs text-muted-foreground">
-                          {role.description}
-                        </span>
-                      )}
-                    </div>
-                  </SelectItem>
-                ))}
+                {groupRoles && groupRoles.length > 0 ? (
+                  groupRoles.map((role) => (
+                    <SelectItem key={role.id} value={role.id.toString()}>
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">{role.role_name}</span>
+                        {role.description && (
+                          <span className="text-xs text-muted-foreground">
+                            {role.description}
+                          </span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))
+                ) : (
+                  <div className="py-4 text-center text-sm text-muted-foreground">
+                    할당 가능한 역할이 없습니다
+                  </div>
+                )}
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
