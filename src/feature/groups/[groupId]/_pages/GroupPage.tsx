@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteGroup } from "../_hooks/useDeleteGroup";
+import { useDeleteGroupMember } from "../_hooks/useDeleteGroupMember";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
@@ -69,6 +70,15 @@ function GroupPage({ group }: GroupPageProps) {
       router.push("/groups");
     },
   });
+
+  // 그룹 멤버 제거 mutation
+  const { mutate: deleteGroupMember, isPending: isDeletingMember } =
+    useDeleteGroupMember({
+      onSuccess: () => {
+        setMemberToDelete(null);
+        router.refresh();
+      },
+    });
 
   const handleDelete = () => {
     deleteGroup({ group_id: group.id });
@@ -416,7 +426,7 @@ function GroupPage({ group }: GroupPageProps) {
       <AlertDialog
         open={!!memberToDelete}
         onOpenChange={(open) => {
-          if (!open) setMemberToDelete(null);
+          if (!open && !isDeletingMember) setMemberToDelete(null);
         }}
       >
         <AlertDialogContent>
@@ -435,17 +445,24 @@ function GroupPage({ group }: GroupPageProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeletingMember}>
+              취소
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
-              
-                setMemberToDelete(null);
+                if (memberToDelete) {
+                  deleteGroupMember({
+                    group_id: group.id,
+                    user_id: memberToDelete.id,
+                  });
+                }
               }}
+              disabled={isDeletingMember}
               className="bg-destructive hover:bg-destructive/90"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              제거
+              {isDeletingMember ? "제거 중..." : "제거"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
