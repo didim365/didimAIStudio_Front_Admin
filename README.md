@@ -4,8 +4,8 @@ Next.js 기반 관리자 대시보드 애플리케이션
 
 ## 기술 스택
 
-- **Framework:** Next.js 16.0.0
-- **React:** 19.2.0
+- **Framework:** Next.js 16.0.10
+- **React:** 19.2.3
 - **TypeScript:** 5.x
 - **Styling:** Tailwind CSS 4 + SCSS
 - **UI Components:** Radix UI
@@ -13,6 +13,8 @@ Next.js 기반 관리자 대시보드 애플리케이션
 - **Charts:** Recharts
 - **Notifications:** Sonner
 - **Code Editor:** CodeMirror
+- **Error Monitoring:** Sentry
+- **Testing:** Vitest (Unit/Integration), Playwright (E2E)
 - **Package Manager:** npm
 - **Reverse Proxy:** Nginx
 
@@ -41,6 +43,65 @@ npm run dev
 npm run build
 npm start
 ```
+
+## 테스트
+
+### Unit/Integration 테스트 (Vitest)
+
+```bash
+# 테스트 실행 (watch 모드)
+npm run test
+
+# 테스트 한 번 실행
+npm run test:run
+
+# UI 모드로 테스트 실행
+npm run test:ui
+
+# 커버리지 리포트 생성
+npm run test:coverage
+```
+
+### E2E 테스트 (Playwright)
+
+```bash
+# E2E 테스트 실행
+npm run test:e2e
+
+# UI 모드로 E2E 테스트 실행
+npm run test:e2e:ui
+
+# 디버그 모드로 E2E 테스트 실행
+npm run test:e2e:debug
+```
+
+**참고:** `npm run build` 실행 시 `prebuild` 스크립트로 인해 테스트가 자동으로 실행됩니다.
+
+## 에러 모니터링 (Sentry)
+
+프로젝트에 Sentry가 통합되어 있어 프론트엔드 및 백엔드 에러를 실시간으로 모니터링할 수 있습니다.
+
+### 설정 파일
+
+- `sentry.server.config.ts` - 서버 환경 Sentry 초기화
+- `sentry.edge.config.ts` - Edge 환경 (미들웨어, 엣지 라우트) Sentry 초기화
+- `src/instrumentation-client.ts` - 클라이언트 Sentry 초기화 및 Replay 통합
+- `src/instrumentation.ts` - Next.js instrumentation 훅
+- `src/app/global-error.tsx` - 전역 에러 핸들러
+
+### 주요 기능
+
+- **에러 캡처:** 프론트엔드/백엔드 에러 자동 캡처
+- **Session Replay:** 사용자 세션 리플레이 (10% 샘플링, 에러 발생 시 100%)
+- **Performance Tracing:** 성능 추적 (tracesSampleRate: 1)
+- **Tunnel Route:** 광고 차단기 우회를 위한 `/monitoring` 라우트
+
+### 테스트 페이지
+
+Sentry 연동 테스트를 위한 예제 페이지가 제공됩니다:
+
+- `/sentry-example-page` - 프론트엔드/백엔드 에러 테스트 페이지
+- `/api/sentry-example-api` - 백엔드 에러 테스트 API
 
 ## Docker 배포
 
@@ -126,20 +187,29 @@ docker run -p 4000:4000 -v $(pwd):/app admin-fe:dev
 ```
 .
 ├── src/
-│   ├── app/              # Next.js App Router 페이지
-│   ├── feature/          # 기능별 컴포넌트
-│   ├── shared/           # 공유 UI 컴포넌트
-│   ├── proxy.ts          # 프록시 설정
-│   └── assets/           # SCSS 스타일
-├── public/               # 정적 파일
-├── certs/                # SSL 인증서 및 FortiGate CA 인증서
-├── Dockerfile            # 프로덕션 Dockerfile
-├── Dockerfile.dev        # 개발 Dockerfile
-├── docker-compose.yml    # Docker Compose 설정
-├── nginx.conf            # Nginx 설정
-├── next.config.ts        # Next.js 설정
-├── package.json          # 의존성 및 스크립트
-└── tsconfig.json         # TypeScript 설정
+│   ├── app/                    # Next.js App Router 페이지
+│   │   ├── api/                # API 라우트
+│   │   └── global-error.tsx    # 전역 에러 핸들러 (Sentry 연동)
+│   ├── feature/                # 기능별 컴포넌트
+│   ├── shared/                 # 공유 UI 컴포넌트
+│   ├── test/                   # 테스트 유틸리티 및 설정
+│   ├── instrumentation.ts      # Next.js instrumentation (Sentry 서버)
+│   ├── instrumentation-client.ts # Sentry 클라이언트 초기화
+│   └── proxy.ts                # 프록시 설정
+├── public/                     # 정적 파일
+├── certs/                      # SSL 인증서 및 FortiGate CA 인증서
+├── docs/                       # 프로젝트 문서
+├── sentry.server.config.ts     # Sentry 서버 설정
+├── sentry.edge.config.ts       # Sentry Edge 설정
+├── vitest.config.ts            # Vitest 설정
+├── playwright.config.ts        # Playwright E2E 설정
+├── Dockerfile                  # 프로덕션 Dockerfile
+├── Dockerfile.dev              # 개발 Dockerfile
+├── docker-compose.yml          # Docker Compose 설정
+├── nginx.conf                  # Nginx 설정
+├── next.config.ts              # Next.js 설정
+├── package.json                # 의존성 및 스크립트
+└── tsconfig.json               # TypeScript 설정
 ```
 
 ## 주요 설정
@@ -153,6 +223,7 @@ docker run -p 4000:4000 -v $(pwd):/app admin-fe:dev
 - 이미지 최적화 비활성화 (`unoptimized: true`)
 - API 프록시 설정 (`/api` → `http://auth:8000/api`)
 - 외부 이미지 도메인 허용 설정
+- **Sentry 통합** - `withSentryConfig` 래핑, 소스맵 업로드, 트리쉐이킹 최적화
 
 ### 네트워크 구조
 
@@ -239,13 +310,15 @@ ENV PORT=4001
 
 ## 배포 체크리스트
 
+- [ ] 테스트 통과 확인 (`npm run test:run`)
 - [ ] `.env.production` 파일 생성 및 환경 변수 설정 (선택사항)
 - [ ] `docker-compose.yml` 환경 변수 확인
+- [ ] Sentry DSN 및 프로젝트 설정 확인
 - [ ] FortiGate CA 인증서 준비 (`certs/fortigate-ca.crt`, 개발 환경)
 - [ ] `nginx.conf` 설정 확인 (개발 환경)
 - [ ] Docker 이미지 빌드 테스트
 - [ ] 프로덕션 환경에서 실행 테스트
-- [ ] 로그 모니터링 설정
+- [ ] Sentry 에러 모니터링 동작 확인
 - [ ] 백업 및 롤백 계획 수립
 
 ## 유용한 명령어
@@ -275,4 +348,13 @@ npm run dev
 # 프로덕션 빌드
 npm run build
 npm start
+
+# 테스트 실행
+npm run test:run
+
+# E2E 테스트 실행
+npm run test:e2e
+
+# 린트 검사
+npm run lint
 ```
