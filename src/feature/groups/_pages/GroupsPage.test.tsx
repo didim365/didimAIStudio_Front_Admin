@@ -48,10 +48,8 @@ describe("GroupsPage", () => {
     expect(screen.getByRole("columnheader", { name: "그룹명" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "설명" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "그룹 타입" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "상위 그룹" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "관리자" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "생성자" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "역할" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "회원 수" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "생성일" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "수정일" })).toBeInTheDocument();

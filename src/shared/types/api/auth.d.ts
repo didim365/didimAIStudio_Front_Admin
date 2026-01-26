@@ -1102,6 +1102,10 @@ export interface paths {
         /**
          * [Admin] 그룹 생성
          * @description 관리자용 새 그룹을 생성합니다.
+         *
+         *     ### ⚠️ 필수 마이그레이션 항목 (Frontend) - v2.3
+         *     - `manager`: Integer → SimpleUserResponse {user_id, user_name}
+         *     - `creator`: Integer → SimpleUserResponse {user_id, user_name}
          */
         post: operations["create_admin_group_api_v1_admin_groups_post"];
         delete?: never;
@@ -1158,6 +1162,14 @@ export interface paths {
         /**
          * [Admin] 그룹 수정
          * @description 관리자용 그룹 정보를 부분 수정합니다.
+         *
+         *     v2.2: child_group_ids 지원 추가 (Top-down 방식)
+         *
+         *     ### ⚠️ 필수 마이그레이션 항목 (Frontend) - v2.3
+         *     - `manager`: Integer → SimpleUserResponse {user_id, user_name}
+         *     - `creator`: Integer → SimpleUserResponse {user_id, user_name}
+         *     - `deleted_by`: Integer → SimpleUserResponse {user_id, user_name}
+         *     - `child_groups[].manager`: Integer → SimpleUserResponse {user_id, user_name}
          */
         patch: operations["update_admin_group_api_v1_admin_groups__group_id__patch"];
         trace?: never;
@@ -1905,11 +1917,8 @@ export interface components {
              * @description 상위 그룹 ID
              */
             parent_group_id?: number | null;
-            /**
-             * Manager
-             * @description 관리자 ID
-             */
-            manager?: number | null;
+            /** @description 관리자 정보 */
+            manager?: components["schemas"]["SimpleUserResponse"] | null;
             /**
              * Created At
              * @description 생성일
@@ -2034,10 +2043,8 @@ export interface components {
             description?: string | null;
             /** Parent Group Id */
             parent_group_id: number | null;
-            /** Manager */
-            manager: number | null;
-            /** Creator */
-            creator: number;
+            manager: components["schemas"]["SimpleUserResponse"] | null;
+            creator: components["schemas"]["SimpleUserResponse"];
             /** Role Id */
             role_id: number | null;
             /**
@@ -2086,11 +2093,8 @@ export interface components {
              * @description 삭제일시
              */
             deleted_at?: string | null;
-            /**
-             * Deleted By
-             * @description 삭제자 ID
-             */
-            deleted_by?: number | null;
+            /** @description 삭제자 정보 */
+            deleted_by?: components["schemas"]["SimpleUserResponse"] | null;
         };
         /** GroupRoleResponse */
         GroupRoleResponse: {
@@ -2166,10 +2170,8 @@ export interface components {
             description?: string | null;
             /** Parent Group Id */
             parent_group_id: number | null;
-            /** Manager */
-            manager: number | null;
-            /** Creator */
-            creator: number;
+            manager: components["schemas"]["SimpleUserResponse"] | null;
+            creator: components["schemas"]["SimpleUserResponse"];
             /** Role Id */
             role_id: number | null;
             /**
@@ -2948,11 +2950,8 @@ export interface components {
              * @description 고유 식별자
              */
             id: number;
-            /**
-             * User Id
-             * @description IP를 등록한 사용자 ID
-             */
-            user_id: number;
+            /** @description IP를 등록한 사용자 정보 */
+            user_id: components["schemas"]["SimpleUserResponse"];
             /**
              * Created At
              * Format: date-time
@@ -2964,11 +2963,8 @@ export interface components {
              * @description 수정 시간
              */
             updated_at?: string | null;
-            /**
-             * Created By
-             * @description 생성자 ID (관리자가 대신 생성한 경우)
-             */
-            created_by?: number | null;
+            /** @description 생성자 정보 (관리자가 대신 생성한 경우) */
+            created_by?: components["schemas"]["SimpleUserResponse"] | null;
         };
         /**
          * ScenarioGatewayIpSyncRequest
@@ -3029,6 +3025,22 @@ export interface components {
              * @description 활성화 여부
              */
             is_active?: boolean | null;
+        };
+        /**
+         * SimpleUserResponse
+         * @description 간소화된 사용자 정보 응답 (Admin API용)
+         */
+        SimpleUserResponse: {
+            /**
+             * User Id
+             * @description 사용자 ID
+             */
+            user_id: number;
+            /**
+             * User Name
+             * @description 사용자 이름
+             */
+            user_name: string;
         };
         /**
          * TokenResponse

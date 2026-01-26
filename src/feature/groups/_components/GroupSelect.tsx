@@ -1,32 +1,36 @@
 "use client";
 
-import { X } from "lucide-react";
-import { Badge } from "@/shared/ui/badge";
-import { Label } from "@/shared/ui/label";
-import GroupTreeView from "./GroupTreeView";
+import { useState } from "react";
+import { Input } from "@/shared/ui/input";
+import { Check, Search, Folder, ChevronLeft, ChevronRight } from "lucide-react";
 import { useGetGroups } from "../_hooks/useGetGroups";
+import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/ui/button";
 
 interface GroupSelectProps {
   value?: number | number[];
   onChange: (value: number | number[] | undefined) => void;
   multiSelect?: boolean;
-  showSelectedBadges?: boolean;
   excludeId?: number;
-  selectedLabel?: string;
+  className?: string;
 }
 
 export default function GroupSelect({
   value,
   onChange,
   multiSelect = false,
-  showSelectedBadges = false,
   excludeId,
-  selectedLabel,
+  className,
 }: GroupSelectProps) {
-  // 그룹 이름을 가져오기 위해 동일한 쿼리 사용 (캐시 공유)
-  const { data: groups } = useGetGroups({
-    page: 1,
-    page_size: 100,
+  // 검색 및 페이지네이션 상태
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+
+  // 그룹 목록 조회
+  const { data: groups, isLoading } = useGetGroups({
+    page,
+    page_size: 10,
+    q: searchQuery || undefined,
   });
 
   const selectedIds = multiSelect
@@ -35,70 +39,115 @@ export default function GroupSelect({
     ? [value as number]
     : [];
 
-  const handleRemove = (idToRemove: number) => {
+  const handleSelect = (id: number) => {
     if (multiSelect) {
-      const currentIds = (value as number[] | undefined) || [];
-      onChange(currentIds.filter((id) => id !== idToRemove));
+      if (selectedIds.includes(id)) {
+        onChange(selectedIds.filter((i) => i !== id));
+      } else {
+        onChange([...selectedIds, id]);
+      }
     } else {
-      onChange(undefined);
+      if (selectedIds.includes(id)) {
+        onChange(undefined);
+      } else {
+        onChange(id);
+      }
     }
   };
 
-  const getGroupName = (id: number) => {
-    return groups?.items?.find((g:any) => g.id === id)?.group_name || `Group ${id}`;
+  // 검색어 변경 시 첫 페이지로 리셋
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setPage(1);
   };
 
-  const handleTreeSelect = (ids: number[]) => {
-    if (multiSelect) {
-      onChange(ids);
-    } else {
-      onChange(ids.length > 0 ? ids[0] : undefined);
-    }
-  };
+  // excludeId 필터링
+  const filteredItems = groups?.items?.filter(
+    (group) => !excludeId || group.id !== excludeId
+  );
 
   return (
-    <div className="space-y-4">
-      {/* 선택된 그룹 표시 */}
-      {showSelectedBadges && selectedIds.length > 0 && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground">
-            {selectedLabel || `선택된 그룹 (${selectedIds.length}개)`}
-          </Label>
-          <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-md border border-dashed min-h-12">
-            {selectedIds.map((id) => (
-              <Badge
-                key={id}
-                variant="secondary"
-                className="px-3 py-1.5 text-sm flex items-center gap-2"
-              >
-                <span>{getGroupName(id)}</span>
-                <button
-                  type="button"
-                  onClick={() => handleRemove(id)}
-                  className="ml-1 rounded-full hover:bg-muted-foreground/20 p-0.5 transition-colors"
-                  aria-label="제거"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-          </div>
+    <div className={cn("flex flex-col gap-2 h-full", className)}>
+      {/* 그룹 목록 */}
+      <div className="border rounded-md overflow-hidden flex-1 flex flex-col">
+        {/* 검색 */}
+        <div className="relative px-2 py-2 border-b shrink-0 flex items-center">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="그룹 이름 검색..."
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="pl-8 h-8 text-sm"
+          />
         </div>
-      )}
 
-      {/* 트리 뷰 */}
-      <div className="space-y-2">
-        <GroupTreeView
-          selectedIds={selectedIds}
-          onSelect={handleTreeSelect}
-          multiSelect={multiSelect}
-          excludeIds={excludeId ? [excludeId] : []}
-          className="min-h-[200px]"
-        />
+        <div className="flex-1 overflow-y-auto">
+          {filteredItems?.map((group) => {
+            const isSelected = selectedIds.includes(group.id);
+            return (
+              <div
+                key={group.id}
+                className={cn(
+                  "flex items-center py-1.5 px-2 rounded-md cursor-pointer hover:bg-accent/50 transition-colors mx-1",
+                  isSelected && "bg-accent"
+                )}
+                onClick={() => handleSelect(group.id)}
+              >
+                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted shrink-0 mr-2">
+                  <Folder className="h-3.5 w-3.5 text-muted-foreground" />
+                </div>
+                <span
+                  className={cn(
+                    "flex-1 text-sm truncate select-none",
+                    isSelected && "font-medium"
+                  )}
+                >
+                  {group.group_name}
+                </span>
+                {isSelected && (
+                  <Check className="h-4 w-4 text-primary ml-2 shrink-0" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 페이지네이션 및 안내 */}
+      <div className="flex items-center justify-between shrink-0">
         <p className="text-xs text-muted-foreground">
           * 폴더를 클릭하여 그룹을 선택하세요.
           {multiSelect && " (다중 선택 가능)"}
         </p>
+        {groups && groups.total_pages > 1 && (
+          <div className="flex items-center gap-0.5">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1 || isLoading}
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </Button>
+            <span className="text-xs text-muted-foreground px-1">
+              {page}/{groups.total_pages}
+            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={() =>
+                setPage((p) => Math.min(groups.total_pages ?? 1, p + 1))
+              }
+              disabled={page === groups.total_pages || isLoading}
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
