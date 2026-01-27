@@ -3,6 +3,7 @@ import "./globals.css";
 import { ReactQueryProvider } from "@/shared/components/ReactQueryProvider";
 import { Toaster } from "@/shared/ui/sonner";
 import { ThemeProvider } from "next-themes";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: "Admin Console - DidimAI Studio",
@@ -25,6 +26,7 @@ export default function RootLayout({
           <ReactQueryProvider>{children}</ReactQueryProvider>
           <Toaster />
         </ThemeProvider>
+        <GoogleAnalytics gaId="G-5JJH3GH9NV" />
       </body>
     </html>
   );
