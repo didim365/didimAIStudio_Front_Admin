@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useParams } from "next/navigation";
 import { cn } from "@/shared/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -23,13 +22,12 @@ import { Badge } from "@/shared/ui/badge";
 import {
   FileText,
   Layers,
-  Hash,
   Clock,
   FileType,
   HardDrive,
   Sparkles,
   Calendar,
-  Download,
+  FolderOpen,
 } from "lucide-react";
 import { useGetMetaCollections } from "../_hooks/useGetMetaCollections";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
@@ -39,40 +37,16 @@ import { formatBytes } from "@/shared/utils/formatBytes";
 import { formatDate } from "@/shared/utils/formatDate";
 import { getStatusBadge } from "../_utils/getStatusBadge";
 import { getFileTypeStyle } from "../_utils/getFileTypeStyle";
-import { Button } from "@/shared/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
-import MetaDetailDialog from "../_components/MetaDetailDialog";
-import type { components } from "@/shared/types/api/indexing";
-
-type MetaDataItem = components["schemas"]["AdminMetaDataItemDTO"];
 
 export default function MetaListPage() {
   const params = useParams();
   const collectionName = params.collectionName as string;
-
-  // 모달 상태
-  const [selectedItem, setSelectedItem] = useState<MetaDataItem | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-
-  const handleRowClick = (item: MetaDataItem) => {
-    setSelectedItem(item);
-    setIsDetailOpen(true);
-  };
-
-  const handleRowKeyDown = (
-    e: React.KeyboardEvent<HTMLTableRowElement>,
-    item: MetaDataItem
-  ) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handleRowClick(item);
-    }
-  };
 
   // URL 쿼리 파라미터 관리
   const [page, setPage] = useQueryParam<number>("page", 1);
@@ -137,125 +111,103 @@ export default function MetaListPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
-                    <TableHead className="w-[5%] text-center">ID</TableHead>
-                    <TableHead>제목</TableHead>
-                    <TableHead className="w-[10%] text-center">파일 타입</TableHead>
+                    <TableHead>파일명</TableHead>
+                    <TableHead className="w-[12%] text-center">
+                      카테고리
+                    </TableHead>
+                    <TableHead className="w-[10%] text-center">
+                      파일 타입
+                    </TableHead>
                     <TableHead className="w-[10%] text-center">상태</TableHead>
-                    <TableHead className="w-[10%] text-right">파일 크기</TableHead>
-                    <TableHead className="w-[8%] text-right">청크</TableHead>
-                    <TableHead className="w-[8%] text-right">토큰</TableHead>
-                    <TableHead className="w-[10%] text-center">만료일</TableHead>
-                    <TableHead className="w-[6%] text-center">다운로드</TableHead>
+                    <TableHead className="w-[10%] text-right">
+                      파일 크기
+                    </TableHead>
+                    <TableHead className="w-[10%] text-right">토큰</TableHead>
+                    <TableHead className="w-[12%] text-center">
+                      등록일
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {metaData?.items.map((item) => {
+                  {metaData?.items.map((item, index) => {
                     const statusBadge = getStatusBadge(item.status);
                     return (
                       <TableRow
-                        key={item.id}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={`${item.title || item.filename} 상세 정보 보기`}
-                        className="group transition-colors hover:bg-muted/50 hover:cursor-pointer"
-                        onClick={() => handleRowClick(item)}
-                        onKeyDown={(e) => handleRowKeyDown(e, item)}
+                        key={`${item.filename}-${index}`}
+                        className="transition-colors hover:bg-muted/50"
                       >
-                          {/* ID */}
-                          <TableCell className="text-center">
-                            <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 font-mono text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                              <Hash className="mr-1 h-3 w-3" />
-                              {item.id}
-                            </span>
-                          </TableCell>
-
-                          {/* 제목 & 파일명 */}
-                          <TableCell>
-                            <div className="space-y-1">
+                        {/* 파일명 */}
+                        <TableCell>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
                               <p className="line-clamp-1 font-medium">
-                                {item.title || "-"}
-                              </p>
-                              <p className="line-clamp-1 text-xs text-muted-foreground">
                                 {item.filename}
                               </p>
-                            </div>
-                          </TableCell>
+                            </TooltipTrigger>
+                            <TooltipContent>{item.filename}</TooltipContent>
+                          </Tooltip>
+                        </TableCell>
 
-                          {/* 파일 타입 */}
-                          <TableCell className="text-center">
-                            <Badge
-                              variant="outline"
-                              className={cn("gap-1 uppercase", getFileTypeStyle(item.file_type))}
-                            >
-                              <FileType className="h-3 w-3" />
-                              {item.file_type}
-                            </Badge>
-                          </TableCell>
+                        {/* 카테고리 */}
+                        <TableCell className="text-center">
+                          <Badge variant="outline" className="gap-1">
+                            <FolderOpen className="h-3 w-3" />
+                            {item.category || "-"}
+                          </Badge>
+                        </TableCell>
 
-                          {/* 상태 */}
-                          <TableCell className="text-center">
-                            <Badge variant={statusBadge.variant} className="gap-1">
-                              {item.status === "completed" && (
-                                <Sparkles className="h-3 w-3" />
-                              )}
-                              {item.status === "processing" && (
-                                <Clock className="h-3 w-3 animate-spin" />
-                              )}
-                              {statusBadge.label}
-                            </Badge>
-                          </TableCell>
-
-                          {/* 파일 크기 */}
-                          <TableCell className="text-right">
-                            <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                              <HardDrive className="h-3 w-3" />
-                              {formatBytes(item.file_size)}
-                            </span>
-                          </TableCell>
-
-                          {/* 청크 수 */}
-                          <TableCell className="text-right">
-                            <span className="font-mono text-sm">
-                              {formatNumber(item.chunk_count)}
-                            </span>
-                          </TableCell>
-
-                          {/* 토큰 */}
-                          <TableCell className="text-right">
-                            <span className="font-mono text-sm">
-                              {formatNumber(item.token)}
-                            </span>
-                          </TableCell>
-
-                          {/* 만료일 */}
-                          <TableCell className="text-center">
-                            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              {formatDate(item.expiration_date)}
-                            </span>
-                          </TableCell>
-
-                          {/* 다운로드 */}
-                          <TableCell className="text-center">
-                            {item.download_url && (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      window.open(item.download_url, "_blank");
-                                    }}
-                                  >
-                                    <Download className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>파일 다운로드</TooltipContent>
-                              </Tooltip>
+                        {/* 파일 타입 */}
+                        <TableCell className="text-center">
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "gap-1 uppercase",
+                              getFileTypeStyle(item.file_type)
                             )}
-                          </TableCell>
+                          >
+                            <FileType className="h-3 w-3" />
+                            {item.file_type}
+                          </Badge>
+                        </TableCell>
+
+                        {/* 상태 */}
+                        <TableCell className="text-center">
+                          <Badge
+                            variant={statusBadge.variant}
+                            className="gap-1"
+                          >
+                            {item.status === "completed" && (
+                              <Sparkles className="h-3 w-3" />
+                            )}
+                            {item.status === "processing" && (
+                              <Clock className="h-3 w-3 animate-spin" />
+                            )}
+                            {statusBadge.label}
+                          </Badge>
+                        </TableCell>
+
+                        {/* 파일 크기 */}
+                        <TableCell className="text-right">
+                          <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                            <HardDrive className="h-3 w-3" />
+                            {formatBytes(item.file_size)}
+                          </span>
+                        </TableCell>
+
+                        {/* 토큰 */}
+                        <TableCell className="text-right">
+                          <span className="font-mono text-sm">
+                            {formatNumber(item.token)}
+                          </span>
+                        </TableCell>
+
+                        {/* 등록일 */}
+                        <TableCell className="text-center">
+                          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            {formatDate(item.start_date)}
+                          </span>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -267,20 +219,11 @@ export default function MetaListPage() {
 
         {/* 페이지네이션 */}
         {metaData && metaData.totalPages > 1 && (
-            <Pagination
-              currentPage={page}
-              totalPages={metaData.totalPages}
-              onPageChange={setPage}
-              isLoading={isFetching}
-            />
-        )}
-
-        {/* 문서 상세 모달 */}
-        {selectedItem && (
-          <MetaDetailDialog
-            item={selectedItem}
-            open={isDetailOpen}
-            onOpenChange={setIsDetailOpen}
+          <Pagination
+            currentPage={page}
+            totalPages={metaData.totalPages}
+            onPageChange={setPage}
+            isLoading={isFetching}
           />
         )}
       </div>

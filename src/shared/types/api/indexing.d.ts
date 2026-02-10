@@ -78,11 +78,17 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 문서 메타데이터 조회
-         * @description 📄 **문서 메타데이터 조회**
+         * 문서 메타데이터 조회 (페이징)
+         * @description 📄 **문서 메타데이터 조회 (페이징)**
          *
-         *     사용자의 권한 범위 내에서 문서 메타데이터를 조회합니다.
+         *     사용자의 권한 범위 내에서 문서 메타데이터를 페이징하여 조회합니다.
          *     문서의 기본 정보(제목, 카테고리, 파일 크기, 업로드 시간 등)를 확인할 수 있습니다.
+         *
+         *     ## 페이징 파라미터
+         *     - **page**: 페이지 번호 (1부터 시작, 기본값: 1)
+         *     - **page_size**: 페이지당 항목 수 (기본값: 10, 최대: 50)
+         *     - **sort_by**: 정렬 기준 필드 (created_at, updated_at, title, id / 기본값: created_at)
+         *     - **sort_order**: 정렬 방향 (asc/desc, 기본값: desc)
          *
          *     ## 필터링 옵션
          *     - **카테고리**: 특정 카테고리의 문서만 조회
@@ -92,10 +98,55 @@ export interface paths {
          *     ## 권한 체계
          *     - 사용자는 자신의 그룹 및 역할에 따라 제한된 문서만 조회 가능
          *     - 멀티테넌시 환경에서 그룹별 격리 보장
+         *
+         *     ## Milvus 제한사항
+         *     - offset + limit < 16,384 (page_size=50 기준 최대 327페이지)
          */
         get: operations["get_meta_info_v1_documents_meta_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/documents/meta/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 문서 메타데이터 검색 (POST body)
+         * @description **문서 메타데이터 검색 (POST body)**
+         *
+         *     GET `/meta`와 동일한 기능을 POST body로 제공합니다.
+         *     hash_sha256_option을 리스트로 전달하여 여러 문서를 한번에 조회할 수 있습니다.
+         *
+         *     ## 사용 예시
+         *
+         *     ```json
+         *     {
+         *       "hash_sha256_option": ["abc123", "def456", "ghi789"],
+         *       "category_option": "계약서",
+         *       "page": 1,
+         *       "page_size": 20
+         *     }
+         *     ```
+         *
+         *     ## GET /meta와의 차이
+         *
+         *     | 항목 | GET /meta | POST /meta/search |
+         *     |------|-----------|-------------------|
+         *     | hash_sha256_option | 단일 문자열 | 문자열 리스트 (복수 지정) |
+         *     | 전달 방식 | Query Parameter | Request Body (JSON) |
+         *     | 적합 상황 | 단순 필터 조회 | 복합 필터, 다수 해시 조회 |
+         */
+        post: operations["search_meta_info_v1_documents_meta_search_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1256,58 +1307,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/graph/relations/by-document/{hash_sha256}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 문서별 관계 조회
-         * @description **문서별 관계 조회**
-         *
-         *     특정 문서에서 추출된 관계(엔티티 간 연결) 목록을 조회합니다.
-         */
-        get: operations["get_relations_by_document_v1_graph_relations_by_document__hash_sha256__get"];
-        put?: never;
-        post?: never;
-        /**
-         * 문서별 관계 삭제
-         * @description **문서별 관계 삭제**
-         *
-         *     특정 문서에서 추출된 모든 관계를 삭제합니다.
-         *     문서 삭제 시 연동하여 호출됩니다.
-         */
-        delete: operations["delete_relations_by_document_v1_graph_relations_by_document__hash_sha256__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/graph/visualization": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 그래프 시각화 데이터 조회
-         * @description **그래프 시각화 데이터 조회**
-         *
-         *     프론트엔드에서 그래프를 시각화하기 위한 노드와 엣지 데이터를 반환합니다.
-         *     중심 엔티티 또는 문서를 기준으로 연결된 그래프를 탐색합니다.
-         */
-        post: operations["get_graph_visualization_v1_graph_visualization_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/costs/models": {
         parameters: {
             query?: never;
@@ -1427,6 +1426,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/sse/pipeline/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream Batch Progress
+         * @description 사용자의 모든 임베딩 작업 진행상황을 단일 SSE로 스트리밍
+         *
+         *     HTTP/1.1 SSE 연결 제한(6개) 문제를 해결하기 위한 멀티플렉싱 채널입니다.
+         *     모든 task 이벤트에 task_id가 포함되어 클라이언트에서 구분할 수 있습니다.
+         *
+         *     **새로고침 시 상태 동기화**:
+         *     - 서버에서 실행 중인 task 목록을 자동으로 조회하여 초기 상태에 포함합니다.
+         *     - 클라이언트가 별도로 task_ids를 전달할 필요가 없습니다.
+         *
+         *     Args:
+         *         sse_mgr: SSE Manager (자동 주입)
+         *         jwt_data: JWT 인증 정보 (자동 주입)
+         *
+         *     Returns:
+         *         StreamingResponse: 모든 task 이벤트를 포함한 SSE 스트림
+         *
+         *     Example:
+         *         GET /sse/pipeline/batch
+         */
+        get: operations["stream_batch_progress_v1_sse_pipeline_batch_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/sse/pipeline/{task_id}": {
         parameters: {
             query?: never;
@@ -1440,7 +1476,6 @@ export interface paths {
          *
          *     Args:
          *         task_id: 작업 ID (UUID)
-         *         req: FastAPI Request 객체
          *         sse_mgr: SSE Manager (자동 주입)
          *
          *     Returns:
@@ -1450,41 +1485,6 @@ export interface paths {
          *         HTTPException: 404 - 유효하지 않은 task_id
          */
         get: operations["stream_pipeline_progress_v1_sse_pipeline__task_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/sse/pipeline/document/{user_id}/{hash_sha256}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Stream Document Progress
-         * @description 문서별 임베딩 생성 진행 상태를 SSE로 스트리밍 (hash 기반).
-         *
-         *     임베딩 생성 파이프라인에서 사용하는 hash 기반 구독 방식입니다.
-         *     `/api/v1/embeddings/generate` API 호출 후 각 문서의 진행 상황을 추적할 때 사용합니다.
-         *
-         *     Args:
-         *         user_id: 사용자 ID
-         *         hash_sha256: 문서 해시값
-         *         req: FastAPI Request 객체
-         *         sse_mgr: SSE Manager (자동 주입)
-         *
-         *     Returns:
-         *         StreamingResponse: SSE 스트림
-         *
-         *     Raises:
-         *         HTTPException: 404 - 유효하지 않은 문서
-         */
-        get: operations["stream_document_progress_v1_sse_pipeline_document__user_id___hash_sha256__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1505,7 +1505,6 @@ export interface paths {
          * @description 사용자 레벨 알림 스트리밍 (스케줄 실행 알림 등)
          *
          *     Args:
-         *         req: FastAPI Request 객체
          *         sse_mgr: SSE Manager (자동 주입)
          *         jwt_data: JWT 인증 정보 (자동 주입)
          *
@@ -1814,7 +1813,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/admin/collections/{collection_name}/meta-data": {
+    "/v1/admin/collections/{collection_name}/meta": {
         parameters: {
             query?: never;
             header?: never;
@@ -1822,17 +1821,78 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Meta 컬렉션 데이터 조회 (관리자 전용)
-         * @description 📊 **Meta 컬렉션 데이터 조회 (관리자 전용)**
+         * Meta 컬렉션 요약 데이터 조회 (관리자 전용)
+         * @description 📊 **Meta 컬렉션 요약 데이터 조회 (관리자 전용)**
          *
-         *     Meta 컬렉션의 데이터를 페이지네이션하여 조회합니다.
+         *     Meta 컬렉션의 경량화된 요약 데이터를 페이지네이션하여 조회합니다.
+         *     전체 30개 이상 필드 대신 핵심 7개 필드만 반환합니다.
+         *
+         *     ## 반환 필드
+         *     - category: 문서 카테고리
+         *     - file_type: 파일 유형
+         *     - filename: 파일명
+         *     - token: 토큰 사용량
+         *     - file_size: 파일 크기
+         *     - start_date: 등록일
+         *     - status: 처리 상태
          *
          *     ## 파라미터
          *     - page: 페이지 번호 (기본값: 1)
          *     - page_size: 페이지 크기 (기본값: 50, 최대: 1000)
          *     - filter_expr: Milvus 필터 표현식 (선택)
          */
-        get: operations["get_meta_collection_data_v1_admin_collections__collection_name__meta_data_get"];
+        get: operations["get_meta_v1_admin_collections__collection_name__meta_get"];
+        /**
+         * Meta 컬렉션 데이터 전체 교체 (관리자 전용)
+         * @description ✏️ **Meta 컬렉션 데이터 전체 교체 (관리자 전용)**
+         *
+         *     Meta 컬렉션의 수정 가능한 필드를 전체 교체합니다.
+         *     임베딩 재계산이 필요한 필드(summary, embedding_value)와 시스템 산출 필드는 제외됩니다.
+         *
+         *     ## 수정 가능 필드 (16개)
+         *     category, title, filename, status, role_ids, persona_id, group_id, user_id,
+         *     file_path, download_url, start_date, end_date, expiration_date,
+         *     anonymization_strategy, enable_pii_anonymization, pii_types
+         */
+        put: operations["put_meta_v1_admin_collections__collection_name__meta_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Meta 컬렉션 데이터 부분 수정 (관리자 전용)
+         * @description 🔧 **Meta 컬렉션 데이터 부분 수정 (관리자 전용)**
+         *
+         *     Meta 컬렉션의 데이터를 부분 수정합니다. 변경할 필드만 제공하면 됩니다.
+         *     임베딩 재계산이 필요한 필드(summary, embedding_value)와 시스템 산출 필드는 제외됩니다.
+         *
+         *     ## 수정 가능 필드 (16개, 모두 Optional)
+         *     category, title, filename, status, role_ids, persona_id, group_id, user_id,
+         *     file_path, download_url, start_date, end_date, expiration_date,
+         *     anonymization_strategy, enable_pii_anonymization, pii_types
+         */
+        patch: operations["patch_meta_v1_admin_collections__collection_name__meta_patch"];
+        trace?: never;
+    };
+    "/v1/admin/collections/{collection_name}/meta/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Meta 컬렉션 상세 데이터 조회 (관리자 전용)
+         * @description 📊 **Meta 컬렉션 상세 데이터 조회 (관리자 전용)**
+         *
+         *     Meta 컬렉션의 전체 필드 데이터를 페이지네이션하여 조회합니다.
+         *
+         *     ## 파라미터
+         *     - page: 페이지 번호 (기본값: 1)
+         *     - page_size: 페이지 크기 (기본값: 50, 최대: 1000)
+         *     - filter_expr: Milvus 필터 표현식 (선택)
+         */
+        get: operations["get_meta_detail_v1_admin_collections__collection_name__meta_detail_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1841,7 +1901,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/admin/collections/{collection_name}/vector-data": {
+    "/v1/admin/collections/{collection_name}/vector": {
         parameters: {
             query?: never;
             header?: never;
@@ -1859,42 +1919,33 @@ export interface paths {
          *     - page_size: 페이지 크기 (기본값: 50, 최대: 1000)
          *     - filter_expr: Milvus 필터 표현식 (선택)
          */
-        get: operations["get_vector_collection_data_v1_admin_collections__collection_name__vector_data_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/collections/{collection_name}/data": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
+        get: operations["get_vector_v1_admin_collections__collection_name__vector_get"];
         /**
-         * 컬렉션 데이터 수정/삽입 (관리자 전용)
-         * @description 📝 **컬렉션 데이터 수정/삽입 (관리자 전용)**
+         * Vector 컬렉션 데이터 전체 교체 (관리자 전용)
+         * @description ✏️ **Vector 컬렉션 데이터 전체 교체 (관리자 전용)**
          *
-         *     컬렉션에 데이터를 수정하거나 새로 삽입합니다.
+         *     Vector 컬렉션의 수정 가능한 필드를 전체 교체합니다.
+         *     임베딩 재계산이 필요한 필드(parsed_text, embedding_value)와 시스템 산출 필드는 제외됩니다.
          *
-         *     ## 동작 방식
-         *     - 기존 데이터가 있으면 수정 (update)
-         *     - 없으면 새로 삽입 (insert)
-         *
-         *     ## 주의사항
-         *     - 데이터 구조가 컬렉션 스키마와 일치해야 합니다.
+         *     ## 수정 가능 필드 (6개)
+         *     category, title, filename, role_ids, group_id, user_id
          */
-        put: operations["upsert_collection_data_endpoint_v1_admin_collections__collection_name__data_put"];
+        put: operations["put_vector_v1_admin_collections__collection_name__vector_put"];
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Vector 컬렉션 데이터 부분 수정 (관리자 전용)
+         * @description 🔧 **Vector 컬렉션 데이터 부분 수정 (관리자 전용)**
+         *
+         *     Vector 컬렉션의 데이터를 부분 수정합니다. 변경할 필드만 제공하면 됩니다.
+         *     임베딩 재계산이 필요한 필드(parsed_text, embedding_value)와 시스템 산출 필드는 제외됩니다.
+         *
+         *     ## 수정 가능 필드 (6개, 모두 Optional)
+         *     category, title, filename, role_ids, group_id, user_id
+         */
+        patch: operations["patch_vector_v1_admin_collections__collection_name__vector_patch"];
         trace?: never;
     };
     "/v1/admin/collections/data": {
@@ -2290,6 +2341,59 @@ export interface components {
             embedding_start_date: number;
             /** Embedding End Date */
             embedding_end_date: number;
+        };
+        /**
+         * AdminMetaSummaryItemDTO
+         * @description Meta 컬렉션 요약 데이터 아이템 DTO
+         *
+         *     관리자 대시보드에서 문서 목록을 경량화하여 조회할 때 사용합니다.
+         *     AdminMetaDataItemDTO의 30개 이상 필드 대신 핵심 7개 필드만 반환합니다.
+         * @example {
+         *       "category": "계약서",
+         *       "file_size": 1048576,
+         *       "file_type": "pdf",
+         *       "filename": "근로계약서_2024.pdf",
+         *       "start_date": 1704067200,
+         *       "status": "completed",
+         *       "token": 3500
+         *     }
+         */
+        AdminMetaSummaryItemDTO: {
+            /**
+             * Category
+             * @description 문서 카테고리
+             */
+            category: string;
+            /**
+             * File Type
+             * @description 파일 유형 (pdf, docx 등)
+             */
+            file_type: string;
+            /**
+             * Filename
+             * @description 파일명
+             */
+            filename: string;
+            /**
+             * Token
+             * @description 토큰 사용량
+             */
+            token: number;
+            /**
+             * File Size
+             * @description 파일 크기 (bytes)
+             */
+            file_size: number;
+            /**
+             * Start Date
+             * @description 등록일 (Unix timestamp)
+             */
+            start_date: number;
+            /**
+             * Status
+             * @description 처리 상태 (pending, processing, completed, failed)
+             */
+            status: string;
         };
         /**
          * AdminVectorDataItemDTO
@@ -2889,58 +2993,6 @@ export interface components {
             preview: boolean;
         };
         /**
-         * DataUpsertRequestDTO
-         * @description 데이터 수정/삽입 요청 DTO
-         *
-         *     컬렉션에 데이터를 삽입하거나 기존 데이터를 수정합니다.
-         */
-        DataUpsertRequestDTO: {
-            /**
-             * Data
-             * @description 삽입/수정할 데이터 목록
-             * @example [
-             *       {
-             *         "id": 1,
-             *         "title": "Test Document"
-             *       }
-             *     ]
-             */
-            data: {
-                [key: string]: unknown;
-            }[];
-        };
-        /**
-         * DataUpsertResponseDTO
-         * @description 데이터 수정/삽입 응답 DTO
-         *
-         *     upsert 작업 결과를 반환합니다.
-         * @example {
-         *       "collection_name": "TB_1_meta",
-         *       "message": "10개 레코드가 수정/삽입되었습니다.",
-         *       "upserted_count": 10
-         *     }
-         */
-        DataUpsertResponseDTO: {
-            /**
-             * Collection Name
-             * @description 컬렉션 이름
-             * @example TB_1_meta
-             */
-            collection_name: string;
-            /**
-             * Upserted Count
-             * @description 수정/삽입된 레코드 수
-             * @example 10
-             */
-            upserted_count: number;
-            /**
-             * Message
-             * @description 처리 결과 메시지
-             * @example 10개 레코드가 수정/삽입되었습니다.
-             */
-            message: string;
-        };
-        /**
          * DeleteDocumentsRequestDTO
          * @description 여러 문서 삭제 요청 DTO
          */
@@ -3445,6 +3497,66 @@ export interface components {
              * @description 엔티티 타입 목록 (Graph RAG)
              */
             entity_types?: string[];
+        };
+        /**
+         * DocumentMetaSearchRequestDTO
+         * @description 문서 메타데이터 검색 요청 DTO (POST body)
+         */
+        DocumentMetaSearchRequestDTO: {
+            /**
+             * Page
+             * @description 페이지 번호 (1부터 시작)
+             * @default 1
+             */
+            page: number;
+            /**
+             * Page Size
+             * @description 페이지당 항목 수 (최대 50)
+             * @default 10
+             */
+            page_size: number;
+            /**
+             * Sort By
+             * @description 정렬 기준 필드 (created_at, updated_at, title, id)
+             * @default created_at
+             */
+            sort_by: string;
+            /**
+             * Sort Order
+             * @description 정렬 방향 (asc, desc)
+             * @default desc
+             */
+            sort_order: string;
+            /**
+             * Category Option
+             * @description 카테고리 필터링
+             */
+            category_option?: string | null;
+            /**
+             * Title Option
+             * @description 제목 필터링 (부분 일치)
+             */
+            title_option?: string | null;
+            /**
+             * Hash Sha256 Option
+             * @description 해시값 필터링 (복수 지정 가능)
+             */
+            hash_sha256_option?: string[] | null;
+            /**
+             * Persona Id Option
+             * @description 페르소나 ID 필터링
+             */
+            persona_id_option?: number | null;
+            /**
+             * Filename Option
+             * @description 파일명 필터링 (부분 일치)
+             */
+            filename_option?: string | null;
+            /**
+             * Status Option
+             * @description 문서 상태 필터링 (uploading, registered, running, uploaded, failed, skipped, ocr_required)
+             */
+            status_option?: string | null;
         };
         /**
          * DocumentResponseDTO
@@ -3962,34 +4074,6 @@ export interface components {
                 [key: string]: unknown;
             }[] | null;
         };
-        /**
-         * GraphVisualizationRequestDTO
-         * @description 그래프 시각화 데이터 요청
-         */
-        GraphVisualizationRequestDTO: {
-            /**
-             * Entity Name
-             * @description 중심 엔티티 이름
-             */
-            entity_name?: string | null;
-            /**
-             * Hash Sha256
-             * @description 문서 해시
-             */
-            hash_sha256?: string | null;
-            /**
-             * Max Nodes
-             * @description 최대 노드 수
-             * @default 50
-             */
-            max_nodes: number;
-            /**
-             * Max Hops
-             * @description 최대 홉 수
-             * @default 2
-             */
-            max_hops: number;
-        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -4096,6 +4180,502 @@ export interface components {
              * @example 50
              */
             page_size: number;
+        };
+        /**
+         * MetaModifyResponseDTO
+         * @description Meta 컬렉션 수정 응답 DTO (PUT/PATCH 공용)
+         *
+         *     수정된 레코드의 전체 데이터를 반환합니다.
+         * @example {
+         *       "collection_name": "TB_1_meta",
+         *       "items": [
+         *         {
+         *           "category": "계약서",
+         *           "chunk_count": 15,
+         *           "chunk_overlap": 50,
+         *           "chunk_size": 500,
+         *           "cost": 0.035,
+         *           "download_url": "https://storage.example.com/contracts/2024/employment.pdf",
+         *           "embedding_end_date": 1704067500,
+         *           "embedding_start_date": 1704067200,
+         *           "enable_pii_anonymization": 0,
+         *           "end_date": 1735689600,
+         *           "expiration_date": 1767225600,
+         *           "file_path": "contracts/2024/employment.pdf",
+         *           "file_size": 1048576,
+         *           "file_type": "pdf",
+         *           "filename": "근로계약서_2024.pdf",
+         *           "filtered_chunk_count": 15,
+         *           "group_id": 1,
+         *           "hash_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+         *           "id": 1,
+         *           "original_chunk_count": 15,
+         *           "persona_id": 0,
+         *           "ref_count": 0,
+         *           "role_ids": [
+         *             1,
+         *             2,
+         *             3
+         *           ],
+         *           "start_date": 1704067200,
+         *           "status": "completed",
+         *           "summary": "본 계약서는 2024년도 정규직 근로자의 고용 조건을 명시합니다.",
+         *           "summary_cost": 0.005,
+         *           "summary_token": 500,
+         *           "title": "2024년 근로계약서",
+         *           "token": 3500,
+         *           "user_id": 1
+         *         }
+         *       ],
+         *       "modified_count": 1
+         *     }
+         */
+        MetaModifyResponseDTO: {
+            /**
+             * Collection Name
+             * @description 컬렉션 이름
+             * @example TB_1_meta
+             */
+            collection_name: string;
+            /**
+             * Modified Count
+             * @description 수정된 레코드 수
+             * @example 1
+             */
+            modified_count: number;
+            /**
+             * Items
+             * @description 수정된 레코드 목록 (전체 필드 포함)
+             */
+            items: components["schemas"]["AdminMetaDataItemDTO"][];
+        };
+        /**
+         * MetaPatchItemDTO
+         * @description Meta 컬렉션 PATCH 아이템 DTO
+         *
+         *     수정할 필드만 선택적으로 제공합니다. id만 필수입니다.
+         *     임베딩 재계산이 필요한 필드(summary, embedding_value)와
+         *     시스템 산출 필드(token, cost 등)는 제외됩니다.
+         * @example {
+         *       "expiration_date": 1767225600,
+         *       "id": 1,
+         *       "status": "completed"
+         *     }
+         */
+        MetaPatchItemDTO: {
+            /**
+             * Id
+             * @description 레코드 ID (Primary Key)
+             */
+            id: number;
+            /**
+             * Category
+             * @description 문서 카테고리
+             */
+            category?: string | null;
+            /**
+             * Title
+             * @description 제목
+             */
+            title?: string | null;
+            /**
+             * Filename
+             * @description 파일 이름
+             */
+            filename?: string | null;
+            /**
+             * Status
+             * @description 처리 상태
+             */
+            status?: string | null;
+            /**
+             * Role Ids
+             * @description 접근 가능한 역할 ID 리스트
+             */
+            role_ids?: number[] | null;
+            /**
+             * Persona Id
+             * @description 페르소나 ID
+             */
+            persona_id?: number | null;
+            /**
+             * Group Id
+             * @description 그룹 ID
+             */
+            group_id?: number | null;
+            /**
+             * User Id
+             * @description 사용자 ID
+             */
+            user_id?: number | null;
+            /**
+             * File Path
+             * @description 파일 경로
+             */
+            file_path?: string | null;
+            /**
+             * Download Url
+             * @description 다운로드 URL
+             */
+            download_url?: string | null;
+            /**
+             * Start Date
+             * @description 작업 시작일 (Unix timestamp)
+             */
+            start_date?: number | null;
+            /**
+             * End Date
+             * @description 작업 종료일 (Unix timestamp)
+             */
+            end_date?: number | null;
+            /**
+             * Expiration Date
+             * @description 문서 만료일 (Unix timestamp)
+             */
+            expiration_date?: number | null;
+            /**
+             * Anonymization Strategy
+             * @description PII 비식별화 전략
+             */
+            anonymization_strategy?: string | null;
+            /**
+             * Enable Pii Anonymization
+             * @description PII 비식별화 활성화 여부 (0/1)
+             */
+            enable_pii_anonymization?: number | null;
+            /**
+             * Pii Types
+             * @description 비식별화 대상 PII 유형
+             */
+            pii_types?: string | null;
+        };
+        /**
+         * MetaPatchRequestDTO
+         * @description Meta 컬렉션 PATCH 요청 DTO
+         *
+         *     Meta 컬렉션의 데이터를 부분 수정합니다. 변경할 필드만 제공합니다.
+         * @example {
+         *       "data": [
+         *         {
+         *           "expiration_date": 1767225600,
+         *           "id": 1,
+         *           "status": "completed"
+         *         }
+         *       ]
+         *     }
+         */
+        MetaPatchRequestDTO: {
+            /**
+             * Data
+             * @description 부분 수정할 데이터 목록 (id 필수, 나머지 선택)
+             */
+            data: components["schemas"]["MetaPatchItemDTO"][];
+        };
+        /**
+         * MetaPutItemDTO
+         * @description Meta 컬렉션 PUT 아이템 DTO
+         *
+         *     수정 가능한 필드를 전체 교체합니다. 모든 필드가 필수입니다.
+         *     임베딩 재계산이 필요한 필드(summary, embedding_value)와
+         *     시스템 산출 필드(token, cost 등)는 제외됩니다.
+         * @example {
+         *       "category": "계약서",
+         *       "download_url": "https://storage.example.com/contracts/2024/employment.pdf",
+         *       "enable_pii_anonymization": 0,
+         *       "end_date": 1735689600,
+         *       "expiration_date": 1767225600,
+         *       "file_path": "contracts/2024/employment.pdf",
+         *       "filename": "근로계약서_2024.pdf",
+         *       "group_id": 1,
+         *       "id": 1,
+         *       "persona_id": 0,
+         *       "role_ids": [
+         *         1,
+         *         2,
+         *         3
+         *       ],
+         *       "start_date": 1704067200,
+         *       "status": "completed",
+         *       "title": "2024년 근로계약서",
+         *       "user_id": 1
+         *     }
+         */
+        MetaPutItemDTO: {
+            /**
+             * Id
+             * @description 레코드 ID (Primary Key)
+             */
+            id: number;
+            /**
+             * Category
+             * @description 문서 카테고리
+             */
+            category: string;
+            /**
+             * Title
+             * @description 제목
+             */
+            title: string;
+            /**
+             * Filename
+             * @description 파일 이름
+             */
+            filename: string;
+            /**
+             * Status
+             * @description 처리 상태
+             */
+            status: string;
+            /**
+             * Role Ids
+             * @description 접근 가능한 역할 ID 리스트
+             */
+            role_ids: number[];
+            /**
+             * Persona Id
+             * @description 페르소나 ID
+             */
+            persona_id: number;
+            /**
+             * Group Id
+             * @description 그룹 ID
+             */
+            group_id: number;
+            /**
+             * User Id
+             * @description 사용자 ID
+             */
+            user_id: number;
+            /**
+             * File Path
+             * @description 파일 경로
+             */
+            file_path: string;
+            /**
+             * Download Url
+             * @description 다운로드 URL
+             */
+            download_url: string;
+            /**
+             * Start Date
+             * @description 작업 시작일 (Unix timestamp)
+             */
+            start_date: number;
+            /**
+             * End Date
+             * @description 작업 종료일 (Unix timestamp)
+             */
+            end_date: number;
+            /**
+             * Expiration Date
+             * @description 문서 만료일 (Unix timestamp)
+             */
+            expiration_date: number;
+            /**
+             * Anonymization Strategy
+             * @description PII 비식별화 전략
+             */
+            anonymization_strategy: string | null;
+            /**
+             * Enable Pii Anonymization
+             * @description PII 비식별화 활성화 여부 (0/1)
+             */
+            enable_pii_anonymization: number;
+            /**
+             * Pii Types
+             * @description 비식별화 대상 PII 유형
+             */
+            pii_types: string | null;
+        };
+        /**
+         * MetaPutRequestDTO
+         * @description Meta 컬렉션 PUT 요청 DTO
+         *
+         *     Meta 컬렉션의 수정 가능한 필드를 전체 교체합니다.
+         * @example {
+         *       "data": [
+         *         {
+         *           "category": "계약서",
+         *           "download_url": "https://storage.example.com/file.pdf",
+         *           "enable_pii_anonymization": 0,
+         *           "end_date": 1735689600,
+         *           "expiration_date": 1767225600,
+         *           "file_path": "contracts/2024/employment.pdf",
+         *           "filename": "근로계약서_2024.pdf",
+         *           "group_id": 1,
+         *           "id": 1,
+         *           "persona_id": 0,
+         *           "role_ids": [
+         *             1,
+         *             2,
+         *             3
+         *           ],
+         *           "start_date": 1704067200,
+         *           "status": "completed",
+         *           "title": "2024년 근로계약서",
+         *           "user_id": 1
+         *         }
+         *       ]
+         *     }
+         */
+        MetaPutRequestDTO: {
+            /**
+             * Data
+             * @description 전체 교체할 데이터 목록
+             */
+            data: components["schemas"]["MetaPutItemDTO"][];
+        };
+        /**
+         * MetaSummaryResponseDTO
+         * @description Meta 컬렉션 요약 응답 DTO
+         *
+         *     Meta 컬렉션의 경량화된 요약 데이터를 페이지네이션하여 반환합니다.
+         * @example {
+         *       "items": [
+         *         {
+         *           "category": "계약서",
+         *           "file_size": 1048576,
+         *           "file_type": "pdf",
+         *           "filename": "근로계약서_2024.pdf",
+         *           "start_date": 1704067200,
+         *           "status": "completed",
+         *           "token": 3500
+         *         }
+         *       ],
+         *       "page": 1,
+         *       "page_size": 50,
+         *       "total": 1
+         *     }
+         */
+        MetaSummaryResponseDTO: {
+            /**
+             * Items
+             * @description Meta 컬렉션 요약 데이터 목록
+             */
+            items: components["schemas"]["AdminMetaSummaryItemDTO"][];
+            /**
+             * Total
+             * @description 전체 레코드 수
+             * @example 100
+             */
+            total: number;
+            /**
+             * Page
+             * @description 현재 페이지
+             * @example 1
+             */
+            page: number;
+            /**
+             * Page Size
+             * @description 페이지 크기
+             * @example 50
+             */
+            page_size: number;
+        };
+        /**
+         * PaginatedDocumentMetaResponseDTO
+         * @description 페이징된 문서 메타데이터 응답 DTO
+         * @example {
+         *       "items": [
+         *         {
+         *           "category": "계약서",
+         *           "chunk_count": 15,
+         *           "chunk_overlap": 50,
+         *           "chunk_size": 500,
+         *           "cost": 0.035,
+         *           "download_url": "https://example.com/contracts/2024.pdf",
+         *           "embedding_end_date": 1705276700,
+         *           "embedding_start_date": 1705276300,
+         *           "enable_pii_anonymization": 0,
+         *           "end_date": 1705276800,
+         *           "expiration_date": 1736812800,
+         *           "file_path": "contracts/2024/employment.pdf",
+         *           "file_size": 1048576,
+         *           "file_type": "pdf",
+         *           "filename": "근로계약서_2024.pdf",
+         *           "filtered_chunk_count": 15,
+         *           "group_id": 101,
+         *           "hash_sha256": "abc123def456789...",
+         *           "id": 123,
+         *           "original_chunk_count": 15,
+         *           "persona_id": 1,
+         *           "ref_count": 0,
+         *           "role_ids": [
+         *             3
+         *           ],
+         *           "start_date": 1705276200,
+         *           "status": "completed",
+         *           "summary": "본 계약서는...",
+         *           "summary_cost": 0.005,
+         *           "summary_token": 500,
+         *           "title": "2024년 근로계약서",
+         *           "token": 3500,
+         *           "user_full_name": "홍길동",
+         *           "user_id": 2001
+         *         }
+         *       ],
+         *       "pagination": {
+         *         "current_page": 1,
+         *         "has_next": true,
+         *         "has_previous": false,
+         *         "page_size": 20,
+         *         "total_count": 150,
+         *         "total_pages": 8
+         *       }
+         *     }
+         */
+        PaginatedDocumentMetaResponseDTO: {
+            /**
+             * Items
+             * @description 문서 메타데이터 목록
+             */
+            items: components["schemas"]["DocumentMetaResponseDTO"][];
+            /** @description 페이징 메타데이터 */
+            pagination: components["schemas"]["PaginationMetaDTO"];
+        };
+        /**
+         * PaginationMetaDTO
+         * @description 페이징 메타데이터 DTO
+         * @example {
+         *       "current_page": 1,
+         *       "has_next": true,
+         *       "has_previous": false,
+         *       "page_size": 20,
+         *       "total_count": 150,
+         *       "total_pages": 8
+         *     }
+         */
+        PaginationMetaDTO: {
+            /**
+             * Total Count
+             * @description 전체 항목 수
+             */
+            total_count: number;
+            /**
+             * Total Pages
+             * @description 전체 페이지 수
+             */
+            total_pages: number;
+            /**
+             * Current Page
+             * @description 현재 페이지 번호
+             */
+            current_page: number;
+            /**
+             * Page Size
+             * @description 페이지당 항목 수
+             */
+            page_size: number;
+            /**
+             * Has Next
+             * @description 다음 페이지 존재 여부
+             */
+            has_next: boolean;
+            /**
+             * Has Previous
+             * @description 이전 페이지 존재 여부
+             */
+            has_previous: boolean;
         };
         /**
          * ParserConfigListResponseDTO
@@ -4381,11 +4961,11 @@ export interface components {
             /**
              * Reranker
              * @description Reranker 선택:
-             *     - None: Reranker 사용 안 함 (하이브리드 검색만) - 기본값
+             *     - None 또는 false: Reranker 사용 안 함 (하이브리드 검색만) - 기본값
              *     - 'cohere': CohereRerank (한국어 성능 우수, API 비용 발생, 권장)
              *     - 'flashrank': FlashrankRerank (로컬 실행, 무료, CPU 최적화)
              */
-            reranker?: ("cohere" | "flashrank") | null;
+            reranker?: ("cohere" | "flashrank") | boolean | null;
             /**
              * Rerank Top N
              * @description Reranker 최종 반환 개수 (1~50, Reranker 사용 시에만 적용)
@@ -4965,6 +5545,15 @@ export interface components {
          *       "id": 1,
          *       "name": "계약서",
          *       "retention_period": 10,
+         *       "status_counts": {
+         *         "failed": 0,
+         *         "ocr_required": 0,
+         *         "registered": 2,
+         *         "running": 1,
+         *         "skipped": 0,
+         *         "uploaded": 12,
+         *         "uploading": 0
+         *       },
          *       "total_size": 52428800
          *     }
          */
@@ -5001,6 +5590,13 @@ export interface components {
              * @default 0
              */
             document_count: number;
+            /**
+             * Status Counts
+             * @description 상태별 문서 개수 (uploading, registered, running, uploaded, failed, skipped, ocr_required)
+             */
+            status_counts?: {
+                [key: string]: number;
+            };
         };
         /**
          * UpdateIndexRequestDTO
@@ -5240,6 +5836,15 @@ export interface components {
          *       "name": "NDA",
          *       "parent_id": 101,
          *       "path": "101/103",
+         *       "status_counts": {
+         *         "failed": 0,
+         *         "ocr_required": 0,
+         *         "registered": 1,
+         *         "running": 0,
+         *         "skipped": 0,
+         *         "uploaded": 4,
+         *         "uploading": 0
+         *       },
          *       "updated_at": "2026-01-13T09:00:00Z",
          *       "user_id": 100
          *     }
@@ -5308,6 +5913,19 @@ export interface components {
              * @default 0
              */
             document_count: number;
+            /**
+             * Total Size
+             * @description 총 용량 (바이트)
+             * @default 0
+             */
+            total_size: number;
+            /**
+             * Status Counts
+             * @description 상태별 문서 개수 (uploading, registered, running, uploaded, failed, skipped, ocr_required)
+             */
+            status_counts?: {
+                [key: string]: number;
+            };
         };
         /**
          * UserCategoryTreeNodeDTO
@@ -5321,7 +5939,16 @@ export interface components {
          *           "description": "비밀유지계약서",
          *           "document_count": 3,
          *           "id": 102,
-         *           "name": "NDA"
+         *           "name": "NDA",
+         *           "status_counts": {
+         *             "failed": 0,
+         *             "ocr_required": 0,
+         *             "registered": 1,
+         *             "running": 0,
+         *             "skipped": 0,
+         *             "uploaded": 2,
+         *             "uploading": 0
+         *           }
          *         },
          *         {
          *           "children": [],
@@ -5330,7 +5957,16 @@ export interface components {
          *           "description": "라이선스 계약서",
          *           "document_count": 2,
          *           "id": 103,
-         *           "name": "라이선스"
+         *           "name": "라이선스",
+         *           "status_counts": {
+         *             "failed": 0,
+         *             "ocr_required": 0,
+         *             "registered": 0,
+         *             "running": 0,
+         *             "skipped": 0,
+         *             "uploaded": 2,
+         *             "uploading": 0
+         *           }
          *         }
          *       ],
          *       "default_retention_period": 10,
@@ -5338,7 +5974,16 @@ export interface components {
          *       "description": "각종 계약 관련 문서",
          *       "document_count": 10,
          *       "id": 101,
-         *       "name": "계약서"
+         *       "name": "계약서",
+         *       "status_counts": {
+         *         "failed": 0,
+         *         "ocr_required": 0,
+         *         "registered": 2,
+         *         "running": 1,
+         *         "skipped": 0,
+         *         "uploaded": 7,
+         *         "uploading": 0
+         *       }
          *     }
          */
         UserCategoryTreeNodeDTO: {
@@ -5373,6 +6018,13 @@ export interface components {
              * @default 0
              */
             document_count: number;
+            /**
+             * Status Counts
+             * @description 상태별 문서 개수 (uploading, registered, running, uploaded, failed, skipped, ocr_required)
+             */
+            status_counts?: {
+                [key: string]: number;
+            };
             /**
              * Children
              * @description 하위 카테고리 목록
@@ -5471,6 +6123,215 @@ export interface components {
              * @example 50
              */
             page_size: number;
+        };
+        /**
+         * VectorModifyResponseDTO
+         * @description Vector 컬렉션 수정 응답 DTO (PUT/PATCH 공용)
+         *
+         *     수정된 레코드의 전체 데이터를 반환합니다.
+         * @example {
+         *       "collection_name": "TB_1_vector",
+         *       "items": [
+         *         {
+         *           "category": "계약서",
+         *           "chunk_index": 0,
+         *           "cost": 0.0025,
+         *           "date": 1704067200,
+         *           "filename": "근로계약서_2024.pdf",
+         *           "group_id": 1,
+         *           "hash_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+         *           "id": 1,
+         *           "page_number": 1,
+         *           "parsed_text": "제1조 (목적) 본 계약은 근로자의 고용 조건을...",
+         *           "role_ids": [
+         *             1,
+         *             2,
+         *             3
+         *           ],
+         *           "title": "2024년 근로계약서",
+         *           "token": 250,
+         *           "user_id": 1
+         *         }
+         *       ],
+         *       "modified_count": 1
+         *     }
+         */
+        VectorModifyResponseDTO: {
+            /**
+             * Collection Name
+             * @description 컬렉션 이름
+             * @example TB_1_vector
+             */
+            collection_name: string;
+            /**
+             * Modified Count
+             * @description 수정된 레코드 수
+             * @example 1
+             */
+            modified_count: number;
+            /**
+             * Items
+             * @description 수정된 레코드 목록 (전체 필드 포함)
+             */
+            items: components["schemas"]["AdminVectorDataItemDTO"][];
+        };
+        /**
+         * VectorPatchItemDTO
+         * @description Vector 컬렉션 PATCH 아이템 DTO
+         *
+         *     수정할 필드만 선택적으로 제공합니다. id만 필수입니다.
+         *     임베딩 재계산이 필요한 필드(parsed_text, embedding_value)와
+         *     시스템 산출 필드(token, cost 등)는 제외됩니다.
+         * @example {
+         *       "category": "보고서",
+         *       "id": 1
+         *     }
+         */
+        VectorPatchItemDTO: {
+            /**
+             * Id
+             * @description 레코드 ID (Primary Key)
+             */
+            id: number;
+            /**
+             * Category
+             * @description 문서 카테고리
+             */
+            category?: string | null;
+            /**
+             * Title
+             * @description 제목
+             */
+            title?: string | null;
+            /**
+             * Filename
+             * @description 파일 이름
+             */
+            filename?: string | null;
+            /**
+             * Role Ids
+             * @description 접근 가능한 역할 ID 리스트
+             */
+            role_ids?: number[] | null;
+            /**
+             * Group Id
+             * @description 그룹 ID
+             */
+            group_id?: number | null;
+            /**
+             * User Id
+             * @description 사용자 ID
+             */
+            user_id?: number | null;
+        };
+        /**
+         * VectorPatchRequestDTO
+         * @description Vector 컬렉션 PATCH 요청 DTO
+         *
+         *     Vector 컬렉션의 데이터를 부분 수정합니다. 변경할 필드만 제공합니다.
+         * @example {
+         *       "data": [
+         *         {
+         *           "category": "보고서",
+         *           "id": 1
+         *         }
+         *       ]
+         *     }
+         */
+        VectorPatchRequestDTO: {
+            /**
+             * Data
+             * @description 부분 수정할 데이터 목록 (id 필수, 나머지 선택)
+             */
+            data: components["schemas"]["VectorPatchItemDTO"][];
+        };
+        /**
+         * VectorPutItemDTO
+         * @description Vector 컬렉션 PUT 아이템 DTO
+         *
+         *     수정 가능한 필드를 전체 교체합니다. 모든 필드가 필수입니다.
+         *     임베딩 재계산이 필요한 필드(parsed_text, embedding_value)와
+         *     시스템 산출 필드(token, cost 등)는 제외됩니다.
+         * @example {
+         *       "category": "계약서",
+         *       "filename": "근로계약서_2024.pdf",
+         *       "group_id": 1,
+         *       "id": 1,
+         *       "role_ids": [
+         *         1,
+         *         2,
+         *         3
+         *       ],
+         *       "title": "2024년 근로계약서",
+         *       "user_id": 1
+         *     }
+         */
+        VectorPutItemDTO: {
+            /**
+             * Id
+             * @description 레코드 ID (Primary Key)
+             */
+            id: number;
+            /**
+             * Category
+             * @description 문서 카테고리
+             */
+            category: string;
+            /**
+             * Title
+             * @description 제목
+             */
+            title: string;
+            /**
+             * Filename
+             * @description 파일 이름
+             */
+            filename: string;
+            /**
+             * Role Ids
+             * @description 접근 가능한 역할 ID 리스트
+             */
+            role_ids: number[];
+            /**
+             * Group Id
+             * @description 그룹 ID
+             */
+            group_id: number;
+            /**
+             * User Id
+             * @description 사용자 ID
+             */
+            user_id: number;
+        };
+        /**
+         * VectorPutRequestDTO
+         * @description Vector 컬렉션 PUT 요청 DTO
+         *
+         *     Vector 컬렉션의 수정 가능한 필드를 전체 교체합니다.
+         * @example {
+         *       "data": [
+         *         {
+         *           "category": "계약서",
+         *           "filename": "근로계약서_2024.pdf",
+         *           "group_id": 1,
+         *           "id": 1,
+         *           "role_ids": [
+         *             1,
+         *             2,
+         *             3
+         *           ],
+         *           "title": "2024년 근로계약서",
+         *           "user_id": 1
+         *         }
+         *       ]
+         *     }
+         */
+        VectorPutRequestDTO: {
+            /**
+             * Data
+             * @description 전체 교체할 데이터 목록
+             */
+            data: components["schemas"]["VectorPutItemDTO"][];
         };
         /**
          * MessageResponseDTO
@@ -5633,6 +6494,14 @@ export interface operations {
     get_meta_info_v1_documents_meta_get: {
         parameters: {
             query?: {
+                /** @description 페이지 번호 (1부터 시작) */
+                page?: number;
+                /** @description 페이지당 항목 수 (최대 50) */
+                page_size?: number;
+                /** @description 정렬 기준 필드 (created_at, updated_at, title, id) */
+                sort_by?: string;
+                /** @description 정렬 방향 (asc/desc) */
+                sort_order?: string;
                 /** @description 카테고리 필터링 옵션 */
                 category_option?: string | null;
                 /** @description 제목 필터링 옵션 */
@@ -5643,6 +6512,8 @@ export interface operations {
                 persona_id_option?: number | null;
                 /** @description 파일명 필터링 옵션 */
                 filename_option?: string | null;
+                /** @description 문서 상태 필터링 옵션 (uploading, registered, running, uploaded, failed, skipped, ocr_required) */
+                status_option?: string | null;
             };
             header?: never;
             path?: never;
@@ -5657,35 +6528,109 @@ export interface operations {
                 };
                 content: {
                     /**
-                     * @example [
-                     *       {
-                     *         "id": 123,
-                     *         "category": "계약서",
-                     *         "title": "2024년 근로계약서",
-                     *         "filename": "근로계약서_2024_김철수.pdf",
-                     *         "summary": "본 계약서는 2024년도 정규직 근로자의 고용 조건을 명시합니다...",
-                     *         "file_type": "pdf",
-                     *         "file_size": 1048576,
-                     *         "status": "completed",
-                     *         "role_id": 3,
-                     *         "persona_id": 5,
-                     *         "file_path": "contracts/2024/employment/kim_chulsoo.pdf",
-                     *         "download_url": "https://storage.example.com/contracts/2024/kim_chulsoo.pdf",
-                     *         "chunk_count": 15,
-                     *         "token": 3500,
-                     *         "cost": 0.035,
-                     *         "summary_token": 500,
-                     *         "summary_cost": 0.005,
-                     *         "group_id": 101,
-                     *         "user_id": 2001,
-                     *         "hash_sha256": "abc123def456789...",
-                     *         "start_date": 1705276200,
-                     *         "end_date": 1705276800,
-                     *         "expiration_date": 1736812800
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "id": 123,
+                     *           "category": "계약서",
+                     *           "title": "2024년 근로계약서",
+                     *           "filename": "근로계약서_2024_김철수.pdf",
+                     *           "summary": "본 계약서는 2024년도 정규직 근로자의 고용 조건을 명시합니다...",
+                     *           "file_type": "pdf",
+                     *           "file_size": 1048576,
+                     *           "status": "completed",
+                     *           "role_ids": [
+                     *             3
+                     *           ],
+                     *           "persona_id": 5,
+                     *           "file_path": "contracts/2024/employment/kim_chulsoo.pdf",
+                     *           "download_url": "https://storage.example.com/contracts/2024/kim_chulsoo.pdf",
+                     *           "chunk_count": 15,
+                     *           "token": 3500,
+                     *           "cost": 0.035,
+                     *           "summary_token": 500,
+                     *           "summary_cost": 0.005,
+                     *           "group_id": 101,
+                     *           "user_id": 2001,
+                     *           "user_full_name": "김철수",
+                     *           "hash_sha256": "abc123def456789...",
+                     *           "start_date": 1705276200,
+                     *           "end_date": 1705276800,
+                     *           "expiration_date": 1736812800
+                     *         }
+                     *       ],
+                     *       "pagination": {
+                     *         "total_count": 150,
+                     *         "total_pages": 15,
+                     *         "current_page": 1,
+                     *         "page_size": 10,
+                     *         "has_next": true,
+                     *         "has_previous": false
                      *       }
-                     *     ]
+                     *     }
                      */
-                    "application/json": components["schemas"]["DocumentMetaResponseDTO"][];
+                    "application/json": components["schemas"]["PaginatedDocumentMetaResponseDTO"];
+                };
+            };
+            /** @description bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    search_meta_info_v1_documents_meta_search_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DocumentMetaSearchRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedDocumentMetaResponseDTO"];
                 };
             };
             /** @description bad request */
@@ -7980,212 +8925,6 @@ export interface operations {
             };
         };
     };
-    get_relations_by_document_v1_graph_relations_by_document__hash_sha256__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hash_sha256: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 요청된 작업에 대한 권한이 없습니다. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    delete_relations_by_document_v1_graph_relations_by_document__hash_sha256__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hash_sha256: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 요청된 작업에 대한 권한이 없습니다. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    get_graph_visualization_v1_graph_visualization_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GraphVisualizationRequestDTO"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 요청된 작업에 대한 권한이 없습니다. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     get_models_list_v1_costs_models_get: {
         parameters: {
             query?: never;
@@ -8428,6 +9167,26 @@ export interface operations {
             };
         };
     };
+    stream_batch_progress_v1_sse_pipeline_batch_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 사용자의 모든 task 진행상황 스트리밍 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
     stream_pipeline_progress_v1_sse_pipeline__task_id__get: {
         parameters: {
             query?: never;
@@ -8457,52 +9216,6 @@ export interface operations {
                     /**
                      * @example {
                      *       "detail": "Task not found: 550e8400-e29b-41d4-a716-446655440000. Please check if the task_id is correct and the task has been started."
-                     *     }
-                     */
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    stream_document_progress_v1_sse_pipeline_document__user_id___hash_sha256__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                user_id: string;
-                hash_sha256: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description 유효하지 않은 문서 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "detail": "Document not found. The embedding pipeline for this document may not have started yet."
                      *     }
                      */
                     "application/json": unknown;
@@ -9369,7 +10082,220 @@ export interface operations {
             };
         };
     };
-    get_meta_collection_data_v1_admin_collections__collection_name__meta_data_get: {
+    get_meta_v1_admin_collections__collection_name__meta_get: {
+        parameters: {
+            query?: {
+                /** @description 페이지 번호 */
+                page?: number;
+                /** @description 페이지 크기 */
+                page_size?: number;
+                /** @description 필터 표현식 */
+                filter_expr?: string | null;
+            };
+            header?: never;
+            path: {
+                collection_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MetaSummaryResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    put_meta_v1_admin_collections__collection_name__meta_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MetaPutRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MetaModifyResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    patch_meta_v1_admin_collections__collection_name__meta_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MetaPatchRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MetaModifyResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_meta_detail_v1_admin_collections__collection_name__meta_detail_get: {
         parameters: {
             query?: {
                 /** @description 페이지 번호 */
@@ -9442,7 +10368,7 @@ export interface operations {
             };
         };
     };
-    get_vector_collection_data_v1_admin_collections__collection_name__vector_data_get: {
+    get_vector_v1_admin_collections__collection_name__vector_get: {
         parameters: {
             query?: {
                 /** @description 페이지 번호 */
@@ -9515,7 +10441,7 @@ export interface operations {
             };
         };
     };
-    upsert_collection_data_endpoint_v1_admin_collections__collection_name__data_put: {
+    put_vector_v1_admin_collections__collection_name__vector_put: {
         parameters: {
             query?: never;
             header?: never;
@@ -9526,7 +10452,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DataUpsertRequestDTO"];
+                "application/json": components["schemas"]["VectorPutRequestDTO"];
             };
         };
         responses: {
@@ -9536,7 +10462,77 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DataUpsertResponseDTO"];
+                    "application/json": components["schemas"]["VectorModifyResponseDTO"];
+                };
+            };
+            /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증 실패 - 유효한 인증 정보가 필요합니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 권한 부족 - 관리자 권한이 필요합니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 찾을 수 없음 - 요청된 리소스가 존재하지 않습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 서버 오류 - 서버 내부 오류가 발생했습니다. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    patch_vector_v1_admin_collections__collection_name__vector_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VectorPatchRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VectorModifyResponseDTO"];
                 };
             };
             /** @description 잘못된 요청 - 요청 매개변수가 유효하지 않습니다. */

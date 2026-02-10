@@ -1,14 +1,14 @@
 import { paths } from "@/shared/types/api/indexing";
 import axiosInstance from "@/shared/utils/axiosInstance";
 
-type GetVectorDataResponse =
-  paths["/v1/admin/collections/{collection_name}/vector-data"]["get"]["responses"]["200"]["content"]["application/json"];
+export type GetVectorDataResponse =
+  paths["/v1/admin/collections/{collection_name}/vector"]["get"]["responses"]["200"]["content"]["application/json"];
 
 type GetVectorDataParams =
-  paths["/v1/admin/collections/{collection_name}/vector-data"]["get"]["parameters"]["path"];
+  paths["/v1/admin/collections/{collection_name}/vector"]["get"]["parameters"]["path"];
 
 type GetVectorDataQueryParams =
-  paths["/v1/admin/collections/{collection_name}/vector-data"]["get"]["parameters"]["query"];
+  paths["/v1/admin/collections/{collection_name}/vector"]["get"]["parameters"]["query"];
 
 const getVectorData = async (
   params: GetVectorDataParams,
@@ -16,7 +16,7 @@ const getVectorData = async (
 ) => {
   try {
     const response = await axiosInstance.indexing.get<GetVectorDataResponse>(
-      `/admin/collections/${params.collection_name}/vector-data`,
+      `/admin/collections/${params.collection_name}/vector`,
       {
         params: queryParams,
       }
@@ -28,4 +28,3 @@ const getVectorData = async (
 };
 
 export default getVectorData;
-export type { GetVectorDataResponse };
