@@ -66,12 +66,13 @@ export default function IndexingPage() {
   });
 
   // 삭제 mutation
-  const { mutate: deleteCollection, isPending: isDeleting } = useDeleteCollection({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["collections"] });
-      setDeleteTarget(null);
-    },
-  });
+  const { mutate: deleteCollection, isPending: isDeleting } =
+    useDeleteCollection({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["collections"] });
+        setDeleteTarget(null);
+      },
+    });
 
   // 삭제 핸들러
   const handleDelete = () => {
@@ -167,23 +168,24 @@ export default function IndexingPage() {
                     className="group cursor-pointer transition-colors hover:bg-muted/50"
                     onClick={() => {
                       router.push(
-                        `/studio/data/indexing/${encodeURIComponent(collection.collection_name)}`
+                        `/studio/data/indexing/${encodeURIComponent(
+                          collection.collection_name
+                        )}`
                       );
                     }}
                   >
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div
-                          className={`flex h-9 w-9 items-center justify-center rounded-lg ${getStyle(collection.db_type)}`}
+                          className={`flex h-9 w-9 items-center justify-center rounded-lg ${getStyle(
+                            collection.db_type
+                          )}`}
                         >
                           {getIcon(collection.db_type)}
                         </div>
                         <div>
                           <p className="font-medium">
                             {collection.collection_name}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Milvus Collection
                           </p>
                         </div>
                       </div>
@@ -237,8 +239,8 @@ export default function IndexingPage() {
           <p className="text-sm text-muted-foreground">
             전체 {formatNumber(collectionsData.total)}개 중{" "}
             {formatNumber((page - 1) * pageSize + 1)}-
-            {formatNumber(Math.min(page * pageSize, collectionsData.total))}
-            개 표시
+            {formatNumber(Math.min(page * pageSize, collectionsData.total))}개
+            표시
           </p>
           <Pagination
             currentPage={page}
