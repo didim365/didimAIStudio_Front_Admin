@@ -40,11 +40,6 @@ type MenuItem =
     };
 
 const MENU: MenuItem[] = [
-  // {
-  //   name: "대시보드",
-  //   href: "/dashboard",
-  //   icon: LayoutDashboard,
-  // },
   {
     name: "회원 관리",
     href: "/users",
@@ -153,7 +148,6 @@ const MENU: MenuItem[] = [
       },
     ],
   },
-  // { name: "문서 관리", href: "/documents", icon: FileText },
 ];
 
 export default MENU;

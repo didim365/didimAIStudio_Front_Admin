@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import {
   Select,
@@ -17,9 +19,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/ui/alert-dialog";
 import { Badge } from "@/shared/ui/badge";
-import { Database, Layers } from "lucide-react";
+import { Button } from "@/shared/ui/button";
+import { Database, Layers, Trash2, Loader2 } from "lucide-react";
 import { useGetCollections } from "../_hooks/useGetCollections";
+import { useDeleteCollection } from "../_hooks/useDeleteCollection";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
 import { formatNumber } from "@/shared/utils/formatNumber";
@@ -29,7 +43,14 @@ import { getStyle } from "../_utils/getStyle";
 
 export default function IndexingPage() {
   const router = useRouter();
-  
+  const queryClient = useQueryClient();
+
+  // 삭제 모달 상태
+  const [deleteTarget, setDeleteTarget] = useState<{
+    collection_name: string;
+    row_count: number;
+  } | null>(null);
+
   // URL 쿼리 파라미터 관리
   const [page, setPage] = useQueryParam<number>("page", 1);
   const [pageSize, setPageSize] = useQueryParam<number>("pageSize", 20);
@@ -43,6 +64,25 @@ export default function IndexingPage() {
     page,
     page_size: pageSize,
   });
+
+  // 삭제 mutation
+  const { mutate: deleteCollection, isPending: isDeleting } =
+    useDeleteCollection({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["collections"] });
+        setDeleteTarget(null);
+      },
+    });
+
+  // 삭제 핸들러
+  const handleDelete = () => {
+    if (!deleteTarget) return;
+    deleteCollection({
+      collection_name: deleteTarget.collection_name,
+      filter_expr: "",
+      preview: false,
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -113,8 +153,11 @@ export default function IndexingPage() {
                   <TableHead className="w-[15%] min-w-[100px] text-center">
                     그룹 ID
                   </TableHead>
-                  <TableHead className="w-[20%] min-w-[120px] text-right">
+                  <TableHead className="w-[15%] min-w-[120px] text-right">
                     레코드 수
+                  </TableHead>
+                  <TableHead className="w-[5%] min-w-[60px] text-center">
+                    삭제
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -125,23 +168,24 @@ export default function IndexingPage() {
                     className="group cursor-pointer transition-colors hover:bg-muted/50"
                     onClick={() => {
                       router.push(
-                        `/studio/data/indexing/${encodeURIComponent(collection.collection_name)}`
+                        `/studio/data/indexing/${encodeURIComponent(
+                          collection.collection_name
+                        )}`
                       );
                     }}
                   >
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div
-                          className={`flex h-9 w-9 items-center justify-center rounded-lg ${getStyle(collection.db_type)}`}
+                          className={`flex h-9 w-9 items-center justify-center rounded-lg ${getStyle(
+                            collection.db_type
+                          )}`}
                         >
                           {getIcon(collection.db_type)}
                         </div>
                         <div>
                           <p className="font-medium">
                             {collection.collection_name}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Milvus Collection
                           </p>
                         </div>
                       </div>
@@ -165,6 +209,22 @@ export default function IndexingPage() {
                         {formatNumber(collection.row_count)}
                       </span>
                     </TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteTarget({
+                            collection_name: collection.collection_name,
+                            row_count: collection.row_count,
+                          });
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -179,8 +239,8 @@ export default function IndexingPage() {
           <p className="text-sm text-muted-foreground">
             전체 {formatNumber(collectionsData.total)}개 중{" "}
             {formatNumber((page - 1) * pageSize + 1)}-
-            {formatNumber(Math.min(page * pageSize, collectionsData.total))}
-            개 표시
+            {formatNumber(Math.min(page * pageSize, collectionsData.total))}개
+            표시
           </p>
           <Pagination
             currentPage={page}
@@ -190,6 +250,42 @@ export default function IndexingPage() {
           />
         </div>
       )}
+
+      {/* 삭제 확인 모달 */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>컬렉션 삭제</AlertDialogTitle>
+            <AlertDialogDescription>
+              <span className="font-semibold text-foreground">
+                {deleteTarget?.collection_name}
+              </span>{" "}
+              컬렉션의 모든 데이터({formatNumber(deleteTarget?.row_count ?? 0)}
+              개)를 삭제하시겠습니까?
+              <br />
+              <span className="text-destructive">
+                이 작업은 되돌릴 수 없습니다.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  삭제 중...
+                </>
+              ) : (
+                "삭제"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
