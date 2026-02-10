@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteGroup } from "../_hooks/useDeleteGroup";
+import { useDeleteGroupMember } from "../_hooks/useDeleteGroupMember";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
@@ -64,11 +65,20 @@ function GroupPage({ group }: GroupPageProps) {
     onSuccess: () => {
       // 그룹 목록 쿼리 무효화
       queryClient.invalidateQueries({
-        queryKey: ["groups"],
+        queryKey: ["admin", "groups"],
       });
       router.push("/groups");
     },
   });
+
+  // 그룹 멤버 제거 mutation
+  const { mutate: deleteGroupMember, isPending: isDeletingMember } =
+    useDeleteGroupMember({
+      onSuccess: () => {
+        setMemberToDelete(null);
+        router.refresh();
+      },
+    });
 
   const handleDelete = () => {
     deleteGroup({ group_id: group.id });
@@ -280,16 +290,12 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">매니저</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {group.manager ? (
                       <Link
-                        href={`/users/${group.manager}`}
+                        href={`/users/${group.manager?.user_id}`}
                         className="text-primary hover:underline cursor-pointer"
                       >
-                        #{group.manager}
+                        {group.manager?.user_name}
                       </Link>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
                   </p>
                 </div>
 
@@ -301,10 +307,10 @@ function GroupPage({ group }: GroupPageProps) {
                   </div>
                   <p className="text-lg font-semibold pl-6">
                     <Link
-                      href={`/users/${group.creator}`}
+                      href={`/users/${group.creator.user_id}`}
                       className="text-primary hover:underline cursor-pointer"
                     >
-                      #{group.creator}
+                      {group.creator.user_name}
                     </Link>
                   </p>
                 </div>
@@ -316,11 +322,7 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">역할</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {group.role_id ? (
-                      <span>#{group.role_id}</span>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
+                    <span>#{group.role_id}</span>
                   </p>
                 </div>
 
@@ -342,7 +344,7 @@ function GroupPage({ group }: GroupPageProps) {
                     <span className="font-medium">마지막 업데이트</span>
                   </div>
                   <p className="text-lg font-semibold pl-6">
-                    {group.updated_at ? formatDate(group.updated_at) : "-"}
+                    {formatDate(group.updated_at)}
                   </p>
                 </div>
               </div>
@@ -424,7 +426,7 @@ function GroupPage({ group }: GroupPageProps) {
       <AlertDialog
         open={!!memberToDelete}
         onOpenChange={(open) => {
-          if (!open) setMemberToDelete(null);
+          if (!open && !isDeletingMember) setMemberToDelete(null);
         }}
       >
         <AlertDialogContent>
@@ -443,21 +445,24 @@ function GroupPage({ group }: GroupPageProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeletingMember}>
+              취소
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
-                // TODO: API 구현 후 삭제 로직 추가
-                // deleteMemberMutation.mutate({
-                //   group_id: Number(groupId),
-                //   user_id: memberToDelete.id,
-                // });
-                setMemberToDelete(null);
+                if (memberToDelete) {
+                  deleteGroupMember({
+                    group_id: group.id,
+                    user_id: memberToDelete.id,
+                  });
+                }
               }}
+              disabled={isDeletingMember}
               className="bg-destructive hover:bg-destructive/90"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              제거
+              {isDeletingMember ? "제거 중..." : "제거"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -112,17 +112,6 @@ describe("GroupAddPage", () => {
     expect(screen.getByText(/그룹 타입/)).toBeInTheDocument();
   });
 
-  it("생성자 정보가 자동으로 표시된다", () => {
-    renderWithProviders(
-      <GroupAddPage myInfo={mockMyInfo} roles={mockRoles} />
-    );
-
-    const creatorInput = screen.getByLabelText(/생성자/);
-    expect(creatorInput).toBeInTheDocument();
-    expect(creatorInput).toHaveValue("테스트 사용자");
-    expect(creatorInput).toBeDisabled();
-  });
-
   it("역할 선택 필드가 표시된다", () => {
     renderWithProviders(
       <GroupAddPage myInfo={mockMyInfo} roles={mockRoles} />
@@ -143,12 +132,12 @@ describe("GroupAddPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("그룹 계층 구조 섹션이 표시된다", () => {
+  it("관리자 및 그룹 계층 구조 섹션이 표시된다", () => {
     renderWithProviders(
       <GroupAddPage myInfo={mockMyInfo} roles={mockRoles} />
     );
 
-    expect(screen.getByText("그룹 계층 구조")).toBeInTheDocument();
+    expect(screen.getByText("관리자 및 그룹 계층 구조")).toBeInTheDocument();
     expect(screen.getByText("상위 그룹")).toBeInTheDocument();
     expect(screen.getByText("하위 그룹")).toBeInTheDocument();
   });

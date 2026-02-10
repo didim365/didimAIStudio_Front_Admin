@@ -3,10 +3,10 @@ import axiosInstance from "@/shared/utils/axiosInstance";
 
 // API 타입 추출
 type PostGroupsResponse =
-  paths["/api/v1/admin/groups/"]["post"]["responses"]["201"]["content"]["application/json"];
+  paths["/api/v1/admin/groups"]["post"]["responses"]["201"]["content"]["application/json"];
 
 type PostGroupsRequest =
-  paths["/api/v1/admin/groups/"]["post"]["requestBody"]["content"]["application/json"];
+  paths["/api/v1/admin/groups"]["post"]["requestBody"]["content"]["application/json"];
 
 /**
  * 그룹 생성 API (Admin 전용)

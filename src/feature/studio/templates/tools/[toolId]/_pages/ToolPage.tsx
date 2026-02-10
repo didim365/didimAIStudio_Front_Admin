@@ -366,7 +366,7 @@ function ToolPage({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Wrench className="h-3.5 w-3.5" />
-                    <span className="font-medium">도구 이름</span>
+                    <span className="font-medium">도구명</span>
                   </div>
                   <p className="text-base font-semibold pl-5">{tool.name}</p>
                 </div>
@@ -376,7 +376,7 @@ function ToolPage({
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Code2 className="h-3.5 w-3.5" />
-                      <span className="font-medium">정의 이름</span>
+                      <span className="font-medium">시스템 내부 식별자</span>
                     </div>
                     <p className="text-base font-mono pl-5">
                       {tool.definition_name}

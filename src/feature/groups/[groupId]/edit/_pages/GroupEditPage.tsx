@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePatchGroup } from "../_hooks/usePatchGroup";
 import GroupSelect from "../../../_components/GroupSelect";
 import ManagerSelect from "../../../_components/ManagerSelect";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Badge } from "@/shared/ui/badge";
+import { Card, CardContent } from "@/shared/ui/card";
 import {
   Building2,
   ArrowLeft,
   Save,
   FolderTree,
   Shield,
-  Hash,
   Network,
+  Users,
+  UserCog,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -28,16 +28,12 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { useRouter } from "next/navigation";
-import {
-  getGroupTypeLabel,
-  GROUP_TYPE_ICONS,
-  GROUP_TYPE_COLORS,
-  GROUP_TYPE_OPTIONS,
-} from "../../../_constants/groupType";
+import { GROUP_TYPE_OPTIONS } from "../../../_constants/groupType";
 import { GetGroupResponse } from "../../_api/getGroup";
+import { PatchGroupRequest } from "../_api/patchGroup";
 import { GetRolesResponse } from "@/feature/roles/_api/getRoles";
-import { useGetGroups } from "../../../_hooks/useGetGroups";
 import Link from "next/link";
+import { Alert, AlertDescription } from "@/shared/ui/alert";
 
 export function GroupEditPage({
   group,
@@ -49,44 +45,22 @@ export function GroupEditPage({
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  // 현재 그룹의 하위 그룹을 가져오기 위한 쿼리
-  const { data: groupsData } = useGetGroups({
-    page: 1,
-    page_size: 100,
-  });
-
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<
+    Omit<PatchGroupRequest, "child_group_ids"> & { child_group_ids: number[] }
+  >({
     group_name: group.group_name,
-    group_type: group.group_type as
-      | "COMPANY"
-      | "DEPARTMENT"
-      | "TEAM"
-      | "PERSONAL",
+    group_type: group.group_type,
     description: group.description || "",
     parent_group_id: group.parent_group_id || null,
-    manager: group.manager || null,
+    manager: group.manager?.user_id ?? null,
     role_id: group.role_id || null,
-    child_group_ids: [] as number[],
+    child_group_ids: group.child_groups?.map((g) => g.id) || [],
   });
-
-  // 하위 그룹 초기값 설정
-  useEffect(() => {
-    if (groupsData?.items) {
-      // 현재 그룹의 하위 그룹 ID 목록을 초기값으로 설정
-      const childGroupIds = groupsData.items
-        .filter((g) => g.parent_group_id === group.id)
-        .map((g) => g.id);
-      setFormData((prev) => ({
-        ...prev,
-        child_group_ids: childGroupIds,
-      }));
-    }
-  }, [groupsData, group.id]);
 
   const { mutate: updateGroup, isPending: isUpdating } = usePatchGroup({
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["groups"],
+        queryKey: ["admin", "groups"],
       });
 
       router.push(`/groups/${group.id}`);
@@ -110,11 +84,6 @@ export function GroupEditPage({
     });
   };
 
-  const GroupTypeIcon = GROUP_TYPE_ICONS[formData.group_type] || Building2;
-  const groupTypeColor =
-    GROUP_TYPE_COLORS[formData.group_type] ||
-    "bg-gray-100 text-gray-700 border-gray-200";
-
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-6">
@@ -132,10 +101,13 @@ export function GroupEditPage({
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">
+              <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+                <Users className="h-8 w-8" />
                 그룹 정보 수정
               </h1>
-              <p className="text-muted-foreground">그룹 ID: {group.id}</p>
+              <p className="text-muted-foreground mt-1">
+                그룹 정보를 수정합니다
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -146,81 +118,63 @@ export function GroupEditPage({
           </div>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Group Info Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5" />
-                그룹 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col md:flex-row gap-6">
-                {/* Icon Preview */}
-                <div className="flex flex-col items-center gap-4">
-                  <div className="h-32 w-32 border-4 border-background shadow-lg rounded-2xl flex items-center justify-center">
-                    <GroupTypeIcon className="h-16 w-16 text-primary" />
-                  </div>
-                  <Badge className={`${groupTypeColor} border`}>
-                    {getGroupTypeLabel(formData.group_type)}
-                  </Badge>
+        {/* Main Content - 통합 Card */}
+        <Card className="overflow-hidden">
+          <CardContent className="p-0">
+            {/* 기본 정보 섹션 */}
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
+                  <Building2 className="h-5 w-5 text-primary" />
                 </div>
+                <div>
+                  <h3 className="text-lg font-semibold">기본 정보</h3>
+                  <p className="text-sm text-muted-foreground">
+                    그룹의 기본적인 정보를 수정합니다
+                  </p>
+                </div>
+              </div>
 
-                {/* Group Form Grid */}
-                <div className="flex-1 grid gap-4 md:grid-cols-2">
-                  {/* Group ID (Read-only) */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="group_id"
-                      className="flex items-center gap-2"
-                    >
-                      <Hash className="h-4 w-4" />
-                      <span>그룹 ID</span>
-                    </Label>
-                    <Input
-                      id="group_id"
-                      value={group.id}
-                      disabled
-                      className="bg-muted"
-                    />
-                  </div>
-
-                  {/* Group Name */}
+              <div className="space-y-6">
+                {/* 첫 번째 행: 그룹명, 그룹 타입, 역할 */}
+                <div className="grid gap-4 md:grid-cols-3">
+                  {/* 그룹명 */}
                   <div className="space-y-2">
                     <Label
                       htmlFor="group_name"
                       className="flex items-center gap-2"
                     >
-                      <Building2 className="h-4 w-4" />
+                      <Users className="h-4 w-4 text-muted-foreground" />
                       <span>그룹명 *</span>
                     </Label>
                     <Input
                       id="group_name"
-                      value={formData.group_name}
+                      value={formData.group_name ?? ""}
                       onChange={(e) =>
                         setFormData({ ...formData, group_name: e.target.value })
                       }
-                      placeholder="그룹명을 입력하세요"
+                      placeholder="예: 개발팀"
                       required
                     />
                   </div>
 
-                  {/* Group Type */}
+                  {/* 그룹 타입 */}
                   <div className="space-y-2">
                     <Label
                       htmlFor="group_type"
                       className="flex items-center gap-2"
                     >
-                      <Building2 className="h-4 w-4" />
+                      <Network className="h-4 w-4 text-muted-foreground" />
                       <span>그룹 타입 *</span>
                     </Label>
                     <Select
-                      value={formData.group_type}
-                      onValueChange={(
-                        value: "COMPANY" | "DEPARTMENT" | "TEAM" | "PERSONAL"
-                      ) => setFormData({ ...formData, group_type: value })}
+                      value={formData.group_type ?? undefined}
+                      onValueChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          group_type: value as PatchGroupRequest["group_type"],
+                        })
+                      }
                       required
                     >
                       <SelectTrigger id="group_type" className="w-full">
@@ -233,7 +187,7 @@ export function GroupEditPage({
                             <SelectItem key={option.value} value={option.value}>
                               <div className="flex items-center gap-2">
                                 <Icon className="h-4 w-4" />
-                                {option.label}
+                                <span>{option.label}</span>
                               </div>
                             </SelectItem>
                           );
@@ -242,13 +196,13 @@ export function GroupEditPage({
                     </Select>
                   </div>
 
-                  {/* Role */}
+                  {/* 역할 */}
                   <div className="space-y-2">
                     <Label
                       htmlFor="role_id"
                       className="flex items-center gap-2"
                     >
-                      <Shield className="h-4 w-4" />
+                      <Shield className="h-4 w-4 text-muted-foreground" />
                       <span>역할</span>
                     </Label>
                     <Select
@@ -267,67 +221,99 @@ export function GroupEditPage({
                         <SelectItem value="none">미지정</SelectItem>
                         {roles.map((role) => (
                           <SelectItem key={role.id} value={role.id.toString()}>
-                            {role.role_name}
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">
+                                {role.role_name}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {role.description}
+                              </span>
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
 
-                  {/* Description */}
-                  <div className="space-y-2 md:col-span-2">
-                    <Label
-                      htmlFor="description"
-                      className="flex items-center gap-2"
-                    >
-                      <Building2 className="h-4 w-4" />
-                      <span>설명</span>
-                    </Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) =>
+                {/* 두 번째 행: 설명 */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="description"
+                    className="flex items-center gap-2"
+                  >
+                    <span>설명</span>
+                  </Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description ?? ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="그룹에 대한 설명을 입력하세요"
+                    rows={3}
+                    className="resize-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 구분선 */}
+            <div className="border-t border-border" />
+
+            {/* 관리자 및 그룹 계층 구조 섹션 */}
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-500/10">
+                  <FolderTree className="h-5 w-5 text-blue-500" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">
+                    관리자 및 그룹 계층 구조
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    그룹 관리자와 상하위 관계를 설정합니다
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-3">
+                {/* 관리자 */}
+                <div className="space-y-3 flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <UserCog className="h-4 w-4 text-muted-foreground" />
+                    <Label className="font-medium">관리자</Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    그룹을 관리할 담당자를 지정합니다.
+                  </p>
+                  <div className="border rounded-lg p-4 bg-muted/20 flex-1">
+                    <ManagerSelect
+                      value={formData.manager ?? undefined}
+                      onChange={(value) =>
                         setFormData({
                           ...formData,
-                          description: e.target.value,
+                          manager: value ?? null,
                         })
                       }
-                      placeholder="그룹에 대한 설명을 입력하세요"
-                      rows={4}
-                      className="resize-none"
                     />
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* 계층 Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FolderTree className="h-5 w-5" />
-                그룹 계층 구조
-              </CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                그룹 간의 상하위 관계를 설정합니다
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-8 md:grid-cols-2">
                 {/* 상위 그룹 */}
-                <div className="space-y-3">
-                  <div className="space-y-1.5">
-                    <Label className="flex items-center gap-2 text-base font-semibold">
-                      <FolderTree className="h-4 w-4 text-primary" />
-                      상위 그룹
-                    </Label>
-                    <p className="text-xs text-muted-foreground pl-6">
-                      이 그룹이 속할 상위 그룹을 선택하세요. 선택하지 않으면
-                      최상위 그룹으로 설정됩니다.
-                    </p>
+                <div className="space-y-3 flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <FolderTree className="h-4 w-4 text-muted-foreground" />
+                    <Label className="font-medium">상위 그룹</Label>
                   </div>
-                  <div className="border rounded-lg p-4 bg-muted/30">
+                  <p className="text-xs text-muted-foreground">
+                    이 그룹이 속할 상위 그룹을 선택하세요. 선택하지 않으면
+                    최상위 그룹으로 설정됩니다.
+                  </p>
+                  <div className="border rounded-lg p-4 bg-muted/20 flex-1">
                     <GroupSelect
                       value={formData.parent_group_id ?? undefined}
                       onChange={(value) =>
@@ -338,24 +324,21 @@ export function GroupEditPage({
                         })
                       }
                       multiSelect={false}
-                      showSelectedBadges={false}
                       excludeId={group.id}
                     />
                   </div>
                 </div>
 
                 {/* 하위 그룹 */}
-                <div className="space-y-3">
-                  <div className="space-y-1.5">
-                    <Label className="flex items-center gap-2 text-base font-semibold">
-                      <Network className="h-4 w-4 text-primary" />
-                      하위 그룹
-                    </Label>
-                    <p className="text-xs text-muted-foreground pl-6">
-                      이 그룹의 하위 그룹으로 포함할 그룹을 다중 선택하세요.
-                    </p>
+                <div className="space-y-3 flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <Network className="h-4 w-4 text-muted-foreground" />
+                    <Label className="font-medium">하위 그룹</Label>
                   </div>
-                  <div className="border rounded-lg p-4 bg-muted/30">
+                  <p className="text-xs text-muted-foreground">
+                    이 그룹의 하위 그룹으로 포함할 그룹을 다중 선택하세요.
+                  </p>
+                  <div className="border rounded-lg p-4 bg-muted/20 flex-1">
                     <GroupSelect
                       value={formData.child_group_ids}
                       onChange={(value) =>
@@ -365,37 +348,23 @@ export function GroupEditPage({
                         }))
                       }
                       multiSelect={true}
-                      showSelectedBadges={true}
                       excludeId={group.id}
-                      selectedLabel={`선택된 하위 그룹 (${formData.child_group_ids.length}개)`}
                     />
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* 관리 정보 Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                관리자
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ManagerSelect
-                value={formData.manager ?? undefined}
-                onChange={(value) =>
-                  setFormData({
-                    ...formData,
-                    manager: value ?? null,
-                  })
-                }
-              />
-            </CardContent>
-          </Card>
-        </div>
+        {/* Info Alert */}
+        <Alert>
+          <AlertDescription className="flex items-center gap-2">
+            <span className="text-sm">
+              * 표시된 필드는 필수 입력 항목입니다.
+            </span>
+          </AlertDescription>
+        </Alert>
       </div>
     </form>
   );
