@@ -19,13 +19,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import {
-  Layers,
-  Hash,
-  FolderOpen,
-  Coins,
-  Calendar,
-} from "lucide-react";
+import { Layers, Hash, FolderOpen, Coins, Calendar } from "lucide-react";
 import { useGetVectorData } from "../_hooks/useGetVectorData";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
@@ -53,16 +47,6 @@ export default function VectorListPage() {
   const handleRowClick = (item: VectorDataItem) => {
     setSelectedItem(item);
     setIsDetailOpen(true);
-  };
-
-  const handleRowKeyDown = (
-    e: React.KeyboardEvent<HTMLTableRowElement>,
-    item: VectorDataItem
-  ) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handleRowClick(item);
-    }
   };
 
   // URL 쿼리 파라미터 관리
@@ -130,7 +114,9 @@ export default function VectorListPage() {
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="w-[5%] text-center">ID</TableHead>
                     <TableHead className="w-[25%]">제목</TableHead>
-                    <TableHead className="w-[10%] text-center">카테고리</TableHead>
+                    <TableHead className="w-[10%] text-center">
+                      카테고리
+                    </TableHead>
                     <TableHead className="w-[8%] text-center">페이지</TableHead>
                     <TableHead className="w-[8%] text-center">청크</TableHead>
                     <TableHead className="w-[8%] text-right">토큰</TableHead>
@@ -145,10 +131,11 @@ export default function VectorListPage() {
                       key={item.id}
                       role="button"
                       tabIndex={0}
-                      aria-label={`${item.title || item.filename} 청크 #${item.chunk_index} 상세 정보 보기`}
+                      aria-label={`${item.title || item.filename} 청크 #${
+                        item.chunk_index
+                      } 상세 정보 보기`}
                       className="group transition-colors hover:bg-muted/50 hover:cursor-pointer"
                       onClick={() => handleRowClick(item)}
-                      onKeyDown={(e) => handleRowKeyDown(e, item)}
                     >
                       {/* ID */}
                       <TableCell className="text-center">
@@ -202,8 +189,7 @@ export default function VectorListPage() {
                       {/* 비용 */}
                       <TableCell className="text-right">
                         <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                          <Coins className="h-3 w-3" />
-                          ${item.cost.toFixed(4)}
+                          <Coins className="h-3 w-3" />${item.cost.toFixed(4)}
                         </span>
                       </TableCell>
 
