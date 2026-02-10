@@ -86,9 +86,9 @@ export function ErrorDisplay({
             </Button>
           )}
           <Button asChild size="lg">
-            <Link href="/dashboard">
+            <Link href="/users">
               <Home className="h-4 w-4 mr-2" />
-              대시보드로 이동
+              홈으로 이동
             </Link>
           </Button>
         </div>

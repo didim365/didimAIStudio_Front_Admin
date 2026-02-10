@@ -17,8 +17,6 @@ const SEGMENT_LABELS: Record<string, string> = {
   roles: "역할 관리",
   privileges: "권한 관리",
   studio: "스튜디오",
-  dashboard: "대시보드",
-  settings: "설정",
 
   // 스튜디오 하위
   templates: "템플릿 관리",
