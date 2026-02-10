@@ -5,13 +5,13 @@ import { paths } from "@/shared/types/api/indexing";
 import getMetaCollections from "../_api/getMetaCollections";
 
 type GetMetaCollectionsResponse =
-  paths["/v1/admin/collections/{collection_name}/meta-data"]["get"]["responses"]["200"]["content"]["application/json"];
+  paths["/v1/admin/collections/{collection_name}/meta"]["get"]["responses"]["200"]["content"]["application/json"];
 
 type GetMetaCollectionsParams =
-  paths["/v1/admin/collections/{collection_name}/meta-data"]["get"]["parameters"]["path"];
+  paths["/v1/admin/collections/{collection_name}/meta"]["get"]["parameters"]["path"];
 
 type GetMetaCollectionsQueryParams =
-  paths["/v1/admin/collections/{collection_name}/meta-data"]["get"]["parameters"]["query"];
+  paths["/v1/admin/collections/{collection_name}/meta"]["get"]["parameters"]["query"];
 
 type GetMetaCollectionsResponseWithTotalPages = GetMetaCollectionsResponse & {
   totalPages: number;
