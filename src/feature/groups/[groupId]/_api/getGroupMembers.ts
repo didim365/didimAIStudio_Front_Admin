@@ -23,10 +23,10 @@ const getGroupMembers = async (
   params: GetGroupMembersParams
 ): Promise<GetGroupMembersResponse> => {
   try {
-    const { group_id, q, page, page_size } = params;
+    const { group_id, q, page, size } = params;
     const response = await axiosInstance.auth.get<GetGroupMembersResponse>(
       `/admin/groups/${group_id}/members`,
-      { params: { q, page, page_size } }
+      { params: { q, page, size } }
     );
     return response.data;
   } catch (error) {
