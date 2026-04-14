@@ -49,7 +49,7 @@ export function GroupsPage() {
     page,
     q: q || undefined,
     group_type: groupType === "ALL" ? undefined : groupType,
-    page_size: pageSize,
+    size: pageSize,
     sort_by: sortBy,
     sort_order: sortOrder,
   });

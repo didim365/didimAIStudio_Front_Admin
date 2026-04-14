@@ -1086,7 +1086,7 @@ export interface paths {
          * @description 관리자용 그룹 목록을 페이지네이션 및 검색 기능으로 조회합니다.
          *
          *     ### ⚠️ 필수 마이그레이션 항목 (Frontend)
-         *     - **페이지네이션 필드 변경**: 응답 명세가 `size` -> `page_size`로 변경되었습니다.
+         *     - **페이지네이션 필드 변경**: 응답 명세가 `page_size` -> `size`로 변경되었습니다.
          *     - **member_count 의미 변경**: 이제 `REMOVED` 상태를 제외한 **유효 회원만** 카운트합니다.
          *
          *     ### ✨ 선택적 마이그레이션 항목
@@ -1187,7 +1187,7 @@ export interface paths {
          *     명세 Section 4.7 준수: 삭제된 그룹의 멤버도 조회 가능.
          *
          *     ### ⚠️ 필수 마이그레이션 항목 (Frontend)
-         *     - **페이지네이션 필드 변경**: 응답 명세가 `size` -> `page_size`로 변경되었습니다.
+         *     - **페이지네이션 필드 변경**: 응답 명세가 `page_size` -> `size`로 변경되었습니다.
          *
          *     ### ✨ 선택적 마이그레이션 항목
          *     - **검색 기능**: `q` 파라미터를 통해 이름 또는 이메일로 검색이 가능합니다.
@@ -1653,6 +1653,7 @@ export interface components {
          *         456,
          *         789
          *       ],
+         *       "invoke_url": "https://aistudio-dev.didim365.com/v1/chat/completions/scenario-gateway/v1/invoke",
          *       "jwt_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
          *     }
          */
@@ -1662,6 +1663,11 @@ export interface components {
              * @description 생성된 API-Key JWT 토큰
              */
             jwt_token: string;
+            /**
+             * Invoke Url
+             * @description API 호출 URL (FS-9.2)
+             */
+            invoke_url: string;
             /**
              * Group Ids
              * @description 적용된 그룹 ID 목록
@@ -1678,11 +1684,12 @@ export interface components {
          * ApiKeyInfo
          * @description API-Key 정보 모델
          * @example {
-         *       "api_key_short": "eyJhbGciOiJIUzI1NiI...",
+         *       "api_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
          *       "created_at": "2024-01-01T12:00:00Z",
          *       "expired_at": "2024-12-31T23:59:59Z",
          *       "group_id": 111,
          *       "id": 1,
+         *       "invoke_url": "https://aistudio-dev.didim365.com/v1/chat/completions/scenario-gateway/v1/invoke",
          *       "is_active": true,
          *       "is_expired": false,
          *       "is_issuer_permission": false,
@@ -1698,10 +1705,15 @@ export interface components {
              */
             id: number;
             /**
-             * Api Key Short
-             * @description API-Key 앞 20자
+             * Api Key
+             * @description 생성된 API-Key JWT 전체 (FS-9.1)
              */
-            api_key_short: string;
+            api_key: string;
+            /**
+             * Invoke Url
+             * @description API 호출 URL (FS-9.2)
+             */
+            invoke_url: string;
             /**
              * User Id
              * @description 시나리오 생성자 ID
@@ -1763,11 +1775,12 @@ export interface components {
          * @example {
          *       "items": [
          *         {
-         *           "api_key_short": "eyJhbGciOiJIUzI1NiI...",
+         *           "api_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
          *           "created_at": "2024-01-01T12:00:00Z",
          *           "expired_at": "2024-12-31T23:59:59Z",
          *           "group_id": 111,
          *           "id": 1,
+         *           "invoke_url": "https://aistudio-dev.didim365.com/v1/chat/completions/scenario-gateway/v1/invoke",
          *           "is_active": true,
          *           "is_expired": false,
          *           "is_issuer_permission": false,
@@ -2346,11 +2359,11 @@ export interface components {
              */
             page: number;
             /**
-             * Page Size
+             * Size
              * @description 페이지당 항목 수
              * @default 20
              */
-            page_size: number;
+            size: number;
             /**
              * Total Pages
              * @description 전체 페이지 수
@@ -2378,11 +2391,11 @@ export interface components {
              */
             page: number;
             /**
-             * Page Size
+             * Size
              * @description 페이지당 항목 수
              * @default 20
              */
-            page_size: number;
+            size: number;
             /**
              * Total Pages
              * @description 전체 페이지 수
@@ -2410,11 +2423,11 @@ export interface components {
              */
             page: number;
             /**
-             * Page Size
+             * Size
              * @description 페이지당 항목 수
              * @default 20
              */
-            page_size: number;
+            size: number;
             /**
              * Total Pages
              * @description 전체 페이지 수
@@ -2442,11 +2455,11 @@ export interface components {
              */
             page: number;
             /**
-             * Page Size
+             * Size
              * @description 페이지당 항목 수
              * @default 20
              */
-            page_size: number;
+            size: number;
             /**
              * Total Pages
              * @description 전체 페이지 수
@@ -2474,11 +2487,11 @@ export interface components {
              */
             page: number;
             /**
-             * Page Size
+             * Size
              * @description 페이지당 항목 수
              * @default 20
              */
-            page_size: number;
+            size: number;
             /**
              * Total Pages
              * @description 전체 페이지 수
@@ -7100,7 +7113,7 @@ export interface operations {
                 /** @description 사용자 상태 (ACTIVE, INACTIVE, SUSPENDED) */
                 status?: string | null;
                 page?: number;
-                page_size?: number;
+                size?: number;
                 sort_by?: string;
                 sort_order?: string;
             };
@@ -7410,7 +7423,7 @@ export interface operations {
                 /** @description 삭제된 그룹 포함 여부 (Admin 전용, 기본값: false) */
                 include_deleted?: boolean;
                 page?: number;
-                page_size?: number;
+                size?: number;
                 sort_by?: string;
                 sort_order?: string;
             };
@@ -7684,7 +7697,7 @@ export interface operations {
                 /** @description 멤버 이름 또는 이메일로 검색 */
                 q?: string | null;
                 page?: number;
-                page_size?: number;
+                size?: number;
                 sort_by?: string;
                 sort_order?: string;
             };
@@ -8019,7 +8032,7 @@ export interface operations {
                 /** @description 역할명 또는 설명으로 검색 */
                 q?: string | null;
                 page?: number;
-                page_size?: number;
+                size?: number;
                 sort_by?: string;
                 sort_order?: string;
             };
@@ -8452,7 +8465,7 @@ export interface operations {
                 /** @description 액션 타입 필터 (READ, WRITE, EXECUTE, DELETE, UPDATE, PATCH) */
                 action_type?: components["schemas"]["ActionTypeEnum"] | null;
                 page?: number;
-                page_size?: number;
+                size?: number;
                 sort_by?: string;
                 sort_order?: string;
             };
@@ -8720,7 +8733,14 @@ export interface operations {
     dynamic_gateway_router_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description 기존 대화 스레드 ID */
+                "x-thread-id"?: string;
+                /** @description 사용자 ID */
+                "x-user-id"?: string;
+                /** @description 채널 유형 (예: SLACK, TEAMS, WEB_PUSH, EMAIL) */
+                "x-channel-type"?: string;
+            };
             path: {
                 service: string;
                 path: string;
@@ -8784,7 +8804,14 @@ export interface operations {
     dynamic_gateway_router_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description 채널 유형 (예: SLACK, TEAMS, WEB_PUSH, EMAIL) */
+                "x-channel-type"?: string;
+                /** @description 기존 대화 스레드 ID */
+                "x-thread-id"?: string;
+                /** @description 사용자 ID */
+                "x-user-id"?: string;
+            };
             path: {
                 service: string;
                 path: string;

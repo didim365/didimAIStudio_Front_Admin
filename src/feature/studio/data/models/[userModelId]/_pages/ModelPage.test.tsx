@@ -4,15 +4,14 @@ import ModelPage from "./ModelPage";
 
 const mockConfig = {
   user_model_id: 1,
-  id: 1,
   model_name: "테스트 모델",
   provider: "OpenAI",
-  deployment_type: "public_api",
+  deployment_type: "PUBLIC_API" as const,
   user_id: 123,
   is_active: true,
   created_at: "2024-01-01T00:00:00Z",
   updated_at: "2024-01-02T00:00:00Z",
-  model_id: "gpt-4",
+  model_id: 1,
 };
 
 describe("ModelPage", () => {

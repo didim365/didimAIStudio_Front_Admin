@@ -46,7 +46,7 @@ export default function AddMemberDialog({ group }: AddMemberDialogProps) {
   // 사용자 목록 조회
   const { data: users, isLoading: isLoadingUsers } = useGetUsers({
     page: userPage,
-    page_size: 10,
+    size: 10,
     q: searchQuery || undefined,
   });
   const joinedUserIds = group.members?.map((member) => member.user_id);

@@ -20,8 +20,11 @@ vi.mock("@/shared/hooks/useGetMyInfo", () => ({
   })),
 }));
 
-const mockSettings = [];
-const mockPersonas = { items: [], total: 0, page: 1, total_pages: 1 };
+import { GetSettingsResponse } from "@/feature/studio/data/models/_api/getSettings";
+import { GetMyPersonasResponse } from "@/feature/studio/data/personas/_api/getMyPersonas";
+
+const mockSettings = [] as unknown as GetSettingsResponse;
+const mockPersonas = { items: [], total: 0, page: 1, size: 10, total_pages: 1 } as unknown as GetMyPersonasResponse;
 
 describe("AgentAddPage (templates)", () => {
   it("페이지가 정상적으로 렌더링된다", () => {
