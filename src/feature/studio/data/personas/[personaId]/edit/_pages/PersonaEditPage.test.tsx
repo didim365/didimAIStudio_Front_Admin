@@ -12,12 +12,16 @@ vi.mock("../../_hooks/usePutMyPersona", () => ({
 
 const mockMyPersona = {
   id: 1,
-  user_id: 1,
+  user_id: "1",
   persona_data_id: 10,
   user_my_persona_title: "테스트 페르소나",
   user_my_persona_description: "테스트 설명",
   is_favorite: true,
+  has_scenario: true,
+  scenarios: [] as { [key: string]: unknown }[],
   count_scenario: 5,
+  has_agent: true,
+  agents: [] as { [key: string]: unknown }[],
   count_agent: 3,
   created_at: "2024-01-01T00:00:00Z",
   updated_at: "2024-01-02T00:00:00Z",

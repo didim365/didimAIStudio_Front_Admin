@@ -29,7 +29,7 @@ export default function GroupSelect({
   // 그룹 목록 조회
   const { data: groups, isLoading } = useGetGroups({
     page,
-    page_size: 10,
+    size: 10,
     q: searchQuery || undefined,
   });
 

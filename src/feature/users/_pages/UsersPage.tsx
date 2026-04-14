@@ -44,7 +44,7 @@ export default function UsersPage() {
     q: searchQuery || undefined,
     status: status !== "all" ? status : undefined,
     page,
-    page_size: pageSize,
+    size: pageSize,
     sort_by: sortBy,
     sort_order: sortOrder,
   });

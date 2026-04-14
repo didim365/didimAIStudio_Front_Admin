@@ -14,13 +14,12 @@ const mockUser = {
   email: "test@example.com",
   full_name: "홍길동",
   phone: "01012345678",
-  status: "ACTIVE" as const,
+  status: "ACTIVE",
   profile_image_url: null,
-  preferences: { theme: "dark", language: "ko" },
+  preferences: { theme: "dark", language: "ko" } as unknown as Record<string, never> | null,
   created_at: "2024-01-01T00:00:00Z",
   updated_at: "2024-01-02T00:00:00Z",
   last_login: "2024-01-03T00:00:00Z",
-  role_id: null,
 };
 
 describe("UserPage", () => {

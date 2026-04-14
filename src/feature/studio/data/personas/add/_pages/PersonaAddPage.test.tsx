@@ -25,8 +25,18 @@ vi.mock("@/feature/studio/templates/personas/_hooks/useGetPersonas", () => ({
 
 const mockMyInfo = {
   id: 1,
-  username: "testuser",
   email: "test@example.com",
+  full_name: "testuser",
+  created_at: "2024-01-01T00:00:00Z",
+  status: "ACTIVE",
+  roles: {
+    group_roles: [],
+    in_group_roles: [],
+    total_roles: [],
+  },
+  groups: {
+    groups: [],
+  },
 };
 
 describe("PersonaAddPage", () => {
