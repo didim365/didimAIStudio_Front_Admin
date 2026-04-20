@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, ChevronRight } from "lucide-react";
+import { LogOut, ChevronRight, BookOpen, ExternalLink } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { tokenStorage } from "@/shared/utils/tokenStorage";
 import MENU from "@/shared/constants/menu";
@@ -12,6 +12,7 @@ import { cn } from "@/shared/lib/utils";
 import {
   Sidebar as UISidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -223,6 +224,24 @@ export function Sidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+          asChild
+        >
+          <Link
+            href="https://didim365.gitbook.io/didimai-studio/undefined/undefined"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <BookOpen className="h-4 w-4" />
+            <span>메뉴얼</span>
+            <ExternalLink className="h-3 w-3 ml-auto" />
+          </Link>
+        </Button>
+      </SidebarFooter>
     </UISidebar>
   );
 }
