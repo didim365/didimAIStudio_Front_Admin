@@ -25,6 +25,7 @@
 # IDE
 .vscode/
 .idea/
+.claude/
 
 # production
 /build

@@ -88,11 +88,6 @@ const MENU: MenuItem[] = [
             ],
           },
           {
-            name: "도구 관리",
-            href: "/studio/templates/tools",
-            icon: Wrench,
-          },
-          {
             name: "페르소나 관리",
             href: "/studio/templates/personas",
             icon: User,

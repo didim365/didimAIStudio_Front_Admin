@@ -23,7 +23,11 @@ import { Badge } from "@/shared/ui/badge";
 import { RefreshCw, Search } from "lucide-react";
 import { useGetUserConfigs } from "../_hooks/useGetUserConfigs";
 import { cn } from "@/shared/lib/utils";
-import { STATUS_CONFIG, STATUS_OPTIONS } from "../_constants/containerConfigs";
+import {
+  REGISTRATION_STATUS_CONFIG,
+  REGISTRATION_STATUS_OPTIONS,
+  HEALTH_STATUS_CONFIG,
+} from "../_constants/registrationStatusConfigs";
 import { formatDate } from "@/shared/utils/formatDate";
 import { useQueryParam } from "@/shared/hooks/useQueryParams";
 import { Pagination } from "@/shared/ui/pagination";
@@ -38,8 +42,8 @@ export default function ToolsPage() {
   const [toolId, setToolId] = useQueryParam<string>("tool_id", "", {
     debounce: 300,
   });
-  const [containerStatus, setContainerStatus] = useQueryParam<string>(
-    "container_status",
+  const [registrationStatus, setRegistrationStatus] = useQueryParam<string>(
+    "registration_status",
     "all"
   );
   const [configName, setConfigName] = useQueryParam<string>("config_name", "", {
@@ -52,8 +56,8 @@ export default function ToolsPage() {
   const queryParams = {
     user_id: userId || undefined,
     tool_id: toolId ? Number(toolId) : undefined,
-    container_status:
-      containerStatus === "all" ? undefined : containerStatus || undefined,
+    registration_status:
+      registrationStatus === "all" ? undefined : registrationStatus || undefined,
     config_name: configName || undefined,
     page,
     size: 10,
@@ -76,9 +80,9 @@ export default function ToolsPage() {
     <div className="space-y-6">
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">컨테이너 관리</h1>
+        <h1 className="text-3xl font-bold tracking-tight">MCP 서버 등록 관리</h1>
         <p className="mt-2 text-slate-600">
-          전체 컨테이너의 상세 정보를 조회하고 관리합니다
+          외부 MCP 서버 등록 현황을 조회하고 관리합니다
         </p>
       </div>
 
@@ -121,20 +125,20 @@ export default function ToolsPage() {
                 </div>
               </div>
 
-              {/* 컨테이너 상태 필터 */}
+              {/* 등록 상태 필터 */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">
-                  컨테이너 상태
+                  등록 상태
                 </label>
                 <Select
-                  value={containerStatus}
-                  onValueChange={setContainerStatus}
+                  value={registrationStatus}
+                  onValueChange={setRegistrationStatus}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="상태 선택" />
                   </SelectTrigger>
                   <SelectContent>
-                    {STATUS_OPTIONS.map((option) => (
+                    {REGISTRATION_STATUS_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -167,7 +171,7 @@ export default function ToolsPage() {
                 <span className="font-semibold text-slate-900">
                   {data?.total ?? 0}
                 </span>
-                개의 컨테이너
+                개의 등록
                 {data && totalPages > 1 && (
                   <span className="ml-2">
                     (페이지 {data.page} / {totalPages})
@@ -190,10 +194,10 @@ export default function ToolsPage() {
         </CardContent>
       </Card>
 
-      {/* 컨테이너 테이블 */}
+      {/* 등록 테이블 */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">컨테이너 목록</CardTitle>
+          <CardTitle className="text-lg font-semibold">등록 목록</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="border rounded-lg">
@@ -204,19 +208,22 @@ export default function ToolsPage() {
                   <TableHead>설정 이름</TableHead>
                   <TableHead>도구 이름</TableHead>
                   <TableHead className="text-center">사용자 ID</TableHead>
-                  <TableHead className="text-center">상태</TableHead>
+                  <TableHead className="text-center">등록 상태</TableHead>
+                  <TableHead className="text-center">헬스 상태</TableHead>
                   <TableHead className="text-center">활성화</TableHead>
                   <TableHead className="text-center">생성 시간</TableHead>
-                  <TableHead className="text-center">수정 시간</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data?.items?.map((config, index) => {
-                  const statusConfig = config.container_status
-                    ? STATUS_CONFIG[
-                        config.container_status.toLowerCase() as keyof typeof STATUS_CONFIG
-                      ] || STATUS_CONFIG.pending
-                    : STATUS_CONFIG.pending;
+                  const statusConfig = config.registration_status
+                    ? REGISTRATION_STATUS_CONFIG[config.registration_status] ||
+                      null
+                    : null;
+
+                  const healthConfig = config.health_status
+                    ? HEALTH_STATUS_CONFIG[config.health_status] || null
+                    : null;
 
                   return (
                     <TableRow
@@ -245,7 +252,7 @@ export default function ToolsPage() {
                         </span>
                       </TableCell>
                       <TableCell className="text-center">
-                        {config.container_status ? (
+                        {statusConfig ? (
                           <Badge
                             variant={statusConfig.variant}
                             className={cn(
@@ -255,6 +262,22 @@ export default function ToolsPage() {
                           >
                             {statusConfig.icon}
                             {statusConfig.label}
+                          </Badge>
+                        ) : (
+                          <span className="text-sm text-slate-400">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {healthConfig ? (
+                          <Badge
+                            variant={healthConfig.variant}
+                            className={cn(
+                              "flex items-center gap-1 w-fit mx-auto",
+                              healthConfig.className
+                            )}
+                          >
+                            {healthConfig.icon}
+                            {healthConfig.label}
                           </Badge>
                         ) : (
                           <span className="text-sm text-slate-400">-</span>
@@ -272,13 +295,6 @@ export default function ToolsPage() {
                         <span className="text-xs text-slate-600">
                           {config.created_at
                             ? formatDate(config.created_at)
-                            : "-"}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <span className="text-xs text-slate-600">
-                          {config.updated_at
-                            ? formatDate(config.updated_at)
                             : "-"}
                         </span>
                       </TableCell>
