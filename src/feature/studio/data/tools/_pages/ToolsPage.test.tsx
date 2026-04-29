@@ -27,7 +27,7 @@ describe("ToolsPage", () => {
   it("페이지가 정상적으로 렌더링된다", () => {
     renderWithProviders(<ToolsPage />);
 
-    expect(screen.getByText("컨테이너 관리")).toBeInTheDocument();
+    expect(screen.getByText("MCP 서버 등록 관리")).toBeInTheDocument();
   });
 
   it("사용자 ID 검색 입력창이 표시된다", () => {
@@ -57,9 +57,9 @@ describe("ToolsPage", () => {
     expect(screen.getByText("새로고침")).toBeInTheDocument();
   });
 
-  it("컨테이너 목록 테이블이 표시된다", () => {
+  it("등록 목록 테이블이 표시된다", () => {
     renderWithProviders(<ToolsPage />);
 
-    expect(screen.getByText("컨테이너 목록")).toBeInTheDocument();
+    expect(screen.getByText("등록 목록")).toBeInTheDocument();
   });
 });

@@ -16,7 +16,10 @@ const mockConfig = {
   tool_id: 10,
   tool_name: "테스트 도구",
   config_name: "테스트 설정",
-  container_status: "running",
+  registration_status: "active",
+  health_status: "healthy",
+  endpoint_url: "https://mcp.example.com",
+  has_registry_api_key: true,
   is_active: true,
   has_secrets: true,
   config_schema_version: "1.0.0",
@@ -40,10 +43,10 @@ describe("ToolPage", () => {
     expect(screen.getByText("테스트 도구")).toBeInTheDocument();
   });
 
-  it("컨테이너 정보 카드가 표시된다", () => {
+  it("등록 정보 카드가 표시된다", () => {
     renderWithProviders(<ToolPage config={mockConfig} />);
 
-    expect(screen.getByText("컨테이너 정보")).toBeInTheDocument();
+    expect(screen.getByText("등록 정보")).toBeInTheDocument();
   });
 
   it("서버 설정 카드가 표시된다", () => {
