@@ -127,900 +127,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/mcp-tools/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 📋 도구 템플릿 목록 조회
-         * @description 등록된 모든 MCP 도구 템플릿의 목록을 페이지네이션과 함께 조회합니다.
-         *
-         *         🏛️ **도구 템플릿(공용) 관리 API**
-         *         - 모든 사용자가 참고할 수 있는 도구 메타데이터를 제공합니다
-         *         - 실제 사용을 위해서는 "내 도구 인스턴스" 생성이 필요합니다
-         *
-         *         💡 **다음 단계**:
-         *         - 원하는 도구를 찾았다면 `POST /v1/mcp-tools/{tool_id}/user-configs`로 내 설정을 생성하세요
-         */
-        get: operations["get_tools_v1_mcp_tools__get"];
-        put?: never;
-        /**
-         * MCP 도구 등록
-         * @description 새로운 MCP 도구를 등록합니다.
-         */
-        post: operations["create_tool_v1_mcp_tools__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * MCP 도구 통계 조회
-         * @description 전체 MCP 도구의 사용 통계를 조회합니다.
-         */
-        get: operations["get_tool_stats_v1_mcp_tools_stats_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/search": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * MCP 도구 검색
-         * @description 키워드, 카테고리, 제공업체 등으로 MCP 도구를 검색합니다. keyword 파라미터는 도구명, 표시명, 설명, 키워드에서 통합 검색됩니다.
-         */
-        get: operations["search_tools_v1_mcp_tools_search_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 특정 MCP 도구 조회
-         * @description ID로 특정 MCP 도구의 상세 정보를 조회합니다.
-         *
-         *         💡 **Transport 정보**: 응답에 포함된 transport 필드를 확인하여 설정 생성 시 참고하세요.
-         */
-        get: operations["get_tool_v1_mcp_tools__tool_id__get"];
-        /**
-         * MCP 도구 수정
-         * @description 기존 MCP 도구의 정보를 수정합니다.
-         */
-        put: operations["update_tool_v1_mcp_tools__tool_id__put"];
-        post?: never;
-        /**
-         * MCP 도구 삭제
-         * @description 기존 MCP 도구를 순차적으로 삭제합니다.
-         *
-         *         ## 삭제 프로세스 (Phase 5 개선 - 컨테이너 재시작 방지)
-         *         1. **Serving MCP 삭제 알림**: 먼저 도구 관리 중단을 Serving MCP에 알림
-         *         2. **사용자 설정 삭제**: 해당 도구와 연관된 모든 user_config 삭제
-         *         3. **도구 설정 삭제**: mcp_tool_config 테이블에서 설정 정보 삭제
-         *         4. **도구 정보 삭제**: mcp_tools 테이블에서 도구 정보 삭제
-         *
-         *         ## 개선된 특징
-         *         - ✅ Serving MCP에 먼저 삭제 알림으로 자동 재시작 방지
-         *         - ✅ 관련된 모든 데이터 순차적 정리
-         *         - ✅ 각 단계별 에러 핸들링
-         *         - ✅ 실패한 단계가 있어도 다음 단계 계속 진행
-         *         - ✅ 15초 대기로 컨테이너 정리 시간 확보
-         *
-         *         ⚠️ **주의**: 이 작업은 되돌릴 수 없습니다.
-         */
-        delete: operations["delete_tool_v1_mcp_tools__tool_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/config": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 🏛️ 도구 템플릿 설정 조회
-         * @description 특정 도구의 템플릿(공용) 설정을 조회합니다.
-         *
-         *         이 엔드포인트는 관리자가 등록한 MCP 도구의 기본 템플릿 설정을 제공합니다.
-         *         사용자는 이 템플릿을 참고하여 자신만의 개인화된 도구 인스턴스 설정을 생성할 수 있습니다.
-         *
-         *         💡 **다음 단계**:
-         *         - 이 템플릿 설정을 참고하여 `POST /v1/mcp-tools/{tool_id}/user-configs` 엔드포인트로 자신만의 설정을 생성하세요.
-         *         - 생성된 개인화 설정은 `GET /v1/mcp-tools/{tool_id}/user-configs/{config_id}`로 조회할 수 있습니다.
-         *
-         *         ✅ **Step02 수정**: mcp_tool_config 우선 조회 (PUT 후 GET 시 변경값 반환)
-         */
-        get: operations["get_tool_config_v1_mcp_tools__tool_id__config_get"];
-        /**
-         * 도구 설정 업데이트
-         * @description 특정 도구의 JSON 기반 확장 설정을 업데이트합니다.
-         *
-         *         ✅ **Step02 수정**: GET과 동일한 응답 구조 반환
-         */
-        put: operations["update_tool_config_v1_mcp_tools__tool_id__config_put"];
-        /**
-         * 도구 설정 생성
-         * @description 특정 도구의 JSON 기반 확장 설정을 생성합니다.
-         *
-         *         ## 지원하는 Transport 방식
-         *         - **streamable_http**: HTTP 스트리밍 방식 (기본값, LangGraph 권장)
-         *         - **sse**: Server-Sent Events 방식 (실시간 스트리밍)
-         *         - **stdio**: 표준 입출력 방식 (로컬 실행)
-         *
-         *         ## 지원하는 서버 유형별 설정 예제
-         *
-         *         ### NPM 서버 (HTTP 방식)
-         *         ```json
-         *         {
-         *           "server_config": {
-         *             "server_type": "npm",
-         *             "transport": "streamable_http",
-         *             "package_name": "@didim365/mcp-search-tools",
-         *             "version": "^1.0.0",
-         *             "entry_point": "dist/index.js",
-         *             "url": "http://localhost:7000/mcp/",
-         *             "environment_variables": {
-         *               "SEARCH_API_KEY": "{{encrypted:search_api_key}}",
-         *               "MAX_RESULTS": "50"
-         *             }
-         *           }
-         *         }
-         *         ```
-         *
-         *         ### Python 서버 (stdio 방식)
-         *         ```json
-         *         {
-         *           "server_config": {
-         *             "server_type": "python",
-         *             "transport": "stdio",
-         *             "module_path": "mcp_tools.document_analyzer",
-         *             "class_name": "DocumentAnalyzerServer",
-         *             "command": "python -m mcp_tools.document_analyzer",
-         *             "requirements": ["transformers>=4.0.0", "torch>=1.9.0"],
-         *             "environment_variables": {
-         *               "MODEL_PATH": "/models/document-analyzer",
-         *               "API_KEY": "{{encrypted:openai_api_key}}"
-         *             }
-         *           }
-         *         }
-         *         ```
-         *
-         *         ### Docker 서버 (HTTP 방식)
-         *         ```json
-         *         {
-         *           "server_config": {
-         *             "server_type": "docker",
-         *             "transport": "streamable_http",
-         *             "image": "didim365/mcp-web-search:latest",
-         *             "url": "http://web-search-container:7000/mcp/",
-         *             "ports": ["7000:7000"],
-         *             "environment_variables": {
-         *               "API_KEY": "{{encrypted:web_search_api_key}}"
-         *             }
-         *           }
-         *         }
-         *         ```
-         *
-         *         ### 환경 변수 템플릿
-         *         - `{{encrypted:key_name}}`: 암호화된 민감 정보 참조
-         *         - `{{env:ENV_VAR}}`: 시스템 환경 변수 참조
-         *         - 일반 문자열: 직접 값 사용
-         */
-        post: operations["create_tool_config_v1_mcp_tools__tool_id__config_post"];
-        /**
-         * 도구 설정 삭제
-         * @description 특정 도구의 설정을 삭제합니다.
-         */
-        delete: operations["delete_tool_config_v1_mcp_tools__tool_id__config_delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/functions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * MCP 도구 Function 목록 조회
-         * @description 도구가 제공하는 Function 목록과 상세 정보를 조회합니다.
-         *         Function 정보는 도구 등록/수정 시 `mcp-tools-spec.yml` 파일에서 동기화됩니다.
-         */
-        get: operations["get_tool_functions_v1_mcp_tools__tool_id__functions_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/config/secrets": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 민감 정보 업데이트
-         * @description 특정 도구의 민감 정보(API 키, 시크릿 등)를 업데이트합니다.
-         */
-        post: operations["update_tool_secrets_v1_mcp_tools__tool_id__config_secrets_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/config/env": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 환경 변수 조회
-         * @description 특정 도구의 환경 변수를 조회합니다 (복호화된 민감 정보 포함).
-         */
-        get: operations["get_tool_env_vars_v1_mcp_tools__tool_id__config_env_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/config/validate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 설정 유효성 검증
-         * @description 특정 도구의 설정 유효성을 검증합니다.
-         */
-        post: operations["validate_tool_config_v1_mcp_tools__tool_id__config_validate_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/config/mcp-client": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * MCP 클라이언트 설정 조회 (LangGraph 호환)
-         * @description 특정 도구의 LangGraph 호환 MCP 클라이언트용 설정을 조회합니다.
-         *
-         *         ## LangGraph mcpServers 형식
-         *
-         *         ```json
-         *         {
-         *           "mcpServers": {
-         *             "tool-name": {
-         *               "transport": "streamable_http",
-         *               "url": "http://localhost:7000/mcp/",
-         *               "headers": {
-         *                 "Authorization": "Bearer YOUR_TOKEN",
-         *                 "X-Custom-Header": "custom-value"
-         *               }
-         *             }
-         *           }
-         *         }
-         *         ```
-         *
-         *         ## 지원 기능
-         *         - **transport**: 항상 "streamable_http" (LangGraph 표준)
-         *         - **url**: MCP 서버 엔드포인트 URL (자동으로 /mcp/ 경로 추가)
-         *         - **headers**: 인증 헤더 및 커스텀 헤더 자동 생성
-         *
-         *         ## URL 설정 우선순위
-         *         1. **server_config.connection.url** (최우선) - 명시적 연결 URL
-         *         2. **환경변수** - ENDPOINT_URL, MCP_SERVER_URL, SERVER_URL
-         *         3. **server_config.url** - 기본 설정의 URL
-         *         4. **기본값** - `http://localhost:{7000+tool_id}/mcp/` (템플릿용)
-         *
-         *         ⚠️ **중요**: 실제 배포 후에는 사용자별 설정에서 정확한 컨테이너 URL을 조회하세요.
-         *
-         *         ## 인증 헤더 자동 생성
-         *         - `API_KEY` 환경 변수 → `Authorization: Bearer {token}`
-         *         - `X_API_KEY` 환경 변수 → `X-API-Key: {key}`
-         *         - 기본 헤더: `User-Agent`, `Content-Type` 자동 설정
-         */
-        get: operations["get_mcp_client_config_v1_mcp_tools__tool_id__config_mcp_client_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/connect": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 도구 연결 설정 (레거시 - 하위 호환성)
-         * @description 특정 도구와의 연결을 설정하고 테스트합니다.
-         *
-         *         **⚠️ 레거시 API**: 이 엔드포인트는 하위 호환성을 위해 유지됩니다.
-         *         새로운 멀티유저 환경에서는 admin 사용자의 'default' 설정으로 자동 처리됩니다.
-         *
-         *         **권장사항**: 새로운 사용자별 설정 API를 사용하세요:
-         *         - `POST /api/v1/mcp-tools/{tool_id}/user-configs` - 사용자별 설정 생성
-         *         - `POST /api/v1/mcp-tools/{tool_id}/user-configs/{config_id}:deploy` - 사용자별 배포
-         */
-        post: operations["connect_tool_v1_mcp_tools__tool_id__connect_post"];
-        /**
-         * 도구 연결 해제
-         * @description 특정 도구와의 연결을 해제합니다.
-         */
-        delete: operations["disconnect_tool_v1_mcp_tools__tool_id__connect_delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}:deploy": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 도구 배포 (레거시 - 하위 호환성)
-         * @description 특정 도구를 배포합니다 (비동기 처리).
-         *
-         *         **⚠️ 레거시 API**: 이 엔드포인트는 하위 호환성을 위해 유지됩니다.
-         *         새로운 멀티유저 환경에서는 admin 사용자의 'default' 설정으로 자동 처리됩니다.
-         *
-         *         **권장사항**: 새로운 사용자별 배포 API를 사용하세요:
-         *         - `POST /api/v1/mcp-tools/{tool_id}/user-configs/{config_id}:deploy`
-         */
-        post: operations["deploy_tool_v1_mcp_tools__tool_id__deploy_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}:stop": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 도구 중지
-         * @description 특정 도구를 중지합니다 (비동기 처리).
-         */
-        post: operations["stop_tool_v1_mcp_tools__tool_id__stop_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}:start": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * ▶️ MCP 도구 시작
-         * @description 중지된 특정 도구를 시작합니다 (비동기 처리).
-         */
-        post: operations["start_tool_v1_mcp_tools__tool_id__start_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/deployment-status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 배포 상태 조회
-         * @description 특정 도구의 배포 상태를 조회합니다.
-         */
-        get: operations["get_deployment_status_v1_mcp_tools__tool_id__deployment_status_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools:batch-deploy": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 다중 도구 배포
-         * @description 여러 도구를 일괄 배포합니다 (비동기 처리).
-         */
-        post: operations["batch_deploy_tools_v1_mcp_tools_batch_deploy_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools:batch-stop": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 다중 도구 중지
-         * @description 여러 도구를 일괄 중지합니다 (비동기 처리).
-         */
-        post: operations["batch_stop_tools_v1_mcp_tools_batch_stop_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/langgraph/export": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 여러 도구의 LangGraph 통합 설정 생성
-         * @description 여러 MCP 도구들을 LangGraph에서 사용할 수 있는 통합 mcpServers 설정으로 생성합니다.
-         *
-         *         ## 요청 형식
-         *         ```json
-         *         {
-         *           "tool_ids": [1, 2, 3, 4, 5]
-         *         }
-         *         ```
-         *
-         *         ## 응답 형식 (LangGraph 표준)
-         *         ```json
-         *         {
-         *           "mcpServers": {
-         *             "naver-search": {
-         *               "transport": "streamable_http",
-         *               "url": "http://naver-search:7000/mcp/"
-         *             },
-         *             "youtube-tool": {
-         *               "transport": "streamable_http",
-         *               "url": "http://youtube-tool:7001/mcp/",
-         *               "headers": {
-         *                 "Authorization": "Bearer YOUR_TOKEN"
-         *               }
-         *             },
-         *             "teams-calendar": {
-         *               "transport": "streamable_http",
-         *               "url": "http://teams-calendar:7002/mcp/"
-         *             }
-         *           }
-         *         }
-         *         ```
-         *
-         *         ## 사용법
-         *         1. 원하는 도구 ID들을 요청에 포함
-         *         2. 응답으로 받은 JSON을 LangGraph 설정 파일에 복사
-         *         3. 각 도구의 인증 정보는 자동으로 headers에 포함됨
-         */
-        post: operations["export_tools_for_langgraph_v1_mcp_tools_langgraph_export_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/langgraph/export/user": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 사용자의 모든 도구 LangGraph 설정 내보내기
-         * @description 특정 사용자가 구성한 모든 MCP 도구를 LangGraph mcpServers 형식으로 내보냅니다.
-         *
-         *         ## 응답 형식
-         *         ```json
-         *         {
-         *           "user_info": {
-         *             "user_id": "developer_user",
-         *             "tools_count": 3
-         *           },
-         *           "mcpServers": {
-         *             "example-tool": {
-         *               "tool_id": 1,
-         *               "command": "http",
-         *               "args": ["http://192.168.1.100:7001/mcp"],
-         *               "env": {
-         *                 "API_KEY": "user_secret_key",
-         *                 "LOG_LEVEL": "INFO"
-         *               },
-         *               "endpoint": {
-         *                 "url": "http://192.168.1.100:7001",
-         *                 "mcp_path": "/mcp",
-         *                 "health_path": "/health",
-         *                 "container_name": "mcp-tool-example-tool-shared",
-         *                 "container_port": 7001
-         *               }
-         *             }
-         *           },
-         *           "user_context": {
-         *             "applied_tools": ["example-tool"],
-         *             "total_user_configs": 1
-         *           }
-         *         }
-         *         ```
-         *
-         *         ## 사용법
-         *         1. 사용자별 모든 MCP 도구 설정을 한 번에 조회
-         *         2. LangGraph Agent 통합시 직접 사용 가능한 형식
-         *         3. 사용자의 개인화된 환경변수와 엔드포인트 정보 포함
-         */
-        get: operations["export_user_tools_for_langgraph_v1_mcp_tools_langgraph_export_user_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/langgraph/export": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 개별 도구의 LangGraph 설정 내보내기
-         * @description 특정 도구를 LangGraph mcpServers 형식으로 내보냅니다.
-         *         사용자별 설정을 포함할 수도 있습니다 (user_id 파라미터 제공시).
-         *
-         *         ## 응답 형식 (기본)
-         *         ```json
-         *         {
-         *           "tool_info": {
-         *             "tool_id": 1,
-         *             "tool_name": "Web Search Tool",
-         *             "server_key": "web-search-tool",
-         *             "status": "ACTIVE",
-         *             "provider": "npm"
-         *           },
-         *           "mcpServers": {
-         *             "web-search-tool": {
-         *               "tool_id": 1,
-         *               "command": "http",
-         *               "args": ["http://192.168.1.100:7001/mcp"],
-         *               "env": {
-         *                 "LOG_LEVEL": "INFO"
-         *               },
-         *               "endpoint": {
-         *                 "url": "http://192.168.1.100:7001",
-         *                 "mcp_path": "/mcp",
-         *                 "health_path": "/health",
-         *                 "container_name": "mcp-tool-web-search-tool-shared",
-         *                 "container_port": 7001
-         *               }
-         *             }
-         *           }
-         *         }
-         *         ```
-         *
-         *         ## 응답 형식 (사용자 설정 포함시)
-         *         ```json
-         *         {
-         *           "tool_info": {
-         *             "tool_id": 1,
-         *             "tool_name": "Web Search Tool",
-         *             "server_key": "web-search-tool",
-         *             "status": "ACTIVE",
-         *             "provider": "npm"
-         *           },
-         *           "mcpServers": {
-         *             "web-search-tool": {
-         *               "tool_id": 1,
-         *               "command": "http",
-         *               "args": ["http://192.168.1.100:7001/mcp"],
-         *               "env": {
-         *                 "API_KEY": "user_secret_key",
-         *                 "LOG_LEVEL": "INFO",
-         *                 "MAX_RESULTS": "10"
-         *               },
-         *               "endpoint": {
-         *                 "url": "http://192.168.1.100:7001",
-         *                 "mcp_path": "/mcp",
-         *                 "health_path": "/health",
-         *                 "container_name": "mcp-tool-web-search-tool-shared",
-         *                 "container_port": 7001
-         *               }
-         *             }
-         *           },
-         *           "user_context": {
-         *             "user_id": "developer_user",
-         *             "config_name": "agent-integration-config",
-         *             "applied_user_settings": ["API_KEY", "MAX_RESULTS"]
-         *           }
-         *         }
-         *         ```
-         *
-         *         ## 사용법
-         *         1. `mcpServers` 부분을 LangGraph 설정에 복사
-         *         2. `tool_info`는 도구 정보 참고용
-         *         3. user_id 제공시 해당 사용자의 개인화 설정 포함
-         */
-        get: operations["export_single_tool_for_langgraph_v1_mcp_tools__tool_id__langgraph_export_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/deploy/shared-container": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Deploy Shared Container Tool
-         * @description Phase 10 공유 컨테이너 도구 배포
-         *
-         *     Serving MCP Service와 호환되는 공유 컨테이너 배포를 수행합니다.
-         */
-        post: operations["deploy_shared_container_tool_v1_mcp_tools__tool_id__deploy_shared_container_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/deploy/shared-container-v2": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Deploy Shared Container With Conflict Resolution
-         * @description 공유 컨테이너 배포 (충돌 처리 포함) - Serving MCP 최신 모델
-         *
-         *     진정한 "공유 컨테이너" 모델을 구현하여 하나의 도구 = 하나의 컨테이너를 보장합니다.
-         *
-         *     Features:
-         *     - 동일 tool_name의 중복 컨테이너 배포 방지
-         *     - tool_name 기반 컨테이너 네이밍 및 관리
-         *     - 중복 배포 시 ContainerConflictError 처리
-         *     - 충돌 해결 옵션: reuse_existing, replace_existing, fail_on_conflict
-         */
-        post: operations["deploy_shared_container_with_conflict_resolution_v1_mcp_tools__tool_id__deploy_shared_container_v2_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/shared-containers": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Active Shared Containers
-         * @description 활성 공유 컨테이너 목록 조회
-         *
-         *     현재 실행 중인 공유 컨테이너들의 상태와 정보를 조회합니다.
-         */
-        get: operations["get_active_shared_containers_v1_mcp_tools_shared_containers_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/shared-containers/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Update Shared Container Status
-         * @description 공유 컨테이너 상태 업데이트 (Serving MCP → MCP Tools API)
-         *
-         *     Serving MCP Tools에서 전송하는 컨테이너 상태 업데이트를 처리합니다.
-         *     이 엔드포인트는 주로 Serving MCP Tools가 호출합니다.
-         */
-        post: operations["update_shared_container_status_v1_mcp_tools_shared_containers_status_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/user-configs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 🔧 내 도구 인스턴스 생성
-         * @description 특정 도구에 대한 내 개인화된 설정을 생성합니다.
-         *
-         *         🔧 **내 도구 인스턴스(개인화) 관리 API**
-         *         - 나만의 환경변수, API키, 배포설정을 가진 도구 인스턴스를 생성합니다
-         *         - config_name을 통해 동일 도구에 여러 설정셋을 가질 수 있습니다
-         *
-         *         💡 **사용 예시**:
-         *         - "개발용", "운영용" 등 용도별 설정 분리
-         *         - 서로 다른 API키를 사용하는 설정 관리
-         *
-         *         📋 **필수 정보**:
-         *         - 민감 정보 (API키, 시크릿 등) - 사용자가 설정하는 유일한 항목
-         *         - 설정명 (선택사항, 기본값: "default")
-         *
-         *         🚨 **중요**: server_config, client_config는 템플릿에서 자동으로 관리되므로 사용자가 설정하지 않습니다.
-         *
-         *         🔗 **다음 단계**:
-         *         - 설정 생성 후 `POST /v1/mcp-tools/{tool_id}/user-configs/{config_id}:deploy`로 배포하세요
-         */
-        post: operations["create_user_config_v1_mcp_tools__tool_id__user_configs_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/user-configs/{config_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 🔧 내 도구 인스턴스 조회
-         * @description 내 특정 도구 인스턴스의 설정을 조회합니다.
-         *
-         *         🔧 **내 도구 인스턴스(개인화) 관리 API**
-         *         - 내가 생성한 개인화된 설정을 조회합니다
-         *         - 민감 정보(secrets)와 템플릿 기반 설정이 포함됩니다
-         *
-         *         🔒 **보안**:
-         *         - 내 설정만 조회 가능하며, 다른 사용자 설정에는 접근할 수 없습니다
-         *         - 민감한 정보는 마스킹되어 표시됩니다
-         *
-         *         💡 **활용 방법**:
-         *         - 배포 전 설정 확인
-         *         - 민감 정보(secrets) 값 검증
-         *         - 템플릿 기반 설정 확인
-         */
-        get: operations["get_user_config_v1_mcp_tools__tool_id__user_configs__config_id__get"];
-        /**
-         * 사용자별 특정 도구 설정 업데이트
-         * @description 현재 사용자의 특정 도구 설정을 업데이트합니다. 부분 업데이트를 지원합니다.
-         */
-        put: operations["update_user_config_v1_mcp_tools__tool_id__user_configs__config_id__put"];
-        post?: never;
-        /**
-         * 사용자별 특정 도구 설정 삭제
-         * @description 현재 사용자의 특정 도구 설정을 삭제합니다. 연관된 컨테이너도 함께 정리됩니다. 이미 삭제된 경우도 성공으로 처리됩니다.
-         */
-        delete: operations["delete_user_config_v1_mcp_tools__tool_id__user_configs__config_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/mcp-tools/user-configs/me": {
         parameters: {
             query?: never;
@@ -1043,11 +149,13 @@ export interface paths {
          *
          *         📋 **필터링 옵션**:
          *         - tool_id: 특정 도구의 설정만 조회
+         *         - tag: 도구 태그로 필터링
          *         - 페이지네이션 지원
+         *         - 쿼리 파라미터 없이 호출하면 전체 목록 반환
          *
          *         🔗 **다음 단계**:
          *         - 특정 설정 상세 조회: `GET /v1/mcp-tools/{tool_id}/user-configs/{config_id}`
-         *         - 도구 배포: `POST /v1/mcp-tools/{tool_id}/user-configs/{config_id}:deploy`
+         *         - 외부 MCP 서버 등록: `POST /v1/registrations` (v0.9.11 P2-1)
          */
         get: operations["get_my_user_configs_v1_mcp_tools_user_configs_me_get"];
         put?: never;
@@ -1058,7 +166,145 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/mcp-tools/{tool_id}/user-configs/{config_id}:deploy": {
+    "/v1/mcp-tools/registrations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 내 등록 목록 조회
+         * @description 사용자 범위 등록 목록 — iter 3 pagination 적용.
+         *
+         *     iter 3 #4: ``limit`` (1~200, 기본 50) + ``offset`` (≥0) 쿼리 파라미터.
+         *     iter 2 #9: 알 수 없는 ``status`` 값은 400 ``INVALID_STATUS`` 반환.
+         */
+        get: operations["list_registrations_v1_mcp_tools_registrations_get"];
+        put?: never;
+        /**
+         * 외부 MCP 서버 등록 (동기 수락 + 검증 대기)
+         * @description 외부 MCP 서버를 Registry 에 등록 (P2-2: BackgroundTasks Probe 스케줄).
+         *
+         *     P1-2 URLValidator 동기 검증 → P1-1 CredentialVault 암호화 → DB INSERT →
+         *     ``registration_created`` WS emit → ``verify_registration`` BackgroundTasks
+         *     예약 (P1-4 Probe 호출).
+         */
+        post: operations["create_registration_v1_mcp_tools_registrations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcp-tools/registrations/{reg_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 등록 상세 조회
+         * @description 단건 상세. 비소유자 → 403, 미존재 → 404.
+         *
+         *     iter 2 #3/#5/#6: capability count 쿼리 + tool eager-load + vault 복호 마스킹.
+         */
+        get: operations["get_registration_v1_mcp_tools_registrations__reg_id__get"];
+        /**
+         * 메타데이터 수정 (config_name / auth_type / auth_header_name 한정)
+         * @description PUT /{reg_id} — 메타데이터 한정 업데이트.
+         */
+        put: operations["put_registration_v1_mcp_tools_registrations__reg_id__put"];
+        post?: never;
+        /**
+         * 등록 Soft Delete (deregistered 전이)
+         * @description ``registration_status=deregistered`` 전이 (row 유지).
+         */
+        delete: operations["delete_registration_v1_mcp_tools_registrations__reg_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcp-tools/registrations/{reg_id}/verification-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 등록 검증 상태 폴링 (P2-2)
+         * @description 백그라운드 검증 진행 상태 폴링 (P2-2 신규).
+         *
+         *     응답 필드:
+         *       - status: ``ToolRegistrationStatus`` enum 값
+         *       - checks.ssrf_check: 등록 시점에 URLValidator 통과 → 항상 ``passed``
+         *       - checks.passport_probe: ``active`` 면 ``passed`` / ``unhealthy`` 면
+         *         ``failed`` / ``pending_verification`` 면 ``pending``
+         *       - checks.discovery: P2-3 구현 전까지 항상 ``pending``
+         *       - elapsed_seconds: ``registered_at`` 기준 경과 초
+         */
+        get: operations["get_verification_status_v1_mcp_tools_registrations__reg_id__verification_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcp-tools/registrations/{reg_id}/credential": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * API 키 교체 (Probe 검증 후 저장)
+         * @description PATCH /{reg_id}/credential — 신규 키로 PassportProbe 재검증 후 저장.
+         *
+         *     iter 2 반영:
+         *       - #3 WS payload 에 `changed_at` 포함
+         *       - #5 service 반환 `rotated_at` 을 WS / 응답에 재사용
+         *       - #6 deregistered 상태는 409 `INVALID_TRANSITION` (service 에서 가드)
+         */
+        patch: operations["patch_credential_v1_mcp_tools_registrations__reg_id__credential_patch"];
+        trace?: never;
+    };
+    "/v1/mcp-tools/registrations/{reg_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * 등록 상태 토글 (active ⇄ disabled, State Machine)
+         * @description PATCH /{reg_id}/status — 사용자 토글 (active / disabled).
+         *
+         *     iter 2 반영:
+         *       - #4 응답에 전이 메타데이터 포함 (StatusTransitionResponse)
+         *       - #5 service 의 `changed_at` 을 WS / 응답 body 모두 재사용 (재생성 없음)
+         */
+        patch: operations["patch_status_v1_mcp_tools_registrations__reg_id__status_patch"];
+        trace?: never;
+    };
+    "/v1/mcp-tools/registrations/{reg_id}/rediscover": {
         parameters: {
             query?: never;
             header?: never;
@@ -1068,183 +314,40 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * 🚀 공유 컨테이너에 개인 설정 적용
-         * @description 사용자별 설정을 공유 컨테이너에 적용하여 MCP 도구를 실행합니다.
+         * 외부 MCP 서버 tool 목록 재디스커버리 (비동기)
+         * @description POST /{reg_id}/rediscover — discover BackgroundTask 예약.
          *
-         *         🏗️ **Phase 10 공유 컨테이너 아키텍처**:
-         *         - 도구당 1개의 공유 컨테이너를 모든 사용자가 공유
-         *         - 사용자별 API 키, 환경변수, 설정은 완전히 격리
-         *         - 컨테이너 이름: `mcp-tool-{tool_name}-shared`
-         *
-         *         🚀 **배포 프로세스**:
-         *         1. 사용자별 설정(secrets, 환경변수) 조회 및 검증
-         *         2. 공유 컨테이너 상태 확인 (이미 실행 중이면 스킵)
-         *         3. 포트 할당 및 네트워크 설정
-         *         4. RabbitMQ를 통한 Serving MCP 서비스에 배포 요청
-         *         5. 비동기 처리로 correlation_id 반환
-         *
-         *         ��     🔧 **공유 컨테이너 모델의 특징**:
-         *         - **컨테이너 공유**: 동일한 도구는 모든 사용자가 하나의 컨테이너 공유
-         *         - **설정 격리**: API 키, 환경변수, 개인 설정은 완전히 격리
-         *         - **리소스 효율성**: 도구당 하나의 컨테이너로 리소스 절약
-         *         - **확장성**: 사용자 증가에 따른 컨테이너 수 증가 없음
-         *
-         *         💡 **배포 후 확인**:
-         *         - 배포 상태: `GET /v1/mcp-tools/{tool_id}/user-configs/{config_id}/deployment-status`
-         *         - 컨테이너 상태: `GET /v1/mcp-tools/shared-containers`
-         *         - MCP 도구 목록: `GET /v1/mcp-tools/{tool_id}/user-configs/{config_id}/tools`
-         *
-         *         ⚠️ **주의사항**:
-         *         - 공유 컨테이너이므로 다른 사용자와 동일한 컨테이너를 사용
-         *         - 컨테이너 자체는 공유하지만 개인 설정은 완전히 격리됨
-         *         - 배포 중에는 설정 변경이 제한됩니다
-         *         - 리소스 사용량에 따라 배포가 제한될 수 있습니다
-         *         - 이미 실행 중인 공유 컨테이너가 있으면 새로 생성하지 않고 기존 컨테이너에 설정 적용
-         *
-         *         🔒 **보안 및 격리**:
-         *         - API 키, 환경변수는 사용자별로 완전히 격리
-         *         - 다른 사용자의 설정에 접근할 수 없음
-         *         - 컨테이너 내부에서 사용자별 요청이 분리되어 처리됨
+         *     - 소유자 / 존재 검증: service.get_registration
+         *     - iter 2 #8 — terminal state (deregistered) 는 예약 전 409 로 차단
+         *     - 본 Phase 는 in-memory 레이트 리미트 미적용 (Phase 3 이관)
+         *     - discover 결과는 WebSocket ``tools_discovered`` 로 통지
          */
-        post: operations["deploy_user_tool_v1_mcp_tools__tool_id__user_configs__config_id__deploy_post"];
+        post: operations["rediscover_registration_v1_mcp_tools_registrations__reg_id__rediscover_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v1/mcp-tools/{tool_id}/user-configs/{config_id}/deployment-status": {
+    "/v1/mcp-tools/registrations/{reg_id}/healthcheck": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * 🚀 공유 컨테이너 종합 상태 조회
-         * @description 사용자별 설정이 적용된 공유 컨테이너의 종합적인 배포 상태를 조회합니다.
-         *
-         *         📋 **제공하는 정보**:
-         *         - 배포 상태 및 컨테이너 정보
-         *         - MCP 도구 목록 및 상세 정보
-         *         - 헬스체크 상태 및 통계
-         *         - 배포 메트릭 (소요 시간, correlation_id)
-         *         - 컨테이너 상세 정보 (포트, 이름, 상태)
-         *
-         *         🔧 **공유 컨테이너 상태 정보**:
-         *         - 컨테이너 실행 상태 및 헬스 상태
-         *         - 할당된 포트 및 네트워크 정보
-         *         - 배포 시작 시간 및 완료 예상 시간
-         *         - 사용자별 설정 적용 상태
-         *
-         *         💡 **활용 사례**:
-         *         - 배포 진행 상황 모니터링
-         *         - 컨테이너 헬스체크 확인
-         *         - MCP 도구 목록 및 기능 조회
-         *         - 문제 진단 및 디버깅
-         *
-         *         ⚠️ **주의사항**:
-         *         - 공유 컨테이너이므로 다른 사용자와 동일한 컨테이너 상태 공유
-         *         - 개인 설정 정보만 사용자별로 격리됨
-         */
-        get: operations["get_user_deployment_status_v1_mcp_tools__tool_id__user_configs__config_id__deployment_status_get"];
+        get?: never;
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/user-configs/{config_id}/tools": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
         /**
-         * 🔧 MCP 도구 목록 조회
-         * @description 배포된 MCP 도구 서버에서 제공하는 도구 목록을 조회합니다.
+         * 외부 MCP 서버 수동 헬스체크 (즉시 실행)
+         * @description POST /{reg_id}/healthcheck — 즉시 헬스체크 실행 + 결과 반환.
          *
-         *         📋 **도구 정보**:
-         *         - 도구 이름 및 설명
-         *         - 입력/출력 스키마
-         *         - 태그 및 메타데이터
-         *
-         *         ⚠️ **주의사항**:
-         *         - 도구 서버가 실행 중이어야 합니다
-         *         - 도구 목록은 서버에서 실시간으로 조회됩니다
+         *     - 소유자 / 존재 검증 (get_registration)
+         *     - terminal state (deregistered) 거부 (409)
+         *     - 결과는 DB 엔티티 필드 (health_status / last_health_check /
+         *       consecutive_failures 등) 에도 반영됨. 연속 3회 실패 시 UNHEALTHY 전이.
          */
-        get: operations["get_mcp_tools_list_v1_mcp_tools__tool_id__user_configs__config_id__tools_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/{tool_id}/user-configs/{config_id}/tools/{tool_name}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 🔧 MCP 도구 상세 정보 조회
-         * @description 특정 MCP 도구의 상세 정보를 조회합니다.
-         *
-         *         📋 **도구 상세 정보**:
-         *         - 도구 설명 및 사용 방법
-         *         - 입력 스키마 (inputSchema)
-         *         - 출력 스키마 (outputSchema)
-         *         - 추가 메타데이터
-         *
-         *         💡 **활용 방법**:
-         *         - 도구 사용 전 파라미터 확인
-         *         - 도구 응답 형식 파악
-         *         - 도구별 제약사항 확인
-         */
-        get: operations["get_mcp_tool_detail_discovery_v1_mcp_tools__tool_id__user_configs__config_id__tools__tool_name__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcp-tools/user-configs/{config_id}/tools": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 🔧 설정 ID로 도구 정보 조회
-         * @description config_id만으로 해당 설정과 도구의 정보를 조회합니다.
-         *
-         *         🔧 **간편한 정보 조회**:
-         *         - config_id만으로 설정과 도구의 메타 정보 확인
-         *         - config_name, tool_name, category, description 등 제공
-         *         - 컨테이너 상태 포함
-         *
-         *         💡 **활용 방법**:
-         *         - 설정 정보 확인
-         *         - 도구 메타데이터 조회
-         *         - UI에서 도구 정보 표시
-         *
-         *         📋 **응답 정보**:
-         *         - config_id, config_name: 설정 정보
-         *         - tool_id, tool_name, tool_category, tool_description: 도구 정보
-         *         - container_status: 컨테이너 상태
-         */
-        get: operations["get_simple_tools_by_config_v1_mcp_tools_user_configs__config_id__tools_get"];
-        put?: never;
-        post?: never;
+        post: operations["manual_healthcheck_v1_mcp_tools_registrations__reg_id__healthcheck_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1427,7 +530,7 @@ export interface paths {
         };
         /**
          * 전체 사용자 도구 설정 목록 조회
-         * @description 관리자 권한으로 전체 사용자의 도구 설정 목록을 필터링하여 조회합니다.
+         * @description 관리자 권한으로 전체 사용자의 도구 설정 목록을 필터링하여 조회합니다. v0.9.11 registration 기반 — registration_status 로 필터링.
          */
         get: operations["get_all_user_configs_v1_admin_user_configs_get"];
         put?: never;
@@ -1452,7 +555,7 @@ export interface paths {
         get: operations["get_user_config_v1_admin_user_configs__config_id__get"];
         /**
          * 사용자 설정 수정
-         * @description 관리자 권한으로 사용자 설정을 수정합니다. 지원 필드: config_name, is_active, server_config, secrets
+         * @description 관리자 권한으로 사용자 설정을 수정합니다. 지원 필드: config_name, is_active, server_config, secrets. v0.9.11 registration 기반 — registration_status 전이는 PATCH /registrations/{id}/status API 사용.
          */
         put: operations["update_user_config_v1_admin_user_configs__config_id__put"];
         post?: never;
@@ -1466,7 +569,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/admin/containers": {
+    "/v1/admin/user-configs-instances": {
         parameters: {
             query?: never;
             header?: never;
@@ -1474,10 +577,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 전체 컨테이너 목록 상세 조회
-         * @description 전체 컨테이너의 상세 목록(상태, 포트, 헬스 등)을 조회합니다.
+         * 전체 사용자 설정 인스턴스 상세 조회
+         * @description 전체 사용자 설정 인스턴스의 상세 정보를 조회합니다 (registration_status, health_status, endpoint_url 포함). v0.9.11 registration 기반 — 이전 /admin/containers 대체.
          */
-        get: operations["get_all_containers_v1_admin_containers_get"];
+        get: operations["get_all_user_config_instances_v1_admin_user_configs_instances_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1486,7 +589,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/admin/containers/status": {
+    "/v1/admin/registration-status/summary": {
         parameters: {
             query?: never;
             header?: never;
@@ -1494,10 +597,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 전체 컨테이너 상태 요약
-         * @description 전체 시스템의 컨테이너 상태별 카운트를 집계하여 조회합니다.
+         * 전체 등록 상태 요약
+         * @description 전체 사용자 설정의 등록 상태별 카운트를 집계하여 조회합니다. v0.9.11 registration 기반 — 이전 /admin/containers/status 대체.
          */
-        get: operations["get_container_status_summary_v1_admin_containers_status_get"];
+        get: operations["get_registration_status_summary_v1_admin_registration_status_summary_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1512,7 +615,10 @@ export interface components {
     schemas: {
         /**
          * AdminUserConfigUpdateDTO
-         * @description 관리자용 사용자 설정 수정 요청 DTO
+         * @description 관리자용 사용자 설정 수정 요청 DTO.
+         *
+         *     v0.9.11 registration 기반 — container_* 필드 제거.
+         *     registration_status 전이는 별도 ``PATCH /registrations/{id}/status`` API 사용.
          * @example {
          *       "config_name": "my-config",
          *       "is_active": true,
@@ -1553,704 +659,29 @@ export interface components {
             } | null;
         };
         /**
-         * BatchDeploymentRequestDTO
-         * @description 배치 배포 요청 DTO
+         * CredentialRotationResponse
+         * @description PATCH /credential 응답 — 등록 상세 + 회전 메타데이터 (iter 2 #3).
          */
-        BatchDeploymentRequestDTO: {
+        CredentialRotationResponse: {
+            registration: components["schemas"]["RegistrationDetail"];
             /**
-             * Tool Ids
-             * @description 배포할 도구 ID 목록 (최대 50개)
-             */
-            tool_ids: number[];
-            /**
-             * Requested By
-             * @description 배포 요청자 (자동으로 설정됨)
-             */
-            requested_by?: string | null;
-            /**
-             * Deployment Options
-             * @description 공통 배포 옵션
-             */
-            deployment_options?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Parallel Execution
-             * @description 병렬 실행 여부
-             * @default false
-             */
-            parallel_execution: boolean;
-            /**
-             * Max Failures
-             * @description 허용 가능한 최대 실패 수
-             * @default 5
-             */
-            max_failures: number;
-        };
-        /**
-         * BatchDeploymentResponseDTO
-         * @description 배치 배포 응답 DTO
-         */
-        BatchDeploymentResponseDTO: {
-            /**
-             * Batch Id
-             * @description 배치 작업 ID
-             */
-            batch_id: string;
-            /**
-             * Total Count
-             * @description 전체 작업 수
-             */
-            total_count: number;
-            /**
-             * Successful Count
-             * @description 성공한 작업 수
-             * @default 0
-             */
-            successful_count: number;
-            /**
-             * Failed Count
-             * @description 실패한 작업 수
-             * @default 0
-             */
-            failed_count: number;
-            /**
-             * In Progress Count
-             * @description 진행 중인 작업 수
-             * @default 0
-             */
-            in_progress_count: number;
-            /**
-             * Results
-             * @description 개별 배포 결과
-             */
-            results?: components["schemas"]["DeploymentResponseDTO"][];
-            /**
-             * Started At
-             * Format: date-time
-             * @description 배치 작업 시작 시간
-             */
-            started_at?: string;
-            /**
-             * Estimated Completion Time
-             * @description 예상 완료 시간
-             */
-            estimated_completion_time?: string | null;
-        };
-        /**
-         * BatchStopRequestDTO
-         * @description 배치 중지 요청 DTO
-         */
-        BatchStopRequestDTO: {
-            /**
-             * Tool Ids
-             * @description 중지할 도구 ID 목록 (최대 50개)
-             */
-            tool_ids: number[];
-            /**
-             * User Id
-             * @description 요청한 사용자 ID
-             */
-            user_id: string;
-            /**
-             * Force
-             * @description 강제 중지 여부
-             * @default false
-             */
-            force: boolean;
-            /**
-             * Timeout
-             * @description 중지 타임아웃 (초)
-             * @default 30
-             */
-            timeout: number;
-        };
-        /**
-         * ContainerConflictError
-         * @description 컨테이너 충돌 오류 정보
-         * @example {
-         *       "conflict_reason": "Tool 'example-tool-test' is already deployed. Only one shared container per tool is allowed.",
-         *       "existing_container_id": "container_abc123",
-         *       "existing_user_id": "admin_user",
-         *       "suggested_actions": [
-         *         "Use existing container",
-         *         "Stop existing container and redeploy",
-         *         "Use different tool name"
-         *       ],
-         *       "tool_name": "example-tool-test"
-         *     }
-         */
-        ContainerConflictError: {
-            /**
-             * Tool Name
-             * @description 충돌이 발생한 도구 이름
-             */
-            tool_name: string;
-            /**
-             * Existing Container Id
-             * @description 기존 컨테이너 ID
-             */
-            existing_container_id?: string | null;
-            /**
-             * Existing User Id
-             * @description 기존 컨테이너 소유자
-             */
-            existing_user_id?: string | null;
-            /**
-             * Conflict Reason
-             * @description 충돌 발생 이유
-             */
-            conflict_reason: string;
-            /**
-             * Suggested Actions
-             * @description 권장 해결 방법
-             */
-            suggested_actions?: string[];
-        };
-        /**
-         * ContainerDTO
-         * @description 컨테이너 상세 정보 DTO
-         */
-        ContainerDTO: {
-            /** Config Id */
-            config_id: number;
-            /** User Id */
-            user_id: string;
-            /** Tool Name */
-            tool_name: string | null;
-            /** Container Name */
-            container_name: string | null;
-            /** Container Status */
-            container_status: string;
-            /** Container Port */
-            container_port: number | null;
-            /** Health Status */
-            health_status: string | null;
-            /** Last Health Check */
-            last_health_check: string | null;
-            /**
-             * Created At
+             * Rotated At
              * Format: date-time
              */
-            created_at: string;
+            rotated_at: string;
         };
         /**
-         * ContainerStatus
-         * @description 컨테이너 상태
-         * @enum {string}
+         * DeleteResponse
+         * @description DELETE 응답 — soft delete 확인.
          */
-        "ContainerStatus-Input": "pending" | "running" | "stopped" | "error" | "conflict" | "terminating";
-        /**
-         * ContainerStatusResponse
-         * @description Serving MCP에서 받는 컨테이너 상태 응답
-         * @example {
-         *       "conflict_info": {
-         *         "conflict_reason": "Duplicate container deployment",
-         *         "existing_container_id": "container_abc123",
-         *         "existing_user_id": "admin_user",
-         *         "suggested_actions": [
-         *           "reuse_existing",
-         *           "replace_existing"
-         *         ],
-         *         "tool_name": "example-tool-test"
-         *       },
-         *       "error": "Tool 'example-tool-test' is already deployed. Only one shared container per tool is allowed.",
-         *       "status": "conflict",
-         *       "timestamp": "2025-08-13T10:00:00Z",
-         *       "tool_id": 48,
-         *       "tool_name": "example-tool-test"
-         *     }
-         */
-        ContainerStatusResponse: {
+        DeleteResponse: {
+            /** Registration Id */
+            registration_id: string;
             /**
-             * Tool Name
-             * @description 도구 이름
+             * Registration Status
+             * @description 'deregistered' 로 설정됨 (row 유지)
              */
-            tool_name: string;
-            /**
-             * Tool Id
-             * @description 도구 ID
-             */
-            tool_id?: number | null;
-            status: components["schemas"]["ContainerStatus-Input"];
-            /**
-             * Container Id
-             * @description 컨테이너 ID
-             */
-            container_id?: string | null;
-            /**
-             * Container Url
-             * @description 컨테이너 접근 URL
-             */
-            container_url?: string | null;
-            /**
-             * Health Check Url
-             * @description 헬스체크 URL
-             */
-            health_check_url?: string | null;
-            /**
-             * Container Ip
-             * @description 컨테이너 IP
-             */
-            container_ip?: string | null;
-            /**
-             * Message
-             * @description 상태 메시지
-             */
-            message?: string | null;
-            /**
-             * Error
-             * @description 오류 메시지
-             */
-            error?: string | null;
-            /** @description 충돌 정보 */
-            conflict_info?: components["schemas"]["ContainerConflictError"] | null;
-            /**
-             * Timestamp
-             * Format: date-time
-             * @description 응답 시간
-             */
-            timestamp?: string;
-        };
-        /**
-         * ContainerStatusSummaryDTO
-         * @description 컨테이너 상태 집계 요약 DTO
-         */
-        ContainerStatusSummaryDTO: {
-            /**
-             * Total
-             * @description 전체 컨테이너 수
-             */
-            total: number;
-            /**
-             * Running
-             * @description 실행 중인 컨테이너 수
-             * @default 0
-             */
-            running: number;
-            /**
-             * Stopped
-             * @description 중지된 컨테이너 수
-             * @default 0
-             */
-            stopped: number;
-            /**
-             * Error
-             * @description 오류 상태인 컨테이너 수
-             * @default 0
-             */
-            error: number;
-            /**
-             * Starting
-             * @description 시작 중인 컨테이너 수
-             * @default 0
-             */
-            starting: number;
-            /**
-             * Stopping
-             * @description 중지 중인 컨테이너 수
-             * @default 0
-             */
-            stopping: number;
-            /**
-             * Last Updated
-             * Format: date-time
-             * @description 마지막 집계 시간
-             */
-            last_updated?: string;
-        };
-        /**
-         * DeleteResponseDTO
-         * @description 리소스 삭제 성공 응답 DTO
-         */
-        DeleteResponseDTO: {
-            /**
-             * Message
-             * @description 삭제 결과 메시지
-             */
-            message: string;
-            /**
-             * Deleted At
-             * Format: date-time
-             * @description 삭제 완료 시간
-             */
-            deleted_at: string;
-            /**
-             * Resource Id
-             * @description 삭제된 리소스 ID
-             */
-            resource_id: string;
-            /**
-             * Success
-             * @description 삭제 성공 여부
-             * @default true
-             */
-            success: boolean;
-        };
-        /**
-         * DeploymentAction
-         * @description 배포 액션 타입
-         * @enum {string}
-         */
-        DeploymentAction: "deploy" | "start" | "stop" | "restart" | "status";
-        /**
-         * DeploymentConflictAction
-         * @description 배포 충돌 시 취할 액션
-         * @enum {string}
-         */
-        DeploymentConflictAction: "reuse_existing" | "replace_existing" | "fail_on_conflict";
-        /**
-         * DeploymentRequest
-         * @description 배포 요청 DTO (충돌 처리 포함)
-         * @example {
-         *       "conflict_action": "reuse_existing",
-         *       "force_replace": false,
-         *       "timeout_seconds": 300,
-         *       "tool_id": 48,
-         *       "tool_name": "example-tool-test",
-         *       "user_id": "admin_user"
-         *     }
-         */
-        DeploymentRequest: {
-            /**
-             * Tool Id
-             * @description 도구 ID
-             */
-            tool_id: number;
-            /**
-             * Tool Name
-             * @description 도구 이름
-             */
-            tool_name: string;
-            /**
-             * User Id
-             * @description 사용자 ID
-             */
-            user_id: string;
-            /**
-             * @description 충돌 시 처리 방법
-             * @default fail_on_conflict
-             */
-            conflict_action: components["schemas"]["DeploymentConflictAction"];
-            /**
-             * Force Replace
-             * @description 강제 교체 여부
-             * @default false
-             */
-            force_replace: boolean;
-            /**
-             * Timeout Seconds
-             * @description 배포 타임아웃 (초)
-             * @default 300
-             */
-            timeout_seconds: number;
-        };
-        /**
-         * DeploymentRequestDTO
-         * @description 배포 요청 DTO
-         * @example {
-         *       "deployment_options": {
-         *         "cpu": "0.5",
-         *         "environment": "production",
-         *         "memory": "512Mi"
-         *       },
-         *       "force_restart": false,
-         *       "timeout_seconds": 300
-         *     }
-         */
-        DeploymentRequestDTO: {
-            /**
-             * Requested By
-             * @description 배포 요청자 (자동으로 설정됨)
-             */
-            requested_by?: string | null;
-            /**
-             * Deployment Options
-             * @description 배포 옵션 (리소스 제한, 환경 변수 등)
-             */
-            deployment_options?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Timeout Seconds
-             * @description 배포 타임아웃 (60-1800초)
-             * @default 300
-             */
-            timeout_seconds: number;
-            /**
-             * Force Restart
-             * @description 강제 재시작 여부 (이미 실행 중인 경우)
-             * @default false
-             */
-            force_restart: boolean;
-        };
-        /**
-         * DeploymentResponseDTO
-         * @description 배포 응답 DTO
-         * @example {
-         *       "action": "deploy",
-         *       "correlation_id": "deploy_req_001",
-         *       "created_at": "2025-06-29T10:00:00Z",
-         *       "estimated_completion_time": "2025-06-29T10:15:00Z",
-         *       "message": "배포 요청이 접수되었습니다",
-         *       "status": "requested",
-         *       "tool_id": 123
-         *     }
-         */
-        DeploymentResponseDTO: {
-            /**
-             * Tool Id
-             * @description 도구 ID
-             */
-            tool_id: number;
-            /** @description 현재 상태 */
-            status: components["schemas"]["DeploymentStatus"];
-            /**
-             * Message
-             * @description 상태 메시지
-             */
-            message: string;
-            /**
-             * Correlation Id
-             * @description 상관관계 ID
-             */
-            correlation_id?: string | null;
-            /** @description 수행된 액션 */
-            action?: components["schemas"]["DeploymentAction"] | null;
-            /**
-             * Estimated Completion Time
-             * @description 예상 완료 시간
-             */
-            estimated_completion_time?: string | null;
-            /**
-             * Created At
-             * Format: date-time
-             * @description 요청 생성 시간
-             */
-            created_at?: string;
-            /**
-             * Success
-             * @description 작업 성공 여부
-             */
-            success?: boolean | null;
-            /**
-             * Tool Name
-             * @description 도구 이름
-             */
-            tool_name?: string | null;
-            /**
-             * Error
-             * @description 에러 메시지
-             */
-            error?: string | null;
-            /**
-             * Timestamp
-             * @description 응답 시간
-             */
-            timestamp?: string | null;
-            /**
-             * Container Url
-             * @description 컨테이너 URL
-             */
-            container_url?: string | null;
-            /**
-             * Container Id
-             * @description 컨테이너 ID
-             */
-            container_id?: string | null;
-            /**
-             * Shared Container
-             * @description 공유 컨테이너 여부
-             */
-            shared_container?: boolean | null;
-            /**
-             * Reused Existing
-             * @description 기존 컨테이너 재사용 여부
-             */
-            reused_existing?: boolean | null;
-            /**
-             * Conflict Info
-             * @description 충돌 정보
-             */
-            conflict_info?: {
-                [key: string]: unknown;
-            } | null;
-        };
-        /**
-         * DeploymentStatus
-         * @description 배포 상태
-         * @enum {string}
-         */
-        DeploymentStatus: "requested" | "in_progress" | "completed" | "failed" | "cancelled";
-        /**
-         * DeploymentStatusDTO
-         * @description 배포 상태 DTO
-         */
-        DeploymentStatusDTO: {
-            /**
-             * Tool Id
-             * @description 도구 ID
-             * @example 1
-             */
-            tool_id: number;
-            /**
-             * Config Id
-             * @description 설정 ID
-             * @example 123
-             */
-            config_id: number;
-            /**
-             * User Id
-             * @description 사용자 ID
-             * @example user123
-             */
-            user_id: string;
-            /**
-             * Config Name
-             * @description 설정 이름
-             * @example production
-             */
-            config_name: string;
-            /**
-             * Container Name
-             * @description 컨테이너 이름
-             * @example mcp-t1-u123-cprod-abc123
-             */
-            container_name: string;
-            /**
-             * @description 컨테이너 상태
-             * @example running
-             */
-            container_status: components["schemas"]["app__enums__mcp_tool_enums__ContainerStatus"];
-            /**
-             * Assigned Port
-             * @description 할당된 포트
-             * @example 7001
-             */
-            assigned_port?: number | null;
-            /**
-             * Health Status
-             * @description 헬스 체크 상태
-             * @example healthy
-             */
-            health_status?: string | null;
-            /**
-             * Uptime Seconds
-             * @description 실행 시간 (초)
-             * @example 3600
-             */
-            uptime_seconds?: number | null;
-            /**
-             * Resource Usage
-             * @description 리소스 사용량
-             * @example {
-             *       "cpu_percent": 15.5,
-             *       "memory_usage": "256MB",
-             *       "network_io": "1.2MB"
-             *     }
-             */
-            resource_usage?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Last Updated
-             * Format: date-time
-             * @description 마지막 업데이트 시간
-             * @example 2024-01-01T12:30:00Z
-             */
-            last_updated: string;
-            /**
-             * Deployment Logs
-             * @description 배포 로그 (최근 10개)
-             * @example [
-             *       "2024-01-01T12:00:00Z: Container starting...",
-             *       "2024-01-01T12:00:05Z: Health check passed",
-             *       "2024-01-01T12:00:10Z: Container ready"
-             *     ]
-             */
-            deployment_logs?: string[] | null;
-            /**
-             * Correlation Id
-             * @description 배포 추적 ID
-             * @example deploy_123_20240115_103000_abc12345
-             */
-            correlation_id?: string | null;
-            /**
-             * Mcp Tools
-             * @description MCP 도구 리스트
-             * @example [
-             *       "search_web",
-             *       "analyze_text",
-             *       "generate_image"
-             *     ]
-             */
-            mcp_tools?: string[] | null;
-            /**
-             * Mcp Capabilities
-             * @description MCP 도구 상세 정보
-             * @example {
-             *       "tools": {
-             *         "analyze_text": {
-             *           "description": "Analyze text content"
-             *         },
-             *         "search_web": {
-             *           "description": "Search the web for information"
-             *         }
-             *       }
-             *     }
-             */
-            mcp_capabilities?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Container Info
-             * @description 컨테이너 상세 정보
-             * @example {
-             *       "created": "2024-01-01T12:00:00Z",
-             *       "id": "container_123",
-             *       "image": "mcp-tool:latest"
-             *     }
-             */
-            container_info?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Deployment Started At
-             * @description 배포 시작 시간
-             * @example 2024-01-01T12:00:00Z
-             */
-            deployment_started_at?: string | null;
-            /**
-             * Deployment Completed At
-             * @description 배포 완료 시간
-             * @example 2024-01-01T12:05:00Z
-             */
-            deployment_completed_at?: string | null;
-            /**
-             * Deployment Duration
-             * @description 배포 소요 시간 (초)
-             * @example 30.5
-             */
-            deployment_duration?: number | null;
-            /**
-             * Consecutive Failures
-             * @description 연속 헬스체크 실패 횟수
-             * @default 0
-             * @example 0
-             */
-            consecutive_failures: number | null;
-            /**
-             * Last Health Check
-             * @description 마지막 헬스체크 시간
-             * @example 2024-01-01T12:30:00Z
-             */
-            last_health_check?: string | null;
-            /**
-             * Tools Last Updated
-             * @description 도구 리스트 마지막 업데이트
-             * @example 2024-01-01T12:00:00Z
-             */
-            tools_last_updated?: string | null;
+            registration_status: string;
         };
         /**
          * ErrorResponseDTO
@@ -2294,1116 +725,30 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
-         * MCPClientConfigDTO
-         * @description MCP 클라이언트 설정 DTO (LangGraph 호환)
-         */
-        MCPClientConfigDTO: {
-            /**
-             * Mcpservers
-             * @description LangGraph mcpServers 설정
-             * @example {
-             *       "naver-search": {
-             *         "transport": "streamable_http",
-             *         "url": "http://naver-search:7000/mcp/"
-             *       },
-             *       "youtube-tool": {
-             *         "headers": {
-             *           "Authorization": "Bearer YOUR_TOKEN",
-             *           "X-Custom-Header": "custom-value"
-             *         },
-             *         "transport": "streamable_http",
-             *         "url": "http://youtube-tool:7001/mcp/"
-             *       }
-             *     }
-             */
-            mcpServers: {
-                [key: string]: {
-                    [key: string]: unknown;
-                };
-            };
-        };
-        /**
-         * MCPFunctionDTO
-         * @description MCP Function DTO
-         */
-        MCPFunctionDTO: {
-            /**
-             * Name
-             * @description 함수 이름
-             */
-            name: string;
-            /**
-             * Description
-             * @description 함수 설명
-             */
-            description?: string | null;
-            /**
-             * Input Schema
-             * @description 입력 스키마 (JSON Schema)
-             */
-            input_schema?: {
-                [key: string]: unknown;
-            } | null;
-        };
-        /**
-         * MCPFunctionListResponseDTO
-         * @description MCP Function 목록 응답 DTO
-         */
-        MCPFunctionListResponseDTO: {
-            /**
-             * Tool Id
-             * @description MCP Tool ID
-             */
-            tool_id: number;
-            /**
-             * Functions
-             * @description 함수 목록 (문자열 또는 상세 정보)
-             */
-            functions?: string[] | components["schemas"]["MCPFunctionDTO"][];
-            /**
-             * Last Updated
-             * @description 마지막 업데이트 시간
-             */
-            last_updated?: string | null;
-        };
-        /**
-         * MCPServerConfigDTO
-         * @description MCP 서버 설정 DTO
-         */
-        MCPServerConfigDTO: {
-            /**
-             * Server Type
-             * @description 서버 타입 (npm, python, github, docker, custom)
-             */
-            server_type: string;
-            /**
-             * @description 전송 방식 (streamable_http, stdio, sse)
-             * @default streamable_http
-             */
-            transport: components["schemas"]["MCPTransportType"] | null;
-            /**
-             * Name
-             * @description 서버 이름
-             */
-            name?: string | null;
-            /**
-             * Command
-             * @description 실행 명령 (stdio 방식에 필요)
-             */
-            command?: string | null;
-            /**
-             * Args
-             * @description 명령 인수 (stdio 방식에 사용)
-             */
-            args?: string[] | null;
-            /**
-             * Cwd
-             * @description 작업 디렉토리
-             */
-            cwd?: string | null;
-            /**
-             * Url
-             * @description 서버 URL (HTTP 방식에 필요)
-             */
-            url?: string | null;
-            /**
-             * Headers
-             * @description HTTP 헤더 (HTTP 방식에 사용)
-             */
-            headers?: {
-                [key: string]: string;
-            } | null;
-            /**
-             * Connection
-             * @description 연결 설정
-             */
-            connection?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Env
-             * @description 환경 변수
-             */
-            env?: {
-                [key: string]: string;
-            } | null;
-            /**
-             * Environment Variables
-             * @description 환경 변수 (별칭)
-             */
-            environment_variables?: {
-                [key: string]: string;
-            } | null;
-            /**
-             * Capabilities
-             * @description 지원 기능
-             */
-            capabilities?: string[] | null;
-            /**
-             * Rate Limits
-             * @description 요청 제한
-             */
-            rate_limits?: {
-                [key: string]: number;
-            } | null;
-            /**
-             * Package Name
-             * @description NPM 패키지 이름
-             */
-            package_name?: string | null;
-            /**
-             * Version
-             * @description 패키지 버전
-             */
-            version?: string | null;
-            /**
-             * Entry Point
-             * @description 진입점 파일
-             */
-            entry_point?: string | null;
-            /**
-             * Module Path
-             * @description Python 모듈 경로
-             */
-            module_path?: string | null;
-            /**
-             * Class Name
-             * @description 클래스 이름
-             */
-            class_name?: string | null;
-            /**
-             * Requirements
-             * @description Python 의존성 목록
-             */
-            requirements?: string[] | null;
-            /**
-             * Repository
-             * @description GitHub 저장소
-             */
-            repository?: string | null;
-            /**
-             * Branch
-             * @description 브랜치
-             */
-            branch?: string | null;
-            /**
-             * Image
-             * @description Docker 이미지
-             */
-            image?: string | null;
-            /**
-             * Ports
-             * @description 포트 매핑
-             */
-            ports?: string[] | null;
-        };
-        /**
-         * MCPToolCapabilityDTO
-         * @description MCP 도구 기능 상세 정보 DTO
-         */
-        MCPToolCapabilityDTO: {
-            /**
-             * Id
-             * @description 도구 기능 ID
-             */
-            id: number;
-            /**
-             * User Config Id
-             * @description 사용자 설정 ID
-             */
-            user_config_id: number;
-            /**
-             * Tool Name
-             * @description 도구 이름
-             */
-            tool_name: string;
-            /**
-             * Description
-             * @description 도구 설명
-             */
-            description?: string | null;
-            /**
-             * Input Schema
-             * @description 입력 스키마
-             */
-            input_schema?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Output Schema
-             * @description 출력 스키마
-             */
-            output_schema?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Tags
-             * @description 태그 목록
-             */
-            tags?: string[] | null;
-            /**
-             * Metadata
-             * @description 추가 메타데이터
-             */
-            metadata?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Discovered At
-             * Format: date-time
-             * @description 발견 시점
-             */
-            discovered_at: string;
-            /**
-             * Last Verified At
-             * @description 마지막 검증 시점
-             */
-            last_verified_at?: string | null;
-        };
-        /**
-         * MCPToolCategory
-         * @description MCP 도구 서버의 카테고리를 나타내는 열거형
+         * HealthCheckResponse
+         * @description POST /{reg_id}/healthcheck 응답 (v0.9.11 P2-5).
          *
-         *     실제 MCP 도구들의 주요 용도에 따라 분류했습니다.
-         * @enum {string}
+         *     즉시 헬스체크 실행 결과. Fields:
+         *         registration_id: 등록 ID
+         *         ok: 2xx 응답 여부
+         *         http_status: 외부 서버 응답 코드 (네트워크 오류 시 None)
+         *         error: 실패 사유 메시지 (성공 시 None)
+         *         elapsed_ms: HTTP 왕복 시간 (ms)
          */
-        MCPToolCategory: "WEB_SEARCH" | "DATA_RETRIEVAL" | "API_CLIENT" | "DOCUMENT_MANAGEMENT" | "FILE_OPERATIONS" | "CONTENT_PROCESSING" | "DATA_ANALYSIS" | "DATABASE_TOOLS" | "VISUALIZATION" | "DEVELOPMENT_TOOLS" | "SYSTEM_UTILITIES" | "CODE_GENERATION" | "COMMUNICATION" | "INTEGRATION" | "AUTOMATION" | "SECURITY" | "AUTHENTICATION" | "PRODUCTIVITY" | "ENTERTAINMENT" | "EDUCATION" | "OTHER";
-        /**
-         * MCPToolConfigEnhancedCreateDTO
-         * @description 확장된 MCP Tool 설정 생성 DTO
-         */
-        MCPToolConfigEnhancedCreateDTO: {
-            /**
-             * Mcp Tool Id
-             * @description MCP Tool ID
-             */
-            mcp_tool_id: number;
-            /** @description 서버 설정 */
-            server_config: components["schemas"]["MCPServerConfigDTO"];
-            /**
-             * Secrets
-             * @description 민감 정보 - 중첩 JSON 구조 지원
-             */
-            secrets?: {
-                [key: string]: unknown;
-            } | null;
-        };
-        /**
-         * MCPToolConfigEnhancedResponseDTO
-         * @description 확장된 MCP Tool 설정 응답 DTO
-         */
-        MCPToolConfigEnhancedResponseDTO: {
-            /**
-             * Id
-             * @description ID
-             */
-            id: number;
-            /**
-             * Mcp Tool Id
-             * @description MCP Tool ID
-             */
-            mcp_tool_id: number;
-            /**
-             * Server Config
-             * @description 서버 설정
-             */
-            server_config: {
-                [key: string]: unknown;
-            };
-            /**
-             * Has Secrets
-             * @description 민감 정보 존재 여부
-             */
-            has_secrets: boolean;
-            /**
-             * Env Keys
-             * @description 환경 변수 키 목록
-             */
-            env_keys: string[];
-            /**
-             * Capabilities
-             * @description 지원 기능 목록
-             */
-            capabilities: string[];
-            /**
-             * Config Schema Version
-             * @description 설정 스키마 버전
-             */
-            config_schema_version: string;
-            /**
-             * Is Verified
-             * @description 검증 완료 여부
-             */
-            is_verified: boolean;
-            /**
-             * Last Verification At
-             * @description 마지막 검증 시간
-             */
-            last_verification_at?: string | null;
-            /**
-             * Verification Error
-             * @description 검증 오류
-             */
-            verification_error?: string | null;
-            /**
-             * Created At
-             * Format: date-time
-             * @description 생성 시간
-             */
-            created_at: string;
-            /**
-             * Updated At
-             * Format: date-time
-             * @description 수정 시간
-             */
-            updated_at: string;
-        };
-        /**
-         * MCPToolConfigEnhancedUpdateDTO
-         * @description 확장된 MCP Tool 설정 수정 DTO (Legacy / Partial Update)
-         */
-        MCPToolConfigEnhancedUpdateDTO: {
-            /** @description 서버 설정 */
-            server_config?: components["schemas"]["MCPServerConfigDTO"] | null;
-            /**
-             * Secrets
-             * @description 민감 정보 - 중첩 JSON 구조 지원
-             */
-            secrets?: {
-                [key: string]: unknown;
-            } | null;
-            /** @description 연결 상태 */
-            connection_status?: components["schemas"]["MCPToolConnectionStatus"] | null;
-            /**
-             * Health Check Enabled
-             * @description 헬스 체크 활성화
-             */
-            health_check_enabled?: boolean | null;
-        };
-        /**
-         * MCPToolConfigTemplateResponseDTO
-         * @description GET/PUT 통합 응답 DTO (Step02 #7)
-         *
-         *     템플릿 설정 조회(GET) 및 업데이트(PUT) 응답을 통일하여
-         *     프론트엔드에서 동일한 모델로 처리할 수 있도록 합니다.
-         */
-        MCPToolConfigTemplateResponseDTO: {
-            /**
-             * Id
-             * @description 설정 ID (legacy 호환, tool_id와 동일)
-             */
-            id: number;
-            /**
-             * Tool Id
-             * @description 도구 ID
-             */
-            tool_id: number;
-            /**
-             * Mcp Tool Id
-             * @description 도구 ID (legacy 호환)
-             */
-            mcp_tool_id: number;
-            /**
-             * Server Config
-             * @description 서버 설정
-             */
-            server_config?: {
-                [key: string]: unknown;
-            };
-            /**
-             * Client Config
-             * @description 클라이언트 설정
-             */
-            client_config?: {
-                [key: string]: unknown;
-            };
-            /**
-             * Secrets
-             * @description secrets 템플릿
-             */
-            secrets?: {
-                [key: string]: unknown;
-            };
-            /**
-             * Deployment Type
-             * @description 배포 타입
-             * @default CONTAINER
-             */
-            deployment_type: string;
-            /**
-             * Health Check Enabled
-             * @description 헬스 체크 활성화
-             * @default true
-             */
-            health_check_enabled: boolean;
-            /**
-             * Has Secrets
-             * @description secrets 존재 여부
-             * @default false
-             */
-            has_secrets: boolean;
-            /**
-             * Env Keys
-             * @description 환경 변수 키 목록
-             */
-            env_keys?: string[];
-            /**
-             * Capabilities
-             * @description 도구 기능 목록
-             */
-            capabilities?: string[];
-            /**
-             * Config Schema Version
-             * @description 설정 스키마 버전
-             * @default v1
-             */
-            config_schema_version: string;
-            /**
-             * Is Verified
-             * @description 검증 여부
-             * @default false
-             */
-            is_verified: boolean;
-            /**
-             * Last Verification At
-             * @description 마지막 검증 시간
-             */
-            last_verification_at?: string | null;
-            /**
-             * Verification Error
-             * @description 검증 오류
-             */
-            verification_error?: string | null;
-            /**
-             * Created At
-             * @description 생성일시
-             */
-            created_at?: string | null;
-            /**
-             * Updated At
-             * @description 수정일시
-             */
-            updated_at?: string | null;
-        };
-        /**
-         * MCPToolConnectionStatus
-         * @description MCP 도구 서버의 연결 상태를 나타내는 열거형
-         *
-         *     - CONNECTED: 연결됨 (API 키 설정 완료)
-         *     - DISCONNECTED: 연결 안됨 (API 키 미설정)
-         *     - CONNECTING: 연결 중
-         *     - CONNECTION_ERROR: 연결 오류
-         * @enum {string}
-         */
-        MCPToolConnectionStatus: "CONNECTED" | "DISCONNECTED" | "CONNECTING" | "CONNECTION_ERROR";
-        /**
-         * MCPToolCreateDTO
-         * @description MCP Tool 생성 DTO
-         */
-        MCPToolCreateDTO: {
-            /**
-             * Name
-             * @description MCP 도구 이름 (시스템 식별자 및 표시명 겸용)
-             * @example youtube-search-tool
-             */
-            name: string;
-            /**
-             * Description
-             * @description 설명
-             */
-            description?: string | null;
-            /** @description 제공업체 */
-            provider: components["schemas"]["MCPToolProvider"];
-            /** @description 카테고리 */
-            category: components["schemas"]["MCPToolCategory"];
-            /** @description 배포 타입 */
-            deployment_type: components["schemas"]["MCPToolDeploymentType"];
-            /**
-             * Display Name
-             * @deprecated
-             * @description [DEPRECATED] display_name은 더 이상 사용되지 않습니다. name을 사용하세요.
-             */
-            display_name?: string | null;
-            /**
-             * Version
-             * @description 버전
-             */
-            version: string;
-            /**
-             * Repo Url
-             * @description 저장소 URL
-             */
-            repo_url?: string | null;
-            /**
-             * Icon Url
-             * @description 아이콘 URL
-             */
-            icon_url?: string | null;
-            /**
-             * Server Url
-             * @description 서버 URL
-             */
-            server_url?: string | null;
-            /**
-             * Container Image
-             * @description 컨테이너 이미지
-             */
-            container_image?: string | null;
-            /**
-             * Docker Compose Config
-             * @description Docker Compose 설정
-             */
-            docker_compose_config?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Environment Variables
-             * @description 환경 변수
-             */
-            environment_variables?: {
-                [key: string]: string;
-            } | null;
-            /**
-             * Resource Requirements
-             * @description 리소스 요구사항
-             */
-            resource_requirements?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Tags
-             * @description 태그
-             */
-            tags?: string[] | null;
-            /**
-             * Keywords
-             * @description 키워드
-             */
-            keywords?: string[] | null;
-            /**
-             * Metadata
-             * @description 메타데이터
-             */
-            metadata?: {
-                [key: string]: unknown;
-            } | null;
-            /** @description 전송 방식 (도구 등록 시 필수) */
-            transport?: components["schemas"]["MCPTransportType"] | null;
-            /**
-             * Server Type
-             * @description 서버 타입 (도구 등록 시 필수)
-             */
-            server_type?: string | null;
-            /**
-             * Url
-             * @description URL (streamable_http/sse transport에서 필수)
-             */
-            url?: string | null;
-            /**
-             * Command
-             * @description 실행 명령어 (stdio transport에서 필수)
-             */
-            command?: string[] | null;
-            /**
-             * Package Name
-             * @description 패키지명 (npm server_type에서 필수)
-             */
-            package_name?: string | null;
-            /**
-             * Module Path
-             * @description 모듈 경로 (python server_type에서 필수)
-             */
-            module_path?: string | null;
-            /**
-             * Repository
-             * @description 저장소 (github server_type에서 필수)
-             */
-            repository?: string | null;
-            /**
-             * Image
-             * @description 이미지 (docker server_type에서 필수)
-             */
-            image?: string | null;
-            /**
-             * Default Config
-             * @description 기본 설정 템플릿 (사용자가 참고할 수 있는 설정 구조)
-             */
-            default_config?: {
-                [key: string]: unknown;
-            } | components["schemas"]["MCPServerConfigDTO"] | null;
-        };
-        /**
-         * MCPToolDeploymentType
-         * @description MCP 도구 서버의 배포 유형을 나타내는 열거형
-         *
-         *     - LOCAL: 로컬 실행
-         *     - CONTAINER: 컨테이너 배포
-         *     - CLOUD: 클라우드 서비스
-         *     - SERVERLESS: 서버리스 함수
-         * @enum {string}
-         */
-        MCPToolDeploymentType: "LOCAL" | "CONTAINER" | "CLOUD" | "SERVERLESS";
-        /**
-         * MCPToolDiscoveryDTO
-         * @description MCP 도구 정보 DTO
-         * @example {
-         *       "description": "Search the web using a query",
-         *       "input_schema": {
-         *         "properties": {
-         *           "query": {
-         *             "description": "Search query",
-         *             "type": "string"
-         *           }
-         *         },
-         *         "required": [
-         *           "query"
-         *         ],
-         *         "type": "object"
-         *       },
-         *       "metadata": {
-         *         "version": "1.0.0"
-         *       },
-         *       "output_schema": {
-         *         "properties": {
-         *           "results": {
-         *             "items": {
-         *               "type": "object"
-         *             },
-         *             "type": "array"
-         *           }
-         *         },
-         *         "type": "object"
-         *       },
-         *       "tags": [
-         *         "search",
-         *         "web"
-         *       ],
-         *       "tool_name": "search_web"
-         *     }
-         */
-        MCPToolDiscoveryDTO: {
-            /**
-             * Tool Name
-             * @description 도구 이름
-             */
-            tool_name: string;
-            /**
-             * Description
-             * @description 도구 설명
-             */
-            description?: string | null;
-            /**
-             * Input Schema
-             * @description 입력 스키마
-             */
-            input_schema?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Output Schema
-             * @description 출력 스키마
-             */
-            output_schema?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Tags
-             * @description 태그 목록
-             */
-            tags?: string[] | null;
-            /**
-             * Metadata
-             * @description 추가 메타데이터
-             */
-            metadata?: {
-                [key: string]: unknown;
-            } | null;
-        };
-        /**
-         * MCPToolListResponseDTO
-         * @description MCP Tool 목록 응답 DTO
-         */
-        MCPToolListResponseDTO: {
-            /**
-             * Items
-             * @description MCP Tool 목록
-             */
-            items: components["schemas"]["MCPToolResponseDTO"][];
-            /**
-             * Total
-             * @description 전체 개수
-             */
-            total: number;
-            /**
-             * Page
-             * @description 현재 페이지
-             */
-            page: number;
-            /**
-             * Size
-             * @description 페이지 크기
-             */
-            size: number;
-            /**
-             * Pages
-             * @description 전체 페이지 수
-             */
-            pages: number;
-            /**
-             * Has Next
-             * @description 다음 페이지 존재 여부
-             */
-            has_next: boolean;
-            /**
-             * Has Prev
-             * @description 이전 페이지 존재 여부
-             */
-            has_prev: boolean;
-        };
-        /**
-         * MCPToolProvider
-         * @description MCP 도구 서버의 제공자(패키지 관리자) 유형을 나타내는 열거형
-         *
-         *     - NPM: Node.js 패키지 매니저
-         *     - PYTHON: Python 패키지 (pip, conda)
-         *     - GITHUB: GitHub 저장소
-         *     - DOCKER: Docker 컨테이너
-         *     - CUSTOM: 사용자 정의 도구
-         * @enum {string}
-         */
-        MCPToolProvider: "NPM" | "PYTHON" | "GITHUB" | "DOCKER" | "CUSTOM";
-        /**
-         * MCPToolResponseDTO
-         * @description MCP Tool 응답 DTO
-         *
-         *     Note:
-         *         definition_name은 시스템에서 자동 생성하는 읽기 전용 필드입니다.
-         *         사용자는 name만 입력하고, definition_name은 kebab-case로 자동 변환됩니다.
-         *
-         *         외부 MCP 서버에서 발견된 도구는 더 유연한 이름 검증을 적용합니다.
-         */
-        MCPToolResponseDTO: {
-            /**
-             * Id
-             * @description ID
-             */
-            id: number;
-            /**
-             * Name
-             * @description MCP 도구 이름 (외부 서버에서 발견된 경우 공백 허용)
-             * @example n8n MCP Server
-             */
-            name: string;
-            /**
-             * Definition Name
-             * @description 시스템 내부 식별자 (name에서 자동 생성된 kebab-case 이름, 읽기 전용)
-             */
-            readonly definition_name?: string | null;
-            /**
-             * Description
-             * @description 설명
-             */
-            description?: string | null;
-            /** @description 제공업체 */
-            provider: components["schemas"]["MCPToolProvider"];
-            /** @description 카테고리 */
-            category: components["schemas"]["MCPToolCategory"];
-            /** @description 배포 타입 */
-            deployment_type: components["schemas"]["MCPToolDeploymentType"];
-            /**
-             * Version
-             * @description 버전
-             */
-            version: string;
-            /** @description 상태 */
-            status: components["schemas"]["MCPToolStatus"];
-            /**
-             * Repo Url
-             * @description 저장소 URL
-             */
-            repo_url?: string | null;
-            /**
-             * Icon Url
-             * @description 아이콘 URL
-             */
-            icon_url?: string | null;
-            /**
-             * Server Url
-             * @description 서버 URL
-             */
-            server_url?: string | null;
-            /**
-             * Container Image
-             * @description 컨테이너 이미지
-             */
-            container_image?: string | null;
-            /**
-             * Docker Compose Config
-             * @description Docker Compose 설정
-             */
-            docker_compose_config?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Environment Variables
-             * @description 환경 변수
-             */
-            environment_variables?: {
-                [key: string]: string;
-            } | null;
-            /**
-             * Resource Requirements
-             * @description 리소스 요구사항
-             */
-            resource_requirements?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Tags
-             * @description 태그
-             */
-            tags?: string[];
-            /**
-             * Keywords
-             * @description 키워드
-             */
-            keywords?: string[];
-            /**
-             * Metadata
-             * @description 메타데이터
-             */
-            metadata?: {
-                [key: string]: unknown;
-            };
-            /** @description 기본 전송 방식 */
-            transport?: components["schemas"]["MCPTransportType"] | null;
-            /**
-             * Server Type
-             * @description 기본 서버 타입
-             */
-            server_type?: string | null;
-            /**
-             * Default Config
-             * @description 기본 설정 템플릿
-             */
-            default_config?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Usage Count
-             * @description 사용 횟수
+        HealthCheckResponse: {
+            /** Registration Id */
+            registration_id: string;
+            /** Ok */
+            ok: boolean;
+            /** Http Status */
+            http_status?: number | null;
+            /** Error */
+            error?: string | null;
+            /**
+             * Elapsed Ms
              * @default 0
              */
-            usage_count: number;
-            /**
-             * Success Rate
-             * @description 성공률
-             * @default 0
-             */
-            success_rate: number;
-            /**
-             * Average Response Time
-             * @description 평균 응답 시간
-             * @default 0
-             */
-            average_response_time: number;
-            /**
-             * Last Used At
-             * @description 마지막 사용 시간
-             */
-            last_used_at?: string | null;
-            /**
-             * Created At
-             * Format: date-time
-             * @description 생성 시간
-             */
-            created_at: string;
-            /**
-             * Updated At
-             * Format: date-time
-             * @description 수정 시간
-             */
-            updated_at: string;
-            /**
-             * Created By
-             * @description 생성자
-             */
-            created_by?: string | null;
-            /**
-             * Updated By
-             * @description 수정자
-             */
-            updated_by?: string | null;
-        };
-        /**
-         * MCPToolStatsDTO
-         * @description MCP Tool 통계 DTO
-         */
-        MCPToolStatsDTO: {
-            /**
-             * Total Count
-             * @description 전체 도구 수
-             */
-            total_count: number;
-            /**
-             * Active Count
-             * @description 활성 도구 수
-             */
-            active_count: number;
-            /**
-             * Inactive Count
-             * @description 비활성 도구 수
-             */
-            inactive_count: number;
-            /**
-             * Error Count
-             * @description 오류 도구 수
-             */
-            error_count: number;
-            /**
-             * Provider Stats
-             * @description 제공업체별 통계
-             */
-            provider_stats: {
-                [key: string]: number;
-            };
-            /**
-             * Category Stats
-             * @description 카테고리별 통계
-             */
-            category_stats: {
-                [key: string]: number;
-            };
-            /**
-             * Deployment Type Stats
-             * @description 배포 타입별 통계
-             */
-            deployment_type_stats: {
-                [key: string]: number;
-            };
-            /**
-             * Usage Stats
-             * @description 사용량 통계
-             */
-            usage_stats: {
-                [key: string]: unknown;
-            };
-        };
-        /**
-         * MCPToolStatus
-         * @description MCP 도구 서버의 상태를 나타내는 열거형
-         *
-         *     - ACTIVE: 활성화된 도구 (사용 가능)
-         *     - INACTIVE: 비활성화된 도구 (사용 불가)
-         *     - PENDING: 배포 대기 중인 도구
-         *     - ERROR: 오류 상태의 도구
-         * @enum {string}
-         */
-        MCPToolStatus: "ACTIVE" | "INACTIVE" | "PENDING" | "ERROR";
-        /**
-         * MCPToolUpdateDTO
-         * @description MCP Tool 수정 DTO
-         */
-        MCPToolUpdateDTO: {
-            /**
-             * Name
-             * @description MCP 도구 이름 (표시 이름)
-             */
-            name?: string | null;
-            /**
-             * Description
-             * @description 설명
-             */
-            description?: string | null;
-            /**
-             * Version
-             * @description 버전
-             */
-            version?: string | null;
-            /** @description 상태 */
-            status?: components["schemas"]["MCPToolStatus"] | null;
-            /**
-             * Repo Url
-             * @description 저장소 URL
-             */
-            repo_url?: string | null;
-            /**
-             * Icon Url
-             * @description 아이콘 URL
-             */
-            icon_url?: string | null;
-            /**
-             * Server Url
-             * @description 서버 URL
-             */
-            server_url?: string | null;
-            /**
-             * Container Image
-             * @description 컨테이너 이미지
-             */
-            container_image?: string | null;
-            /**
-             * Image
-             * @description Docker 이미지 (container_image와 동일)
-             */
-            image?: string | null;
-            /**
-             * Docker Compose Config
-             * @description Docker Compose 설정
-             */
-            docker_compose_config?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Environment Variables
-             * @description 환경 변수
-             */
-            environment_variables?: {
-                [key: string]: string;
-            } | null;
-            /**
-             * Resource Requirements
-             * @description 리소스 요구사항
-             */
-            resource_requirements?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Tags
-             * @description 태그
-             */
-            tags?: string[] | null;
-            /**
-             * Keywords
-             * @description 키워드
-             */
-            keywords?: string[] | null;
-            /**
-             * Metadata
-             * @description 메타데이터
-             */
-            metadata?: {
-                [key: string]: unknown;
-            } | null;
-        };
-        /**
-         * MCPToolUserConfigCreateDTO
-         * @description 사용자별 MCP Tool 설정 생성 요청 DTO - 단순화된 구조
-         */
-        MCPToolUserConfigCreateDTO: {
-            /**
-             * Secrets
-             * @description 민감 정보 (API 키, 시크릿 등) - 중첩 JSON 구조 지원
-             */
-            secrets?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Config Name
-             * @description 사용자별 설정셋 이름 (동일 도구 내에서 고유해야 함, 기본값: 'default')
-             * @default default
-             */
-            config_name: string;
+            elapsed_ms: number;
         };
         /**
          * MCPToolUserConfigListResponseDTO
@@ -3443,9 +788,9 @@ export interface components {
             id: number;
             /**
              * Tool Id
-             * @description 도구 ID
+             * @description 도구 ID. NULL=Standalone 등록, non-NULL=Template 기반
              */
-            tool_id: number;
+            tool_id?: number | null;
             /**
              * User Id
              * @description 사용자 ID
@@ -3471,17 +816,56 @@ export interface components {
                 [key: string]: unknown;
             } | null;
             /**
-             * Container Name
-             * @description 이 설정으로 배포된 컨테이너 이름
+             * Registration Id
+             * @description 등록 고유 ID ('reg_' + UUID)
              */
-            container_name?: string | null;
-            /** @description 컨테이너 상태 */
-            container_status: components["schemas"]["app__enums__mcp_tool_enums__ContainerStatus"];
+            registration_id?: string | null;
             /**
-             * Container Port
-             * @description 할당된 컨테이너 포트
+             * Endpoint Url
+             * @description 외부 MCP 서버 endpoint URL (HTTPS 권장)
              */
-            container_port?: number | null;
+            endpoint_url?: string | null;
+            /**
+             * Endpoint Resolved Ip
+             * @description DNS 해석 결과 IP (NULL=미해석, P1-4 또는 use-time 에 채움)
+             */
+            endpoint_resolved_ip?: string | null;
+            /**
+             * Auth Type
+             * @description 인증 방식 (bearer/basic/none)
+             */
+            auth_type?: string | null;
+            /**
+             * Auth Header Name
+             * @description 인증 헤더 이름
+             */
+            auth_header_name?: string | null;
+            /**
+             * Registration Status
+             * @description 등록 상태 (pending_verification/active/unhealthy/disabled/deregistered)
+             */
+            registration_status?: string | null;
+            /**
+             * Transport
+             * @description MCP transport 유형 (server_config.transport 에서 파생, 기본 streamable_http)
+             * @default streamable_http
+             */
+            transport: string;
+            /**
+             * Registered At
+             * @description 최초 등록 시각
+             */
+            registered_at?: string | null;
+            /**
+             * Passport Verified At
+             * @description Passport Probe 검증 완료 시각 (NULL=미검증)
+             */
+            passport_verified_at?: string | null;
+            /**
+             * Last Discovery At
+             * @description 마지막 Tools Discovery 완료 시각
+             */
+            last_discovery_at?: string | null;
             /**
              * Is Active
              * @description 설정 활성화 여부
@@ -3511,143 +895,8 @@ export interface components {
             updated_at: string;
         };
         /**
-         * MCPToolUserConfigUpdateDTO
-         * @description 사용자별 MCP Tool 설정 업데이트 요청 DTO - 단순화된 구조
-         */
-        MCPToolUserConfigUpdateDTO: {
-            /**
-             * Secrets
-             * @description 민감 정보 (API 키, 시크릿 등) - 중첩 JSON 구조 지원
-             */
-            secrets?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Config Name
-             * @description 사용자별 설정셋 이름
-             */
-            config_name?: string | null;
-        };
-        /**
-         * MCPToolsListResponseDTO
-         * @description MCP 도구 목록 응답 DTO
-         * @example {
-         *       "config_id": 123,
-         *       "discovered_at": "2025-07-25T12:00:00Z",
-         *       "tools": [
-         *         {
-         *           "description": "Search the web using a query",
-         *           "tags": [
-         *             "search",
-         *             "web"
-         *           ],
-         *           "tool_name": "search_web"
-         *         }
-         *       ],
-         *       "total_count": 1
-         *     }
-         */
-        MCPToolsListResponseDTO: {
-            /**
-             * Config Id
-             * @description 사용자 설정 ID
-             */
-            config_id: number;
-            /**
-             * Tools
-             * @description 도구 목록
-             */
-            tools: components["schemas"]["MCPToolDiscoveryDTO"][];
-            /**
-             * Discovered At
-             * Format: date-time
-             * @description 조회 시점
-             */
-            discovered_at: string;
-            /**
-             * Total Count
-             * @description 전체 도구 수
-             */
-            total_count: number;
-        };
-        /**
-         * MCPToolsResponseDTO
-         * @description MCP 도구 리스트 응답 DTO
-         */
-        MCPToolsResponseDTO: {
-            /**
-             * Tools
-             * @description 사용 가능한 MCP 도구 이름 목록
-             * @example [
-             *       "search_web",
-             *       "analyze_text",
-             *       "generate_image"
-             *     ]
-             */
-            tools: string[];
-            /**
-             * Capabilities
-             * @description 전체 MCP capabilities 정보
-             * @example {
-             *       "tools": {
-             *         "search_web": {
-             *           "description": "Search the web for information",
-             *           "inputSchema": {
-             *             "properties": {
-             *               "query": {
-             *                 "description": "Search query",
-             *                 "type": "string"
-             *               }
-             *             },
-             *             "required": [
-             *               "query"
-             *             ],
-             *             "type": "object"
-             *           }
-             *         }
-             *       }
-             *     }
-             */
-            capabilities?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Last Updated
-             * @description 도구 리스트 마지막 업데이트 시간
-             * @example 2024-01-01T12:00:00Z
-             */
-            last_updated?: string | null;
-            /**
-             * @description 컨테이너 상태
-             * @example running
-             */
-            container_status: components["schemas"]["app__enums__mcp_tool_enums__ContainerStatus"];
-            /**
-             * Config Id
-             * @description 설정 ID
-             * @example 123
-             */
-            config_id: number;
-            /**
-             * Tool Id
-             * @description 도구 ID
-             * @example 1
-             */
-            tool_id: number;
-        };
-        /**
-         * MCPTransportType
-         * @description MCP 도구 서버의 전송 방식을 나타내는 열거형
-         *
-         *     - streamable_http: HTTP 스트리밍 (LangGraph 권장)
-         *     - stdio: 표준 입출력 (로컬 실행)
-         *     - sse: Server-Sent Events (실시간 스트리밍)
-         * @enum {string}
-         */
-        MCPTransportType: "streamable_http" | "stdio" | "sse";
-        /**
          * PaginatedUserConfigsDTO
-         * @description 페이지네이션된 사용자 설정 목록 DTO
+         * @description 페이지네이션된 사용자 설정 목록 DTO.
          */
         PaginatedUserConfigsDTO: {
             /**
@@ -3672,213 +921,253 @@ export interface components {
             items: components["schemas"]["UserConfigSummaryDTO"][];
         };
         /**
+         * PatchCredentialRequest
+         * @description PATCH /{reg_id}/credential 요청 body (v0.9.11 P2-3).
+         */
+        PatchCredentialRequest: {
+            /**
+             * Api Key
+             * @description 신규 API 키 (Probe 검증 통과 시 Fernet 암호화 후 저장)
+             */
+            api_key: string;
+        };
+        /**
+         * PatchStatusRequest
+         * @description PATCH /{reg_id}/status 요청 body (v0.9.11 P2-3).
+         *
+         *     허용 값: ``active`` / ``disabled``. State Machine 이 현재 status 기준으로
+         *     전이 유효성 검증.
+         */
+        PatchStatusRequest: {
+            /**
+             * Status
+             * @description 전이 대상 상태 (active / disabled 만 사용자 토글 허용)
+             */
+            status: string;
+        };
+        /**
+         * RegisterRequest
+         * @description POST /api/v1/mcp-tools/registrations 요청 body.
+         */
+        RegisterRequest: {
+            /**
+             * Config Name
+             * @description 사용자 정의 등록 이름 (user_id 내 unique)
+             */
+            config_name: string;
+            /**
+             * Endpoint Url
+             * @description 외부 MCP 서버 URL. URLValidator 에서 SSRF 검증됨
+             */
+            endpoint_url: string;
+            /**
+             * Api Key
+             * @description 외부 서버 인증용 API 키. CredentialVault 로 암호화 저장
+             */
+            api_key?: string | null;
+            /**
+             * Auth Type
+             * @description 인증 방식 — bearer/basic/none. 기본 bearer
+             */
+            auth_type?: string | null;
+            /**
+             * Auth Header Name
+             * @description 커스텀 인증 헤더명. 기본 Authorization
+             */
+            auth_header_name?: string | null;
+            /**
+             * Tool Definition Id
+             * @description 카탈로그 템플릿 ID (MCPTool.id). None → standalone 등록
+             */
+            tool_definition_id?: number | null;
+        };
+        /**
+         * RegisterResponse
+         * @description POST 응답 (202 Accepted).
+         */
+        RegisterResponse: {
+            /**
+             * Registration Id
+             * @description DB default 생성 ID
+             */
+            registration_id: string;
+            /**
+             * Registration Status
+             * @description 항상 'pending_verification' — Probe 검증은 P2-2
+             */
+            registration_status: string;
+        };
+        /**
+         * RegistrationDetail
+         * @description GET /{reg_id} 응답 — 상세.
+         */
+        RegistrationDetail: {
+            /** Registration Id */
+            registration_id: string;
+            /** Config Name */
+            config_name: string;
+            /** Endpoint Url */
+            endpoint_url: string;
+            /** Registration Status */
+            registration_status: string;
+            /** Tool Id */
+            tool_id?: number | null;
+            /** Auth Type */
+            auth_type?: string | null;
+            /** Auth Header Name */
+            auth_header_name?: string | null;
+            /**
+             * Api Key Masked
+             * @description 마스킹된 API 키 (sk-XXX****...****YYYY). 원문 / 암호화 bytes 는 응답에 포함되지 않음
+             */
+            api_key_masked?: string | null;
+            /** Registered At */
+            registered_at?: string | null;
+            /** Passport Verified At */
+            passport_verified_at?: string | null;
+            /** Last Discovery At */
+            last_discovery_at?: string | null;
+            /**
+             * Capability Count
+             * @default 0
+             */
+            capability_count: number | null;
+            /** Tool Definition */
+            tool_definition?: {
+                [key: string]: unknown;
+            } | null;
+            /** Template Archived */
+            template_archived?: boolean | null;
+        };
+        /**
+         * RegistrationListItem
+         * @description GET /registrations 목록 항목.
+         */
+        RegistrationListItem: {
+            /** Registration Id */
+            registration_id: string;
+            /** Config Name */
+            config_name: string;
+            /** Endpoint Url */
+            endpoint_url: string;
+            /** Registration Status */
+            registration_status: string;
+            /** Tool Id */
+            tool_id?: number | null;
+            /** Registered At */
+            registered_at?: string | null;
+        };
+        /**
+         * RegistrationListResponse
+         * @description GET /registrations 응답 — iter 3 #4 pagination 메타 포함.
+         *
+         *     Fields:
+         *         items: 현재 페이지 rows
+         *         total: 필터 적용 후 전체 매칭 건수
+         *         limit: 요청 한도
+         *         offset: 요청 시작 위치
+         */
+        RegistrationListResponse: {
+            /** Items */
+            items: components["schemas"]["RegistrationListItem"][];
+            /** Total */
+            total: number;
+            /**
+             * Limit
+             * @default 50
+             */
+            limit: number;
+            /**
+             * Offset
+             * @default 0
+             */
+            offset: number;
+        };
+        /**
+         * RegistrationStatusSummaryDTO
+         * @description 사용자 설정 registration_status 집계 요약 DTO.
+         *
+         *     v0.9.11 registration 기반 — 이전 ``ContainerStatusSummaryDTO`` 대체.
+         */
+        RegistrationStatusSummaryDTO: {
+            /**
+             * Total
+             * @description 전체 설정 수
+             */
+            total: number;
+            /**
+             * Pending Verification
+             * @description 검증 대기 수
+             * @default 0
+             */
+            pending_verification: number;
+            /**
+             * Active
+             * @description 활성 수
+             * @default 0
+             */
+            active: number;
+            /**
+             * Unhealthy
+             * @description 헬스 체크 실패 수
+             * @default 0
+             */
+            unhealthy: number;
+            /**
+             * Disabled
+             * @description 비활성화 수
+             * @default 0
+             */
+            disabled: number;
+            /**
+             * Deregistered
+             * @description 등록 해제 수
+             * @default 0
+             */
+            deregistered: number;
+            /**
+             * Last Updated
+             * Format: date-time
+             * @description 마지막 집계 시간
+             */
+            last_updated?: string;
+        };
+        /**
          * ResponseStatus
          * @description 응답 상태
          * @enum {string}
          */
         ResponseStatus: "success" | "error" | "warning";
         /**
-         * SharedContainerInfo
-         * @description 공유 컨테이너 정보
-         * @example {
-         *       "active_users": [
-         *         "admin_user",
-         *         "developer_user"
-         *       ],
-         *       "container_id": "container_abc123",
-         *       "container_url": "http://shared-container:7000",
-         *       "created_at": "2025-08-13T09:00:00Z",
-         *       "created_by": "admin_user",
-         *       "last_accessed": "2025-08-13T10:00:00Z",
-         *       "resource_usage": {
-         *         "cpu_percent": 15.5,
-         *         "memory_mb": 256,
-         *         "network_io": {
-         *           "rx_bytes": 1024,
-         *           "tx_bytes": 2048
-         *         }
-         *       },
-         *       "status": "running",
-         *       "tool_id": 48,
-         *       "tool_name": "example-tool-test"
-         *     }
+         * StatusTransition
+         * @description PATCH /status 응답에 포함되는 전이 메타데이터 (P2-3 iter 2 #4).
          */
-        SharedContainerInfo: {
+        StatusTransition: {
+            /** Previous Status */
+            previous_status: string;
+            /** New Status */
+            new_status: string;
             /**
-             * Tool Name
-             * @description 도구 이름
-             */
-            tool_name: string;
-            /**
-             * Tool Id
-             * @description 도구 ID
-             */
-            tool_id: number;
-            /**
-             * Container Id
-             * @description 컨테이너 ID
-             */
-            container_id: string;
-            /**
-             * Container Url
-             * @description 컨테이너 접근 URL
-             */
-            container_url: string;
-            status: components["schemas"]["app__dto__container_status_dto__ContainerStatus"];
-            /**
-             * Created By
-             * @description 생성자
-             */
-            created_by: string;
-            /**
-             * Created At
+             * Changed At
              * Format: date-time
-             * @description 생성 시간
              */
-            created_at: string;
-            /**
-             * Last Accessed
-             * Format: date-time
-             * @description 마지막 접근 시간
-             */
-            last_accessed: string;
-            /**
-             * Active Users
-             * @description 활성 사용자 목록
-             */
-            active_users?: string[];
-            /**
-             * Resource Usage
-             * @description 리소스 사용률
-             */
-            resource_usage?: {
-                [key: string]: unknown;
-            };
-        };
-        /**
-         * SimpleToolsListResponseDTO
-         * @description 도구 설정 정보 응답 DTO
-         */
-        SimpleToolsListResponseDTO: {
-            /**
-             * Config Id
-             * @description 설정 ID
-             * @example 123
-             */
-            config_id: number;
-            /**
-             * Config Name
-             * @description 설정 이름
-             * @example default
-             */
-            config_name: string;
-            /**
-             * Tool Id
-             * @description 도구 ID
-             * @example 1
-             */
-            tool_id: number;
-            /**
-             * Tool Name
-             * @description 도구 이름
-             * @example MCP Search Tools
-             */
-            tool_name: string;
-            /**
-             * Tool Category
-             * @description 도구 카테고리
-             * @example search
-             */
-            tool_category?: string | null;
-            /**
-             * Tool Description
-             * @description 도구 설명
-             * @example Web search and analysis tools
-             */
-            tool_description?: string | null;
-            /**
-             * @description 컨테이너 상태
-             * @example running
-             */
-            container_status: components["schemas"]["app__enums__mcp_tool_enums__ContainerStatus"];
-        };
-        /**
-         * StartRequestDTO
-         * @description 시작 요청 DTO
-         */
-        StartRequestDTO: {
-            /**
-             * Health Check Timeout
-             * @description 헬스체크 타임아웃 (10-600초)
-             * @default 60
-             */
-            health_check_timeout: number;
-            /**
-             * Reason
-             * @description 시작 사유
-             */
+            changed_at: string;
+            /** Reason */
             reason?: string | null;
-            /**
-             * Requested By
-             * @description 시작 요청자 (자동으로 설정됨)
-             */
-            requested_by?: string | null;
         };
         /**
-         * StopRequestDTO
-         * @description 중지 요청 DTO
+         * StatusTransitionResponse
+         * @description PATCH /status 응답 — 등록 상세 + 전이 메타데이터 (iter 2 #4/#5).
+         *
+         *     service 가 반환한 ``changed_at`` 을 API 가 재사용 (재생성 없음).
          */
-        StopRequestDTO: {
-            /**
-             * Graceful
-             * @description 정상 종료 여부 (False: 강제 종료)
-             * @default true
-             */
-            graceful: boolean;
-            /**
-             * Timeout Seconds
-             * @description 중지 타임아웃 (5-300초)
-             * @default 30
-             */
-            timeout_seconds: number;
-            /**
-             * Reason
-             * @description 중지 사유
-             */
-            reason?: string | null;
-            /**
-             * Requested By
-             * @description 중지 요청자 (자동으로 설정됨)
-             */
-            requested_by?: string | null;
-        };
-        /**
-         * SuccessResponseDTO
-         * @description 성공 응답 DTO
-         */
-        SuccessResponseDTO: {
-            /** @default success */
-            status: components["schemas"]["ResponseStatus"];
-            /**
-             * Message
-             * @description 응답 메시지
-             */
-            message: string;
-            /**
-             * Data
-             * @description 응답 데이터
-             */
-            data?: unknown | null;
-            /**
-             * Timestamp
-             * Format: date-time
-             * @description 응답 시간
-             */
-            timestamp?: string;
+        StatusTransitionResponse: {
+            registration: components["schemas"]["RegistrationDetail"];
+            transition: components["schemas"]["StatusTransition"];
         };
         /**
          * UserConfigDetailDTO
-         * @description 사용자 설정 상세 정보 DTO
+         * @description 사용자 설정 상세 정보 DTO.
          */
         UserConfigDetailDTO: {
             /**
@@ -3893,9 +1182,9 @@ export interface components {
             user_id: string;
             /**
              * Tool Id
-             * @description 도구 ID
+             * @description 도구 ID (standalone 등록 시 NULL)
              */
-            tool_id: number;
+            tool_id?: number | null;
             /**
              * Tool Name
              * @description 도구 이름
@@ -3907,10 +1196,21 @@ export interface components {
              */
             config_name: string;
             /**
-             * Container Status
-             * @description 컨테이너 상태
+             * Registration Status
+             * @description 등록 상태
              */
-            container_status?: string | null;
+            registration_status?: string | null;
+            /**
+             * Health Status
+             * @description 헬스 상태
+             */
+            health_status?: string | null;
+            /**
+             * Has Registry Api Key
+             * @description v0.9.11 Registry API 키 (api_key_encrypted) 등록 여부. 값 자체는 노출하지 않음 — 관리자가 키 등록 여부만 확인.
+             * @default false
+             */
+            has_registry_api_key: boolean;
             /**
              * Created At
              * @description 생성 일시
@@ -3963,10 +1263,48 @@ export interface components {
              * @default v1
              */
             config_schema_version: string;
+            /**
+             * Endpoint Url
+             * @description 외부 MCP 서버 endpoint URL (registration 기반)
+             */
+            endpoint_url?: string | null;
+        };
+        /**
+         * UserConfigInstanceDTO
+         * @description 사용자 설정 인스턴스 상세 정보 DTO.
+         *
+         *     v0.9.11 registration 기반 — 이전 ``ContainerDTO`` 대체.
+         *     external registration 모델에서는 '컨테이너' 대신 'user config instance' 로 지칭.
+         */
+        UserConfigInstanceDTO: {
+            /** Config Id */
+            config_id: number;
+            /** User Id */
+            user_id: string;
+            /** Tool Name */
+            tool_name: string | null;
+            /** Config Name */
+            config_name: string | null;
+            /** Registration Status */
+            registration_status: string | null;
+            /** Health Status */
+            health_status: string | null;
+            /**
+             * Endpoint Url
+             * @description 외부 MCP 서버 endpoint URL
+             */
+            endpoint_url?: string | null;
+            /** Last Health Check */
+            last_health_check: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /**
          * UserConfigSummaryDTO
-         * @description 사용자 설정 요약 정보 DTO
+         * @description 사용자 설정 요약 정보 DTO.
          */
         UserConfigSummaryDTO: {
             /**
@@ -3981,9 +1319,9 @@ export interface components {
             user_id: string;
             /**
              * Tool Id
-             * @description 도구 ID
+             * @description 도구 ID (standalone 등록 시 NULL)
              */
-            tool_id: number;
+            tool_id?: number | null;
             /**
              * Tool Name
              * @description 도구 이름
@@ -3995,10 +1333,21 @@ export interface components {
              */
             config_name: string;
             /**
-             * Container Status
-             * @description 컨테이너 상태
+             * Registration Status
+             * @description 등록 상태
              */
-            container_status?: string | null;
+            registration_status?: string | null;
+            /**
+             * Health Status
+             * @description 헬스 상태
+             */
+            health_status?: string | null;
+            /**
+             * Has Registry Api Key
+             * @description v0.9.11 Registry API 키 (api_key_encrypted) 등록 여부. 값 자체는 노출하지 않음 — 관리자가 키 등록 여부만 확인.
+             * @default false
+             */
+            has_registry_api_key: boolean;
             /**
              * Created At
              * @description 생성 일시
@@ -4016,129 +1365,6 @@ export interface components {
              */
             is_active: boolean;
         };
-        /**
-         * UserDeploymentRequestDTO
-         * @description 사용자별 배포 요청 DTO
-         */
-        UserDeploymentRequestDTO: {
-            /**
-             * Restart Policy
-             * @description 컨테이너 재시작 정책
-             * @default unless-stopped
-             * @example unless-stopped
-             */
-            restart_policy: string | null;
-            /**
-             * Resource Limits
-             * @description 리소스 제한 설정
-             * @example {
-             *       "cpu": "0.5",
-             *       "disk": "1g",
-             *       "memory": "512m"
-             *     }
-             */
-            resource_limits?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Environment Overrides
-             * @description 환경 변수 오버라이드
-             * @example {
-             *       "LOG_LEVEL": "DEBUG",
-             *       "TIMEOUT": "60"
-             *     }
-             */
-            environment_overrides?: {
-                [key: string]: string;
-            } | null;
-            /**
-             * Timeout Seconds
-             * @description 배포 타임아웃 (초)
-             * @default 300
-             * @example 300
-             */
-            timeout_seconds: number | null;
-        };
-        /**
-         * UserDeploymentResponseDTO
-         * @description 사용자별 배포 응답 DTO
-         */
-        UserDeploymentResponseDTO: {
-            /**
-             * Correlation Id
-             * @description 배포 요청 추적 ID
-             * @example deploy_123_20240115_103000_abc12345
-             */
-            correlation_id: string;
-            /**
-             * Tool Id
-             * @description 도구 ID
-             * @example 1
-             */
-            tool_id: number;
-            /**
-             * Config Id
-             * @description 설정 ID
-             * @example 123
-             */
-            config_id: number;
-            /**
-             * User Id
-             * @description 사용자 ID
-             * @example user123
-             */
-            user_id: string;
-            /**
-             * Config Name
-             * @description 설정 이름
-             * @example production
-             */
-            config_name: string;
-            /**
-             * Container Name
-             * @description 컨테이너 이름
-             * @example mcp-t1-u123-cprod-abc123
-             */
-            container_name: string;
-            /**
-             * Assigned Port
-             * @description 할당된 포트
-             * @example 7001
-             */
-            assigned_port?: number | null;
-            /**
-             * Status
-             * @description 배포 상태
-             * @example REQUESTED
-             */
-            status: string;
-            /**
-             * Message
-             * @description 배포 메시지
-             * @example 배포 요청이 접수되었습니다. 진행 상황은 correlation_id로 추적하세요.
-             */
-            message: string;
-            /**
-             * Initiated At
-             * Format: date-time
-             * @description 배포 시작 시간
-             * @example 2024-01-01T12:00:00Z
-             */
-            initiated_at: string;
-            /**
-             * Estimated Completion
-             * @description 예상 완료 시간 (일반적으로 30-60초)
-             * @example 2024-01-01T12:01:00Z
-             */
-            estimated_completion?: string | null;
-            /**
-             * Metadata
-             * @description 추가 메타데이터
-             */
-            metadata?: {
-                [key: string]: unknown;
-            } | null;
-        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -4149,127 +1375,38 @@ export interface components {
             type: string;
         };
         /**
-         * ContainerStatus
-         * @description 컨테이너 상태
-         * @enum {string}
-         */
-        app__dto__container_status_dto__ContainerStatus: "pending" | "running" | "stopped" | "error" | "conflict" | "terminating";
-        /**
-         * MCPToolDetailResponseDTO
-         * @description MCP 도구 상세 정보 응답 DTO
-         * @example {
-         *       "config_id": 123,
-         *       "tool": {
-         *         "description": "Search the web using a query",
-         *         "discovered_at": "2025-07-25T12:00:00Z",
-         *         "id": 1,
-         *         "input_schema": {
-         *           "properties": {
-         *             "query": {
-         *               "type": "string"
-         *             }
-         *           },
-         *           "type": "object"
-         *         },
-         *         "tool_name": "search_web",
-         *         "user_config_id": 123
-         *       }
-         *     }
-         */
-        app__dto__mcp_tool_discovery_dto__MCPToolDetailResponseDTO: {
-            /**
-             * Config Id
-             * @description 사용자 설정 ID
-             */
-            config_id: number;
-            /** @description 도구 상세 정보 */
-            tool: components["schemas"]["MCPToolCapabilityDTO"];
-        };
-        /**
-         * MCPToolDetailResponseDTO
-         * @description MCP 도구 상세 정보 응답 DTO
-         */
-        app__dto__mcp_tool_user_dto__MCPToolDetailResponseDTO: {
-            /**
-             * Tool Name
-             * @description 도구 이름
-             * @example search_web
-             */
-            tool_name: string;
-            /**
-             * Tool Detail
-             * @description 도구 상세 정보
-             * @example {
-             *       "description": "Search the web for information",
-             *       "inputSchema": {
-             *         "properties": {
-             *           "query": {
-             *             "description": "Search query",
-             *             "type": "string"
-             *           },
-             *           "limit": {
-             *             "default": 10,
-             *             "description": "Max results",
-             *             "type": "integer"
-             *           }
-             *         },
-             *         "required": [
-             *           "query"
-             *         ],
-             *         "type": "object"
-             *       },
-             *       "outputSchema": {
-             *         "items": {
-             *           "properties": {
-             *             "title": {
-             *               "type": "string"
-             *             },
-             *             "url": {
-             *               "type": "string"
-             *             },
-             *             "snippet": {
-             *               "type": "string"
-             *             }
-             *           },
-             *           "type": "object"
-             *         },
-             *         "type": "array"
-             *       }
-             *     }
-             */
-            tool_detail: {
-                [key: string]: unknown;
-            };
-            /**
-             * @description 컨테이너 상태
-             * @example running
-             */
-            container_status: components["schemas"]["app__enums__mcp_tool_enums__ContainerStatus"];
-            /**
-             * Config Id
-             * @description 설정 ID
-             * @example 123
-             */
-            config_id: number;
-            /**
-             * Tool Id
-             * @description 도구 ID
-             * @example 1
-             */
-            tool_id: number;
-        };
-        /**
-         * ContainerStatus
-         * @description 사용자별 MCP 도구 컨테이너의 상태를 나타내는 열거형
+         * VerificationStatusResponse
+         * @description GET /{reg_id}/verification-status 응답 (v0.9.11 P2-2).
          *
-         *     - STOPPED: 중지됨
-         *     - STARTING: 시작 중
-         *     - RUNNING: 실행 중
-         *     - STOPPING: 중지 중
-         *     - ERROR: 오류 상태
-         * @enum {string}
+         *     Fields:
+         *         registration_id: 등록 ID
+         *         status: ``ToolRegistrationStatus`` enum 값 (pending_verification /
+         *             active / unhealthy / disabled / deregistered)
+         *         checks: 단계별 검증 상태 — ``{"ssrf_check", "passport_probe", "discovery"}``.
+         *             각 값은 ``passed`` / ``failed`` / ``pending``.
+         *         error_code: 실패 시 ``ProbeFailureReason`` 또는 구체 에러 코드 (선택)
+         *         elapsed_seconds: ``registered_at`` 기준 경과 시간
          */
-        app__enums__mcp_tool_enums__ContainerStatus: "stopped" | "starting" | "running" | "stopping" | "error";
+        VerificationStatusResponse: {
+            /** Registration Id */
+            registration_id: string;
+            /** Status */
+            status: string;
+            /**
+             * Checks
+             * @description 단계별 상태 — ssrf_check / passport_probe / discovery
+             */
+            checks?: {
+                [key: string]: string;
+            };
+            /** Error Code */
+            error_code?: string | null;
+            /**
+             * Elapsed Seconds
+             * @default 0
+             */
+            elapsed_seconds: number;
+        };
         /**
          * @example {
          *       "error": {
@@ -4659,2844 +1796,17 @@ export interface operations {
             };
         };
     };
-    get_tools_v1_mcp_tools__get: {
-        parameters: {
-            query?: {
-                /** @description 페이지 번호 */
-                page?: number;
-                /** @description 페이지 크기 */
-                size?: number;
-                /** @description 상태 필터 */
-                status_filter?: components["schemas"]["MCPToolStatus"] | null;
-                /** @description 설정 정보 포함 여부 */
-                include_config?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MCPToolListResponseDTO"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    create_tool_v1_mcp_tools__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MCPToolCreateDTO"];
-            };
-        };
-        responses: {
-            /** @description 생성 성공 */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "id": 1,
-                     *       "name": "web-search-tool",
-                     *       "display_name": "Web Search Tool",
-                     *       "category": "WEB_SEARCH",
-                     *       "provider": "NPM",
-                     *       "deployment_type": "CONTAINER",
-                     *       "version": "1.0.0",
-                     *       "status": "INACTIVE",
-                     *       "repo_url": "https://github.com/didim365/mcp-web-search",
-                     *       "icon_url": "https://example.com/icons/web-search.png",
-                     *       "description": "웹 검색 및 정보 수집을 위한 MCP 도구",
-                     *       "tags": [
-                     *         "search",
-                     *         "web",
-                     *         "information"
-                     *       ],
-                     *       "keywords": [
-                     *         "검색",
-                     *         "웹",
-                     *         "크롤링",
-                     *         "정보수집"
-                     *       ],
-                     *       "usage_count": 0,
-                     *       "success_rate": 0,
-                     *       "average_response_time": 0,
-                     *       "created_at": "2024-01-01T12:00:00Z",
-                     *       "updated_at": "2024-01-01T12:00:00Z"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["MCPToolResponseDTO"];
-                };
-            };
-            /** @description 잘못된 요청 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 중복된 도구명 */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    get_tool_stats_v1_mcp_tools_stats_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 통계 조회 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MCPToolStatsDTO"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/stats",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    search_tools_v1_mcp_tools_search_get: {
-        parameters: {
-            query?: {
-                /** @description 통합 키워드 검색 (이름, 표시명, 설명, 키워드에서 검색) */
-                keyword?: string | null;
-                /** @description 카테고리 필터 */
-                category?: components["schemas"]["MCPToolCategory"] | null;
-                /** @description 제공업체 필터 */
-                provider?: components["schemas"]["MCPToolProvider"] | null;
-                /** @description 상태 필터 */
-                status?: components["schemas"]["MCPToolStatus"] | null;
-                /** @description 태그 (쉼표로 구분) */
-                tags?: string | null;
-                /** @description 페이지 번호 */
-                page?: number;
-                /** @description 페이지 크기 */
-                size?: number;
-                /** @description 정렬 기준 */
-                sort_by?: string | null;
-                /** @description 정렬 순서 (asc/desc) */
-                sort_order?: string | null;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 검색 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MCPToolListResponseDTO"];
-                };
-            };
-            /** @description 잘못된 검색 매개변수 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/search",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    get_tool_v1_mcp_tools__tool_id__get: {
-        parameters: {
-            query?: {
-                /** @description 설정 정보 포함 여부 */
-                include_config?: boolean;
-            };
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "id": 1,
-                     *       "name": "youtube-search-tool",
-                     *       "display_name": "YouTube 검색 도구",
-                     *       "provider": "NPM",
-                     *       "category": "WEB_SEARCH",
-                     *       "transport": "streamable_http",
-                     *       "server_type": "npm",
-                     *       "default_config": {
-                     *         "server_config": {
-                     *           "server_type": "npm",
-                     *           "transport": "streamable_http",
-                     *           "package_name": "@didim365/mcp-youtube-search"
-                     *         }
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["MCPToolResponseDTO"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    update_tool_v1_mcp_tools__tool_id__put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MCPToolUpdateDTO"];
-            };
-        };
-        responses: {
-            /** @description 수정 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MCPToolResponseDTO"];
-                };
-            };
-            /** @description 잘못된 요청 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}",
-                     *         "method": "PUT"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}",
-                     *         "method": "PUT"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    delete_tool_v1_mcp_tools__tool_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 삭제 성공 */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}",
-                     *         "method": "DELETE"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}",
-                     *         "method": "DELETE"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    get_tool_config_v1_mcp_tools__tool_id__config_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 설정 조회 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MCPToolConfigTemplateResponseDTO"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    update_tool_config_v1_mcp_tools__tool_id__config_put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MCPToolConfigEnhancedUpdateDTO"];
-            };
-        };
-        responses: {
-            /** @description 설정 업데이트 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MCPToolConfigTemplateResponseDTO"];
-                };
-            };
-            /** @description 잘못된 설정 데이터 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config",
-                     *         "method": "PUT"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구 또는 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config",
-                     *         "method": "PUT"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    create_tool_config_v1_mcp_tools__tool_id__config_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MCPToolConfigEnhancedCreateDTO"];
-            };
-        };
-        responses: {
-            /** @description 설정 생성 성공 */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "tool_id": 1,
-                     *       "server_config": {
-                     *         "server_type": "npm",
-                     *         "transport": "streamable_http",
-                     *         "package_name": "@didim365/mcp-search-tools",
-                     *         "version": "^1.0.0",
-                     *         "entry_point": "dist/index.js",
-                     *         "url": "http://localhost:7000/mcp/",
-                     *         "environment_variables": {
-                     *           "SEARCH_API_KEY": "{{encrypted:search_api_key}}",
-                     *           "MAX_RESULTS": "50",
-                     *           "TIMEOUT": "30"
-                     *         },
-                     *         "capabilities": [
-                     *           "search",
-                     *           "web_scraping",
-                     *           "data_extraction"
-                     *         ]
-                     *       },
-                     *       "client_config": {
-                     *         "name": "Web Search Tool",
-                     *         "version": "1.0.0",
-                     *         "description": "웹 검색 및 정보 수집 도구"
-                     *       },
-                     *       "is_verified": false,
-                     *       "health_check_enabled": true,
-                     *       "created_at": "2024-01-01T12:00:00Z",
-                     *       "updated_at": "2024-01-01T12:00:00Z"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["MCPToolConfigEnhancedResponseDTO"];
-                };
-            };
-            /** @description 잘못된 설정 데이터 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 설정이 이미 존재함 */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    delete_tool_config_v1_mcp_tools__tool_id__config_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 설정 삭제 성공 */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config",
-                     *         "method": "DELETE"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구 또는 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config",
-                     *         "method": "DELETE"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    get_tool_functions_v1_mcp_tools__tool_id__functions_get: {
-        parameters: {
-            query?: {
-                /** @description 상세 정보 포함 여부 */
-                detail?: boolean;
-            };
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 조회 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MCPFunctionListResponseDTO"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/functions",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    update_tool_secrets_v1_mcp_tools__tool_id__config_secrets_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    [key: string]: string;
-                };
-            };
-        };
-        responses: {
-            /** @description 민감 정보 업데이트 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SuccessResponseDTO"];
-                };
-            };
-            /** @description 잘못된 민감 정보 데이터 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config/secrets",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구 또는 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config/secrets",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    get_tool_env_vars_v1_mcp_tools__tool_id__config_env_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 환경 변수 조회 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-            /** @description 도구 또는 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config/env",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    validate_tool_config_v1_mcp_tools__tool_id__config_validate_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 설정 유효성 검증 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SuccessResponseDTO"];
-                };
-            };
-            /** @description 설정 유효성 검증 실패 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config/validate",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구 또는 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config/validate",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    get_mcp_client_config_v1_mcp_tools__tool_id__config_mcp_client_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description LangGraph 호환 MCP 클라이언트 설정 조회 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "mcpServers": {
-                     *         "web-search-tool": {
-                     *           "transport": "streamable_http",
-                     *           "url": "http://localhost:7001/mcp/",
-                     *           "headers": {
-                     *             "Authorization": "Bearer sk-1234567890",
-                     *             "User-Agent": "MCP-Client/web-search-tool",
-                     *             "Content-Type": "application/json"
-                     *           }
-                     *         }
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["MCPClientConfigDTO"];
-                };
-            };
-            /** @description 도구 또는 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/config/mcp-client",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    connect_tool_v1_mcp_tools__tool_id__connect_post: {
-        parameters: {
-            query?: {
-                /** @description 연결 테스트 수행 여부 */
-                test_connection?: boolean;
-            };
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                /**
-                 * @example {
-                 *       "api_key": "your-secret-key",
-                 *       "api_secret": "your-secret-key",
-                 *       "timeout": 30,
-                 *       "custom_headers": {
-                 *         "User-Agent": "MCP-Tool-Client"
-                 *       }
-                 *     }
-                 */
-                "application/json": {
-                    [key: string]: unknown;
-                };
-            };
-        };
-        responses: {
-            /** @description 연결 설정 성공 (admin/default 설정으로 처리) */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SuccessResponseDTO"];
-                };
-            };
-            /** @description 연결 설정 실패 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/connect",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구 또는 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/connect",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    disconnect_tool_v1_mcp_tools__tool_id__connect_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 연결 해제 성공 */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/connect",
-                     *         "method": "DELETE"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구 또는 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/connect",
-                     *         "method": "DELETE"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    deploy_tool_v1_mcp_tools__tool_id__deploy_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DeploymentRequestDTO"];
-            };
-        };
-        responses: {
-            /** @description 배포 요청 접수됨 (admin/default 설정으로 처리) */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeploymentResponseDTO"];
-                };
-            };
-            /** @description 잘못된 배포 요청 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}:deploy",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 배포할 수 없는 상태 */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}:deploy",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 배포 서비스 연동 오류 */
-            502: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    stop_tool_v1_mcp_tools__tool_id__stop_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["StopRequestDTO"];
-            };
-        };
-        responses: {
-            /** @description 중지 요청 접수됨 */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeploymentResponseDTO"];
-                };
-            };
-            /** @description 잘못된 중지 요청 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}:stop",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 중지할 수 없는 상태 */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}:stop",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 배포 서비스 연동 오류 */
-            502: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    start_tool_v1_mcp_tools__tool_id__start_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["StartRequestDTO"];
-            };
-        };
-        responses: {
-            /** @description 시작 요청 접수됨 */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeploymentResponseDTO"];
-                };
-            };
-            /** @description 잘못된 시작 요청 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}:start",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 시작할 수 없는 상태 */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}:start",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 배포 서비스 연동 오류 */
-            502: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    get_deployment_status_v1_mcp_tools__tool_id__deployment_status_get: {
-        parameters: {
-            query: {
-                /** @description 요청한 사용자 ID */
-                user_id: string;
-            };
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 배포 상태 조회 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeploymentStatusDTO"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/deployment-status",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    batch_deploy_tools_v1_mcp_tools_batch_deploy_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["BatchDeploymentRequestDTO"];
-            };
-        };
-        responses: {
-            /** @description 배치 배포 요청 접수됨 */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BatchDeploymentResponseDTO"];
-                };
-            };
-            /** @description 잘못된 배치 배포 요청 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools:batch-deploy",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools:batch-deploy",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    batch_stop_tools_v1_mcp_tools_batch_stop_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["BatchStopRequestDTO"];
-            };
-        };
-        responses: {
-            /** @description 배치 중지 요청 접수됨 */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BatchDeploymentResponseDTO"];
-                };
-            };
-            /** @description 잘못된 배치 중지 요청 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools:batch-stop",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools:batch-stop",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    export_tools_for_langgraph_v1_mcp_tools_langgraph_export_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                /**
-                 * @example {
-                 *       "tool_ids": [
-                 *         1,
-                 *         2,
-                 *         3,
-                 *         4,
-                 *         5
-                 *       ]
-                 *     }
-                 */
-                "application/json": {
-                    [key: string]: number[];
-                };
-            };
-        };
-        responses: {
-            /** @description 통합 LangGraph 설정 생성 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "mcpServers": {
-                     *         "web-search": {
-                     *           "transport": "streamable_http",
-                     *           "url": "http://web-search:7000/mcp/"
-                     *         },
-                     *         "document-analyzer": {
-                     *           "transport": "streamable_http",
-                     *           "url": "http://document-analyzer:7001/mcp/",
-                     *           "headers": {
-                     *             "Authorization": "Bearer sk-1234567890"
-                     *           }
-                     *         }
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["MCPClientConfigDTO"];
-                };
-            };
-            /** @description 잘못된 요청 (도구 ID 목록 필요) */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/langgraph/export",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 생성 가능한 도구 설정이 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/langgraph/export",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    export_user_tools_for_langgraph_v1_mcp_tools_langgraph_export_user_get: {
-        parameters: {
-            query: {
-                /** @description 사용자 ID */
-                user_id: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 사용자 모든 도구 LangGraph 설정 내보내기 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description 잘못된 요청 (user_id 필수) */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 권한 없음 (다른 사용자 설정 접근 시도) */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 사용자 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/langgraph/export/user",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    export_single_tool_for_langgraph_v1_mcp_tools__tool_id__langgraph_export_get: {
-        parameters: {
-            query?: {
-                /** @description 사용자 ID (사용자 설정 포함시) */
-                user_id?: string | null;
-            };
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 도구 LangGraph 설정 내보내기 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description 권한 없음 (다른 사용자 설정 접근 시도) */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description 도구 또는 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/langgraph/export",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    deploy_shared_container_tool_v1_mcp_tools__tool_id__deploy_shared_container_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DeploymentRequestDTO"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeploymentResponseDTO"];
-                };
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/deploy/shared-container",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/deploy/shared-container",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    deploy_shared_container_with_conflict_resolution_v1_mcp_tools__tool_id__deploy_shared_container_v2_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DeploymentRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeploymentResponseDTO"];
-                };
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/deploy/shared-container-v2",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/deploy/shared-container-v2",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    get_active_shared_containers_v1_mcp_tools_shared_containers_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: components["schemas"]["SharedContainerInfo"];
-                    };
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/shared-containers",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    update_shared_container_status_v1_mcp_tools_shared_containers_status_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ContainerStatusResponse"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SuccessResponseDTO"];
-                };
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/shared-containers/status",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/shared-containers/status",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    create_user_config_v1_mcp_tools__tool_id__user_configs_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 도구 ID */
-                tool_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MCPToolUserConfigCreateDTO"];
-            };
-        };
-        responses: {
-            /** @description 설정 생성 성공 */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MCPToolUserConfigResponseDTO"];
-                };
-            };
-            /** @description 잘못된 요청 데이터 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 인증 실패 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 동일한 설정명이 이미 존재함 */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 사용자 리소스 제한 초과 */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs",
-                     *         "method": "POST"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    get_user_config_v1_mcp_tools__tool_id__user_configs__config_id__get: {
-        parameters: {
-            query?: {
-                /** @description 민감 정보 포함 여부 (기본값: False) */
-                include_secrets?: boolean;
-            };
-            header?: never;
-            path: {
-                /** @description 도구 ID */
-                tool_id: number;
-                /** @description 설정 ID */
-                config_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 설정 조회 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MCPToolUserConfigResponseDTO"];
-                };
-            };
-            /** @description 인증 실패 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 접근 권한 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs/{config_id}",
-                     *         "method": "GET"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    update_user_config_v1_mcp_tools__tool_id__user_configs__config_id__put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 도구 ID */
-                tool_id: number;
-                /** @description 설정 ID */
-                config_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MCPToolUserConfigUpdateDTO"];
-            };
-        };
-        responses: {
-            /** @description 설정 업데이트 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MCPToolUserConfigResponseDTO"];
-                };
-            };
-            /** @description 잘못된 요청 데이터 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 인증 실패 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs/{config_id}",
-                     *         "method": "PUT"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 입력 데이터 유효성 검증 실패 */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationErrorResponse"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs/{config_id}",
-                     *         "method": "PUT"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    delete_user_config_v1_mcp_tools__tool_id__user_configs__config_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 도구 ID */
-                tool_id: number;
-                /** @description 설정 ID */
-                config_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 설정 삭제 성공 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeleteResponseDTO"];
-                };
-            };
-            /** @description 인증 실패 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 403,
-                     *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs/{config_id}",
-                     *         "method": "DELETE"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-            /** @description 내부 서버 오류 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "error": {
-                     *         "code": 500,
-                     *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs/{config_id}",
-                     *         "method": "DELETE"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
     get_my_user_configs_v1_mcp_tools_user_configs_me_get: {
         parameters: {
             query?: {
                 /** @description 특정 도구 ID로 필터링 */
                 tool_id?: number | null;
+                /** @description 도구 태그 필터 (예: rag) */
+                tag?: string | null;
                 /** @description 페이지 번호 */
-                page?: number;
+                page?: number | null;
                 /** @description 페이지당 항목 수 */
-                size?: number;
+                size?: number | null;
             };
             header?: never;
             path?: never;
@@ -7552,40 +1862,79 @@ export interface operations {
             };
         };
     };
-    deploy_user_tool_v1_mcp_tools__tool_id__user_configs__config_id__deploy_post: {
+    list_registrations_v1_mcp_tools_registrations_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                has_template?: boolean | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegistrationListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/mcp-tools/registrations",
+                     *         "method": "GET"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_registration_v1_mcp_tools_registrations_post: {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                /** @description 도구 ID */
-                tool_id: number;
-                /** @description 설정 ID */
-                config_id: number;
-            };
+            path?: never;
             cookie?: never;
         };
-        requestBody?: {
+        requestBody: {
             content: {
-                "application/json": components["schemas"]["UserDeploymentRequestDTO"] | null;
+                "application/json": components["schemas"]["RegisterRequest"];
             };
         };
         responses: {
-            /** @description 배포 요청 접수 */
+            /** @description Successful Response */
             202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserDeploymentResponseDTO"];
-                };
-            };
-            /** @description 인증 실패 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
+                    "application/json": components["schemas"]["RegisterResponse"];
                 };
             };
             /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
@@ -7599,30 +1948,12 @@ export interface operations {
                      *       "error": {
                      *         "code": 403,
                      *         "message": "Insufficient permissions",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs/{config_id}:deploy",
+                     *         "path": "/v1/mcp-tools/registrations",
                      *         "method": "POST"
                      *       }
                      *     }
                      */
                     "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 이미 실행 중인 공유 컨테이너 */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
                 };
             };
             /** @description 입력 데이터 유효성 검증 실패 */
@@ -7645,7 +1976,7 @@ export interface operations {
                      *       "error": {
                      *         "code": 500,
                      *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs/{config_id}:deploy",
+                     *         "path": "/v1/mcp-tools/registrations",
                      *         "method": "POST"
                      *       }
                      *     }
@@ -7655,54 +1986,24 @@ export interface operations {
             };
         };
     };
-    get_user_deployment_status_v1_mcp_tools__tool_id__user_configs__config_id__deployment_status_get: {
+    get_registration_v1_mcp_tools_registrations__reg_id__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description 도구 ID */
-                tool_id: number;
-                /** @description 설정 ID */
-                config_id: number;
+                reg_id: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description 배포 상태 조회 성공 */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DeploymentStatusDTO"];
-                };
-            };
-            /** @description 인증 실패 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 접근 권한 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
+                    "application/json": components["schemas"]["RegistrationDetail"];
                 };
             };
             /** @description Validation Error */
@@ -7725,7 +2026,7 @@ export interface operations {
                      *       "error": {
                      *         "code": 500,
                      *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs/{config_id}/deployment-status",
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}",
                      *         "method": "GET"
                      *       }
                      *     }
@@ -7735,63 +2036,58 @@ export interface operations {
             };
         };
     };
-    get_mcp_tools_list_v1_mcp_tools__tool_id__user_configs__config_id__tools_get: {
+    put_registration_v1_mcp_tools_registrations__reg_id__put: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description 도구 ID */
-                tool_id: number;
-                /** @description 설정 ID */
-                config_id: number;
+                reg_id: string;
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
         responses: {
-            /** @description 도구 목록 조회 성공 */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MCPToolsListResponseDTO"];
+                    "application/json": components["schemas"]["RegistrationDetail"];
                 };
             };
-            /** @description 인증 실패 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 접근 권한 없음 */
+            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 403,
+                     *         "message": "Insufficient permissions",
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}",
+                     *         "method": "PUT"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
-            /** @description 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description Validation Error */
+            /** @description 입력 데이터 유효성 검증 실패 */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                    "application/json": components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description 내부 서버 오류 */
@@ -7805,75 +2101,53 @@ export interface operations {
                      *       "error": {
                      *         "code": 500,
                      *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs/{config_id}/tools",
-                     *         "method": "GET"
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}",
+                     *         "method": "PUT"
                      *       }
                      *     }
                      */
                     "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 서버가 실행 중이 아님 */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
                 };
             };
         };
     };
-    get_mcp_tool_detail_discovery_v1_mcp_tools__tool_id__user_configs__config_id__tools__tool_name__get: {
+    delete_registration_v1_mcp_tools_registrations__reg_id__delete: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description 도구 ID */
-                tool_id: number;
-                /** @description 설정 ID */
-                config_id: number;
-                /** @description MCP 도구 이름 */
-                tool_name: string;
+                reg_id: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description 도구 정보 조회 성공 */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__dto__mcp_tool_discovery_dto__MCPToolDetailResponseDTO"];
+                    "application/json": components["schemas"]["DeleteResponse"];
                 };
             };
-            /** @description 인증 실패 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 접근 권한 없음 */
+            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 도구를 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 403,
+                     *         "message": "Insufficient permissions",
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}",
+                     *         "method": "DELETE"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Validation Error */
@@ -7896,71 +2170,34 @@ export interface operations {
                      *       "error": {
                      *         "code": 500,
                      *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/{tool_id}/user-configs/{config_id}/tools/{tool_name}",
-                     *         "method": "GET"
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}",
+                     *         "method": "DELETE"
                      *       }
                      *     }
                      */
                     "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description 서버가 실행 중이 아님 */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
                 };
             };
         };
     };
-    get_simple_tools_by_config_v1_mcp_tools_user_configs__config_id__tools_get: {
+    get_verification_status_v1_mcp_tools_registrations__reg_id__verification_status_get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description 설정 ID */
-                config_id: number;
+                reg_id: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description 도구 목록 조회 성공 */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SimpleToolsListResponseDTO"];
-                };
-            };
-            /** @description 인증 실패 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 접근 권한 없음 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
-                };
-            };
-            /** @description 설정을 찾을 수 없음 */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
+                    "application/json": components["schemas"]["VerificationStatusResponse"];
                 };
             };
             /** @description Validation Error */
@@ -7983,7 +2220,7 @@ export interface operations {
                      *       "error": {
                      *         "code": 500,
                      *         "message": "Internal server error",
-                     *         "path": "/v1/mcp-tools/user-configs/{config_id}/tools",
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}/verification-status",
                      *         "method": "GET"
                      *       }
                      *     }
@@ -7991,13 +2228,252 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
-            /** @description 서버가 실행 중이 아님 */
-            503: {
+        };
+    };
+    patch_credential_v1_mcp_tools_registrations__reg_id__credential_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reg_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatchCredentialRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ErrorResponseDTO"];
+                    "application/json": components["schemas"]["CredentialRotationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}/credential",
+                     *         "method": "PATCH"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    patch_status_v1_mcp_tools_registrations__reg_id__status_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reg_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatchStatusRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatusTransitionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}/status",
+                     *         "method": "PATCH"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    rediscover_registration_v1_mcp_tools_registrations__reg_id__rediscover_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reg_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 403,
+                     *         "message": "Insufficient permissions",
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}/rediscover",
+                     *         "method": "POST"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 입력 데이터 유효성 검증 실패 */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}/rediscover",
+                     *         "method": "POST"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    manual_healthcheck_v1_mcp_tools_registrations__reg_id__healthcheck_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reg_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthCheckResponse"];
+                };
+            };
+            /** @description 권한 부족 - 해당 작업을 수행할 권한이 없음 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 403,
+                     *         "message": "Insufficient permissions",
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}/healthcheck",
+                     *         "method": "POST"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description 입력 데이터 유효성 검증 실패 */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description 내부 서버 오류 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": 500,
+                     *         "message": "Internal server error",
+                     *         "path": "/v1/mcp-tools/registrations/{reg_id}/healthcheck",
+                     *         "method": "POST"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -8379,8 +2855,8 @@ export interface operations {
                 user_id?: string | null;
                 /** @description 도구 ID 필터 */
                 tool_id?: number | null;
-                /** @description 컨테이너 상태 필터 */
-                container_status?: string | null;
+                /** @description 등록 상태 필터 (pending_verification, active, unhealthy, disabled, deregistered) */
+                registration_status?: string | null;
                 /** @description 설정 이름 검색 (부분 일치) */
                 config_name?: string | null;
                 /** @description 페이지 번호 */
@@ -8651,11 +3127,11 @@ export interface operations {
             };
         };
     };
-    get_all_containers_v1_admin_containers_get: {
+    get_all_user_config_instances_v1_admin_user_configs_instances_get: {
         parameters: {
             query?: {
-                /** @description 컨테이너 상태 필터 */
-                status?: string | null;
+                /** @description 등록 상태 필터 */
+                registration_status?: string | null;
                 /** @description 헬스 상태 필터 */
                 health_status?: string | null;
             };
@@ -8671,7 +3147,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ContainerDTO"][];
+                    "application/json": components["schemas"]["UserConfigInstanceDTO"][];
                 };
             };
             /** @description Not found */
@@ -8701,7 +3177,7 @@ export interface operations {
                      *       "error": {
                      *         "code": 500,
                      *         "message": "Internal server error",
-                     *         "path": "/v1/admin/containers",
+                     *         "path": "/v1/admin/user-configs-instances",
                      *         "method": "GET"
                      *       }
                      *     }
@@ -8711,7 +3187,7 @@ export interface operations {
             };
         };
     };
-    get_container_status_summary_v1_admin_containers_status_get: {
+    get_registration_status_summary_v1_admin_registration_status_summary_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -8726,7 +3202,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ContainerStatusSummaryDTO"];
+                    "application/json": components["schemas"]["RegistrationStatusSummaryDTO"];
                 };
             };
             /** @description Not found */
@@ -8747,7 +3223,7 @@ export interface operations {
                      *       "error": {
                      *         "code": 500,
                      *         "message": "Internal server error",
-                     *         "path": "/v1/admin/containers/status",
+                     *         "path": "/v1/admin/registration-status/summary",
                      *         "method": "GET"
                      *       }
                      *     }
