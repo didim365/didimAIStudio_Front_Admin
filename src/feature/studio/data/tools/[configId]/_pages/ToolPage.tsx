@@ -17,7 +17,7 @@ import {
 } from "@/shared/ui/alert-dialog";
 import {
   Settings,
-  Container,
+  Globe,
   Server,
   Key,
   Calendar,
@@ -32,13 +32,17 @@ import {
   Code,
   Shield,
   Layers,
+  Link as LinkIcon,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/formatDate";
 import { GetUserConfigResponse } from "../_api/getUserConfig";
 import JsonView from "@uiw/react-json-view";
-import { STATUS_CONFIG } from "../../_constants/containerConfigs";
+import {
+  REGISTRATION_STATUS_CONFIG,
+  HEALTH_STATUS_CONFIG,
+} from "../../_constants/registrationStatusConfigs";
 import { cn } from "@/shared/lib/utils";
 import { useDeleteUserConfig } from "../_hooks/useDeleteUserConfig";
 
@@ -71,15 +75,18 @@ function ToolPage({ config }: ToolPageProps) {
     deleteUserConfig({ config_id: config.config_id });
   };
 
-  const statusConfig =
-    config.container_status && STATUS_CONFIG[config.container_status]
-      ? STATUS_CONFIG[config.container_status]
-      : {
-          label: config.container_status || "알 수 없음",
-          variant: "secondary" as const,
-          icon: <Activity className="h-3 w-3" />,
-          className: "bg-slate-50 text-slate-700 border-slate-200",
-        };
+  // 등록 상태 설정
+  const registrationStatusConfig =
+    config.registration_status &&
+    REGISTRATION_STATUS_CONFIG[config.registration_status]
+      ? REGISTRATION_STATUS_CONFIG[config.registration_status]
+      : null;
+
+  // 헬스 상태 설정
+  const healthStatusConfig =
+    config.health_status && HEALTH_STATUS_CONFIG[config.health_status]
+      ? HEALTH_STATUS_CONFIG[config.health_status]
+      : null;
 
   return (
     <div className="space-y-6">
@@ -100,7 +107,7 @@ function ToolPage({ config }: ToolPageProps) {
               도구 설정 상세 정보
             </h1>
             <p className="text-muted-foreground">
-              설정 ID: {config.config_id} | 도구 ID: {config.tool_id}
+              설정 ID: {config.config_id} | 도구 ID: {config.tool_id ?? "없음"}
             </p>
           </div>
         </div>
@@ -187,7 +194,9 @@ function ToolPage({ config }: ToolPageProps) {
                   <Wrench className="h-4 w-4" />
                   <span className="font-medium">도구 ID</span>
                 </div>
-                <p className="text-lg font-semibold pl-6">{config.tool_id}</p>
+                <p className="text-lg font-semibold pl-6">
+                  {config.tool_id ?? "없음"}
+                </p>
               </div>
 
               {/* Tool Name */}
@@ -210,18 +219,33 @@ function ToolPage({ config }: ToolPageProps) {
                   <span className="font-medium">상태</span>
                 </div>
                 <div className="pl-6 flex flex-wrap gap-2">
-                  {config.container_status && (
+                  {/* 등록 상태 */}
+                  {registrationStatusConfig && (
                     <Badge
-                      variant={statusConfig.variant}
+                      variant={registrationStatusConfig.variant}
                       className={cn(
                         "flex items-center gap-1",
-                        statusConfig.className
+                        registrationStatusConfig.className
                       )}
                     >
-                      {statusConfig.icon}
-                      {statusConfig.label}
+                      {registrationStatusConfig.icon}
+                      {registrationStatusConfig.label}
                     </Badge>
                   )}
+                  {/* 헬스 상태 */}
+                  {healthStatusConfig && (
+                    <Badge
+                      variant={healthStatusConfig.variant}
+                      className={cn(
+                        "flex items-center gap-1",
+                        healthStatusConfig.className
+                      )}
+                    >
+                      {healthStatusConfig.icon}
+                      {healthStatusConfig.label}
+                    </Badge>
+                  )}
+                  {/* 활성화 상태 */}
                   <Badge
                     variant={config.is_active ? "default" : "secondary"}
                     className="flex items-center gap-1"
@@ -233,6 +257,17 @@ function ToolPage({ config }: ToolPageProps) {
                     )}
                     {config.is_active ? "활성" : "비활성"}
                   </Badge>
+                  {/* Registry API 키 등록 여부 */}
+                  <Badge
+                    variant={config.has_registry_api_key ? "default" : "outline"}
+                    className="flex items-center gap-1"
+                  >
+                    <Key className="h-3 w-3" />
+                    {config.has_registry_api_key
+                      ? "API 키 등록됨"
+                      : "API 키 미등록"}
+                  </Badge>
+                  {/* 민감정보 */}
                   <Badge
                     variant={config.has_secrets ? "default" : "outline"}
                     className="flex items-center gap-1"
@@ -254,7 +289,7 @@ function ToolPage({ config }: ToolPageProps) {
                   <span className="font-medium">생성일</span>
                 </div>
                 <p className="text-lg font-semibold pl-6">
-                  {formatDate(config.created_at)}
+                  {config.created_at ? formatDate(config.created_at) : "-"}
                 </p>
               </div>
 
@@ -265,7 +300,7 @@ function ToolPage({ config }: ToolPageProps) {
                   <span className="font-medium">마지막 업데이트</span>
                 </div>
                 <p className="text-lg font-semibold pl-6">
-                  {formatDate(config.updated_at)}
+                  {config.updated_at ? formatDate(config.updated_at) : "-"}
                 </p>
               </div>
 
@@ -283,34 +318,79 @@ function ToolPage({ config }: ToolPageProps) {
           </CardContent>
         </Card>
 
-        {/* Container Info Card */}
+        {/* Registration Info Card */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Container className="h-5 w-5" />
-              컨테이너 정보
+              <Globe className="h-5 w-5" />
+              등록 정보
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {/* Container Status */}
+              {/* Registration Status */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Activity className="h-4 w-4" />
-                  <span className="font-medium">컨테이너 상태</span>
+                  <span className="font-medium">등록 상태</span>
                 </div>
                 <div className="pl-6">
-                  {config.container_status ? (
+                  {registrationStatusConfig ? (
                     <Badge
-                      variant={statusConfig.variant}
+                      variant={registrationStatusConfig.variant}
                       className={cn(
                         "flex items-center gap-1 w-fit",
-                        statusConfig.className
+                        registrationStatusConfig.className
                       )}
                     >
-                      {statusConfig.icon}
-                      {statusConfig.label}
+                      {registrationStatusConfig.icon}
+                      {registrationStatusConfig.label}
                     </Badge>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">
+                      정보 없음
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Health Status */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Activity className="h-4 w-4" />
+                  <span className="font-medium">헬스 상태</span>
+                </div>
+                <div className="pl-6">
+                  {healthStatusConfig ? (
+                    <Badge
+                      variant={healthStatusConfig.variant}
+                      className={cn(
+                        "flex items-center gap-1 w-fit",
+                        healthStatusConfig.className
+                      )}
+                    >
+                      {healthStatusConfig.icon}
+                      {healthStatusConfig.label}
+                    </Badge>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">
+                      정보 없음
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Endpoint URL */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <LinkIcon className="h-4 w-4" />
+                  <span className="font-medium">엔드포인트 URL</span>
+                </div>
+                <div className="pl-6">
+                  {config.endpoint_url ? (
+                    <code className="text-sm bg-muted px-2 py-1 rounded break-all">
+                      {config.endpoint_url}
+                    </code>
                   ) : (
                     <span className="text-sm text-muted-foreground">
                       정보 없음
